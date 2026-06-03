@@ -1,0 +1,25 @@
+src/adapters/ops/structural/extract_area.rs
+  ai_agent 1-139
+src/adapters/ops/mod.rs
+  ai_agent 3
+src/adapters/ops/structural/flip_horizontal.rs
+  ai_agent 1-153
+src/adapters/scheduler/rayon_scheduler.rs
+  ai_agent 104-116,118-120
+tests/integration_pipeline.rs
+  ai_agent 227-399
+src/adapters/ops/structural/flip_vertical.rs
+  ai_agent 1-154
+src/adapters/pipeline/mod.rs
+  ai_agent 6-9,105-115,417-541
+src/lib.rs
+  ai_agent 25
+src/adapters/ops/structural/mod.rs
+  ai_agent 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f49e2747e1709ece4744e6d82287c6895e51f1ae",
+  "prompts": {}
+}
