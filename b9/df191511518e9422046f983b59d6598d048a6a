@@ -1,0 +1,33 @@
+BACKLOG.md
+  s_e5ffa9cad67ed4::t_45b5f853042252 119
+  s_e5ffa9cad67ed4::t_ea26017f019e99 22-23
+src/adapters/scheduler/mod.rs
+  s_e5ffa9cad67ed4::t_76ca83a5db0a9f 38-41
+  s_e5ffa9cad67ed4::t_bc842d95e07ad5 3-4,6-8,21-37,42-79
+DECISIONS.md
+  s_e5ffa9cad67ed4::t_6cc92dc7e5c1cb 25-26
+  s_e5ffa9cad67ed4::t_521d96aca0b6c6 1889-1998
+src/adapters/scheduler/rayon_scheduler.rs
+  s_e5ffa9cad67ed4::t_24ec7b9f74109e 16
+  s_e5ffa9cad67ed4::t_f95c778c7e7d0a 196-249
+  s_e5ffa9cad67ed4::t_aef70e3b112c4c 343,393-395,404-407
+  s_e5ffa9cad67ed4::t_dc61af041b8c1f 332-342,344-346,348-392,396-403,408
+  s_e5ffa9cad67ed4::t_a896d2f04040cd 347
+  s_e5ffa9cad67ed4::t_73044a989231d0 21-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b9df191511518e9422046f983b59d6598d048a6a",
+  "prompts": {},
+  "sessions": {
+    "s_e5ffa9cad67ed4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cb97d114-60c9-45ee-8e07-9a74d7e48833",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
