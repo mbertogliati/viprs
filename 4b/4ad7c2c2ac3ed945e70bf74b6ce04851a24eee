@@ -1,0 +1,65 @@
+vendor/memmap2-0.9.5/Cargo.toml
+  ai_agent 1-43
+Cargo.toml
+  s_e5ffa9cad67ed4::t_cc536b70199eb0 20-22
+  s_e5ffa9cad67ed4::t_fd0f710d24487d 10,17,19
+src/lib.rs
+  s_e5ffa9cad67ed4::t_43c113a14e58ab 14-15
+vendor/memmap2-0.9.5/src/lib.rs
+  ai_agent 1-2212
+vendor/memmap2-0.9.5/.gitignore
+  ai_agent 1-2
+src/adapters/sources/mod.rs
+  s_e5ffa9cad67ed4::t_11e97064ec6fb1 3-4
+vendor/memmap2-0.9.5/Cargo.toml.orig
+  ai_agent 1-20
+vendor/memmap2-0.9.5/src/stub.rs
+  ai_agent 1-81
+vendor/memmap2-0.9.5/CHANGELOG.md
+  ai_agent 1-245
+Cargo.lock
+  ai_agent 419,421,429-435,825
+src/adapters/sources/mmap.rs
+  s_e5ffa9cad67ed4::t_83b2391229699f 144-150,153,156,159,164,171-172,181-182,193-194,206-207,219-220,228-229
+  s_e5ffa9cad67ed4::t_263959c5ee7019 1-143,151-152,154-155,157-158,160-163,167-170,173-180,183-192,195-205,208-218,221-227,230-232
+  s_e5ffa9cad67ed4::t_fce9c3a7638398 165-166
+vendor/memmap2-0.9.5/LICENSE-APACHE
+  ai_agent 1-201
+vendor/memmap2-0.9.5/examples/cat.rs
+  ai_agent 1-23
+vendor/memmap2-0.9.5/src/advice.rs
+  ai_agent 1-422
+vendor/memmap2-0.9.5/src/unix.rs
+  ai_agent 1-458
+vendor/memmap2-0.9.5/.cargo_vcs_info.json
+  ai_agent 1-6
+BACKLOG.md
+  s_e5ffa9cad67ed4::t_2e062f6eb5ef8a 141
+  s_e5ffa9cad67ed4::t_10c4621f7aba63 22
+vendor/memmap2-0.9.5/README.md
+  ai_agent 1-33
+src/adapters/sources/any.rs
+  s_e5ffa9cad67ed4::t_5b8601991b7f83 20-22
+vendor/memmap2-0.9.5/LICENSE-MIT
+  ai_agent 1-26
+vendor/memmap2-0.9.5/.github/workflows/main.yml
+  ai_agent 1-129
+vendor/memmap2-0.9.5/src/windows.rs
+  ai_agent 1-524
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4b4ad7c2c2ac3ed945e70bf74b6ce04851a24eee",
+  "prompts": {},
+  "sessions": {
+    "s_e5ffa9cad67ed4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cb97d114-60c9-45ee-8e07-9a74d7e48833",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
