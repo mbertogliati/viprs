@@ -1,0 +1,70 @@
+src/adapters/ops/arithmetic/add.rs
+  s_1aee1be9748b6e::t_35fd86223ca60e 8,30,35-36
+src/adapters/ops/arithmetic/linear.rs
+  s_1aee1be9748b6e::t_0319d043ace691 8,25,30-31
+src/lib.rs
+  s_1aee1be9748b6e::t_a11d09f8139e87 18
+  s_1aee1be9748b6e::t_62cba3a370e490 16,21
+  s_1aee1be9748b6e::t_93f26be247625b 15,17
+tests/integration_pipeline.rs
+  s_1aee1be9748b6e::t_62cba3a370e490 13,53,110-113,146-149
+  s_1aee1be9748b6e::t_27efcdd35290c0 1,3-8,29,69,87-109,114-145,150-155
+src/ports/source.rs
+  s_1aee1be9748b6e::t_43c0b9e1da332f 3,7,9-17,19-22,28-31,34-75
+BACKLOG.md
+  s_1aee1be9748b6e::t_486bfb1a8136cd 125-146
+  s_1aee1be9748b6e::t_0649452ddfc73b 177
+src/domain/pipeline.rs
+  s_1aee1be9748b6e::t_cfef0068212c26 478-480
+  s_1aee1be9748b6e::t_6b27e72e53c473 426-427
+  s_1aee1be9748b6e::t_01c210857444a9 410-411
+  s_1aee1be9748b6e::t_38d0eca46090f6 5,8,10-11,30,32-33,37,51,53-55,98-99,218-220,263-265,348-358,368-371,397-409,413-425,428-429,431-438,442-444,446-447,454-470,472-477,488,496-498,500,514-516,518,585,592-594,596-621
+  s_1aee1be9748b6e::t_62cba3a370e490 101-103,595
+  s_1aee1be9748b6e::t_324cb829c426da 9
+  s_1aee1be9748b6e::t_d10988d68bd53b 374,380-383,394,396
+  s_1aee1be9748b6e::t_54c68073982b27 299-347,359-362,367,372-373,375-379,384-393,395,412,430,441,448-453,471
+  s_1aee1be9748b6e::t_a2945cdec1c309 363-366
+  s_1aee1be9748b6e::t_d21893a1943eb6 439-440,445
+src/adapters/ops/arithmetic/subtract.rs
+  s_1aee1be9748b6e::t_d4c3a6350e2b22 8,36,41-42
+src/adapters/sources/zero.rs
+  s_1aee1be9748b6e::t_a7dd6945663ea1 69-70,76,83-85,94
+  s_1aee1be9748b6e::t_86e93ee3ee2dca 1-2,6,15-16,18-20,25,28-29,35,40-41,74,82,86-88,93
+src/adapters/ops/conversion/cast.rs
+  s_1aee1be9748b6e::t_62cba3a370e490 127
+  s_1aee1be9748b6e::t_337cab6fce8b1a 152-155
+  s_1aee1be9748b6e::t_35cb5fa00b580b 1,7-8,10,15-18,71-77,96-102,105,112-115,124,128,141,143-144,147,156-158,166,178,191,195-209
+src/adapters/ops/arithmetic/invert.rs
+  s_1aee1be9748b6e::t_2ac3c5df1e4dd8 8,83,88-89
+src/adapters/sources/memory.rs
+  s_1aee1be9748b6e::t_1edd2414d9724f 6,50-51
+src/adapters/ops/arithmetic/multiply.rs
+  s_1aee1be9748b6e::t_b8e51f905924f3 8,22,27-28
+src/adapters/sinks/memory.rs
+  s_1aee1be9748b6e::t_62cba3a370e490 4,101-108,124-131,143-147,233-236,240-243,296-299
+  s_1aee1be9748b6e::t_0e7e3155abb959 148,159-161,177-179
+  s_1aee1be9748b6e::t_4e15eaf1ac2f3e 153-154
+DECISIONS.md
+  s_1aee1be9748b6e::t_50b600eb9a7bba 1445-1537
+src/adapters/scheduler/rayon_scheduler.rs
+  s_1aee1be9748b6e::t_26ebf78442d2f0 202,206-208
+src/ports/op.rs
+  s_1aee1be9748b6e::t_dca6f30b7075e8 4,6-13,19,21-27,29-49,51,53-55,57-58,60-72,75,96-101,103-105,110,112-115,118,122,124-128,131,133,135,137,141,177,181,183-202,218-220,222
+  s_1aee1be9748b6e::t_62cba3a370e490 182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5af5fdc263442cdc99212f7d97a71e4c0ff54866",
+  "prompts": {},
+  "sessions": {
+    "s_1aee1be9748b6e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "540c232a-0714-43f7-b4fa-30054d1ff124",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
