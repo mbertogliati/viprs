@@ -1,0 +1,41 @@
+benches/arithmetic/add.rs
+  s_e5ffa9cad67ed4::t_63ca12aa3459df 1-7,9-10,13-33,35-56
+  s_e5ffa9cad67ed4::t_2821d4dc3030ee 8,11-12,34
+benches/arithmetic/invert.rs
+  s_e5ffa9cad67ed4::t_2821d4dc3030ee 8-9,24
+  s_e5ffa9cad67ed4::t_210f0617a37eaf 1-7,10-23,25-44
+benches/pipeline.rs
+  s_e5ffa9cad67ed4::t_2821d4dc3030ee 10-11,26
+  s_e5ffa9cad67ed4::t_5d44426677818d 1-9,12-25,27-49
+benches/arithmetic/subtract.rs
+  s_e5ffa9cad67ed4::t_2821d4dc3030ee 7,10-11,34
+  s_e5ffa9cad67ed4::t_055f715ca4a32b 1-6,8-9,12-33,35-56
+BACKLOG.md
+  s_e5ffa9cad67ed4::t_5c823dd5df0872 22
+  s_e5ffa9cad67ed4::t_a0376c4a676e7d 148
+  s_e5ffa9cad67ed4::t_07a67b9c3ed32f 126,128-129
+benches/arithmetic/linear.rs
+  s_e5ffa9cad67ed4::t_f8c6ac7cd587ec 1-7,10-23,25-45
+  s_e5ffa9cad67ed4::t_2821d4dc3030ee 8-9,24
+benches/arithmetic/multiply.rs
+  s_e5ffa9cad67ed4::t_2821d4dc3030ee 7,10-11,34
+  s_e5ffa9cad67ed4::t_df657161f87e81 1-6,8-9,12-33,35-56
+Cargo.toml
+  s_e5ffa9cad67ed4::t_5d771b8d7fdc64 18-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8a1a61c46d96c70549331b9bece29ee58e5d5a80",
+  "prompts": {},
+  "sessions": {
+    "s_e5ffa9cad67ed4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cb97d114-60c9-45ee-8e07-9a74d7e48833",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
