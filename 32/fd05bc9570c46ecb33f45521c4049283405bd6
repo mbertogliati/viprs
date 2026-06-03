@@ -1,0 +1,39 @@
+vendor/memmap2-0.9.5/Cargo.toml.orig
+  ai_agent 1-20
+vendor/memmap2-0.9.5/.cargo_vcs_info.json
+  ai_agent 1-6
+vendor/memmap2-0.9.5/.gitignore
+  ai_agent 1-2
+vendor/memmap2-0.9.5/src/stub.rs
+  ai_agent 1-81
+vendor/memmap2-0.9.5/src/advice.rs
+  ai_agent 1-422
+Cargo.lock
+  ai_agent 419,421,429-435,825
+vendor/memmap2-0.9.5/LICENSE-MIT
+  ai_agent 1-26
+vendor/memmap2-0.9.5/LICENSE-APACHE
+  ai_agent 1-201
+vendor/memmap2-0.9.5/examples/cat.rs
+  ai_agent 1-23
+vendor/memmap2-0.9.5/src/lib.rs
+  ai_agent 1-2212
+vendor/memmap2-0.9.5/src/windows.rs
+  ai_agent 1-524
+vendor/memmap2-0.9.5/CHANGELOG.md
+  ai_agent 1-245
+vendor/memmap2-0.9.5/Cargo.toml
+  ai_agent 1-43
+vendor/memmap2-0.9.5/.github/workflows/main.yml
+  ai_agent 1-129
+vendor/memmap2-0.9.5/README.md
+  ai_agent 1-33
+vendor/memmap2-0.9.5/src/unix.rs
+  ai_agent 1-458
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "32fd05bc9570c46ecb33f45521c4049283405bd6",
+  "prompts": {}
+}
