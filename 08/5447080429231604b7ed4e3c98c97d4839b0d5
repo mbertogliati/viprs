@@ -1,0 +1,42 @@
+src/adapters/pipeline/mod.rs
+  s_e5ffa9cad67ed4::t_e434992552a768 15
+  s_e5ffa9cad67ed4::t_9a42d741925ac7 2-8,11,16,19-20,268-273,277-280,284,286-291,293,295-296,300-302,307-308,312-315,317-325,341,343,345-381,384-400,402-442,445-449,451-456,460-465,572,581-596,598-603,606,610-614,617,620-629,632-637,639-642,644-646,660-662,664-666,671,674
+src/adapters/sources/any.rs
+  s_e5ffa9cad67ed4::t_33c1bd13e783d7 129
+  s_e5ffa9cad67ed4::t_decbde2fb2be33 1-128,130-143
+src/lib.rs
+  s_e5ffa9cad67ed4::t_33c1bd13e783d7 12-13
+tests/integration_pipeline.rs
+  s_e5ffa9cad67ed4::t_33c1bd13e783d7 35-38,74-77,94-95,110,128-129,144-147,162-163,178-181,186-190,198-199,218-221,235-236
+  s_e5ffa9cad67ed4::t_180b5bfa3d4c13 1,3-5,7,11-12,24,28,63,67,87,90-91,101-105,117-118,124-125,130-143,148-161,164-177,182-185,194-195,205-213,222-234,242-243,245-247,258,260-261
+src/adapters/sinks/memory.rs
+  s_e5ffa9cad67ed4::t_e423b1ae2033b9 315-319
+BACKLOG.md
+  s_e5ffa9cad67ed4::t_63797963211b96 143
+  s_e5ffa9cad67ed4::t_47c8afe7359ee4 19,21
+src/domain/error.rs
+  s_e5ffa9cad67ed4::t_5d754c3e601576 44-48
+  s_e5ffa9cad67ed4::t_33c1bd13e783d7 40-42
+src/adapters/scheduler/mod.rs
+  s_e5ffa9cad67ed4::t_33c1bd13e783d7 3-5
+src/adapters/sources/mod.rs
+  s_e5ffa9cad67ed4::t_3748d807f1390b 1
+DECISIONS.md
+  s_e5ffa9cad67ed4::t_bc1c6e2be19eb7 1767-1886
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "085447080429231604b7ed4e3c98c97d4839b0d5",
+  "prompts": {},
+  "sessions": {
+    "s_e5ffa9cad67ed4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cb97d114-60c9-45ee-8e07-9a74d7e48833",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
