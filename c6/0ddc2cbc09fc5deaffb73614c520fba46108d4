@@ -1,0 +1,189 @@
+"backlog/archive/tasks/d-010 - CompiledPipeline-generica-source.md"
+  s_891ff43f86c97c::t_6295a472ddb982 1-29
+src/adapters/ops/resample/affine.rs
+  s_891ff43f86c97c::t_4e928b568453f1 6
+  s_891ff43f86c97c::t_72228da79f8493 27
+"backlog/docs/adr-015 - ADR-015 — NodeSpec: declaración explícita de dimensiones de .md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-52
+"backlog/archive/tasks/b-021 - Zero-copy-ops-estructurales.md"
+  s_891ff43f86c97c::t_b29ad708f0a523 1-16
+"backlog/docs/adr-001 - ADR-001 — No async runtimes (Tokio, async-std, smol, …).md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-125
+"backlog/docs/adr-006 - ADR-006 — Source connection model: source stored in Compiled.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-87
+"backlog/archive/tasks/d-009 - Estrategia-SIMD.md"
+  s_891ff43f86c97c::t_d65df3125ccafb 1-30
+"backlog/docs/adr-007 - ADR-007 — ConcurrentSink: interior mutability for parallel w.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-181
+"backlog/docs/adr-013 - ADR-013 — TileSchedulerP genérico para mover el trait a .md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-81
+GUIDELINES.md
+  s_891ff43f86c97c::t_9e18ca614c0b98 116,203,295,433,473,528
+"backlog/archive/tasks/b-023 - unsafe-Send-Sync-AnySource.md"
+  s_891ff43f86c97c::t_55ac45a70dcde5 1-16
+"backlog/tasks/b-028 - ReducingScheduler-run_with_reducer.md"
+  s_891ff43f86c97c::t_2135ee59234084 1-12,16
+  s_891ff43f86c97c::t_40c2edb81d6e09 13-15,17-30
+"backlog/archive/tasks/d-012 - ReducingScheduler-single-pass.md"
+  s_891ff43f86c97c::t_b6cdc25b1e1f3a 1-32
+"backlog/docs/adr-005 - ADR-005 — Source and Sink abstractions, and the unavoidable .md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-241
+"backlog/archive/tasks/b-008 - Golden-output-tests.md"
+  s_891ff43f86c97c::t_0070b0d25169d6 1-18
+"backlog/archive/tasks/b-025 - Rotate90-formula-landscape.md"
+  s_891ff43f86c97c::t_10e34fe3132e0e 1-17
+"backlog/docs/adr-026 - ADR-026 — CompiledPipeline genérica sobre source: no hacer.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-94
+"backlog/archive/tasks/d-004 - DAG-pipeline-multi-input.md"
+  s_891ff43f86c97c::t_749c978fc2fd68 1-29
+"backlog/archive/tasks/d-007 - Codec-API-v2.md"
+  s_891ff43f86c97c::t_981551235d0689 1-31
+src/adapters/ops/resample/resize.rs
+  s_891ff43f86c97c::t_4e928b568453f1 9
+"backlog/archive/tasks/b-010 - Test-integracion-MemorySource.md"
+  s_891ff43f86c97c::t_f45cc08925b637 1-16
+"backlog/archive/tasks/d-008 - FusedOp-kernel-fusion.md"
+  s_891ff43f86c97c::t_a4cebd5cbf4a3c 1-31
+"backlog/docs/adr-025 - ADR-025 — SIMD dispatch strategy: runtime detection + inline.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-98
+"backlog/archive/tasks/d-002 - Arithmetic-Boolean-completos.md"
+  s_891ff43f86c97c::t_c2d42b8f89e5fe 1-29
+"backlog/archive/tasks/b-007 - Conv2d-halo-handling.md"
+  s_891ff43f86c97c::t_e99324a77e3ac7 1-17
+"backlog/tasks/b-011 - Pipeline-DAG-support.md"
+  s_891ff43f86c97c::t_88ed071a905bd9 1-12,16-22,24,26
+  s_891ff43f86c97c::t_4ffe99378be685 13-15,23,25,27-28
+"backlog/archive/tasks/b-024 - TileScheduler-trait-en-ports.md"
+  s_891ff43f86c97c::t_8230a605c7f147 1-16
+"backlog/docs/adr-018 - ADR-018 — Sub-traits de formato: FloatFormat, IntegerFormat,.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-75
+"backlog/docs/adr-004 - ADR-004 — Region-Tile model and demand hint propagation.md"
+  s_891ff43f86c97c::t_c571273d2845f3 2-6
+"backlog/docs/adr-009 - ADR-009 — Band count propagation through the static pipeline.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-136
+"backlog/archive/tasks/b-022 - Criterion-benchmarks-estructurales.md"
+  s_891ff43f86c97c::t_3ff7405efaf2ae 1-15
+"backlog/archive/tasks/b-005a - Rotate90.md"
+  s_891ff43f86c97c::t_8bd90c11fdf98d 1-18
+backlog/config.yml
+  s_891ff43f86c97c::t_8e59f682573f52 1
+  s_891ff43f86c97c::t_1c54ddb04a267e 2-15
+"backlog/archive/tasks/b-009 - Criterion-benchmarks-aritmetica.md"
+  s_891ff43f86c97c::t_e3791982180cb9 1-17
+"backlog/archive/tasks/d-006 - TileCache-Sequential-vs-RandomAccess.md"
+  s_891ff43f86c97c::t_0e530b97ea409f 1-31
+src/domain/simd.rs
+  s_891ff43f86c97c::t_dfabc598354281 19
+"backlog/docs/adr-023 - ADR-023 — Codec API v2: LoadOptions-SaveOptions genéricos + .md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-135
+"backlog/docs/adr-003 - ADR-003 — Pipeline execution model: compiled linear over rec.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-266
+"backlog/archive/tasks/b-015 - expect-OperationBridge.md"
+  s_891ff43f86c97c::t_6a25f7355c7226 1-15
+src/adapters/codecs/webp.rs
+  s_891ff43f86c97c::t_08526d1358b4af 125
+"backlog/archive/tasks/b-016 - expect-PipelineArena-compile.md"
+  s_891ff43f86c97c::t_eafcd0d4018265 1-15
+"backlog/archive/tasks/b-019 - domain-importa-adapters.md"
+  s_891ff43f86c97c::t_2b4ee6c5fa48e6 1-16
+"backlog/archive/tasks/b-020 - Pipeline-estatico-eliminado.md"
+  s_891ff43f86c97c::t_5263497557c8e3 1-15
+"backlog/docs/adr-019 - ADR-019 — Colorspace: sealed enum + marker trait, sin type p.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-73
+"backlog/docs/adr-010 - ADR-010 — Mover pipeline graph a adapters- para restaurar .md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-102
+"backlog/archive/tasks/d-001 - TileReducer-ops-escalares.md"
+  s_891ff43f86c97c::t_9d3eafa270d710 1-28
+"backlog/tasks/b-017 - CompiledPipeline-monomorphized.md"
+  s_891ff43f86c97c::t_4ac15748ded7c2 2-10,20
+  s_891ff43f86c97c::t_fc7d1d2216e529 13,15,18,22-23,25-26
+benches/structural/extract_area.rs
+  s_891ff43f86c97c::t_ff6d1f5873d627 7
+CLAUDE.md
+  s_891ff43f86c97c::t_0da6f12f8e97d9 8-10
+  s_891ff43f86c97c::t_3e7e3823e7c2db 122,124,126-130,132-157,161,163-173,175-178,180-181,183-185,187-206,208-268,270-275,278-306,310-312,314-315
+  s_891ff43f86c97c::t_9e18ca614c0b98 323
+  s_891ff43f86c97c::t_faa14989d77eac 269,276-277
+  s_891ff43f86c97c::t_1c54ddb04a267e 330-331,333-334,342-343,345
+  s_891ff43f86c97c::t_8989940bfdbf38 332,335-341,344
+"backlog/docs/adr-011 - ADR-011 — Eliminar el pipeline estático (SourceOnly, Pipe.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-127
+"backlog/archive/tasks/b-001 - ImageSource-conectado-a-CompiledPipeline.md"
+  s_891ff43f86c97c::t_852ecd23fca642 1-17
+"backlog/archive/tasks/b-006 - SIMD-arithmetic.md"
+  s_891ff43f86c97c::t_bc213260d1a4fe 1-16
+"backlog/archive/tasks/d-003 - Colorspace-tipo-vs-metadata.md"
+  s_891ff43f86c97c::t_f9d395d8f0659f 1-30
+"backlog/tasks/b-004 - Codecs-JPEG-PNG-WebP.md"
+  s_891ff43f86c97c::t_dc8bb398622f16 13-15,29
+  s_891ff43f86c97c::t_9637f386ad5839 1-12,16-28
+"backlog/archive/tasks/b-013 - ViprsError-Scheduler.md"
+  s_891ff43f86c97c::t_d8bc3d9e489ef0 1-15
+"backlog/archive/tasks/d-005 - Interpolation-kernels-resize-API.md"
+  s_891ff43f86c97c::t_24b4802abe95a8 1-32
+"backlog/docs/adr-008 - ADR-008 — Op trait con associated types + pipeline estático.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-102
+"backlog/docs/adr-014 - ADR-014 — ViewOp: zero-copy para operaciones de coordenadas .md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-51
+"backlog/docs/adr-017 - ADR-017 — TileReducer: reducción fuera del pipeline para ops.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-69
+"backlog/docs/adr-021 - ADR-021 — InterpolationKernel como enum sellado; ReduceH-Red.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-84
+"backlog/docs/adr-027 - ADR-027 — ColourConvertBridge: type erasure para ColourConve.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-99
+"backlog/docs/adr-002 - ADR-002 — Dispatch strategy: static trait + dyn-compatible b.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-259
+"backlog/docs/adr-028 - ADR-028 — ReducingScheduler: trait separado con run_with_.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-219
+benches/structural/flip_vertical.rs
+  s_891ff43f86c97c::t_ff6d1f5873d627 8
+"backlog/archive/tasks/b-002b - ConcurrentSink-directo.md"
+  s_891ff43f86c97c::t_3556c2f287f9d5 1-15
+"backlog/docs/adr-022 - ADR-022 — TileCache como source wrapper + sub-traits Sequent.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-97
+"backlog/archive/tasks/b-012 - MemorySink-bps-automatico.md"
+  s_891ff43f86c97c::t_76558ff0a0041d 1-16
+src/adapters/scheduler/rayon_scheduler.rs
+  s_891ff43f86c97c::t_ff6d1f5873d627 317,329
+benches/structural/flip_horizontal.rs
+  s_891ff43f86c97c::t_ff6d1f5873d627 8
+"backlog/archive/tasks/b-002 - ConcurrentSink-scheduler-wiring.md"
+  s_891ff43f86c97c::t_23849fa65adae3 1-15
+"backlog/docs/adr-012 - ADR-012 — run_concurrent en TileScheduler: wiring del sc.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-118
+"backlog/docs/adr-016 - ADR-016 — dyn_process_region con input_region + output_.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-87
+"backlog/docs/adr-020 - ADR-020 — DAG pipeline: input_bufs por nodo + connect_to_slo.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-68
+"backlog/archive/tasks/b-018 - bands-propagation-superseded.md"
+  s_891ff43f86c97c::t_4877de60af849d 1-15
+"backlog/docs/adr-024 - ADR-024 — FusedOpA, B: kernel fusion compile-time con Pixe.md"
+  s_891ff43f86c97c::t_c571273d2845f3 1-96
+src/adapters/sources/decoder_source.rs
+  s_891ff43f86c97c::t_4e928b568453f1 79
+  s_891ff43f86c97c::t_ff6d1f5873d627 173,177
+"backlog/archive/tasks/b-005 - Ops-estructurales-zero-copy.md"
+  s_891ff43f86c97c::t_cc8e4023060b11 1-17
+"backlog/archive/tasks/b-003 - MmapSource.md"
+  s_891ff43f86c97c::t_10dc5c74b5de58 1-15
+"backlog/archive/tasks/d-011 - ColourConvert-bridge-pipeline.md"
+  s_891ff43f86c97c::t_50fa01c1ee645c 1-31
+"backlog/archive/tasks/b-014 - Subtract-wrapping.md"
+  s_891ff43f86c97c::t_d4b2d30e2c6556 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c60ddc2cbc09fc5deaffb73614c520fba46108d4",
+  "prompts": {},
+  "sessions": {
+    "s_891ff43f86c97c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7a626d2c-f87f-487c-a345-3123378469e7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
