@@ -1,0 +1,23 @@
+benches/resample/shrinkv.rs
+  s_e2f6af2e9d2525::t_2703351a38b0e5 1-46
+benches/resample/shrinkh.rs
+  s_e2f6af2e9d2525::t_125c55f9b4a9db 1-46
+Cargo.toml
+  s_e2f6af2e9d2525::t_32a1c40e10e33a 101-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "65a081249f26e05522b1b6bbb2ffef8f3fd4366b",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
