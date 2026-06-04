@@ -1,0 +1,22 @@
+src/adapters/codecs/heif.rs
+  s_c620b818b8964e::t_566a3a97da1f93 15,21,23,40,88,172,175-176
+  s_c620b818b8964e::t_c2701fcf71f074 30,113-115
+  s_c620b818b8964e::t_e40cb84f6292a0 1-14,16-20,22,24-29,31-39,41-68,73-87,89-112,116-128,131-171,173-174,177-215,220-224,228-283
+  s_c620b818b8964e::t_8f2a9a3492d8be 69-72,129-130,216-219,225-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "89a82967f733bba9ca29b819bbdc459dc4da4b21",
+  "prompts": {},
+  "sessions": {
+    "s_c620b818b8964e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f52b4608-e3e2-407d-a5cf-e2cd2ab5a919",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
