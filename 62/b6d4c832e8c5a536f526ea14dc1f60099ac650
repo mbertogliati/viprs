@@ -1,0 +1,19 @@
+BACKLOG.md
+  s_675645467e8cbd::t_e70510835f1cd4 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "62b6d4c832e8c5a536f526ea14dc1f60099ac650",
+  "prompts": {},
+  "sessions": {
+    "s_675645467e8cbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b168690a-4479-4e5e-900f-8568ae317bec",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
