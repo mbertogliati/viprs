@@ -1,0 +1,48 @@
+src/adapters/ops/relational/equal.rs
+  s_651dcff71cef4c::t_1f4da8d17b7fc3 1-137
+benches/relational/less.rs
+  s_651dcff71cef4c::t_a336bd97b3b2a0 1-41
+benches/relational/not_equal.rs
+  s_651dcff71cef4c::t_731eacb9ac3b90 1-41
+src/adapters/ops/relational/more.rs
+  s_651dcff71cef4c::t_d132126a9ea01c 1-135
+src/adapters/ops/relational/more_eq.rs
+  s_651dcff71cef4c::t_8ce6a91cbf90f2 1-135
+src/adapters/ops/relational/less.rs
+  s_651dcff71cef4c::t_847c14d6fc9c60 1-135
+src/adapters/ops/relational/mod.rs
+  s_651dcff71cef4c::t_7f9422c15e5d93 1-13
+  s_651dcff71cef4c::t_87b80979875f1e 14-61
+Cargo.toml
+  s_651dcff71cef4c::t_d6d6a3cd9ee7c9 256-290
+  s_651dcff71cef4c::t_2359bd3a2f6001 146-225
+  s_651dcff71cef4c::t_a87e8bcc1ca7cb 226-255
+benches/relational/more_eq.rs
+  s_651dcff71cef4c::t_3004947e183146 1-41
+src/adapters/ops/relational/less_eq.rs
+  s_651dcff71cef4c::t_d898a2836b1842 1-135
+benches/relational/equal.rs
+  s_651dcff71cef4c::t_4cecd41de0005d 1-41
+benches/relational/more.rs
+  s_651dcff71cef4c::t_e6b9df46bed067 1-41
+src/adapters/ops/relational/not_equal.rs
+  s_651dcff71cef4c::t_b3a3d24e54645d 1-133
+benches/relational/less_eq.rs
+  s_651dcff71cef4c::t_0a92c5f4a1389b 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "139052552f1f6647c1632be6b11b203b9873374c",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
