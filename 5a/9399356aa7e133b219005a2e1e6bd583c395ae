@@ -1,0 +1,33 @@
+src/adapters/sources/decoder_source.rs
+  s_3e96e61039d64b::t_28bd8fe0f94847 154,158,162
+  s_3e96e61039d64b::t_a1c47f996812cb 170
+  s_3e96e61039d64b::t_9ba4cb82d46045 1-153,155-157,159-161,163-169,171-246
+DECISIONS.md
+  s_3e96e61039d64b::t_07d2ca808250a5 2501-2628
+src/domain/mod.rs
+  s_3e96e61039d64b::t_6f59a26412f487 1
+DESIGN_BACKLOG.md
+  s_3e96e61039d64b::t_ef69888c8e70b8 195
+src/ports/codec.rs
+  s_3e96e61039d64b::t_996b4280f3ccb7 11-20,22,39-40,59-61,65,69-91,115-116,123-124,127,130-152,183-191,217-225,265-282
+src/domain/codec_options.rs
+  s_3e96e61039d64b::t_8388cf5c0f5ff2 1-225
+src/adapters/sources/mod.rs
+  s_3e96e61039d64b::t_e8e2eb536b2333 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5a9399356aa7e133b219005a2e1e6bd583c395ae",
+  "prompts": {},
+  "sessions": {
+    "s_3e96e61039d64b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0373086c-c8dd-4ce7-b87c-ba4f38d415c7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
