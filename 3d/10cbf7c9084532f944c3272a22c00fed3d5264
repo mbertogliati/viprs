@@ -1,0 +1,26 @@
+Cargo.toml
+  s_651dcff71cef4c::t_5f31771050abfd 78-81
+src/lib.rs
+  s_651dcff71cef4c::t_44c958de37c005 27
+"backlog/tasks/b-38 - Embed-—-insertar-imagen-en-canvas-mayor-con-opciones-de-relleno.md"
+  s_651dcff71cef4c::t_44c958de37c005 4,7
+benches/structural/embed.rs
+  s_651dcff71cef4c::t_9b012e57386c3b 1-12,15-66
+  s_651dcff71cef4c::t_54689defc32a3c 13-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3d10cbf7c9084532f944c3272a22c00fed3d5264",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
