@@ -1,0 +1,37 @@
+src/adapters/ops/arithmetic/linear.rs
+  s_675645467e8cbd::t_9e44709799ddc7 158-192
+  s_675645467e8cbd::t_5b0c027cbd3f01 51-77,84-115
+  s_675645467e8cbd::t_82a461500baaa2 11-12
+src/adapters/ops/arithmetic/multiply.rs
+  s_675645467e8cbd::t_bd937cdbd07a26 61-80,87-118
+  s_675645467e8cbd::t_b5dc97347b70ca 163-195
+  s_675645467e8cbd::t_71e3e78e4a42f0 11-12
+src/adapters/ops/arithmetic/add.rs
+  s_675645467e8cbd::t_2c720ec25bd3a5 73-98,105-166,239-307
+  s_675645467e8cbd::t_e63af6151f9c6c 11-12
+src/adapters/ops/arithmetic/subtract.rs
+  s_675645467e8cbd::t_2cdd1fa1715aa7 11-12
+  s_675645467e8cbd::t_85c304919e5bd9 220-222
+  s_675645467e8cbd::t_afd5c83fc73015 75-100,107-165
+  s_675645467e8cbd::t_30797bf93fe34e 211-219,223-278
+BACKLOG.md
+  s_675645467e8cbd::t_dd152a1db01ca5 169
+  s_675645467e8cbd::t_f7d947e811a573 32
+  s_675645467e8cbd::t_4636fdab769ef8 106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6c3b36d000174b4c6e9535dfba1967495e7b8c94",
+  "prompts": {},
+  "sessions": {
+    "s_675645467e8cbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b168690a-4479-4e5e-900f-8568ae317bec",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
