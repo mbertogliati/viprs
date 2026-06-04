@@ -1,0 +1,24 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_1ccfe35093a21b::t_0455529e162c01 181-183,189,215
+  s_1ccfe35093a21b::t_02d3bf39fd5330 266,321,399
+  s_1ccfe35093a21b::t_a8c12060a02c8f 203-205,212-214,218
+  s_1ccfe35093a21b::t_5b2d7e76db9dc8 143-148
+  s_1ccfe35093a21b::t_1647d6c37ad2a9 89
+  s_1ccfe35093a21b::t_e6224a26040437 92-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f409798314af86bc5823129dcf973936dc277877",
+  "prompts": {},
+  "sessions": {
+    "s_1ccfe35093a21b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5861a780-e04d-47d4-894d-79a1091ce84a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
