@@ -1,0 +1,72 @@
+src/domain/ops/arithmetic/multiply.rs
+  s_9af6082de95dcb::t_ca952219fe8a1a 4,263
+  s_9af6082de95dcb::t_0bf433a418ba80 106-129,136-144
+  s_9af6082de95dcb::t_c58213d1331558 130-135
+  s_9af6082de95dcb::t_48f27bac300638 81-86,97-99
+  s_9af6082de95dcb::t_68adc71060d5dd 87-96
+  s_9af6082de95dcb::t_2d76746950465b 254-262,264-281
+  s_9af6082de95dcb::t_94b0fd3d7e6c83 11
+src/domain/ops/arithmetic/subtract.rs
+  s_9af6082de95dcb::t_4fcf0cde3ebede 430-474,476-493
+  s_9af6082de95dcb::t_5dce1b475e2e93 281-286
+  s_9af6082de95dcb::t_f84a2064373b4a 109-141
+  s_9af6082de95dcb::t_cc277ae62c9318 244-249
+  s_9af6082de95dcb::t_ca952219fe8a1a 4,475
+  s_9af6082de95dcb::t_bc2276e73cb42a 11
+  s_9af6082de95dcb::t_48e8696297f06e 220-243,250-280,287-295
+src/domain/simd.rs
+  s_9af6082de95dcb::t_3493220fadd894 58-61
+  s_9af6082de95dcb::t_272cdd79f107b3 35-41,43,51,53-56,67-69,80-87
+  s_9af6082de95dcb::t_4f44531bdc66da 3-6,17-22
+  s_9af6082de95dcb::t_b11191b0359e7b 44-48
+  s_9af6082de95dcb::t_6905078d3da6fa 105-107,115-117,123-137
+"backlog/archive/tasks/b-52 - NEON-Apple-Silicon-—-infraestructura-SIMD-y-ops-críticas.md"
+  s_9af6082de95dcb::t_bf1e64bf69a857 1-40
+src/domain/ops/simd_util.rs
+  s_9af6082de95dcb::t_a2c0988e5b49bb 77,90,102-106
+src/domain/ops/arithmetic/linear.rs
+  s_9af6082de95dcb::t_8a6bc46469009a 78-103
+  s_9af6082de95dcb::t_09330913ba7f7a 261-290
+  s_9af6082de95dcb::t_8d94798c0538f3 11
+  s_9af6082de95dcb::t_8114130f66a3d8 110-129,133-137,143-151
+  s_9af6082de95dcb::t_9ba8d7f7be72d9 138-142
+  s_9af6082de95dcb::t_ca952219fe8a1a 4
+  s_9af6082de95dcb::t_d455b3e98e4374 130-132
+"backlog/docs/doc-2 - ADR-030-—-Posición-de-Neon-en-el-enum-SimdLevel.md"
+  s_9af6082de95dcb::t_e3939efde41c54 8-81
+  s_9af6082de95dcb::t_e617ee63d7f725 1-7
+src/domain/ops/arithmetic/invert.rs
+  s_9af6082de95dcb::t_6d5de833ed5e43 182-201,204-209,215-243,246-250,256-264
+  s_9af6082de95dcb::t_253d517e524f74 244-245
+  s_9af6082de95dcb::t_e5d54171018bde 508-560
+  s_9af6082de95dcb::t_ca952219fe8a1a 4
+  s_9af6082de95dcb::t_46b7f462c6ea82 210-214
+  s_9af6082de95dcb::t_e71b3af77052f6 251-255
+  s_9af6082de95dcb::t_2ee544716e18d7 202-203
+  s_9af6082de95dcb::t_62a0aa43d44c85 134-166
+  s_9af6082de95dcb::t_5b19304924e872 11
+src/domain/ops/arithmetic/add.rs
+  s_9af6082de95dcb::t_856466d71c194e 249-254
+  s_9af6082de95dcb::t_12409440a0e1f7 286-291
+  s_9af6082de95dcb::t_f421aaa4e9a236 445-491,493-511
+  s_9af6082de95dcb::t_ca952219fe8a1a 4,492
+  s_9af6082de95dcb::t_e8322ead23b188 11
+  s_9af6082de95dcb::t_1a593562e1a9c6 107-139
+  s_9af6082de95dcb::t_53180b6aa34455 227-248,255-285,292-300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2466c992a93f4a769fdde84f66637b809b96a081",
+  "prompts": {},
+  "sessions": {
+    "s_9af6082de95dcb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05ba7f36-bc59-4731-ac5e-e51fbae78745",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
