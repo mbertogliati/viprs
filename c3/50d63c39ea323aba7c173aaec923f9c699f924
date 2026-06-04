@@ -1,0 +1,152 @@
+benches/arithmetic/sign.rs
+  ai_agent 1-5,7-12,15-45
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+"backlog/tasks/b-52 - NEON-Apple-Silicon-—-infraestructura-SIMD-y-ops-críticas.md"
+  ai_agent 1-39
+benches/relational/not_equal.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/resample/shrinkv.rs
+  s_651dcff71cef4c::t_1839650ae330aa 14-15
+benches/boolean/lshift.rs
+  ai_agent 1-5,7-12,15-46
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+"backlog/tasks/b-54 - FusedOp-automático-en-PipelineBuilder-—-detectar-cadenas-pixel-local.md"
+  ai_agent 1-33
+benches/structural/embed.rs
+  s_651dcff71cef4c::t_822be88105b295 13-15,18
+benches/boolean/or.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+  ai_agent 1-5,7-12,15-46
+benches/lut/map_lut.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+benches/arithmetic/sqrt.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+"backlog/archive/tasks/b-33 - Colour-conversions-—-implementar-sRGB↔Lab-sRGB↔HSV-sRGB↔XYZ.md"
+  ai_agent 4,7
+benches/arithmetic/exp.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/arithmetic/multiply.rs
+  s_651dcff71cef4c::t_1839650ae330aa 14-15
+"backlog/tasks/b-51 - HEIF-AVIF-codec-—-soporte-moderno-para-web.md"
+  ai_agent 1-32
+"backlog/archive/tasks/b-38 - Embed-—-insertar-imagen-en-canvas-mayor-con-opciones-de-relleno.md"
+  s_651dcff71cef4c::t_7425d5d173bca7 4,7
+"backlog/tasks/b-56 - C-API-FFI-boundary-—-habilitar-bindings-desde-otros-lenguajes.md"
+  ai_agent 1-40
+benches/relational/more_eq.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/arithmetic/subtract.rs
+  s_651dcff71cef4c::t_1839650ae330aa 14-15
+benches/arithmetic/divide.rs
+  ai_agent 1-6,8-13,16-50
+  s_651dcff71cef4c::t_1839650ae330aa 14-15
+  s_651dcff71cef4c::t_83e90d3147eb2d 7
+"backlog/archive/tasks/b-30 - DecoderSource-—-conectar-decoders-al-pipeline-de-tiles.md"
+  ai_agent 4,7
+benches/convolution/gauss_blur.rs
+  s_651dcff71cef4c::t_72d46f9d35adbe 21
+  s_651dcff71cef4c::t_1839650ae330aa 22
+benches/relational/equal.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/arithmetic/cos.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/colour/xyz_to_srgb.rs
+  ai_agent 1-48
+"backlog/archive/tasks/b-32 - Boolean-ops-—-completar-And-Or-Xor-LShift-RShift.md"
+  ai_agent 4,7
+benches/boolean/rshift.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+  ai_agent 1-5,7-12,15-46
+benches/arithmetic/abs.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+"backlog/archive/tasks/b-41 - GaussBlur-separable-—-On-en-lugar-de-On²-de-Conv2d-genérico.md"
+  s_651dcff71cef4c::t_26cd0437741942 4,7
+"backlog/tasks/b-53 - AVX-512F-—-implementar-paths-de-ops-críticas.md"
+  ai_agent 1-31
+benches/arithmetic/sin.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/arithmetic/atan.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/arithmetic/round.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+  ai_agent 1-5,7-12,15-99
+"backlog/tasks/b-55 - CMYK-colorspace-perfiles-ICC-lcms2.md"
+  ai_agent 1-36
+benches/arithmetic/add.rs
+  s_651dcff71cef4c::t_1839650ae330aa 15-16
+"backlog/archive/tasks/b-57 - Benchmarks-mienten-reportan-scalar-como-si-fuera-SIMD-—-agregar-anotación-de-SimdLevel-y-.cargo-config.toml.md"
+  s_651dcff71cef4c::t_65cd23d20fa73c 1-44
+benches/arithmetic/acos.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+benches/arithmetic/tan.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/colour/lab_to_srgb.rs
+  ai_agent 1-48
+benches/arithmetic/log.rs
+  ai_agent 1-5,7-12,15-45
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+"backlog/archive/tasks/b-58 - D-013-—-Decisión-de-diseño-dispatch-SIMD-compile-time-cfg-vs-runtime-function-pointer-ADR-025.md"
+  s_651dcff71cef4c::t_65cd23d20fa73c 1-42
+"backlog/archive/tasks/b-44 - MapLut-Recomb-—-aplicar-tablas-de-lookup-y-matrices-de-recombinación.md"
+  ai_agent 4,7
+benches/colour/srgb_to_hsv.rs
+  ai_agent 1-48
+benches/boolean/xor.rs
+  ai_agent 1-5,7-12,15-46
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+"backlog/archive/tasks/b-42 - SIMD-horizontal-—-extender-dispatch-AVX2-a-Invert-Conv2d-colour-ops.md"
+  s_651dcff71cef4c::t_e1e548fffa047d 4,7
+benches/relational/less_eq.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+"backlog/archive/tasks/b-31 - Aritmética-stubeada-—-completar-Abs-Divide-Exp-Log-Power-Round-Floor-Ceil.md"
+  ai_agent 4,7
+"backlog/archive/tasks/b-45 - Math-ops-elementales-—-sin-cos-tan-sqrt-atan2-como-pixel-ops.md"
+  ai_agent 4,7
+benches/relational/less.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+benches/boolean/and.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+benches/lut/recomb.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+benches/arithmetic/asin.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+benches/arithmetic/power.rs
+  ai_agent 1-5,7-12,15-45
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+benches/colour/hsv_to_srgb.rs
+  ai_agent 1-48
+"backlog/archive/tasks/b-46 - Operadores-relacionales-—-Equal-NotEqual-Less-LessEq-More-MoreEq.md"
+  ai_agent 4,7
+benches/conversion/bandsplit.rs
+  s_651dcff71cef4c::t_1839650ae330aa 13-14
+benches/colour/srgb_to_xyz.rs
+  ai_agent 1-48
+benches/resample/shrinkh.rs
+  s_651dcff71cef4c::t_1839650ae330aa 14-15
+benches/relational/more.rs
+  s_651dcff71cef4c::t_1839650ae330aa 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c350d63c39ea323aba7c173aaec923f9c699f924",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
