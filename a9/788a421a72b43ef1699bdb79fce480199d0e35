@@ -1,0 +1,23 @@
+Cargo.toml
+  s_e2f6af2e9d2525::t_cbed51d1f86569 101-110
+benches/arithmetic/exp.rs
+  s_e2f6af2e9d2525::t_1c8f2e72970914 1-8,10-39
+benches/arithmetic/abs.rs
+  s_e2f6af2e9d2525::t_f4b199530eae5e 1-8,10-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a9788a421a72b43ef1699bdb79fce480199d0e35",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
