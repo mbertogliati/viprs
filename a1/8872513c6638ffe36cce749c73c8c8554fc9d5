@@ -1,0 +1,41 @@
+src/domain/ops/structural/premultiply.rs
+  s_9af6082de95dcb::t_448d431889f3f2 1-288
+src/domain/ops/structural/unpremultiply.rs
+  s_9af6082de95dcb::t_06f483bf0f5de0 1-77,79-288,291,301-305,308-330,337-340
+  s_9af6082de95dcb::t_e65589ac931645 296
+  s_9af6082de95dcb::t_6a2fa8e53870fb 289-290,292-295,297-300,306-307,331-336
+  s_9af6082de95dcb::t_9f126b75579f2e 78
+"backlog/tasks/b-39 - Composite-Flatten-Premultiply-Unpremultiply-—-alpha-blending-completo.md"
+  s_9af6082de95dcb::t_cd9d93004c0737 4,7
+Cargo.toml
+  s_9af6082de95dcb::t_a17342cb05d23f 100-108
+benches/structural/premultiply.rs
+  s_9af6082de95dcb::t_9f126b75579f2e 59-63
+  s_9af6082de95dcb::t_26f2d605f1b117 1-58,64-86
+src/lib.rs
+  s_9af6082de95dcb::t_21801eab3c36b2 27-30
+src/domain/ops/structural.rs
+  s_9af6082de95dcb::t_1c07538a2fbcb0 3,6,8,12,15,17
+src/domain/ops/structural/flatten.rs
+  s_9af6082de95dcb::t_6794a7c1b4eb96 1-247,250-280,283-363
+  s_9af6082de95dcb::t_0c0426d1f6028b 281-282
+  s_9af6082de95dcb::t_d2170138fa1536 248-249
+benches/structural/flatten.rs
+  s_9af6082de95dcb::t_3c4cba12285b09 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a18872513c6638ffe36cce749c73c8c8554fc9d5",
+  "prompts": {},
+  "sessions": {
+    "s_9af6082de95dcb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05ba7f36-bc59-4731-ac5e-e51fbae78745",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
