@@ -1,0 +1,29 @@
+src/adapters/ops/boolean/and.rs
+  s_e2f6af2e9d2525::t_726f7157630b78 37,39-41,43,47,49,51-129
+src/adapters/ops/boolean/or.rs
+  s_e2f6af2e9d2525::t_252c60dc7de3b4 37,39-41,43,47,49,51-129
+src/adapters/ops/boolean/rshift.rs
+  s_e2f6af2e9d2525::t_7a3c0d37a889ba 119,122,124,126,133-134
+  s_e2f6af2e9d2525::t_9e640eaa95af17 41,43-45,47,51,53,55-118,120-121,123,125,127-132,135
+src/adapters/ops/boolean/lshift.rs
+  s_e2f6af2e9d2525::t_77fc56c7544392 41,43-45,47,51,53,55-118,120-121,123,125,127-132,135
+  s_e2f6af2e9d2525::t_803fb7b2963a17 119,122,124,126,133-134
+src/adapters/ops/boolean/xor.rs
+  s_e2f6af2e9d2525::t_202c7ab088c127 37,39-41,43,47,49,51-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8161295f61a098b6394a9e7d1f5b761a42428814",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
