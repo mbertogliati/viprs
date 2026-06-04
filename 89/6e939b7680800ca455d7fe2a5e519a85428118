@@ -1,0 +1,31 @@
+src/domain/op.rs
+  s_c620b818b8964e::t_9345baabb304e5 122-132,307-312,314-326,570-588,590-615,617-622
+  s_c620b818b8964e::t_9f8cad66f7c136 589,616
+src/domain/ops/conversion/bandsplit.rs
+  s_c620b818b8964e::t_9f8cad66f7c136 4
+  s_c620b818b8964e::t_7a545e716a7ed8 17-20,51-52,150-175
+  s_c620b818b8964e::t_09e633864847d2 85
+src/domain/ops/conversion/extract_bands.rs
+  s_c620b818b8964e::t_7657201a69bd0e 104
+  s_c620b818b8964e::t_9f8cad66f7c136 4
+  s_c620b818b8964e::t_d84422bd758f24 17-19,48-63,175-199
+"backlog/docs/doc-3 - ADR-031-—-OUTPUT_BANDS-en-trait-Op-band-count-tracking-en-tiempo-de-compilación.md"
+  s_c620b818b8964e::t_8a6f34848cd256 62,88,106
+  s_c620b818b8964e::t_b1b9c7189119bd 1-61,63-87,89-105,107-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "896e939b7680800ca455d7fe2a5e519a85428118",
+  "prompts": {},
+  "sessions": {
+    "s_c620b818b8964e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f52b4608-e3e2-407d-a5cf-e2cd2ab5a919",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
