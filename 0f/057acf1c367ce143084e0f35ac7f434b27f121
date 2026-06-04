@@ -1,0 +1,35 @@
+src/adapters/pipeline/mod.rs
+  s_675645467e8cbd::t_1c87c49987135a 572-578,956
+  s_675645467e8cbd::t_d17a05459c903d 350-379
+  s_675645467e8cbd::t_63af067e5379be 19,29-37,39,49-50,90-100,111-112,175-207,212-215,219-222,224-225,227-229,231,241,245-274,278-279,282-285,287-294,310-328,338-347,381,404-405,416-423,570-571,580-581,585,589,593,597,601,605,610-622,952-955,979-1018
+DECISIONS.md
+  s_675645467e8cbd::t_20946a46a2a53d 2075-2118
+src/ports/op.rs
+  s_675645467e8cbd::t_0b368b2a3dd529 219-298
+  s_675645467e8cbd::t_7f3ac607b997f4 86-94
+src/adapters/scheduler/rayon_scheduler.rs
+  s_675645467e8cbd::t_65ca2164a43892 7
+  s_675645467e8cbd::t_1c87c49987135a 153-154
+  s_675645467e8cbd::t_20248ffdf89e58 137,139-145,147-151,157-158,161,167-170
+src/adapters/ops/structural/extract_area.rs
+  s_675645467e8cbd::t_b98b09f63803a2 4,6,13-17,42-43,59-61,63-64,99-102,106,108-114,116-122
+BACKLOG.md
+  s_675645467e8cbd::t_786f4866beead3 31,37,39-42
+  s_675645467e8cbd::t_936225ec60b618 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0f057acf1c367ce143084e0f35ac7f434b27f121",
+  "prompts": {},
+  "sessions": {
+    "s_675645467e8cbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b168690a-4479-4e5e-900f-8568ae317bec",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
