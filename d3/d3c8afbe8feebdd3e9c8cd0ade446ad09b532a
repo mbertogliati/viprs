@@ -1,0 +1,24 @@
+tests/integration_pipeline.rs
+  s_f8df575d5e4492::t_d46d5aba461353 54,56,61
+  s_f8df575d5e4492::t_5a20a0872d11e6 14,16,21
+tests/golden/subtract_test.rs
+  s_f8df575d5e4492::t_d021454ef5234f 16,18,23
+tests/golden/add_test.rs
+  s_f8df575d5e4492::t_18937c05287336 12,14,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d3d3c8afbe8feebdd3e9c8cd0ade446ad09b532a",
+  "prompts": {},
+  "sessions": {
+    "s_f8df575d5e4492": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3057f1ce-a10b-4ea4-98d6-a3a2d5f3ac34",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
