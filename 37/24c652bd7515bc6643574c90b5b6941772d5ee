@@ -1,0 +1,24 @@
+rust_out.d
+  s_1ccfe35093a21b::t_520522cc3a5af0 1-2
+"backlog/archive/tasks/b-30 - WebpCodec-decode-hardcodea-bands3-—-RGBA-decode-falla-silenciosamente.md"
+  s_1ccfe35093a21b::t_6de883d80cc660 2-4,6-7,9,11-12,18,20,22,24
+"backlog/docs/doc-1 - ADR-029-—-Smart-constructor-para-CompiledNode-invariante-input_buf-output_buf-en-el-tipo.md"
+  s_1ccfe35093a21b::t_a578c28fa5163f 1-9
+  s_1ccfe35093a21b::t_22476f80dd545a 10-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3724c652bd7515bc6643574c90b5b6941772d5ee",
+  "prompts": {},
+  "sessions": {
+    "s_1ccfe35093a21b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5861a780-e04d-47d4-894d-79a1091ce84a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
