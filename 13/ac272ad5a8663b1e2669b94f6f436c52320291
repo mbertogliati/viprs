@@ -1,0 +1,15 @@
+Cargo.toml
+  ai_agent 53-67
+benches/structural/flip_horizontal.rs
+  ai_agent 1-49
+benches/structural/extract_area.rs
+  ai_agent 1-54
+benches/structural/flip_vertical.rs
+  ai_agent 1-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "13ac272ad5a8663b1e2669b94f6f436c52320291",
+  "prompts": {}
+}
