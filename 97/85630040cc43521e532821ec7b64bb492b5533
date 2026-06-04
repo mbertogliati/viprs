@@ -1,0 +1,27 @@
+benches/structural/flip_horizontal.rs
+  s_675645467e8cbd::t_d6b3eb828f77cb 1-49
+benches/structural/flip_vertical.rs
+  s_675645467e8cbd::t_41c38ffff239af 1-49
+benches/structural/extract_area.rs
+  s_675645467e8cbd::t_62e879b194c7ea 1-54
+Cargo.toml
+  s_675645467e8cbd::t_424fa53d4dd441 53-67
+BACKLOG.md
+  s_675645467e8cbd::t_45503c63a3125e 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9785630040cc43521e532821ec7b64bb492b5533",
+  "prompts": {},
+  "sessions": {
+    "s_675645467e8cbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b168690a-4479-4e5e-900f-8568ae317bec",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
