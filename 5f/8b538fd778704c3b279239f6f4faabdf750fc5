@@ -1,0 +1,25 @@
+src/adapters/ops/resample/mod.rs
+  s_e2f6af2e9d2525::t_5c4758dc368172 14-15,22-23
+src/adapters/ops/resample/shrinkh.rs
+  s_e2f6af2e9d2525::t_b82918b2109b86 241-242
+  s_e2f6af2e9d2525::t_44ffaebfbad373 1-240,243-316
+src/adapters/ops/resample/shrinkv.rs
+  s_e2f6af2e9d2525::t_fa4bebe2117538 1-156,159-233
+  s_e2f6af2e9d2525::t_b82918b2109b86 157-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5f8b538fd778704c3b279239f6f4faabdf750fc5",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
