@@ -1,0 +1,20 @@
+src/adapters/sources/tile_cache.rs
+  s_9af6082de95dcb::t_be82c91886f32c 313-317
+  s_9af6082de95dcb::t_e55429672f2b01 1-5,15-67,112-115,127-131,171-204,225,273-276,278-312,318-350,352-370
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "11f1ed8b346cb71e988279206f6bc8c1ec89689c",
+  "prompts": {},
+  "sessions": {
+    "s_9af6082de95dcb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05ba7f36-bc59-4731-ac5e-e51fbae78745",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
