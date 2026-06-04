@@ -1,0 +1,22 @@
+src/adapters/sources/decoder_source.rs
+  s_651dcff71cef4c::t_ca80e09de8aedd 38-39
+  s_651dcff71cef4c::t_785b4bb309ca97 172,177-199
+  s_651dcff71cef4c::t_d6d49c2d6be110 267-280,284-367
+  s_651dcff71cef4c::t_293087afec7587 173-176,281-283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "16c94186c840f5692b46f12486a5240a8f62c593",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
