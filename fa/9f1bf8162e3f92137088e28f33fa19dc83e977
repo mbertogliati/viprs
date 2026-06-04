@@ -1,0 +1,29 @@
+src/domain/ops/resample/affine.rs
+  s_9af6082de95dcb::t_b45f8dcd4b4f80 96
+"backlog/tasks/b-63 - colour.rs-conversiones-de-colorspace-con-todo-—-Lab-XYZ-HSV-no-funcionan.md"
+  s_9af6082de95dcb::t_4a3b1bcd8d8a89 1-32
+src/domain/colour.rs
+  s_9af6082de95dcb::t_7e5f8f932f4d2d 91,94,98
+src/adapters/sources/decoder_source.rs
+  s_9af6082de95dcb::t_472fc4d786b172 79
+"backlog/archive/tasks/b-62 - DecoderSource-new-nunca-decodifica-—-image-siempre-es-None.md"
+  s_9af6082de95dcb::t_ce831fe4323b04 1-32
+src/domain/ops/colour/bridge.rs
+  s_9af6082de95dcb::t_b45f8dcd4b4f80 200
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "fa9f1bf8162e3f92137088e28f33fa19dc83e977",
+  "prompts": {},
+  "sessions": {
+    "s_9af6082de95dcb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05ba7f36-bc59-4731-ac5e-e51fbae78745",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
