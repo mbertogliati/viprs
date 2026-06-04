@@ -1,0 +1,35 @@
+src/domain/ops/arithmetic/multiply.rs
+  ai_agent 11,88-106,113-151,266-289
+src/domain/simd.rs
+  s_9af6082de95dcb::t_3e47b189afa904 3-6,17-22,35-41,43-48,51,53-61,67-69,80-88,105-107,115-117,123-137
+src/domain/ops/arithmetic/linear.rs
+  ai_agent 11,83-108,115-156,271-296
+src/domain/ops/simd_util.rs
+  s_9af6082de95dcb::t_3e47b189afa904 77,90,102-106
+"backlog/docs/doc-2 - ADR-030-—-Posición-de-Neon-en-el-enum-SimdLevel.md"
+  s_9af6082de95dcb::t_3e47b189afa904 1-81
+src/domain/ops/arithmetic/add.rs
+  s_9af6082de95dcb::t_3e47b189afa904 4,11,107-139,227-300,445-507
+src/domain/ops/arithmetic/subtract.rs
+  s_9af6082de95dcb::t_3e47b189afa904 4,11,109-141,220-295,430-492
+src/domain/ops/arithmetic/invert.rs
+  s_9af6082de95dcb::t_3e47b189afa904 4,11,134-166,182-264,508-556
+"backlog/archive/tasks/b-52 - NEON-Apple-Silicon-—-infraestructura-SIMD-y-ops-críticas.md"
+  s_9af6082de95dcb::t_3e47b189afa904 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "fbb30c99eac5120bf404eda0c02e09a88f868f07",
+  "prompts": {},
+  "sessions": {
+    "s_9af6082de95dcb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "05ba7f36-bc59-4731-ac5e-e51fbae78745",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
