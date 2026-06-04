@@ -1,0 +1,116 @@
+src/domain/ops/relational/not_equal.rs
+  s_651dcff71cef4c::t_2b93e4d37e90eb 4
+benches/arithmetic/subtract.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 7
+benches/relational/equal.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+src/domain/ops/resample/shrinkv.rs
+  s_651dcff71cef4c::t_f19bfd4ca543cd 132
+src/domain/ops/relational/less.rs
+  s_651dcff71cef4c::t_2b93e4d37e90eb 4
+benches/relational/less.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/arithmetic/tan.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/lut/map_lut.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+src/domain/ops.rs
+  s_651dcff71cef4c::t_2ce39ef741c375 7-8
+GUIDELINES.md
+  s_651dcff71cef4c::t_42e59f641529f8 33-34,37,39-44,46-65,67-69,71-74
+  s_651dcff71cef4c::t_a19858cf276716 66,70
+  s_651dcff71cef4c::t_afb917eecae04b 509
+src/domain/ops/arithmetic/log.rs
+  s_651dcff71cef4c::t_dcb821f0e90bc0 105
+benches/conversion/bandsplit.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+benches/arithmetic/multiply.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 7
+src/domain/ops/simd_util.rs
+  s_651dcff71cef4c::t_44e36b3d704a7d 61
+  s_651dcff71cef4c::t_dec60e61267189 12
+benches/arithmetic/abs.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/arithmetic/exp.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+src/domain/ops/convolution/gauss_blur.rs
+  s_651dcff71cef4c::t_48a52bb6170d4e 544
+src/lib.rs
+  s_651dcff71cef4c::t_3e85374fde89b1 25-27
+src/domain/ops/fused.rs
+  s_651dcff71cef4c::t_2528e87748e06d 197
+  s_651dcff71cef4c::t_995a1542ceca8d 78-79
+benches/resample/shrinkv.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 7
+src/adapters.rs
+  s_651dcff71cef4c::t_cee57fafe787d9 1-5
+benches/arithmetic/cos.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/relational/less_eq.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/arithmetic/asin.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+benches/arithmetic/sin.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+proptest-regressions/domain/ops/structural/embed.txt
+  s_651dcff71cef4c::t_972a70d472d3d5 1-7
+benches/arithmetic/add.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 8
+src/domain/ops/relational/more.rs
+  s_651dcff71cef4c::t_2b93e4d37e90eb 4
+src/domain.rs
+  s_651dcff71cef4c::t_3035bae6e0a3fc 9,11
+benches/boolean/and.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+benches/lut/recomb.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+src/domain/ops/relational/equal.rs
+  s_651dcff71cef4c::t_2b93e4d37e90eb 4
+benches/relational/more.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+src/domain/ops/relational/more_eq.rs
+  s_651dcff71cef4c::t_2b93e4d37e90eb 4
+benches/relational/more_eq.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/relational/not_equal.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+benches/arithmetic/sqrt.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+benches/resample/shrinkh.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 7
+src/domain/ops/conversion/bandjoin.rs
+  s_651dcff71cef4c::t_65e6399d6b63e8 259
+  s_651dcff71cef4c::t_77678709df175e 299
+benches/arithmetic/acos.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 6
+src/domain/ops/relational/less_eq.rs
+  s_651dcff71cef4c::t_2b93e4d37e90eb 4
+benches/arithmetic/atan.rs
+  s_651dcff71cef4c::t_83e90d3147eb2d 5
+CLAUDE.md
+  s_651dcff71cef4c::t_04d63d399e0263 118
+  s_651dcff71cef4c::t_e013cbec2905ff 96-98
+  s_651dcff71cef4c::t_f2c9d661a383d9 144
+  s_651dcff71cef4c::t_417d9fc24e060f 163
+  s_651dcff71cef4c::t_331b0e82303352 114
+src/adapters/pipeline.rs
+  s_651dcff71cef4c::t_3e7ab31bdae2fb 1201
+  s_651dcff71cef4c::t_aebe153c3e883f 1518,1540
+  s_651dcff71cef4c::t_7e07abe4acef86 5-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1dd9d1637edfb3588f8791c746dc7cba4d249abd",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
