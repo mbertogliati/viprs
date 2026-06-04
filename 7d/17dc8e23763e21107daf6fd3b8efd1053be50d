@@ -1,0 +1,39 @@
+src/domain/ops/resample.rs
+  s_c620b818b8964e::t_ad4ab11958aefb 10-11
+src/domain/ops/resample/reduceh.rs
+  s_c620b818b8964e::t_434d2546d1949c 26-28
+src/domain/ops/resample/affine.rs
+  s_c620b818b8964e::t_e92db23dcd7a81 48-49,51
+  s_c620b818b8964e::t_1d9e7eb225ef43 8-12,17,25-26,29-35,37-41,43,53-55,62-64,80,84-115,117-210,213-216,222-225,229-253,257-259,266-281,284-317,319-440,443-480,483-485
+  s_c620b818b8964e::t_be554aea0a5ba7 441-442,481-482
+  s_c620b818b8964e::t_feaef76aca8779 116,282-283,318
+src/domain/ops/resample/sample_conv.rs
+  s_c620b818b8964e::t_0cbb4bca10e73f 1-105
+src/domain/ops/resample/reducev.rs
+  s_c620b818b8964e::t_93af54228ebb67 21
+Cargo.toml
+  s_c620b818b8964e::t_22d6a16e68021a 308-312
+benches/resample/affine.rs
+  s_c620b818b8964e::t_feaef76aca8779 9-10
+  s_c620b818b8964e::t_e920ba9cee09b3 1-8,11-79
+src/adapters/pipeline.rs
+  s_c620b818b8964e::t_90661b46a0e7a8 602-603,605-667,672-703
+  s_c620b818b8964e::t_feaef76aca8779 2,29,668-671,1656-1658,1680-1682
+  s_c620b818b8964e::t_571b17c87058ad 1107-1148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7d17dc8e23763e21107daf6fd3b8efd1053be50d",
+  "prompts": {},
+  "sessions": {
+    "s_c620b818b8964e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f52b4608-e3e2-407d-a5cf-e2cd2ab5a919",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
