@@ -1,0 +1,87 @@
+src/adapters.rs
+  s_c620b818b8964e::t_719d7e7e5756dc 2
+src/domain/ops/arithmetic/log.rs
+  s_c620b818b8964e::t_677f5384ffd623 2,62
+  s_c620b818b8964e::t_4a3be5f5f0693a 60-61
+src/domain/ops/arithmetic/sign.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 60-61
+  s_c620b818b8964e::t_677f5384ffd623 2,62
+src/domain/ops/arithmetic/subtract.rs
+  s_c620b818b8964e::t_0ba1943d71d049 301
+  s_c620b818b8964e::t_4a3be5f5f0693a 4,296-300,302-303
+src/adapters/dyn_fused.rs
+  s_c620b818b8964e::t_cd60ae48114f7a 195-203,205-218,220,224,228-229,235,239
+  s_c620b818b8964e::t_f4697312b17d8a 222-223,237-238,254-257
+  s_c620b818b8964e::t_e6bf288270b88b 1-134,136-194,204,219,221,225-227,230-234,236,240-253,258-270,272-286,288-302,304-325,327-333,335-342,344-348
+  s_c620b818b8964e::t_677f5384ffd623 135,271,287,303,326,334,343
+src/domain/ops/arithmetic/sqrt.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 60-61
+  s_c620b818b8964e::t_677f5384ffd623 2,62
+src/domain/ops/arithmetic/acos.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 60-61
+  s_c620b818b8964e::t_677f5384ffd623 2,62
+src/domain/ops/arithmetic/linear.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 4,197-204
+src/domain/ops/arithmetic/multiply.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 4,192-196,198-199
+  s_c620b818b8964e::t_0ba1943d71d049 197
+src/adapters/pipeline.rs
+  s_c620b818b8964e::t_ea6d1c06637da2 1790-1796,1798-1817,1819-1879,1884-1886,1888-1894,1896-1897,1899-1915,1921,1926,1928
+  s_c620b818b8964e::t_8891c54a694135 926,930,934,938,942,946,950
+  s_c620b818b8964e::t_f4697312b17d8a 965-991,1252-1285,1880-1883,1895,1916-1920,1927
+  s_c620b818b8964e::t_cee017ed738adf 428
+  s_c620b818b8964e::t_208d9656e4d0a8 211-265,272-288,290-335,344-427
+  s_c620b818b8964e::t_a150254722ecf8 1797,1818
+  s_c620b818b8964e::t_a3d3f20cfd89bd 509,531-539
+  s_c620b818b8964e::t_677f5384ffd623 2,29,289,336-343,1754-1756,1778-1780
+  s_c620b818b8964e::t_bed129c24361ea 1887,1898,1922-1925
+src/domain/ops/arithmetic/tan.rs
+  s_c620b818b8964e::t_677f5384ffd623 2,61
+  s_c620b818b8964e::t_4a3be5f5f0693a 59-60
+src/domain/op.rs
+  s_c620b818b8964e::t_677f5384ffd623 362-366
+  s_c620b818b8964e::t_c31375f27e2ed7 176-187,310-313,334-352,394-395
+src/domain/ops/arithmetic/exp.rs
+  s_c620b818b8964e::t_677f5384ffd623 2,61
+  s_c620b818b8964e::t_4a3be5f5f0693a 59-60
+src/domain/ops/arithmetic/asin.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 60-61
+  s_c620b818b8964e::t_677f5384ffd623 2,62
+src/domain/ops/arithmetic/abs.rs
+  s_c620b818b8964e::t_677f5384ffd623 2,61
+  s_c620b818b8964e::t_4a3be5f5f0693a 59-60
+src/domain/ops/arithmetic/power.rs
+  s_c620b818b8964e::t_677f5384ffd623 2,56
+  s_c620b818b8964e::t_4a3be5f5f0693a 54-55
+src/domain/ops/arithmetic/divide.rs
+  s_c620b818b8964e::t_677f5384ffd623 2,79
+  s_c620b818b8964e::t_4a3be5f5f0693a 77-78
+src/domain/ops/conversion/cast.rs
+  s_c620b818b8964e::t_f117a83ed91a6b 6,134-143
+  s_c620b818b8964e::t_677f5384ffd623 147
+src/domain/ops/arithmetic/sin.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 59-60
+  s_c620b818b8964e::t_677f5384ffd623 2,61
+src/domain/ops/arithmetic/atan.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 60-61
+  s_c620b818b8964e::t_677f5384ffd623 2,62
+src/domain/ops/arithmetic/cos.rs
+  s_c620b818b8964e::t_4a3be5f5f0693a 59-60
+  s_c620b818b8964e::t_677f5384ffd623 2,61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4151c8e2c43706aaa617fb30e6067507e8d4d203",
+  "prompts": {},
+  "sessions": {
+    "s_c620b818b8964e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f52b4608-e3e2-407d-a5cf-e2cd2ab5a919",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
