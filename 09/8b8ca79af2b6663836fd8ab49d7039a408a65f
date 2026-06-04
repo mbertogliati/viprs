@@ -1,0 +1,65 @@
+src/adapters/ops/arithmetic/sqrt.rs
+  s_651dcff71cef4c::t_8803ce4b1fbfb4 1-106
+benches/arithmetic/atan.rs
+  s_651dcff71cef4c::t_816d4e16d856c4 1-39
+src/adapters/ops/lut/recomb.rs
+  s_651dcff71cef4c::t_66479f5aa379fe 1-193,220-268
+  s_651dcff71cef4c::t_96044d67b86ef3 194-219
+src/adapters/ops/arithmetic/asin.rs
+  s_651dcff71cef4c::t_69111e7b493a27 1-108
+src/adapters/ops/arithmetic/sin.rs
+  s_651dcff71cef4c::t_15b8ed741abb89 1-110
+benches/lut/recomb.rs
+  s_651dcff71cef4c::t_f21c3b7289018a 1-23,25-44
+  s_651dcff71cef4c::t_1b3302f9a853ec 24
+benches/arithmetic/cos.rs
+  s_651dcff71cef4c::t_74bd9dcae96a0e 1-39
+benches/arithmetic/sin.rs
+  s_651dcff71cef4c::t_b4112916e929f3 1-39
+benches/arithmetic/sqrt.rs
+  s_651dcff71cef4c::t_86c7e1fdb5dc26 1-40
+src/adapters/ops/lut/map_lut.rs
+  s_651dcff71cef4c::t_d2c7efb3be3125 1-133,153-185
+  s_651dcff71cef4c::t_682dec01ebbfa0 134-152
+benches/arithmetic/asin.rs
+  s_651dcff71cef4c::t_9422f101f535ab 1-40
+src/domain/format.rs
+  s_651dcff71cef4c::t_2359bd3a2f6001 61-67,111-138,182-208
+  s_651dcff71cef4c::t_3910ba3cc1c669 209
+benches/arithmetic/tan.rs
+  s_651dcff71cef4c::t_b30c0a77f7eaf7 1-39
+src/adapters/ops/arithmetic/tan.rs
+  s_651dcff71cef4c::t_efecf92003372d 1-105
+src/adapters/ops/arithmetic/mod.rs
+  s_651dcff71cef4c::t_7e042474f5e2a2 2,5-7,17-18,20,23,26-28,38-39,41
+src/adapters/ops/arithmetic/cos.rs
+  s_651dcff71cef4c::t_592dec875d6e8e 1-110
+src/adapters/ops/arithmetic/acos.rs
+  s_651dcff71cef4c::t_782806a718d5fe 1-108
+src/adapters/ops/lut/mod.rs
+  s_651dcff71cef4c::t_2cdea542920bdd 1-5
+"backlog/tasks/b-59 - Recomb-con-M≠N-bandas-—-cambio-de-cantidad-de-canales-en-la-salida.md"
+  s_651dcff71cef4c::t_c333055d3b8e20 1-33
+benches/arithmetic/acos.rs
+  s_651dcff71cef4c::t_1015343f9caba0 1-40
+src/adapters/ops/arithmetic/atan.rs
+  s_651dcff71cef4c::t_e04a398067f21b 1-107
+benches/lut/map_lut.rs
+  s_651dcff71cef4c::t_bd3b7b0ef4fee8 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "098b8ca79af2b6663836fd8ab49d7039a408a65f",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
