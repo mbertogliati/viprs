@@ -1,0 +1,21 @@
+CLAUDE.md
+  s_de5fb7de1384a4::t_e75566629b7a9d 14-36
+"backlog/tasks/b-30 - WebpCodec-decode-hardcodea-bands3-—-RGBA-decode-falla-silenciosamente.md"
+  s_de5fb7de1384a4::t_5071ef1a7427db 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3f325cf498dd4f0c91f078e0295eee508e709cc6",
+  "prompts": {},
+  "sessions": {
+    "s_de5fb7de1384a4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2a60764d-05c3-4163-ab7f-e4351972a133",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
