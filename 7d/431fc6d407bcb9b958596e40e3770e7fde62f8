@@ -1,0 +1,21 @@
+Cargo.toml
+  s_e2f6af2e9d2525::t_14f36637b8dbfc 101-105
+benches/conversion/bandsplit.rs
+  s_e2f6af2e9d2525::t_88e2db9d14523c 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7d431fc6d407bcb9b958596e40e3770e7fde62f8",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
