@@ -1,0 +1,32 @@
+"backlog/archive/tasks/b-31 - D-001-—-Smart-constructor-para-CompiledNode-que-garantice-input_bufs-output_buf.md"
+  s_1ccfe35093a21b::t_69ff1b2bbc43d6 1-31
+src/domain/error.rs
+  s_1ccfe35093a21b::t_2d1f683bb7f45a 64-72
+  s_1ccfe35093a21b::t_d18e886276813f 73
+"backlog/tasks/b-30 - WebpCodec-decode-hardcodea-bands3-—-RGBA-decode-falla-silenciosamente.md"
+  s_1ccfe35093a21b::t_e6aac7d189fb8b 7
+src/ports/op.rs
+  s_1ccfe35093a21b::t_1718a4b266c98e 253-254
+src/adapters/pipeline/mod.rs
+  s_1ccfe35093a21b::t_5c5afc52ac9fb3 298-302
+  s_1ccfe35093a21b::t_edf18a1a19ee09 351-352,355
+  s_1ccfe35093a21b::t_affe591ac29d1c 493,500-549
+"backlog/archive/tasks/b-29 - B-029-—-Eliminar-clones-por-tile-en-multi-input-path-de-execute_tile.md"
+  s_1ccfe35093a21b::t_50ee98c155bd0e 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "12d5a6b61da5d31e64b78a219a2523fae0978a53",
+  "prompts": {},
+  "sessions": {
+    "s_1ccfe35093a21b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5861a780-e04d-47d4-894d-79a1091ce84a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
