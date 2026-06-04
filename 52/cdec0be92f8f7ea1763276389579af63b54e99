@@ -1,0 +1,27 @@
+src/adapters/ops/convolution/gauss_blur.rs
+  s_651dcff71cef4c::t_edf99a8ff94524 573,583,592,603,617,619-620
+  s_651dcff71cef4c::t_210fcd6e39aacd 1-572,574-582,584-591,593-602,604-616,618,621-748
+src/adapters/ops/convolution/mod.rs
+  s_651dcff71cef4c::t_208c520e108dab 2-3
+Cargo.toml
+  s_651dcff71cef4c::t_247c20e9484087 103-106
+benches/convolution/gauss_blur.rs
+  s_651dcff71cef4c::t_a2028cb6169751 1-35,37-68
+  s_651dcff71cef4c::t_edf99a8ff94524 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "52cdec0be92f8f7ea1763276389579af63b54e99",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
