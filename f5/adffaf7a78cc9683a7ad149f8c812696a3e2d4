@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-29 - B-032-—-Tests-de-integración-E2E-con-imágenes-reales-y-goldens-de-libvips.md"
+  s_1ccfe35093a21b::t_513a81e28c01e3 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f5adffaf7a78cc9683a7ad149f8c812696a3e2d4",
+  "prompts": {},
+  "sessions": {
+    "s_1ccfe35093a21b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5861a780-e04d-47d4-894d-79a1091ce84a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
