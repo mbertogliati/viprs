@@ -1,0 +1,38 @@
+src/domain/error.rs
+  s_3e96e61039d64b::t_6a9d4126e9686a 49-63
+  s_3e96e61039d64b::t_0d2ad3621f4df1 1
+src/adapters/ops/colour/mod.rs
+  s_3e96e61039d64b::t_f2549981c466e8 3-4,12-14
+DESIGN_BACKLOG.md
+  s_3e96e61039d64b::t_c3a41a50030987 332
+DECISIONS.md
+  s_3e96e61039d64b::t_734da8e6228fbf 3067-3155,3235-3259
+  s_3e96e61039d64b::t_664efdf5055882 3260
+src/adapters/pipeline/mod.rs
+  s_3e96e61039d64b::t_62631b8de55414 20
+  s_3e96e61039d64b::t_7c47182677ae86 5-9
+  s_3e96e61039d64b::t_9b79416b040daa 628-632
+  s_3e96e61039d64b::t_9e51910c41afa5 989-1013,1015-1018,1020-1023,1025-1028,1030-1033,1035-1038,1040-1052
+  s_3e96e61039d64b::t_3d1bb733b9c60d 566-569
+  s_3e96e61039d64b::t_c2373e09fe1512 586-588,601,605-611
+  s_3e96e61039d64b::t_572ffdd70b7f6d 1014,1019,1024,1029,1034,1039
+src/ports/op.rs
+  s_3e96e61039d64b::t_9dd191a358bc99 202-214
+  s_3e96e61039d64b::t_946071e0c1320c 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c4c11f5e853c1816cae3e1851afef1e5554002e6",
+  "prompts": {},
+  "sessions": {
+    "s_3e96e61039d64b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0373086c-c8dd-4ce7-b87c-ba4f38d415c7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
