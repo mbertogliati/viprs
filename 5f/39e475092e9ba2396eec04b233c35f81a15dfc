@@ -1,0 +1,11 @@
+Cargo.lock
+  ai_agent 6-10,97-108,167-175,271-295,357-362,445-454,485-494,520-529,585-597,848-859,946,950,1080-1086
+src/adapters/codecs/png.rs
+  ai_agent 1-417
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5f39e475092e9ba2396eec04b233c35f81a15dfc",
+  "prompts": {}
+}
