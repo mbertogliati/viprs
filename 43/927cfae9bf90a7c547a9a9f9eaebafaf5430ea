@@ -1,0 +1,95 @@
+"backlog/tasks/b-46 - Operadores-relacionales-—-Equal-NotEqual-Less-LessEq-More-MoreEq.md"
+  s_e2f6af2e9d2525::t_3e21d92ebe1267 1-6,8-27
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,28-38
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 39-46
+"backlog/tasks/b-38 - Embed-—-insertar-imagen-en-canvas-mayor-con-opciones-de-relleno.md"
+  s_e2f6af2e9d2525::t_be4cf0f24f66e3 7,28-36
+  s_e2f6af2e9d2525::t_f75b0061d243cc 1-6,8-27
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 37-44
+"backlog/tasks/b-40 - Thumbnail-into_pipeline_nodes-—-descomposición-real-en-nodos-del-DAG.md"
+  s_e2f6af2e9d2525::t_83dc36b288824a 7,33-41
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 42-49
+  s_e2f6af2e9d2525::t_ceaa9ddf3d9a1f 1-6,8-32
+"backlog/tasks/b-47 - Morfología-básica-—-Dilate-Erode-Median-rank-filter.md"
+  s_e2f6af2e9d2525::t_a370e2f6f132f2 1-6,8-29
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,30-40
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 41-48
+"backlog/tasks/b-34 - TileCache-LRU-—-implementar-read_region-con-evicción-por-LRU.md"
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 37-44
+  s_e2f6af2e9d2525::t_b3c12b3025da77 1-6,8-27
+  s_e2f6af2e9d2525::t_be4cf0f24f66e3 7,28-36
+CLAUDE.md
+  s_e2f6af2e9d2525::t_a888430ac44587 264-273
+  s_e2f6af2e9d2525::t_8263779a45d29a 139-152
+  s_e2f6af2e9d2525::t_80400429230368 99-102
+"backlog/tasks/b-39 - Composite-Flatten-Premultiply-Unpremultiply-—-alpha-blending-completo.md"
+  s_e2f6af2e9d2525::t_647ab821f6aa16 1-6,8-32
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 45-52
+  s_e2f6af2e9d2525::t_83dc36b288824a 7,33-44
+"backlog/tasks/b-43 - Shrink-on-load-—-conectar-LoadOptions-shrink_factor-a-DecoderSource.md"
+  s_e2f6af2e9d2525::t_74d6433049a325 1-6,8-29
+  s_e2f6af2e9d2525::t_be4cf0f24f66e3 7,30-38
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 39-46
+"backlog/tasks/b-31 - Aritmética-stubeada-—-completar-Abs-Divide-Exp-Log-Power-Round-Floor-Ceil.md"
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,28-38
+  s_e2f6af2e9d2525::t_1f37aae93bc389 1-6,8-27
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 39-46
+"backlog/tasks/b-33 - Colour-conversions-—-implementar-sRGB↔Lab-sRGB↔HSV-sRGB↔XYZ.md"
+  s_e2f6af2e9d2525::t_215f1c1db6141d 1-6,8-30
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,31-41
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 42-49
+"backlog/tasks/b-32 - Boolean-ops-—-completar-And-Or-Xor-LShift-RShift.md"
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 37-44
+  s_e2f6af2e9d2525::t_b8ff5d1e6f51d8 1-6,8-25
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,26-36
+"backlog/tasks/b-48 - HistEqual-HistLocal-CLAHE-—-ecualización-de-histograma-global-y-local.md"
+  s_e2f6af2e9d2525::t_be4cf0f24f66e3 7,28-36
+  s_e2f6af2e9d2525::t_340645e39b4acf 1-6,8-27
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 37-44
+"backlog/tasks/b-41 - GaussBlur-separable-—-On-en-lugar-de-On²-de-Conv2d-genérico.md"
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 42-49
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,31-41
+  s_e2f6af2e9d2525::t_3435bcead85f85 1-6,8-30
+"backlog/tasks/b-35 - Affine-process_region-—-implementar-transformación-afín-real.md"
+  s_e2f6af2e9d2525::t_21dafc8c69d328 1-6,8-25
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,26-36
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 37-44
+"backlog/tasks/b-30 - DecoderSource-—-conectar-decoders-al-pipeline-de-tiles.md"
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 37-44
+  s_e2f6af2e9d2525::t_7cfac82f8140d4 1-6,8-25
+  s_e2f6af2e9d2525::t_83dc36b288824a 34-35
+  s_e2f6af2e9d2525::t_be4cf0f24f66e3 7,26-33,36
+"backlog/tasks/b-49 - Codecs-adicionales-—-TIFF-y-GIF-primeros-targets-realistas.md"
+  s_e2f6af2e9d2525::t_83dc36b288824a 7,32-40
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 41-48
+  s_e2f6af2e9d2525::t_f7044724d1cc89 1-6,8-31
+"backlog/tasks/b-44 - MapLut-Recomb-—-aplicar-tablas-de-lookup-y-matrices-de-recombinación.md"
+  s_e2f6af2e9d2525::t_5167299ae23222 1-6,8-28
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 40-47
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,29-39
+"backlog/tasks/b-45 - Math-ops-elementales-—-sin-cos-tan-sqrt-atan2-como-pixel-ops.md"
+  s_e2f6af2e9d2525::t_a2e2ec08526d0c 1-6,8-27
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,28-38
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 39-46
+"backlog/tasks/b-42 - SIMD-horizontal-—-extender-dispatch-AVX2-a-Invert-Conv2d-colour-ops.md"
+  s_e2f6af2e9d2525::t_a2ed69c9bf2b2f 1-6,8-31
+  s_e2f6af2e9d2525::t_47749a1fa6317c 7,32-41,46
+  s_e2f6af2e9d2525::t_83dc36b288824a 42-45
+  s_e2f6af2e9d2525::t_19ea6cea3dbb89 47-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "43927cfae9bf90a7c547a9a9f9eaebafaf5430ea",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
