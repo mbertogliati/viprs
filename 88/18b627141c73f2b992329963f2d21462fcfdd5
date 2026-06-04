@@ -1,0 +1,92 @@
+src/ports/op.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 179-182,251-255
+  s_3e96e61039d64b::t_548fda0ef627d7 60-89
+src/adapters/ops/mod.rs
+  s_3e96e61039d64b::t_a11eb4aa4e1c8e 6
+src/adapters/ops/colour/mod.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 1,3-4,8,10-11
+src/adapters/ops/colour/lab_to_srgb.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 17-22,24-26
+src/adapters/reducers/histogram.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 93-98
+src/domain/format.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 57-96,100-139,171-174,195-197,200-206,229-270,276-316
+src/adapters/ops/colour/hsv_to_srgb.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 17-22,24-26
+src/adapters/ops/arithmetic/log.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 20-22,33-41,44-46
+src/adapters/ops/arithmetic/invert.rs
+  s_3e96e61039d64b::t_362401ace63982 110-118
+  s_3e96e61039d64b::t_6ea08bb8f230e9 8
+src/adapters/ops/boolean/lshift.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 24-29,40-48,51-53
+src/adapters/ops/colour/srgb_to_lab.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 3,17-22,24-26
+src/adapters/ops/arithmetic/add.rs
+  s_3e96e61039d64b::t_e5492ccb7d6ec5 8
+  s_3e96e61039d64b::t_276d01f1c7a728 105-113
+src/domain/colorspace.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 127-156
+src/ports/colour.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 90-95,97
+src/adapters/ops/boolean/and.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 23-25,36-44,47-49
+src/adapters/ops/boolean/or.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 23-25,36-44,47-49
+tests/integration_pipeline.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 565-572,575-578,595-598
+src/adapters/ops/arithmetic/abs.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 19-21,32-40,43-45
+src/adapters/ops/fused.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 162,171
+  s_3e96e61039d64b::t_a172cf5dc7510c 1-117,120-161,163-170,172-187,190-196,199-333,337-338,341-377
+  s_3e96e61039d64b::t_74085d818f972f 197
+  s_3e96e61039d64b::t_67b75b6225af32 188-189
+  s_3e96e61039d64b::t_2cade7ddf57d74 198
+  s_3e96e61039d64b::t_0b80d799593499 334-336,339-340
+  s_3e96e61039d64b::t_6818ba332a8df2 118-119
+src/adapters/ops/arithmetic/divide.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 41-49
+src/adapters/ops/colour/srgb_to_hsv.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 3,17-22,24-26
+src/adapters/reducers/stats.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 69,148-152
+src/adapters/ops/arithmetic/power.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 23-25,36-44,47-49
+proptest-regressions/adapters/ops/fused.txt
+  s_3e96e61039d64b::t_278bf77726ed43 1-7
+src/adapters/ops/arithmetic/sign.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 20-22,33-41,44-46
+src/adapters/ops/boolean/rshift.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 24-29,40-48,51-53
+src/adapters/ops/boolean/xor.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 23-25,36-44,47-49
+src/adapters/ops/colour/srgb_to_xyz.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 17-22,24-26
+src/adapters/ops/arithmetic/exp.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 19-21,32-40,43-45
+DECISIONS.md
+  s_3e96e61039d64b::t_664efdf5055882 2797-2909
+DESIGN_BACKLOG.md
+  s_3e96e61039d64b::t_e46a7a6120b58e 234
+src/adapters/ops/arithmetic/round.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 19-21,32-40,43-45,58-60,71-79,82-84,97-99,110-118,121-123
+src/adapters/ops/colour/xyz_to_srgb.rs
+  s_3e96e61039d64b::t_5005e757f1cbf4 3,17-22,24-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8818b627141c73f2b992329963f2d21462fcfdd5",
+  "prompts": {},
+  "sessions": {
+    "s_3e96e61039d64b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0373086c-c8dd-4ce7-b87c-ba4f38d415c7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
