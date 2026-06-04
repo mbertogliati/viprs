@@ -1,0 +1,21 @@
+src/adapters/pipeline/mod.rs
+  s_1ccfe35093a21b::t_c611c3a32da99a 232-259
+"backlog/archive/tasks/b-30 - Rotate90-buffer-underallocation-for-large-multi-byte-images.md"
+  s_1ccfe35093a21b::t_c7ef2f570783d7 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cdd2da4e8acd80a682493a4f405422d18e094028",
+  "prompts": {},
+  "sessions": {
+    "s_1ccfe35093a21b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5861a780-e04d-47d4-894d-79a1091ce84a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
