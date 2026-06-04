@@ -1,0 +1,29 @@
+Cargo.toml
+  s_1ccfe35093a21b::t_93800c06fe9902 32-34
+tests/e2e_images.rs
+  s_1ccfe35093a21b::t_23029fffa8b09d 1-31,34-44,50-53,59-69,71-80,83-119,121-129,132-163,169,171-172,174-182,185-222,226-228,230-238,241-267,272-288,290-292
+  s_1ccfe35093a21b::t_cce5a995fffaa5 268-271
+  s_1ccfe35093a21b::t_ef395eca421d3b 32-33,45-49,54-58,70,81-82,120,130-131,173,183-184,229,239-240,289
+  s_1ccfe35093a21b::t_5b597741b212aa 164-168,170
+  s_1ccfe35093a21b::t_fe049dbc1df2a4 223-225
+tests/fixtures/e2e/jpeg_invert.bin
+  ai_agent 1
+"backlog/tasks/b-30 - Rotate90-buffer-underallocation-for-large-multi-byte-images.md"
+  s_1ccfe35093a21b::t_cab580061dc981 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1ad95806f551610d7ba8c88d40130351f033790e",
+  "prompts": {},
+  "sessions": {
+    "s_1ccfe35093a21b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5861a780-e04d-47d4-894d-79a1091ce84a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
