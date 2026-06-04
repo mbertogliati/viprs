@@ -1,0 +1,46 @@
+tests/golden/add_test.rs
+  s_675645467e8cbd::t_ff1215f69fbe45 13-14
+  s_675645467e8cbd::t_aa19c0828bd255 1-12,15-63
+tests/fixtures/add/uniform_constant.bin
+  s_675645467e8cbd::t_77548d4ca5caea 1
+tests/golden/subtract_test.rs
+  s_675645467e8cbd::t_ec074671dd4fb7 1-16,19-67
+  s_675645467e8cbd::t_ff1215f69fbe45 17-18
+BACKLOG.md
+  s_675645467e8cbd::t_237bf83b7d2a77 26
+  s_675645467e8cbd::t_0b69c91b97a39d 106,108-111
+  s_675645467e8cbd::t_e08358877a6653 134
+tests/integration_pipeline.rs
+  s_675645467e8cbd::t_ff1215f69fbe45 253-255,302-306,370-374
+tests/fixtures/add/sequential_plus_one.bin
+  s_675645467e8cbd::t_77548d4ca5caea 1-2
+tests/golden/golden.rs
+  s_675645467e8cbd::t_ff1215f69fbe45 1-76
+src/adapters/pipeline/mod.rs
+  s_675645467e8cbd::t_ff1215f69fbe45 422
+tests/golden/linear_test.rs
+  s_675645467e8cbd::t_6483d10ab230ce 48,58
+  s_675645467e8cbd::t_ff1215f69fbe45 14-15
+  s_675645467e8cbd::t_5e28a8d6c255ef 1-13,16-23,26-47,49-57,59-60
+  s_675645467e8cbd::t_91f0551e802312 24-25
+src/adapters/scheduler/rayon_scheduler.rs
+  s_675645467e8cbd::t_ff1215f69fbe45 115-117,120-122
+Cargo.toml
+  s_675645467e8cbd::t_d9d858eb2be65e 24-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6bfa772ae720c5b0ed2fc9b3a5843ed3732cf8c6",
+  "prompts": {},
+  "sessions": {
+    "s_675645467e8cbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b168690a-4479-4e5e-900f-8568ae317bec",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
