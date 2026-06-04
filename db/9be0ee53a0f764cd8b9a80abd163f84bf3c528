@@ -1,0 +1,21 @@
+benches/colour/srgb_to_lab.rs
+  s_e2f6af2e9d2525::t_2ccf996bdb60f3 1-48
+Cargo.toml
+  s_e2f6af2e9d2525::t_2f7cbdd2abf372 101-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "db9be0ee53a0f764cd8b9a80abd163f84bf3c528",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
