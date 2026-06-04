@@ -1,0 +1,21 @@
+BACKLOG.md
+  s_675645467e8cbd::t_6629a39c7273a5 84-112
+  s_675645467e8cbd::t_7d877f10f05e86 179-180
+  s_675645467e8cbd::t_8a77961f7df72e 177-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3e3b84e3fa3063bc073ccc3405761edb58726efb",
+  "prompts": {},
+  "sessions": {
+    "s_675645467e8cbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b168690a-4479-4e5e-900f-8568ae317bec",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
