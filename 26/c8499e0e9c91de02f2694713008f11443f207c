@@ -1,0 +1,9 @@
+src/adapters/pipeline.rs
+  ai_agent 2,211-265,272-428,509,531-539,1026,1030,1034,1038,1042,1046,1050,1065-1091,1394-1427,1932-2069
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "26c8499e0e9c91de02f2694713008f11443f207c",
+  "prompts": {}
+}
