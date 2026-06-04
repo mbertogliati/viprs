@@ -1,0 +1,9 @@
+src/adapters/codecs/webp.rs
+  ai_agent 1-367
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1c87aefd107ca9e1f76c40ddbb5da1bd889093c6",
+  "prompts": {}
+}
