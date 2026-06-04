@@ -1,0 +1,161 @@
+src/domain/resample.rs
+  s_651dcff71cef4c::t_20af6f960f3ae9 18
+src/adapters/ops/arithmetic/cos.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/arithmetic/sqrt.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/ports.rs
+  s_651dcff71cef4c::t_c404d2bd4eb876 1,3-8
+  s_651dcff71cef4c::t_f58f78b9b50bcd 2,9-15
+src/domain.rs
+  s_651dcff71cef4c::t_6d10574684699d 1,3-7,11-12
+  s_651dcff71cef4c::t_fcaed916734bb5 2,8-10
+src/adapters/ops/colour/bridge.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 176
+  s_651dcff71cef4c::t_71cf04b5d5d473 16-21
+src/adapters/ops/conversion/bandjoin.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6,264
+src/adapters/ops/lut/map_lut.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/boolean/rshift.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/ports/scheduler.rs
+  s_651dcff71cef4c::t_41e0d2d80b6b72 14-15
+src/adapters/ops/structural/extract_area.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/colour/xyz_to_srgb.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7
+src/adapters/ops/arithmetic/subtract.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/ops/convolution/conv2d.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 11
+src/adapters/ops/relational/less.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9
+src/adapters/ops/resample/reduceh.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 273,282,287
+  s_651dcff71cef4c::t_a08989495f1aa4 18-23
+src/adapters/ops/arithmetic/tan.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/arithmetic/sin.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/boolean/xor.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/boolean/or.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/arithmetic/log.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/arithmetic/invert.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/ops/arithmetic/round.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/boolean/and.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/colour/lab_to_srgb.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7
+src/adapters/ops/convolution/gauss_blur.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 33
+src/adapters/ops/structural/flip_vertical.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/conversion/bandsplit.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/ops/colour/srgb_to_hsv.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7
+src/adapters/ops/arithmetic/atan.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/conversion/cast.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 10,141
+src/adapters/ops/relational/more.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9
+src/adapters/ops/arithmetic/add_images.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/structural/embed.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9,196,307
+src/adapters/ops/relational/less_eq.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9
+src/adapters/ops/relational/more_eq.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9
+src/adapters/reducers/histogram.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7,93,96
+src/adapters/ops/arithmetic/power.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/scheduler/rayon_scheduler.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 457,541
+  s_651dcff71cef4c::t_b127a02ab635b4 764-766,768-769
+  s_651dcff71cef4c::t_d8a258c270d01e 12
+src/adapters/ops/resample/affine.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 18
+src/adapters/ops/arithmetic/multiply.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/ops/arithmetic/add.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/sinks/memory.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 150
+src/adapters/ops/arithmetic/exp.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/arithmetic/abs.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/arithmetic/acos.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/lut/recomb.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+CLAUDE.md
+  s_651dcff71cef4c::t_da7bf38ff1b5d6 114
+  s_651dcff71cef4c::t_b32637c33e8fc4 18-27
+  s_651dcff71cef4c::t_b5883e00e3c37a 64-67,69
+  s_651dcff71cef4c::t_6be1866c5fce25 92-97,99-101
+src/adapters/ops/arithmetic/linear.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/reducers/stats.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7,148,152
+src/adapters/ops/conversion/extract_bands.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 8
+src/adapters/ops/relational/not_equal.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9
+src/adapters/ops/arithmetic/sign.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/relational/equal.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 9
+src/adapters/ops/colour/hsv_to_srgb.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7
+src/adapters/ops/fused.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 38
+src/adapters/ops/arithmetic/divide.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/colour/srgb_to_lab.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7
+src/adapters/ops/colour/srgb_to_xyz.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 7
+src/adapters/ops/boolean/lshift.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/resample/reducev.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 161,170,175
+  s_651dcff71cef4c::t_d5a161679057a0 11-16
+src/adapters/ops/arithmetic/asin.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/structural/flip_horizontal.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6
+src/adapters/ops/structural/rotate90.rs
+  s_651dcff71cef4c::t_83fea13d4a3c3a 6,111,120,128,215
+src/adapters/pipeline.rs
+  s_651dcff71cef4c::t_045caf28cd5bc6 29
+  s_651dcff71cef4c::t_83fea13d4a3c3a 1221
+  s_651dcff71cef4c::t_eb6bcada42256c 1-28,30-1220,1222-1550
+src/lib.rs
+  s_651dcff71cef4c::t_85dfb9ca08ecae 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f6ae9c2ef4aeadf67785a9b45edd764a8e216dff",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
