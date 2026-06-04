@@ -1,0 +1,82 @@
+src/adapters/ops/boolean/lshift.rs
+  s_3e96e61039d64b::t_2dd98305227ead 10
+  s_3e96e61039d64b::t_0b429004b9c7d9 1-2,4-9,11-41
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+src/adapters/ops/mod.rs
+  s_3e96e61039d64b::t_5dc7216da4eda8 2
+src/adapters/ops/arithmetic/abs.rs
+  s_3e96e61039d64b::t_f532929962b556 1-36
+.claude/scheduled_tasks.lock
+  ai_agent 1
+src/adapters/ops/boolean/rshift.rs
+  s_3e96e61039d64b::t_16b69ce232eb3a 10
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+  s_3e96e61039d64b::t_cf5cfb089f2db8 1-2,4-9,11-41
+src/domain/format.rs
+  s_3e96e61039d64b::t_95ea4fe562e59e 32-231,300-318,326,340-368
+src/adapters/ops/arithmetic/mod.rs
+  s_3e96e61039d64b::t_c591ce4000b398 1,3-4,7,9-11,14,16-17,20,22-24
+tests/integration_pipeline.rs
+  s_3e96e61039d64b::t_aab239b345a90f 553-558,565-566,568-573,582-583,586-590
+DECISIONS.md
+  s_3e96e61039d64b::t_7ab50537cd11bd 2306-2373
+src/adapters/ops/arithmetic/sign.rs
+  s_3e96e61039d64b::t_ccabc2055a21a2 1-37
+src/adapters/ops/arithmetic/power.rs
+  s_3e96e61039d64b::t_4b5e100f7655a1 10
+  s_3e96e61039d64b::t_8dbc1d66973ebc 1-2,4-9,11-40
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+src/adapters/ops/boolean/or.rs
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+  s_3e96e61039d64b::t_eebbb1da87c1c8 1-2,4-9,11-40
+  s_3e96e61039d64b::t_ec53f186d470ea 10
+DESIGN_BACKLOG.md
+  s_3e96e61039d64b::t_78b7fdf8f3b52f 40
+src/adapters/ops/structural/rotate90.rs
+  s_3e96e61039d64b::t_e5e184daf8482d 11-12
+  s_3e96e61039d64b::t_002ff5a3b52fb3 49,54
+  s_3e96e61039d64b::t_90228c7c8566e3 190,195
+src/adapters/ops/arithmetic/divide.rs
+  s_3e96e61039d64b::t_4f4fccd1e93213 14
+  s_3e96e61039d64b::t_8d52c392a18df1 42
+  s_3e96e61039d64b::t_0494f35358d6a7 1-13,15-41,43-49
+src/adapters/ops/boolean/mod.rs
+  s_3e96e61039d64b::t_fe15a596a2a8ea 1-11
+BACKLOG.md
+  s_3e96e61039d64b::t_74398049212448 35
+  s_3e96e61039d64b::t_754b2528ce7960 87,89-91
+  s_3e96e61039d64b::t_e8211e8ecb57aa 159
+src/adapters/ops/boolean/xor.rs
+  s_3e96e61039d64b::t_193f1939c99a68 1-2,4-9,11-40
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+  s_3e96e61039d64b::t_ec53f186d470ea 10
+src/adapters/ops/arithmetic/exp.rs
+  s_3e96e61039d64b::t_a80d69ec411494 1-2,4-36
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+src/adapters/ops/arithmetic/log.rs
+  s_3e96e61039d64b::t_7e9def4dbd9bbb 1-2,4-37
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+src/adapters/ops/arithmetic/round.rs
+  s_3e96e61039d64b::t_123300f7bfb988 1-2,4-94
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+src/adapters/ops/boolean/and.rs
+  s_3e96e61039d64b::t_ec53f186d470ea 10
+  s_3e96e61039d64b::t_5a8ad956ae8ebc 1-2,4-9,11-40
+  s_3e96e61039d64b::t_8d52c392a18df1 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5824e26aaae4273fe77712b923b423b4a6d16d7d",
+  "prompts": {},
+  "sessions": {
+    "s_3e96e61039d64b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0373086c-c8dd-4ce7-b87c-ba4f38d415c7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
