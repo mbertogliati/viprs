@@ -1,0 +1,51 @@
+src/adapters/ops/colour/srgb_to_xyz.rs
+  s_3e96e61039d64b::t_8aaa5aa82560cd 1-3,5-21
+  s_3e96e61039d64b::t_df64ecc2386f36 4
+DECISIONS.md
+  s_3e96e61039d64b::t_aa97e7cfee4859 2374-2439
+src/adapters/ops/colour/srgb_to_lab.rs
+  s_3e96e61039d64b::t_df64ecc2386f36 4
+  s_3e96e61039d64b::t_8aaa5aa82560cd 1-3,5-21
+src/domain/colorspace.rs
+  s_3e96e61039d64b::t_11106d5026216e 1-164
+src/adapters/ops/colour/hsv_to_srgb.rs
+  s_3e96e61039d64b::t_8aaa5aa82560cd 1-3,5-21
+  s_3e96e61039d64b::t_df64ecc2386f36 4
+src/domain/mod.rs
+  s_3e96e61039d64b::t_6fb59b6b2dd161 1
+src/adapters/ops/colour/mod.rs
+  s_3e96e61039d64b::t_29146d0e4c136e 1-13
+src/ports/colour.rs
+  s_3e96e61039d64b::t_61241eed4725a1 1-115
+src/adapters/ops/colour/srgb_to_hsv.rs
+  s_3e96e61039d64b::t_8aaa5aa82560cd 1-3,5-21
+  s_3e96e61039d64b::t_df64ecc2386f36 4
+DESIGN_BACKLOG.md
+  s_3e96e61039d64b::t_e9a2a1ea53ef1a 67
+src/adapters/ops/colour/lab_to_srgb.rs
+  s_3e96e61039d64b::t_df64ecc2386f36 4
+  s_3e96e61039d64b::t_8aaa5aa82560cd 1-3,5-21
+src/adapters/ops/mod.rs
+  s_3e96e61039d64b::t_a8773095cebe9a 3
+src/ports/mod.rs
+  s_3e96e61039d64b::t_1f82cba0ce2732 8
+src/adapters/ops/colour/xyz_to_srgb.rs
+  s_3e96e61039d64b::t_8aaa5aa82560cd 1-3,5-21
+  s_3e96e61039d64b::t_df64ecc2386f36 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d8068f7b50b7ce493982ccdc1d04b6998fa0914a",
+  "prompts": {},
+  "sessions": {
+    "s_3e96e61039d64b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0373086c-c8dd-4ce7-b87c-ba4f38d415c7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
