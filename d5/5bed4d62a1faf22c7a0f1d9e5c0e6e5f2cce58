@@ -1,0 +1,23 @@
+"backlog/tasks/b-60 - Migrar-multiply.rs-y-linear.rs-a-runtime-SIMD-dispatch-ADR-025.md"
+  s_651dcff71cef4c::t_e372d05473fffb 1-28
+"backlog/tasks/b-61 - ColorSource-—-fuente-generadora-de-color-sólido-para-pipeline.md"
+  s_651dcff71cef4c::t_b94caa5cc8369d 1-33
+CLAUDE.md
+  s_651dcff71cef4c::t_d8176287a516f8 68-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d55bed4d62a1faf22c7a0f1d9e5c0e6e5f2cce58",
+  "prompts": {},
+  "sessions": {
+    "s_651dcff71cef4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dcd3f35-63d3-45b4-83ca-6809176cf2f3",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
