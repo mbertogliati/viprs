@@ -1,0 +1,19 @@
+Cargo.toml
+  s_e2f6af2e9d2525::t_33497469b37793 131-145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cf16310994baf09aceb1da1dd612d2a7af63938d",
+  "prompts": {},
+  "sessions": {
+    "s_e2f6af2e9d2525": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2beb11f-4917-48b3-8151-61438a90d456",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
