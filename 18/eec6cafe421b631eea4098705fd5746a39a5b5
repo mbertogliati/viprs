@@ -1,0 +1,33 @@
+"backlog/docs/doc-6 - ADR-033-—-Foreign-codec-registry-bridge.md"
+  s_7bf79ebe302b22::t_720c2fbd2cf2d1 8-77
+tests/foreign_registry.rs
+  s_7bf79ebe302b22::t_2bce0bbf403015 1-28
+src/ports/codec.rs
+  s_7bf79ebe302b22::t_2df29707167258 7,9-13
+src/domain/codec_options.rs
+  s_7bf79ebe302b22::t_2df29707167258 6-8
+src/adapters.rs
+  s_7bf79ebe302b22::t_2df29707167258 3
+src/adapters/foreign.rs
+  s_7bf79ebe302b22::t_2cf2487859f705 85
+  s_7bf79ebe302b22::t_2df29707167258 1-11,13-84,86-97,99-298,300-303,305-308,310-394,396-404
+  s_7bf79ebe302b22::t_f45b1c20e17e44 98
+src/lib.rs
+  s_7bf79ebe302b22::t_2df29707167258 12,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "18eec6cafe421b631eea4098705fd5746a39a5b5",
+  "prompts": {},
+  "sessions": {
+    "s_7bf79ebe302b22": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01V6BhZhmhAo9Jxh5P2Em6Ba",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
