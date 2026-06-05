@@ -1,0 +1,43 @@
+src/domain/ops/arithmetic/complex_real.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 170-195
+src/domain/ops/conversion/addalpha.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 182-203,229-273
+src/domain/ops/conversion/arrayjoin.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 176-224
+src/domain/ops/convolution/correlation.rs
+  s_a8e87ddbc0ac71::t_facf04b0074d8e 274-275
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 226-273,277-288
+  s_a8e87ddbc0ac71::t_33bc84e5e102b6 276
+src/domain/ops/morphology/rank.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 235,239,278-305,360-406
+src/domain/ops/morphology/dilate.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 280-286,288-324,332-336,344-355
+src/domain/ops/structural/replicate.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 200-252
+src/domain/ops/conversion/composite.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 430-508
+src/domain/ops/resample/sample_conv.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 191-268
+src/domain/ops/conversion/ifthenelse.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 274-294,356-410
+src/domain/ops/arithmetic/complex_imag.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 165-190
+src/domain/ops/convolution/compass.rs
+  s_a8e87ddbc0ac71::t_ec63ad485475a0 161-220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7ce969b479058e214fe0a46e982481e3ca7029f1",
+  "prompts": {},
+  "sessions": {
+    "s_a8e87ddbc0ac71": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01LnWetkwjU73DvwrdSLWtek",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
