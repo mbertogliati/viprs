@@ -1,0 +1,38 @@
+src/domain/ops/morphology/erode.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 236-251
+src/domain/ops/morphology/rank.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 237,276-320,322-329
+src/domain/ops/morphology/close.rs
+  s_5bd18c04ac7ec1::t_e8941684e7317a 196-227
+  s_5bd18c04ac7ec1::t_66c047b75da256 1-160,162-195,228-242
+src/domain/ops/morphology/dilate.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 259-277
+src/domain/ops/morphology.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 1,7,10,16
+src/domain/ops/morphology/open.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 1-163,165-191,198-218,221,248-264
+  s_5bd18c04ac7ec1::t_daff1c17443cd6 219-220
+  s_5bd18c04ac7ec1::t_e8941684e7317a 192-197,222-247
+benches/morphology/open.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 1-3,5-24
+Cargo.toml
+  s_5bd18c04ac7ec1::t_66c047b75da256 763-771
+benches/morphology/close.rs
+  s_5bd18c04ac7ec1::t_66c047b75da256 1-3,5-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "288de94bc763abdcbf922d4d6af0ba21ef6eab6e",
+  "prompts": {},
+  "sessions": {
+    "s_5bd18c04ac7ec1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018mgaiYDAxRRBXz3V7YtvwM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
