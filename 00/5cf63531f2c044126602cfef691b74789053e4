@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-86 - Freqfilt-derivados-—-freqmult-spectrum-y-phasecor.md"
+  s_0e187d747de9ec::t_aa0406a0c464d3 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "005cf63531f2c044126602cfef691b74789053e4",
+  "prompts": {},
+  "sessions": {
+    "s_0e187d747de9ec": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D4LnzFX6FCXRSgcF7JYQRG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
