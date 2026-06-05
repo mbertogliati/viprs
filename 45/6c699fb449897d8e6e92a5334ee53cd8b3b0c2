@@ -1,0 +1,45 @@
+benches/draw/draw_circle.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-35
+src/domain/ops/draw/draw_flood.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-57
+src/lib.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 24,42-45
+src/domain/ops/draw/draw_line.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-67
+src/domain.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 4
+src/domain/draw.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-32
+src/domain/ops/draw.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-16,35-42,59,61-66,85-164,178,193,195-247,250-253,259-262,271,282,284,286-344,353,380-402,404-405,412-426,432-433,441-444,451,456-457,464-466,470-471,477,482-483,489,491-504,507-509,541-543,611-624
+src/domain/ops/convolution/conva.rs
+  ai_agent 556-561
+src/domain/ops/draw/draw_circle.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-69
+src/domain/ops/draw/draw_rect.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-77
+benches/draw/draw_rect.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-36
+benches/draw/draw_line.rs
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-35
+Cargo.toml
+  s_be4b59d33aac41::t_79aaacbb83e9a1 131-144
+"backlog/tasks/b-108 - Draw-primitives-—-line-rect-circle-flood-fill.md"
+  s_be4b59d33aac41::t_79aaacbb83e9a1 1-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "456c699fb449897d8e6e92a5334ee53cd8b3b0c2",
+  "prompts": {},
+  "sessions": {
+    "s_be4b59d33aac41": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NnktMwiyDZ7QSB9NSiv3Bu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
