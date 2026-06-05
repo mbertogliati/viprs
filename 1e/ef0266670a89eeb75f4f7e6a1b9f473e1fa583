@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-144 - Autorot-raw-EXIF-orientation-removal-parity.md"
+  s_16e4eca23ca9f8::t_a2373580a45bba 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1eef0266670a89eeb75f4f7e6a1b9f473e1fa583",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
