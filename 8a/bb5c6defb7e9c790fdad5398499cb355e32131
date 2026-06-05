@@ -1,0 +1,142 @@
+src/domain/ops/fused.rs
+  s_c620b818b8964e::t_eb19488df26283 34,198
+src/domain/ops/colour/srgb_to_lab.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/colour.rs
+  s_c620b818b8964e::t_79117cc544db5a 76,80-81,83-84
+src/domain/ops/colour/bridge.rs
+  s_c620b818b8964e::t_2ec25b61e95248 209-210
+  s_c620b818b8964e::t_cd58f4c39095c7 185-208,211-232
+  s_c620b818b8964e::t_90c6684efb1277 121-123
+  s_c620b818b8964e::t_b98d49bdeda642 151-155,160,168,174,181
+  s_c620b818b8964e::t_eb19488df26283 126-138
+tests/integration_pipeline.rs
+  s_c620b818b8964e::t_eb19488df26283 16-17,55-56
+"backlog/tasks/b-67 - HEIF-implementar-encode-AVIF-HEIF-10-bit-support.md"
+  ai_agent 2-3,6,10-11,17,19-20,22,24,26-30
+src/domain/ops/structural/rotate90.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/lut/recomb.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/colour/xyz_to_srgb.rs
+  s_c620b818b8964e::t_9763a8a4069a5a 197-199
+  s_c620b818b8964e::t_cd58f4c39095c7 176-196
+  s_c620b818b8964e::t_355b1c5e88f691 91
+  s_c620b818b8964e::t_13c17a75c99179 92-93,105-107
+  s_c620b818b8964e::t_eb19488df26283 2,144,151,158
+src/domain/ops/convolution/conv2d.rs
+  s_c620b818b8964e::t_eb19488df26283 6
+src/domain/ops/colour/srgb_to_hsv.rs
+  s_c620b818b8964e::t_9763a8a4069a5a 93-94,109-110,125-126,139-140,153-154
+  s_c620b818b8964e::t_cd58f4c39095c7 91-92,107-108,123-124,167-189,194-195
+  s_c620b818b8964e::t_eb19488df26283 2,190-193
+src/domain/ops/boolean/lshift.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/boolean/and.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/relational/more.rs
+  s_c620b818b8964e::t_eb19488df26283 4
+src/domain/reducers/stats.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain.rs
+  s_c620b818b8964e::t_eb19488df26283 3
+"backlog/tasks/b-66 - GIF-soporte-multi-frame-animated-GIF-decode.md"
+  ai_agent 2-3,6,10-11,17,19-21,23-27
+src/adapters/sinks/memory.rs
+  s_c620b818b8964e::t_eb19488df26283 144
+src/domain/ops/morphology/dilate.rs
+  ai_agent 1-324
+src/domain/ops/colour/srgb_to_xyz.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/resample/shrinkv.rs
+  s_c620b818b8964e::t_eb19488df26283 10-14
+src/domain/ops/relational/less.rs
+  s_c620b818b8964e::t_eb19488df26283 4
+src/domain/ops/structural/flip_vertical.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/reducers/histogram.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/boolean/or.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+tests/golden/subtract_test.rs
+  s_c620b818b8964e::t_eb19488df26283 18-19
+src/domain/ops/relational/less_eq.rs
+  s_c620b818b8964e::t_eb19488df26283 4
+src/domain/ops/colour/hsv_to_srgb.rs
+  s_c620b818b8964e::t_cd58f4c39095c7 206-224,227-240,243-256,259
+  s_c620b818b8964e::t_eb19488df26283 2,174,181,188
+  s_c620b818b8964e::t_355b1c5e88f691 95-97,109-111,123-125,225-226,241-242,257-258
+src/adapters/scheduler/rayon_scheduler.rs
+  s_c620b818b8964e::t_eb19488df26283 769
+src/domain/ops/arithmetic/add_images.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+benches/convolution/gauss_blur.rs
+  s_c620b818b8964e::t_eb19488df26283 16-22
+src/domain/ops/boolean/rshift.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+benches/arithmetic/add.rs
+  s_c620b818b8964e::t_eb19488df26283 15
+src/domain/ops/lut/map_lut.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/structural/embed.rs
+  s_c620b818b8964e::t_eb19488df26283 5
+src/domain/ops/structural/extract_area.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/structural/flip_horizontal.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+tests/golden/add_test.rs
+  s_c620b818b8964e::t_eb19488df26283 14-15
+src/domain/ops/relational/equal.rs
+  s_c620b818b8964e::t_eb19488df26283 4
+src/domain/ops/convolution/gauss_blur.rs
+  s_c620b818b8964e::t_eb19488df26283 29
+"backlog/tasks/b-64 - Implement-morphology-ops-Dilate-Erode-Median.md"
+  ai_agent 1-19
+"backlog/tasks/b-65 - Implement-HistEqual-TileReducer-CLAHE-Op.md"
+  ai_agent 1-19
+benches/sources/tile_cache.rs
+  ai_agent 1-97
+benches/arithmetic/multiply.rs
+  s_c620b818b8964e::t_eb19488df26283 14
+benches/arithmetic/subtract.rs
+  s_c620b818b8964e::t_eb19488df26283 14
+src/domain/ops/boolean/xor.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+CLAUDE.md
+  s_c620b818b8964e::t_cd58f4c39095c7 12-27
+src/domain/ops/relational/more_eq.rs
+  s_c620b818b8964e::t_eb19488df26283 4
+benches/structural/embed.rs
+  s_c620b818b8964e::t_eb19488df26283 13-14
+src/domain/ops/resample/shrinkh.rs
+  s_c620b818b8964e::t_eb19488df26283 11-15
+src/domain/ops/arithmetic/round.rs
+  s_c620b818b8964e::t_eb19488df26283 2
+src/domain/ops/conversion/bandjoin.rs
+  s_c620b818b8964e::t_eb19488df26283 2,259
+src/domain/ops/colour/lab_to_srgb.rs
+  s_c620b818b8964e::t_13c17a75c99179 116-118,131-133
+  s_c620b818b8964e::t_9763a8a4069a5a 226-228
+  s_c620b818b8964e::t_cd58f4c39095c7 202-225
+  s_c620b818b8964e::t_eb19488df26283 2,170,177,184
+src/domain/ops/morphology/erode.rs
+  ai_agent 1-285
+src/domain/ops/relational/not_equal.rs
+  s_c620b818b8964e::t_eb19488df26283 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8abb5c6defb7e9c790fdad5398499cb355e32131",
+  "prompts": {},
+  "sessions": {
+    "s_c620b818b8964e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f52b4608-e3e2-407d-a5cf-e2cd2ab5a919",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
