@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-43 - Shrink-on-load-—-conectar-LoadOptions-shrink_factor-a-DecoderSource.md"
+  s_2373a643c679c5::t_b84e6dba3e5f57 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bcc51339847801e18172ca71b4297a490e2fcbc6",
+  "prompts": {},
+  "sessions": {
+    "s_2373a643c679c5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GDDvEno8LrKVa12fKVBFsG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
