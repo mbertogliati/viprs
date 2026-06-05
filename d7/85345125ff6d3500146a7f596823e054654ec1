@@ -1,0 +1,31 @@
+src/lib.rs
+  s_ddd7116c1d9eff::t_23276525552383 29
+src/domain/ops/mosaicing.rs
+  s_ddd7116c1d9eff::t_23276525552383 1-5
+src/domain/ops/mosaicing/merge.rs
+  s_ddd7116c1d9eff::t_23276525552383 1-77,79-178,180-184,186-288,291-298,301-331,334-341,344-390,392-394,396-469,471-473,475-611,613-674,685-688,696,699-893
+  s_ddd7116c1d9eff::t_18ccd107ba644b 391,395,470,474
+  s_ddd7116c1d9eff::t_ef8f4e35eae4df 675-684,689-695,697-698
+  s_ddd7116c1d9eff::t_40ed6fa918db43 612
+  s_ddd7116c1d9eff::t_675df3b195723d 78,289-290,299-300,332-333,342-343
+src/domain/ops/mosaicing/mosaic.rs
+  s_ddd7116c1d9eff::t_ef8f4e35eae4df 251-255,258-259
+  s_ddd7116c1d9eff::t_23276525552383 1-160,162-164,166-249,256-257,260-263,265-268
+  s_ddd7116c1d9eff::t_8f8608df2753ef 161,165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d785345125ff6d3500146a7f596823e054654ec1",
+  "prompts": {},
+  "sessions": {
+    "s_ddd7116c1d9eff": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01B5Jvrj7hmiLYTTmhNc2LhL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
