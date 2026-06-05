@@ -1,0 +1,43 @@
+src/ports/codec.rs
+  s_16e4eca23ca9f8::t_617f6cc703a2b0 28-61,138-193
+src/ports/source.rs
+  s_16e4eca23ca9f8::t_9ba2427dd5c309 42-49
+"backlog/docs/doc-14 - ADR-038-—-Tile-decoder-contract-for-DecoderSource-streaming.md"
+  s_16e4eca23ca9f8::t_847134319a2fac 1-49,55-82
+  s_16e4eca23ca9f8::t_d1dbaeb6ca90f9 83-84
+  s_16e4eca23ca9f8::t_18cbbe02413629 50-54
+"backlog/tasks/b-140 - Tile-streaming-DecoderSource.md"
+  s_16e4eca23ca9f8::t_204f58e622234c 4,7,24-25
+Cargo.toml
+  s_16e4eca23ca9f8::t_7da901162a23a5 170-173
+src/adapters/sources/decoder_source.rs
+  s_16e4eca23ca9f8::t_fae4f1b228c20c 5-8,10-14,26-29,36,39,46,57-78,80-158,160
+  s_16e4eca23ca9f8::t_fe6bdd0656c367 373-374,381-384,388-391,395-398,401-402,408-411,415-418,430-458,460-464,469-475,477-478,497,508-509,515
+  s_16e4eca23ca9f8::t_c559630aa97f39 459,465-468
+  s_16e4eca23ca9f8::t_5a85b4454ed441 79,159,481-482
+  s_16e4eca23ca9f8::t_4ea6a27069eb86 707-708,710-712
+  s_16e4eca23ca9f8::t_4fd4db15b97ef9 909-968,973-983,985-1103
+  s_16e4eca23ca9f8::t_0412dfc43948c2 538
+  s_16e4eca23ca9f8::t_cd4b451689357a 775-776,969-972,984
+  s_16e4eca23ca9f8::t_797150bc0c20fc 179,189-191,194-197,199-200,211,240-306,341-342,344-367
+  s_16e4eca23ca9f8::t_9460723a52c32f 315
+benches/sources/decoder_source.rs
+  s_16e4eca23ca9f8::t_d1dbaeb6ca90f9 26-32,111-112,116-118,126-127,129
+  s_16e4eca23ca9f8::t_606b0406101ed8 1-8,10-25,33-110,113-115,119-125,130-139
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f2781b6c0f1dad90db06a7f40cd3d0370de80b00",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
