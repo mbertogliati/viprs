@@ -1,0 +1,33 @@
+src/domain/ops/convolution.rs
+  s_16e4eca23ca9f8::t_742bc83b5decd5 21
+src/domain/ops/convolution/fastcor.rs
+  s_16e4eca23ca9f8::t_7c5f67a56ccd2d 9,14,18-19,68,72,81,91-95,128,142-181,186,211-212,215-216,221,252-253,258-259,262-267
+src/domain/ops/convolution/convasep.rs
+  s_16e4eca23ca9f8::t_98b96d9b2db0d0 9,14,49,247,250,287,381,383,389-392,404,434,436,442-445,453,506,508-509,512,514,519
+"backlog/tasks/b-147 - Convolution-facades-output-format-parity-after-mask-metadata.md"
+  s_16e4eca23ca9f8::t_83a5c5fbc48b1c 4
+src/domain/ops/convolution/conv.rs
+  s_16e4eca23ca9f8::t_53a6c1dda61438 9,14,16,24-29,31,33-44,46,49,52,59,73-75,77-128,131-137,139,142-193,207-284,291,295,298,301-304,306-307,311-312,318,323,347,358,389-434
+"backlog/docs/doc-17 - ADR-040-—-Output-specialized-convolution-facades.md"
+  s_16e4eca23ca9f8::t_2b94d4e12c86ec 1-45
+src/domain/ops/convolution/edge.rs
+  s_16e4eca23ca9f8::t_ecf34155ba009d 8,24,73,101,115-118,140,145,147,156-157,179,195
+src/domain/ops/convolution/common.rs
+  s_16e4eca23ca9f8::t_2ab05dc73f2883 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "fbbb9c6c4ae85ae317195bae3eb98a28177e3938",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
