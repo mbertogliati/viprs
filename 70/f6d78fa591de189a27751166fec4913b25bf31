@@ -1,0 +1,39 @@
+src/domain/ops.rs
+  s_89dbc4be1bbe9d::t_981438c843beea 7
+src/domain/ops/freqfilt/phasecor.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-255
+"backlog/tasks/b-103 - Spectrum-DC-shift-op.md"
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-30
+benches/freqfilt/freqmult.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-63
+benches/freqfilt/spectrum.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-47
+src/domain/ops/freqfilt/spectrum.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-180
+"backlog/tasks/b-86 - Freqfilt-derivados-—-freqmult-spectrum-y-phasecor.md"
+  s_89dbc4be1bbe9d::t_981438c843beea 4,7
+benches/freqfilt/phasecor.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-63
+src/domain/ops/freqfilt/freqmult.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-233
+src/domain/ops/freqfilt.rs
+  s_89dbc4be1bbe9d::t_cfee9becb087c4 1-9
+src/lib.rs
+  s_89dbc4be1bbe9d::t_981438c843beea 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "70f6d78fa591de189a27751166fec4913b25bf31",
+  "prompts": {},
+  "sessions": {
+    "s_89dbc4be1bbe9d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0197X8zh2UtJKgVUFtNJD4nG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
