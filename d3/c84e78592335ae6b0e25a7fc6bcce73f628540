@@ -1,0 +1,23 @@
+"backlog/archive/tasks/b-124 - dyn-Fft-f32-in-FwFftOp-InvFftOp-violates-no-dyn-on-hot-path-rule-without-documented-justification.md"
+  s_7fc67219536fb9::t_81affa3796914b 6,9
+"backlog/archive/tasks/b-118 - FwFftOp-and-InvFftOp-allocate-full-image-Vec-in-start-—-violates-Othreads-×-tile_size-memory-contract.md"
+  s_7fc67219536fb9::t_81affa3796914b 6,9
+"backlog/archive/tasks/b-121 - Divide-op-stores-full-image-rhs-buffer-—-violates-zero-heap-allocation-per-tile-contract.md"
+  s_7fc67219536fb9::t_81affa3796914b 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d3c84e78592335ae6b0e25a7fc6bcce73f628540",
+  "prompts": {},
+  "sessions": {
+    "s_7fc67219536fb9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RdRgKcr4JS98B6Z4GjZeRi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
