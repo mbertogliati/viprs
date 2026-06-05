@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-117 - ConvaOp-scratch-buffer-silently-falls-back-to-exact-convolution-when-tile-exceeds-DEFAULT_TILE_SIDE.md"
+  s_7fc67219536fb9::t_4d8285a447695f 6,9
+"backlog/archive/tasks/b-119 - JPEG-and-WebP-shrink_factor-test-verifies-dimensions-only-—-does-not-detect-incorrect-pixel-averaging.md"
+  s_7fc67219536fb9::t_4d8285a447695f 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3b66a8c45b510f822c71610375db3dfa936c078c",
+  "prompts": {},
+  "sessions": {
+    "s_7fc67219536fb9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RdRgKcr4JS98B6Z4GjZeRi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
