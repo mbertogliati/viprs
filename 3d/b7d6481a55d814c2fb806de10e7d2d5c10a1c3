@@ -1,0 +1,30 @@
+src/adapters/codecs/png.rs
+  s_ebd5ca27ecd873::t_14da0c89dea7ee 13-16,21,24-41,73-156,168-198,266-267,462,473,511,532,550,563,565,567-569,571-574,576-592
+  s_ebd5ca27ecd873::t_cfb2c0754b3d74 602-603,723-826
+  s_ebd5ca27ecd873::t_968ec966da5840 9,11,157-167,199-265,268-324,326-442
+"backlog/tasks/b-132 - PNG-compression-options-WebP-animation-decode.md"
+  s_ebd5ca27ecd873::t_cfb2c0754b3d74 1-18
+src/adapters/codecs/webp.rs
+  s_ebd5ca27ecd873::t_cfb2c0754b3d74 280,300-302,602-634
+  s_ebd5ca27ecd873::t_14da0c89dea7ee 27,33,59-65,67,69-73,75-124,126-144,178,180-186,189,194,196-201
+Cargo.toml
+  s_ebd5ca27ecd873::t_6b9562c7dfeb21 18-19,41
+src/adapters/codecs.rs
+  s_ebd5ca27ecd873::t_14da0c89dea7ee 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3db7d6481a55d814c2fb806de10e7d2d5c10a1c3",
+  "prompts": {},
+  "sessions": {
+    "s_ebd5ca27ecd873": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KxYZryGmXZtu7yHLZJrUv6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
