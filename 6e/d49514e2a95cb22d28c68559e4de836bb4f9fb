@@ -1,0 +1,21 @@
+src/domain/kernel.rs
+  ai_agent 21,49-50,131-144,214,220,228,233,277-290,359-377
+"backlog/archive/tasks/b-170 - Quadratic-interpolation-parity-missing.md"
+  s_ced0b1c3abf5fb::t_141423405e41d2 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6ed49514e2a95cb22d28c68559e4de836bb4f9fb",
+  "prompts": {},
+  "sessions": {
+    "s_ced0b1c3abf5fb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "7ae1f683-72b1-47f3-ba4c-95496ba2fdc7",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
