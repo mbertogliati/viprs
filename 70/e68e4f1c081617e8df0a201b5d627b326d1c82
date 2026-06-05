@@ -1,0 +1,19 @@
+"backlog/docs/doc-21 - ADR-044-—-Transpose3d-line-tile-workaround.md"
+  s_ea646e93dc2876::t_dd96b0c754ce67 8-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "70e68e4f1c081617e8df0a201b5d627b326d1c82",
+  "prompts": {},
+  "sessions": {
+    "s_ea646e93dc2876": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019h9etHtyxTM4ZfJwU86cvr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
