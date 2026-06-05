@@ -1,0 +1,57 @@
+src/adapters/sources/any.rs
+  ai_agent 6,94-102
+src/adapters/scheduler/rayon_scheduler.rs
+  ai_agent 152-154
+src/domain/image.rs
+  ai_agent 117,124,129,140,353
+src/domain/ops/morphology/count_lines.rs
+  ai_agent 1-146
+src/domain/ops/morphology/rank.rs
+  ai_agent 1-276
+benches/arithmetic/add.rs
+  ai_agent 21
+src/domain/ops/morphology/nearest.rs
+  ai_agent 1-131
+src/ports/source.rs
+  ai_agent 4,28-31,76,100-101
+src/domain/reducers.rs
+  ai_agent 3,7
+src/adapters/sinks/memory.rs
+  ai_agent 5-9,72-94
+benches/morphology/nearest.rs
+  ai_agent 1-41
+src/domain/ops/morphology.rs
+  ai_agent 1,5-6,8,12-13
+src/adapters/sources/memory.rs
+  ai_agent 7,20,43,46-51,73-76,107,115-124
+src/domain/reducers/label_regions.rs
+  ai_agent 1-177
+"backlog/tasks/b-104 - Global-morphology-ops-need-streaming-scratch-hardening.md"
+  ai_agent 1-30
+benches/arithmetic/subtract.rs
+  ai_agent 20
+src/adapters/sources/decoder_source.rs
+  s_2373a643c679c5::t_0ad56bbca63d94 268-313
+benches/arithmetic/multiply.rs
+  ai_agent 20
+benches/morphology/count_lines.rs
+  ai_agent 1-42
+benches/morphology/rank.rs
+  ai_agent 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cbdd4f5fa991999b26ecaa74e28205aa57288cc3",
+  "prompts": {},
+  "sessions": {
+    "s_2373a643c679c5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GDDvEno8LrKVa12fKVBFsG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
