@@ -1,0 +1,25 @@
+"backlog/archive/tasks/b-150 - Similarity-auto-canvas-parity.md"
+  s_16e4eca23ca9f8::t_14245340be3465 1-31
+src/domain/resample.rs
+  s_16e4eca23ca9f8::t_14245340be3465 21-25
+src/domain/ops/resample/similarity.rs
+  s_16e4eca23ca9f8::t_14245340be3465 18,32-66,78,80,147-150,160-221,239-240,243-245,247,291-294,356-373
+src/domain/op.rs
+  s_16e4eca23ca9f8::t_14245340be3465 337,343-345
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "771059fb5ccda1b8ab2d14623db320644ac3acaa",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
