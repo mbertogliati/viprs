@@ -1,0 +1,33 @@
+src/domain/ops/arithmetic/add.rs
+  s_4404b44cf4f444::t_04af89c7f5e96e 76,79-89,91-112,165,167-169,172-195,205,242,553-556,558-564,567-571
+src/domain/ops/simd_util.rs
+  s_4404b44cf4f444::t_04af89c7f5e96e 76,88
+src/domain/ops/arithmetic/subtract.rs
+  s_4404b44cf4f444::t_04af89c7f5e96e 78,81-89,91-107,151,153-155,158-181,191,228,536-554
+src/domain/ops/arithmetic/divide.rs
+  s_4404b44cf4f444::t_04af89c7f5e96e 55-83,92-96,111-175,271,281,284,291-292,294,304,307
+  s_4404b44cf4f444::t_4ba595d5b73ce1 272-280,282-283,285-290,293,295-303,305-306,308-313
+src/domain/simd.rs
+  s_4404b44cf4f444::t_04af89c7f5e96e 29,59,78,108,120-121,129
+src/domain/ops/arithmetic/multiply.rs
+  s_4404b44cf4f444::t_04af89c7f5e96e 64,67-77,79-87,139,156,158-165,168-191,206
+  s_4404b44cf4f444::t_39412c5a96b657 343-351,353-354,356-361
+  s_4404b44cf4f444::t_4ba595d5b73ce1 155,157,166-167
+  s_4404b44cf4f444::t_0bb70a6145df7b 342,352,355
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "54d9b8a0098cb5fb52a2e16129ec42748e9e1603",
+  "prompts": {},
+  "sessions": {
+    "s_4404b44cf4f444": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_015i7HVrZNdd6PvRh5H7BLr2",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
