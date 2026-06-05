@@ -1,0 +1,24 @@
+src/adapters/codecs/gif.rs
+  s_e679f605fb23da::t_b38726e647e9b1 334
+  s_e679f605fb23da::t_6f0fb3a0cd9fe4 13-16,40-41,162-164,199-204,218-219,333,335-368
+"backlog/tasks/b-74 - GIF-encoder-libvips-quantizer-parity.md"
+  s_e679f605fb23da::t_72f304730eb53f 17-43
+"backlog/docs/doc-5 - ADR-031-—-GIF-quantization-parity-deferred-behind-NeuQuant.md"
+  s_e679f605fb23da::t_505ab06d4e251d 8-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "28840be3cac9a929c5395c2a0a92bae0c639394e",
+  "prompts": {},
+  "sessions": {
+    "s_e679f605fb23da": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SfeKeojkj1L2uDjV4Cb9ZA",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
