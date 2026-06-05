@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-76 - Multi-input-spatial-ops-need-per-slot-region-propagation.md"
+  s_a57b42386a24db::t_6320fbce355d13 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "542fb4d39cd705e63651cae1c1827cbc884e2bdb",
+  "prompts": {},
+  "sessions": {
+    "s_a57b42386a24db": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WCd7qHBGYHHRikbqdbANHr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
