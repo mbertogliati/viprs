@@ -1,0 +1,29 @@
+"backlog/docs/doc-11 - ADR-029-—-FFT-scratch-sharing-and-opaque-plans.md"
+  s_c95704cf41c339::t_5d4b2638269589 8-48
+src/domain/ops/arithmetic/divide.rs
+  s_c95704cf41c339::t_2d6efb8649a7d9 359
+  s_c95704cf41c339::t_385e99feba4c55 1-2,30-33,41-50,79-90,92-113,117-132,134-150,153-157,291,309,323,336,346-358,371
+src/domain/ops/freqfilt/invfft.rs
+  s_c95704cf41c339::t_1e017346e73d4e 132,134-135,142
+  s_c95704cf41c339::t_1f81d02c97aff2 1-4,15,25-26,29-31,55,90,116-124,238,241-242,244-246,257,259-261
+src/domain/ops/freqfilt/fwfft.rs
+  s_c95704cf41c339::t_15180e1c3d168c 22,31
+  s_c95704cf41c339::t_38b03e94bec000 1-4,16,21,23-28,32,60-61,64-66,90,125,151-159,251,254-255,257-259,270,272-274
+  s_c95704cf41c339::t_f5d70c8c392649 163,165-166,174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "89b46098bd1a10f5383889732fb2e8bcf3c09a84",
+  "prompts": {},
+  "sessions": {
+    "s_c95704cf41c339": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01EJkZx3dLDciPsPYagyAS7e",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
