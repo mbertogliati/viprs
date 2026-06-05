@@ -1,0 +1,42 @@
+src/adapters/codecs/gif.rs
+  s_b164c96075136b::t_db76297c5a9bba 7,29,182-200,431,435-437,464,466,469-477,480-482,484-488,490-495,629-647,710-727
+src/domain/ops/lut/recomb.rs
+  s_b164c96075136b::t_c428e52486209b 1
+src/domain/image.rs
+  s_b164c96075136b::t_1e6e151f809389 198-201,244,279,289-294,310-313,323,339,393-394,412-413,422-436
+src/domain/ops/conversion/extract_bands.rs
+  s_b164c96075136b::t_f6ebd7fd420a38 56
+  s_b164c96075136b::t_31c18cd79834ef 60-61
+src/domain/op.rs
+  s_b164c96075136b::t_31c18cd79834ef 716
+  s_b164c96075136b::t_3f907f4fb0f22f 309,334,353,359,361-364,367-368,372-384,478,658,681,684-715,717-726
+src/domain/ops/conversion/copy.rs
+  s_b164c96075136b::t_8b3be75d592a5c 130-131,167-168
+Cargo.toml
+  s_b164c96075136b::t_47582f1970cf71 416
+src/lib.rs
+  s_b164c96075136b::t_b3b654772b2ae1 37-38
+benches/arithmetic/recomb.rs
+  s_b164c96075136b::t_b3b654772b2ae1 3,5-6,8,13-20,22-29,32,34-38,43,51
+src/domain/ops/arithmetic/recomb.rs
+  s_b164c96075136b::t_c9eda20032a754 270
+  s_b164c96075136b::t_3fd8e65d8562b1 6
+  s_b164c96075136b::t_09315ec203e4a0 93,95,101,103,124,126,165
+  s_b164c96075136b::t_205cab1d5fc481 1-5,7-92,94,96-100,102,104-123,125,127-164,166-172,174-269,271-274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "942e3b7067436b00ba480ce63dae96a319ce4a10",
+  "prompts": {},
+  "sessions": {
+    "s_b164c96075136b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01YDUMm8vSnwwYpuR8LFYFU9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
