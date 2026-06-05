@@ -1,0 +1,36 @@
+src/domain/ops/structural/unpremultiply.rs
+  s_e68428084c1a11::t_f45816f96eb515 12,126-128
+tests/integration_pipeline.rs
+  s_e68428084c1a11::t_b487551988f21c 604-639
+src/domain/ops/resample/thumbnail.rs
+  s_e68428084c1a11::t_6bf96b812aaa9a 213-219
+  s_e68428084c1a11::t_93add19112f6cf 18-20,24-29,31-32,34-36,38-40,42-52,54-63,108-212,220-268,270-271,274-275,277-279,281-302
+  s_e68428084c1a11::t_4deb6eb2ee1f36 269,272-273,276,280
+src/domain/ops/resample/shrinkh.rs
+  s_e68428084c1a11::t_e3bb21dcc2ec72 213-284
+src/domain/ops/resample/shrinkv.rs
+  s_e68428084c1a11::t_30caea3c0d85a5 126-197
+src/domain/ops/structural/flatten.rs
+  s_e68428084c1a11::t_91780d9b72300f 177-188,190-311
+  s_e68428084c1a11::t_9d84724c4c84e3 21,189
+src/domain/ops/structural/premultiply.rs
+  s_e68428084c1a11::t_6e119607d38231 14,132-133
+src/adapters/pipeline.rs
+  s_e68428084c1a11::t_d210fb47579d8b 12-18,22,25,27,1335-1348,1368-1381,1424-1525
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4c4f22d8fdeae3962d3ff4c7e5bb09a89d3a03b5",
+  "prompts": {},
+  "sessions": {
+    "s_e68428084c1a11": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WuvLfm8UmLPbBxfLtpha5n",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
