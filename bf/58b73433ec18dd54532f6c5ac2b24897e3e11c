@@ -1,0 +1,19 @@
+src/domain/ops/convolution/conva.rs
+  s_e538bcba87dea4::t_ba4ae02d4b5992 523-526,528-534,564-567,569-575,707-740,742
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bf58b73433ec18dd54532f6c5ac2b24897e3e11c",
+  "prompts": {},
+  "sessions": {
+    "s_e538bcba87dea4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01CunxzLmVzM4f2eisYueU3b",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
