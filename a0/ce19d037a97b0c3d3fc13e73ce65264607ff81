@@ -1,0 +1,31 @@
+"backlog/tasks/b-136 - Implement-real-LoadOptions-max_dimension-and-no_rotate-semantics-in-codec-adapters.md"
+  ai_agent 1-35
+"backlog/tasks/b-134 - Bound-DecoderSource-peak-memory-to-the-demand-driven-source-contract.md"
+  ai_agent 1-34
+"backlog/tasks/b-137 - Restore-libvips-output-format-parity-for-uchar-ushort-create-sources.md"
+  ai_agent 1-33
+"backlog/tasks/b-138 - Replace-DecoderSource-format_name-smoke-test-with-a-real-adapter-level-test.md"
+  ai_agent 1-33
+"backlog/tasks/b-139 - Decode-time-shrink-on-load-backend-gap-for-JPEG-WebP-wrappers.md"
+  ai_agent 1-18
+"backlog/tasks/b-140 - Tile-streaming-DecoderSource.md"
+  ai_agent 1-30
+"backlog/archive/tasks/b-135 - Restore-decode-time-shrink-on-load-semantics-for-JPEG-and-WebP-codecs.md"
+  s_142948d93927af::t_2a11c88f807d9f 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a0ce19d037a97b0c3d3fc13e73ce65264607ff81",
+  "prompts": {},
+  "sessions": {
+    "s_142948d93927af": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018QzAeyQur6YNLmw8Jeiz5m",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
