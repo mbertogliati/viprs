@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-147 - Convolution-facades-output-format-parity-after-mask-metadata.md"
+  s_16e4eca23ca9f8::t_8ed75c490c3511 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "294c200af53823a8bed18248588f45fdfefa1944",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
