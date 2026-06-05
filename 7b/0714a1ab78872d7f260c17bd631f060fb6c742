@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-95 - Arithmetic-completeness-—-clamp-complex-find_trim-hough-sum-measure.md"
+  s_0e187d747de9ec::t_7f4265bb4d1e82 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7b0714a1ab78872d7f260c17bd631f060fb6c742",
+  "prompts": {},
+  "sessions": {
+    "s_0e187d747de9ec": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D4LnzFX6FCXRSgcF7JYQRG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
