@@ -1,0 +1,22 @@
+src/domain/ops/resample/reduce.rs
+  s_9b6972b199853a::t_cd73ac17798b62 99
+  s_9b6972b199853a::t_844eed2630d6fd 67
+Cargo.toml
+  s_9b6972b199853a::t_0ea3f779cb130b 683,691,693
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "055e4104c055cff61a9854874ad049b7a48cea1d",
+  "prompts": {},
+  "sessions": {
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
