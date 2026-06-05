@@ -1,0 +1,48 @@
+src/domain/ops/convolution/conv.rs
+  s_16e4eca23ca9f8::t_815d82999232d8 15,24,30,49,56-59,63-69,72-73,75-76,86-96,113,121,136-139,150-152,168
+  s_16e4eca23ca9f8::t_d41b2a04a099c3 36-37
+  s_16e4eca23ca9f8::t_15476d19703b9e 191-200,238-245
+src/domain/error.rs
+  s_16e4eca23ca9f8::t_4d7f09a9a57851 14-15,69-100
+src/domain/ops/convolution/edge.rs
+  s_16e4eca23ca9f8::t_e2749ccaea6657 24
+src/domain/ops/convolution/convasep.rs
+  s_16e4eca23ca9f8::t_d5dac48aaa33c2 50
+  s_16e4eca23ca9f8::t_b0dd16d058704a 388-389,402,437-438,447
+  s_16e4eca23ca9f8::t_31c7323b7f44ec 471-485,535-545
+  s_16e4eca23ca9f8::t_494ab92ffbe6d4 14,54-55,69-70,72,76-84,86,93-97,99,105-106,321-328
+src/domain/ops/convolution/fastcor.rs
+  s_16e4eca23ca9f8::t_8ac50c42e1d607 20
+src/domain/ops/convolution/conva.rs
+  s_16e4eca23ca9f8::t_f0ab3a19e548f0 184
+  s_16e4eca23ca9f8::t_952d84ccda2806 15,33,60-64,87-89,93,98,135-136
+  s_16e4eca23ca9f8::t_b19af049a453ea 288-295,501-508,510
+  s_16e4eca23ca9f8::t_5c8ebe2b1f256f 303,382
+"backlog/docs/doc-15 - ADR-039-—-Convolution-mask-metadata-before-output-polymorphism.md"
+  s_16e4eca23ca9f8::t_ebc1a80bb98834 1-48,50-52
+  s_16e4eca23ca9f8::t_84aa7022717e59 49
+src/domain/ops/convolution.rs
+  s_16e4eca23ca9f8::t_159a61226a1135 19
+src/domain/ops/convolution/conv2d.rs
+  s_16e4eca23ca9f8::t_dc31f884bc36d2 14-15,76-77
+  s_16e4eca23ca9f8::t_2ef8e1763f81a2 96-97,99-105,113-114
+  s_16e4eca23ca9f8::t_f3e75f48128a32 184
+src/domain/ops/convolution/common.rs
+  s_16e4eca23ca9f8::t_a01254885017f6 3-7,13,16-20,22-25,29-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7835d87a8015cd601acbf148ea4356684c46303a",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
