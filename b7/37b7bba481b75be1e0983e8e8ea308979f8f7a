@@ -1,0 +1,40 @@
+src/domain/ops/convolution/correlation.rs
+  s_13867a3ddd8bee::t_654fae900768f9 1-249
+Cargo.toml
+  s_13867a3ddd8bee::t_ebc71cef2ef52b 489-498
+src/domain/ops/resample.rs
+  s_13867a3ddd8bee::t_ebc71cef2ef52b 14,20,24,30
+src/domain/ops/resample/similarity.rs
+  s_13867a3ddd8bee::t_654fae900768f9 1-269
+src/domain/ops/resample/reduce.rs
+  s_13867a3ddd8bee::t_654fae900768f9 1-152,154-163,165-326
+src/domain/ops/convolution/compass.rs
+  s_13867a3ddd8bee::t_654fae900768f9 1-180
+src/domain/ops/resample/thumbnail.rs
+  s_13867a3ddd8bee::t_69b392ff7d1ff5 129-137
+  s_13867a3ddd8bee::t_ebc71cef2ef52b 51-56,93,104,117-119,139-153,155-156,219-220,239-240,245-253,333-354
+src/adapters/pipeline.rs
+  s_13867a3ddd8bee::t_ebc71cef2ef52b 26,31,1621-1628,1630-1653,1710-1719,1830-1835
+benches/resample/similarity.rs
+  s_13867a3ddd8bee::t_654fae900768f9 1-38
+benches/convolution/compass.rs
+  s_13867a3ddd8bee::t_654fae900768f9 1-46
+src/domain/ops/convolution.rs
+  s_13867a3ddd8bee::t_ebc71cef2ef52b 6,13,15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b737b7bba481b75be1e0983e8e8ea308979f8f7a",
+  "prompts": {},
+  "sessions": {
+    "s_13867a3ddd8bee": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SWJG8f4x2S8YNHthwUbg4D",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
