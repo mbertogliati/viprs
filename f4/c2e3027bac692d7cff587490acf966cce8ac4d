@@ -1,0 +1,31 @@
+Cargo.toml
+  s_9859b8b7dd4b37::t_1a3a073595d195 251-254
+src/domain/ops/colour/cmyk.rs
+  s_9859b8b7dd4b37::t_1a3a073595d195 1-255
+benches/colour/cmyk.rs
+  s_9859b8b7dd4b37::t_a78ba616684fa5 2-71
+src/domain/ops/colour.rs
+  s_9859b8b7dd4b37::t_1a3a073595d195 2,29
+src/domain/ops/colour/bridge.rs
+  s_9859b8b7dd4b37::t_1a3a073595d195 33-35,43-44,55,58-59,85,144-145,155-156,158,195-197,199-200
+src/adapters/pipeline.rs
+  s_9859b8b7dd4b37::t_1a3a073595d195 7,53,2104-2143,2979-3007
+src/adapters/codecs/jpeg.rs
+  s_9859b8b7dd4b37::t_1a3a073595d195 20,57-139,204-206,208,299-327,391-406
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f4c2e3027bac692d7cff587490acf966cce8ac4d",
+  "prompts": {},
+  "sessions": {
+    "s_9859b8b7dd4b37": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017ekL3ZnPQsinmqnErs7buZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
