@@ -1,0 +1,29 @@
+src/adapters/sources/generators/grey.rs
+  s_c1c5839e2ae237::t_1d501df950bf33 1-2,6-7,9,12,14,18,21-22,27,32-33,56,69-70,72,85-190,196-210,217,224-225,230,232,235,243-245,247-248
+src/adapters/sources/generators/sines.rs
+  s_c1c5839e2ae237::t_1d501df950bf33 4-5,7,10-17,20-21,27,32-33,56,81-82,90-192,198-211,218,225-226,233,236,239-246
+src/adapters/sources/generators/common.rs
+  s_c1c5839e2ae237::t_1d501df950bf33 3-7,62-64,67-106
+src/adapters/sources/generators/zone.rs
+  s_c1c5839e2ae237::t_1d501df950bf33 1-2,6-7,9,12,14-17,20-21,25,30-31,54,71-72,80-178,184-197,203-204,211-212,219,222,225-232
+src/adapters/sources/generators/identity.rs
+  s_c1c5839e2ae237::t_1d501df950bf33 1-2,6-7,9,12,14-16,19-24,28-78,82,104-105,113-114,117,126-224,230-244,251,258,265-266,271,273,275-276,280-282,285-286
+src/adapters/sources/generators/eye.rs
+  s_c1c5839e2ae237::t_1d501df950bf33 1-2,6-7,9,12,14-18,21-22,33,38-39,62,78-79,87-188,194-207,213-214,221-222,229,232,237-243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d4d4e0c69a555f97ada99667ae31304cdec81c2a",
+  "prompts": {},
+  "sessions": {
+    "s_c1c5839e2ae237": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01MmVbe5QjNuWfvzQaMZFKiV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
