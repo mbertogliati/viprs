@@ -1,0 +1,89 @@
+"backlog/archive/tasks/b-112 - Forward-and-Inverse-FFT-ops-fwfft-invfft.md"
+  ai_agent 1-19
+"backlog/archive/tasks/b-116 - StdifOp-lazy-scratch-allocation-violates-pixel-path-zero-alloc-rule.md"
+  s_5bd18c04ac7ec1::t_075262356355d5 1-35
+"backlog/archive/tasks/b-115 - TIFF-codec-encoder-decoder.md"
+  ai_agent 1-19
+"backlog/tasks/b-119 - JPEG-and-WebP-shrink_factor-test-verifies-dimensions-only-—-does-not-detect-incorrect-pixel-averaging.md"
+  ai_agent 1-35
+"backlog/tasks/b-125 - GIF-encode-allocates-full-image-histogram-dither-error-buffers-and-index-Vec-per-encode-call.md"
+  ai_agent 1-34
+"backlog/tasks/b-130 - Band-manipulation-ops-bandfold-bandunfold-bandbool.md"
+  ai_agent 1-19
+"backlog/tasks/b-132 - PNG-compression-options-WebP-animation-decode.md"
+  ai_agent 1-18
+"backlog/archive/tasks/b-112 - Arithmetic-ops-coverage-complex-sum-round-polar-rect-to-≥90.md"
+  ai_agent 1-19
+"backlog/tasks/b-118 - FwFftOp-and-InvFftOp-allocate-full-image-Vec-in-start-—-violates-Othreads-×-tile_size-memory-contract.md"
+  ai_agent 1-37
+"backlog/tasks/b-129 - Create-parity-eye-zone-text-and-generator-sources.md"
+  ai_agent 1-29
+"backlog/tasks/b-131 - Backfill-criterion-benches-for-implemented-ops-missing-them.md"
+  ai_agent 1-29
+"backlog/tasks/b-122 - PipelineBuilder-from_source-does-not-auto-map-ImageMetadata-colorspace-—-callers-silently-get-None.md"
+  ai_agent 1-35
+"backlog/tasks/b-120 - Thumbnail-into_pipeline_nodes-omits-shrink-on-load-hint-to-codec-—-silent-resource-consumption-gap.md"
+  ai_agent 1-34
+"backlog/tasks/b-121 - Divide-op-stores-full-image-rhs-buffer-—-violates-zero-heap-allocation-per-tile-contract.md"
+  ai_agent 1-38
+"backlog/tasks/b-114 - Freqfilt-coverage-freqmult-phasecor-spectrum-to-≥90.md"
+  ai_agent 1-19
+"backlog/tasks/b-126 - Thumbnail-pipeline-has-no-integration-test-—-ThumbnailNode-plan-is-tested-but-materialised-pipeline-is-not.md"
+  ai_agent 1-35
+"backlog/tasks/b-124 - dyn-Fft-f32-in-FwFftOp-InvFftOp-violates-no-dyn-on-hot-path-rule-without-documented-justification.md"
+  ai_agent 1-34
+src/domain/reducers/hist_equal.rs
+  s_9b6972b199853a::t_db791d76895e8e 124-125
+"backlog/tasks/b-123 - WebP-probe-decodes-full-image-to-get-dimensions-—-Oimage_size-allocation-instead-of-Oheader.md"
+  ai_agent 1-35
+"backlog/archive/tasks/b-112 - Grid-Switch-Getpoint-ops.md"
+  ai_agent 1-19
+"backlog/tasks/b-117 - ConvaOp-scratch-buffer-silently-falls-back-to-exact-convolution-when-tile-exceeds-DEFAULT_TILE_SIDE.md"
+  ai_agent 1-36
+"backlog/tasks/b-128 - Resample-parity-mapim-and-axis-shrink-reduce-ops.md"
+  ai_agent 1-29
+ANALYZER.md
+  ai_agent 1-242
+"backlog/tasks/b-113 - Morphology-erode-open-close-ops-rank-dilate-coverage.md"
+  ai_agent 1-18
+src/domain/ops/draw/draw_circle.rs
+  s_9b6972b199853a::t_c60da6f513ddb1 67
+tests/golden/golden.rs
+  s_1cad6842988005::t_fb3e5bb57625d0 239
+"backlog/tasks/b-133 - Histogram-ops-coverage-≥90-hist_cum-hist_equal-stdif-etc..md"
+  ai_agent 1-18
+"backlog/tasks/b-127 - Histogram-parity-clahe-hist_match-and-stdif.md"
+  ai_agent 1-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eb546a2380419b31a754b1a932257798c127de1b",
+  "prompts": {},
+  "sessions": {
+    "s_1cad6842988005": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01L99ug8wbxwmjtRdxqWjUS1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_5bd18c04ac7ec1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018mgaiYDAxRRBXz3V7YtvwM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
