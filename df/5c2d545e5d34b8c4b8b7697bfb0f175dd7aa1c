@@ -1,0 +1,25 @@
+src/domain/ops/histogram/stdif.rs
+  s_b609a5dcb45354::t_82b5d5c7d873d9 106-110,358-382,407
+  s_b609a5dcb45354::t_e5beb86b6f7bad 11-15,60-105,116,140-142,145,150,156-189,197-216,249,257,263-266,273-330,335,349-353,386,393,401,404-406,408-412
+  s_b609a5dcb45354::t_64fd35e6580bf7 10
+src/domain/ops/freqfilt/spectrum.rs
+  s_b609a5dcb45354::t_e5beb86b6f7bad 22-28,57,97-98,111,115-116,127-128,131,133-134,151-167,173-174,176,178,185
+benches/histogram/stdif.rs
+  s_b609a5dcb45354::t_e5beb86b6f7bad 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "df5c2d545e5d34b8c4b8b7697bfb0f175dd7aa1c",
+  "prompts": {},
+  "sessions": {
+    "s_b609a5dcb45354": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JoDs4a5qxiTuPJ9tcAvdxS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
