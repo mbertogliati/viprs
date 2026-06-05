@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-114 - Fractsurf-parity-with-libvips-frequency-domain-implementation.md"
+  s_498cbab28a2673::t_22cd8d8d6e6140 4,7
+"backlog/archive/tasks/b-115 - Fractsurf-benchmark-sizes-differ-from-standard-create-sizes.md"
+  s_498cbab28a2673::t_22cd8d8d6e6140 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f40d49cf33e08406097a06272f2493a4e9f3e9e2",
+  "prompts": {},
+  "sessions": {
+    "s_498cbab28a2673": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01MNuZEREY2tMT4kyEACpRvD",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
