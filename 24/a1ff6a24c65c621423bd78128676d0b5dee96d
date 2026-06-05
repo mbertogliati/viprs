@@ -1,0 +1,49 @@
+src/domain/ops/arithmetic/complex_form.rs
+  s_36b28cec29fa74::t_e023f7a5b84b79 137,158-163,166-194,214-240
+  s_36b28cec29fa74::t_dc05ee0ff9dc7a 71-74,164-165,195-213
+src/domain/ops/arithmetic/rect.rs
+  s_36b28cec29fa74::t_e023f7a5b84b79 70-110
+  s_36b28cec29fa74::t_dc05ee0ff9dc7a 112-117,119-121
+  s_36b28cec29fa74::t_2d4e2ce7a4d3f3 118
+src/domain/format.rs
+  s_36b28cec29fa74::t_e023f7a5b84b79 105,190
+src/domain/ops/arithmetic/sum.rs
+  s_36b28cec29fa74::t_f5c0ffa055cdbb 216-219
+  s_36b28cec29fa74::t_e023f7a5b84b79 131,177-215,220-245
+src/domain/ops/arithmetic/find_trim.rs
+  s_36b28cec29fa74::t_6c09c998f24079 234,241
+  s_36b28cec29fa74::t_f5c0ffa055cdbb 235-240,242-246
+  s_36b28cec29fa74::t_e023f7a5b84b79 177-233,247
+src/domain/ops/arithmetic/subtract.rs
+  s_36b28cec29fa74::t_e023f7a5b84b79 483-499
+src/domain/ops/arithmetic/complex_real.rs
+  s_36b28cec29fa74::t_e023f7a5b84b79 126,146-163,168-188
+  s_36b28cec29fa74::t_f5c0ffa055cdbb 164-167
+src/domain/ops/arithmetic/round.rs
+  s_36b28cec29fa74::t_2d4e2ce7a4d3f3 195-197
+  s_36b28cec29fa74::t_e023f7a5b84b79 9,172-174,180-185,275,290-307
+  s_36b28cec29fa74::t_dc05ee0ff9dc7a 189-194,198-207
+src/domain/ops/arithmetic/polar.rs
+  s_36b28cec29fa74::t_e023f7a5b84b79 53,71-87,98-122
+  s_36b28cec29fa74::t_dc05ee0ff9dc7a 88-92,94-97
+  s_36b28cec29fa74::t_2d4e2ce7a4d3f3 93
+src/domain/ops/arithmetic/complex_imag.rs
+  s_36b28cec29fa74::t_f5c0ffa055cdbb 158-161
+  s_36b28cec29fa74::t_e023f7a5b84b79 126,140-157,162-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "24a1ff6a24c65c621423bd78128676d0b5dee96d",
+  "prompts": {},
+  "sessions": {
+    "s_36b28cec29fa74": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VuiGhTnvEKdDLEdBHxxhW8",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
