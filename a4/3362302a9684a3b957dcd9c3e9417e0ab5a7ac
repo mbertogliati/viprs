@@ -1,0 +1,81 @@
+benches/colour/oklab_to_xyz.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/morphology/dilate.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-24
+benches/histogram/clahe.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-36
+benches/colour/yxy_to_xyz.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/conversion/extract_bands.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-42
+benches/structural/unpremultiply.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-30
+benches/colour/lch_to_ucs.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/colour/labs_to_lab.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-23
+benches/colour/lab_to_labs.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-23
+benches/colour/oklch_to_oklab.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/colour/scrgb_to_bw.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-20
+benches/resample/resize.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-23
+benches/structural/insert.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-55
+benches/colour/decmc.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-20
+Cargo.toml
+  ai_agent 547-688
+benches/colour/lab_to_labq.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-23
+benches/colour/oklab_to_oklch.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/colour/xyz_to_oklab.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/conversion/cast.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-23
+benches/colour/ucs_to_lch.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+benches/conversion/bandjoin.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-38
+benches/mosaicing/mosaic.rs
+  ai_agent 1,4,7,12-13,15,22-70,72-74,76-87,89,106
+benches/structural/join.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-99
+benches/resample/thumbnail.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-50
+benches/mosaicing/merge.rs
+  ai_agent 1,4-10,12-13,15-26,28-61,63,65,82
+benches/colour/labq_to_lab.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-23
+benches/morphology/erode.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-24
+benches/colour/xyz_to_yxy.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-26
+"backlog/tasks/b-89 - Benchmark-parity-—-ops-implementadas-sin-criterion.md"
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 4,7
+benches/arithmetic/add_images.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-40
+benches/common/mod.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-130
+benches/histogram/hist_match.rs
+  s_9b6972b199853a::t_ef2fa5f6d0bcfc 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a43362302a9684a3b957dcd9c3e9417e0ab5a7ac",
+  "prompts": {},
+  "sessions": {
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
