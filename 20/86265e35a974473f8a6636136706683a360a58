@@ -1,0 +1,24 @@
+src/domain/ops/morphology.rs
+  s_dd6c914cb42f56::t_8337924dc5d2b3 5,15
+Cargo.toml
+  s_dd6c914cb42f56::t_bf369b12b41f76 954-957
+src/domain/ops/morphology/labelregions.rs
+  s_dd6c914cb42f56::t_5ffa4fc7098933 7-21,61-65,70-171,188,234-238
+  s_dd6c914cb42f56::t_8337924dc5d2b3 1-6,22-60,66-68,172-187,189-233,239-248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2086265e35a974473f8a6636136706683a360a58",
+  "prompts": {},
+  "sessions": {
+    "s_dd6c914cb42f56": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AEUoigJuqePHbVs99C13So",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
