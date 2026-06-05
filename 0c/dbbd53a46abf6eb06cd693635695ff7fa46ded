@@ -1,0 +1,19 @@
+src/lib.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0cdbbd53a46abf6eb06cd693635695ff7fa46ded",
+  "prompts": {},
+  "sessions": {
+    "s_89dbc4be1bbe9d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0197X8zh2UtJKgVUFtNJD4nG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
