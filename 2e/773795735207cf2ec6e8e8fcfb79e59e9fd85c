@@ -1,0 +1,83 @@
+src/adapters/sources/decoder_source.rs
+  s_f9190a8f5b8857::t_ec46048b03687c 37,90-91,128,138-148,203-213,255,352-416
+src/adapters/codecs/webp.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 300-302,463-477
+benches/arithmetic/complex_real.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+src/adapters/codecs/jpeg.rs
+  s_71def40a43e5de::t_658dd74139987c 20,57-70,219,425-434
+src/domain/ops/resample/thumbnail.rs
+  s_f9190a8f5b8857::t_ec46048b03687c 20-21,66,90,159-166,179-180,282,319-331,342,347,351,370,396
+benches/conversion/ifthenelse.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+src/domain/error.rs
+  s_f9190a8f5b8857::t_ec46048b03687c 84-88
+src/adapters/pipeline.rs
+  s_f9190a8f5b8857::t_ec46048b03687c 62,69,1081-1084,1092,2002-2022,2350-2366,3006-3132
+benches/arithmetic/complex_imag.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+benches/conversion/bandfold.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+benches/colour/lch.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+benches/colour/cmyk.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+benches/conversion/bandunfold.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+benches/resample/resize.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+src/ports/source.rs
+  s_f9190a8f5b8857::t_ec46048b03687c 6,33-40,86,113-114
+benches/colour/hsv.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+benches/arithmetic/complex_conj.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+benches/arithmetic/complex_form.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 5
+benches/conversion/bandbool.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+src/domain/ops/conversion/bandbool.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 9,205
+benches/arithmetic/measure.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+benches/morphology/close.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+benches/common/mod.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+tests/golden/golden_libvips_test.rs
+  s_71def40a43e5de::t_658dd74139987c 4-5
+benches/arithmetic/find_trim.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 1
+src/adapters/sources/any.rs
+  s_f9190a8f5b8857::t_ec46048b03687c 10,107-115
+src/adapters/codecs/png.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 12,601
+benches/conversion/arrayjoin.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+benches/morphology/open.rs
+  s_f9190a8f5b8857::t_55eb14524b22c7 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2e773795735207cf2ec6e8e8fcfb79e59e9fd85c",
+  "prompts": {},
+  "sessions": {
+    "s_71def40a43e5de": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012sJ6Psn56DUE3yq1rB2MZJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_f9190a8f5b8857": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01C74YkdHXcEQxYyTChTxhSc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
