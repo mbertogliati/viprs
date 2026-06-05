@@ -1,0 +1,41 @@
+Cargo.toml
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 286-299
+src/domain/ops.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 7
+benches/freqfilt/freqmult.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-63
+src/lib.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 38
+src/domain/ops/freqfilt.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-9
+src/domain/ops/freqfilt/freqmult.rs
+  s_89dbc4be1bbe9d::t_72117836ef8203 8,16,20
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-7,9-15,17-19,21-233
+src/domain/ops/freqfilt/spectrum.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-7,9-20,22-24,26-104,106-108,110-180
+  s_89dbc4be1bbe9d::t_ab6a389c095575 105,109
+  s_89dbc4be1bbe9d::t_72117836ef8203 8,21,25
+src/domain/ops/freqfilt/phasecor.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-7,9-15,17-19,21-255
+  s_89dbc4be1bbe9d::t_72117836ef8203 8,16,20
+benches/freqfilt/phasecor.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-63
+benches/freqfilt/spectrum.rs
+  s_89dbc4be1bbe9d::t_3bab3376c68fbc 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6ec9974e76a728f7b3a2ac33fef2dd1f6a8310ea",
+  "prompts": {},
+  "sessions": {
+    "s_89dbc4be1bbe9d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0197X8zh2UtJKgVUFtNJD4nG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
