@@ -1,0 +1,60 @@
+"backlog/tasks/b-93 - Composite-—-Porter-Duff-blend-modes.md"
+  s_a57b42386a24db::t_2dd5ca1e38d31c 2-3,6,8,11,17
+"backlog/archive/tasks/b-48 - HistEqual-HistLocal-CLAHE-—-ecualización-de-histograma-global-y-local.md"
+  s_9b6972b199853a::t_353247378216aa 4,7
+"backlog/tasks/b-96 - Histogram-completeness-—-case-entropy-ismonotonic-percent-stdif.md"
+  s_9b6972b199853a::t_883fd2e5ddb726 1-18
+"backlog/archive/tasks/b-77 - Structural-parity-ops-lack-benchmark-and-golden-coverage.md"
+  s_806704d7256242::t_94c3c96c964001 4
+  s_9b6972b199853a::t_353247378216aa 7
+"backlog/tasks/b-101 - Gauss-blur-libvips-parity-on-non-uniform-inputs.md"
+  s_9b6972b199853a::t_3bf7b3ca08861e 1-18
+"backlog/tasks/b-99 - Morphology-completeness-—-labelregions-countlines-nearest-rank.md"
+  s_a57b42386a24db::t_f149b30d8a440e 1-18
+"backlog/tasks/b-98 - Convolution-completeness-—-compass-conva-correlation-edge-spcor.md"
+  s_a57b42386a24db::t_f149b30d8a440e 1-18
+"backlog/tasks/b-100 - Metadata-propagation-through-CompiledPipeline-output.md"
+  s_9b6972b199853a::t_3bf7b3ca08861e 1-18
+"backlog/tasks/b-95 - Arithmetic-completeness-—-clamp-complex-find_trim-hough-sum-measure.md"
+  s_a57b42386a24db::t_2dd5ca1e38d31c 1-18
+"backlog/archive/tasks/b-52 - NEON-Apple-Silicon-—-infraestructura-SIMD-y-ops-críticas.md"
+  s_9b6972b199853a::t_353247378216aa 7
+"backlog/tasks/b-102 - Replicate-pipeline-tile-propagation-panic.md"
+  s_9b6972b199853a::t_3bf7b3ca08861e 1-18
+"backlog/tasks/b-94 - Conversion-completeness-—-ifthenelse-addalpha-arrayjoin-smartcrop.md"
+  s_a57b42386a24db::t_2dd5ca1e38d31c 1-18
+"backlog/tasks/b-97 - Resample-completeness-—-similarity-quadratic-reduce-combinado.md"
+  s_9b6972b199853a::t_883fd2e5ddb726 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "87eee8712aef7e6206e3e483e37f906c84b07e15",
+  "prompts": {},
+  "sessions": {
+    "s_806704d7256242": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01ThoZajiBnNa6d8URwA3KRF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_a57b42386a24db": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WCd7qHBGYHHRikbqdbANHr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
