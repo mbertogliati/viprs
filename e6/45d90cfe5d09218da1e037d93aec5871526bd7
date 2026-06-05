@@ -1,0 +1,37 @@
+src/domain/ops/arithmetic/sign.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 10,84,90,105-106
+src/lib.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 26
+src/domain/ops/arithmetic/log.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 10,89,98
+Cargo.toml
+  s_58c81b23e613a0::t_2ad33a01d697e8 235-238
+src/domain/ops/arithmetic/remainder.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 1-138
+benches/arithmetic/remainder.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 1-47
+src/domain/ops/arithmetic/abs.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 109,114,117-124,128-129
+src/domain/format.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 59,73,89-97,117-123,158,174-182,202-208,258-259,279,383-384,395,405,415,457-463,473-518,520-529,531-553,738,743-748
+  s_58c81b23e613a0::t_8a75c5dfe2472b 739
+  s_58c81b23e613a0::t_722986f6863b06 519,530
+src/domain/ops/arithmetic/power.rs
+  s_58c81b23e613a0::t_2ad33a01d697e8 10,98-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e645d90cfe5d09218da1e037d93aec5871526bd7",
+  "prompts": {},
+  "sessions": {
+    "s_58c81b23e613a0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_016Mi5sbLkxbgGDtyg2DgM2o",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
