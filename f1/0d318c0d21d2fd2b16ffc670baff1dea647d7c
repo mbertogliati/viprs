@@ -1,0 +1,24 @@
+src/adapters/codecs/jpeg.rs
+  s_16e4eca23ca9f8::t_97f5c4925c0849 7-14,17,85-86,275-278,391-393,400-401,693,718-738
+src/adapters/codecs/shrink_on_load.rs
+  s_16e4eca23ca9f8::t_90f14f8a50a0a5 3-36,38-55,60,69-70,137,139,174-177,179-201
+src/adapters/codecs/webp.rs
+  s_16e4eca23ca9f8::t_cd5c7dbec2fd0e 393-394
+  s_16e4eca23ca9f8::t_9c706ab0725209 22-27,48-50,82-85,97-99,106-107,125,135-136,317-319,376,398-406,410-411,413-416
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f10d318c0d21d2fd2b16ffc670baff1dea647d7c",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
