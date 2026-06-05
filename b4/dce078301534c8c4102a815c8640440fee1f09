@@ -1,0 +1,37 @@
+src/domain/ops/draw/draw_mask.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-354
+"backlog/archive/tasks/b-143 - Draw-ops-draw_image-draw_mask-draw_smudge.md"
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-19
+benches/draw/draw_mask.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-37
+src/domain/ops/draw.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 3,5,7,18,20,22,158-205
+benches/draw/draw_smudge.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-31
+Cargo.toml
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 165-178
+benches/draw/draw_image.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-38
+src/domain/ops/draw/draw_image.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-456
+src/domain/ops/draw/draw_smudge.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 1-359
+src/domain/error.rs
+  s_16e4eca23ca9f8::t_fa2a2b27cab8a1 32-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b4dce078301534c8c4102a815c8640440fee1f09",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
