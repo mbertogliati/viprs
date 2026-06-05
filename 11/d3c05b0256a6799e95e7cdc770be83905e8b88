@@ -1,0 +1,34 @@
+benches/freqfilt/fwfft.rs
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 1-35,37-52
+src/domain/ops/freqfilt/invfft.rs
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 1-11,13-21,24-211
+  s_1f09b2bf013cf5::t_7e0e19f36b98cf 22-23
+src/lib.rs
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 43-44
+Cargo.toml
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 768-779
+benches/freqfilt/invfft.rs
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 1-32,34-55,57-72
+src/domain/ops/freqfilt.rs
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 2-5,10-13
+src/domain/ops/freqfilt/fwfft.rs
+  s_1f09b2bf013cf5::t_2a91cd69308d5f 1-11,16-44,47-209
+  s_1f09b2bf013cf5::t_abac71e9bec76e 14-15,45-46
+  s_1f09b2bf013cf5::t_d3be257a3f9142 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "11d3c05b0256a6799e95e7cdc770be83905e8b88",
+  "prompts": {},
+  "sessions": {
+    "s_1f09b2bf013cf5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01G5jbg6QK5dtii25BgS28vL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
