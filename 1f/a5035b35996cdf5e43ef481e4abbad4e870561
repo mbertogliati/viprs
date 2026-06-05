@@ -1,0 +1,36 @@
+src/domain/ops/structural/replicate.rs
+  s_a48773b97e65aa::t_dce2a2e1e53c00 46-47,63-78,172,183,185-186,189-190,193,210-214,220,230-231,235-246
+  s_a48773b97e65aa::t_3f3ca5071c9032 54-55,215-219,221-229,232-234
+src/adapters/pipeline.rs
+  s_a48773b97e65aa::t_7297178eca6150 2795-2830
+tests/golden/golden_libvips_test.rs
+  s_a48773b97e65aa::t_5b361b20b78843 129,133,136-147,171,580-604
+src/domain/ops/convolution/gauss_blur.rs
+  s_a48773b97e65aa::t_7757e5d6f9a827 225,234,324,333
+  s_a48773b97e65aa::t_545b55c0860de9 488,490,622
+  s_a48773b97e65aa::t_b4811f88db7269 420-455,457-459,461,463-468,470-472,474,476-481,832-900
+  s_a48773b97e65aa::t_567024cf97c502 36-40,42-45,50-66,71-72,74-79,81,161-162
+  s_a48773b97e65aa::t_03ad2a110e0546 456,460,462,469,473,475
+  s_a48773b97e65aa::t_e5c5e1235698b3 49,69,73,150,231,252,330
+src/domain/ops/convolution/sharpen.rs
+  s_a48773b97e65aa::t_4b2f3b7b014241 112
+  s_a48773b97e65aa::t_f871bd1c15aa29 30
+src/domain/ops/convolution/canny.rs
+  s_a48773b97e65aa::t_4d62850e207936 30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1fa5035b35996cdf5e43ef481e4abbad4e870561",
+  "prompts": {},
+  "sessions": {
+    "s_a48773b97e65aa": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01CcDeyvQbV3Z7ujvKi47Jze",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
