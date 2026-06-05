@@ -1,0 +1,33 @@
+"backlog/docs/doc-20 - ADR-043-—-Temporary-separable-nohalo-approximation.md"
+  s_ced0b1c3abf5fb::t_7f861be3e07ee3 1-38
+src/domain/ops/resample/affine.rs
+  s_ced0b1c3abf5fb::t_7f861be3e07ee3 482-516,529
+src/domain/ops/resample/reduce_common.rs
+  s_ced0b1c3abf5fb::t_7f861be3e07ee3 228
+src/domain/ops/resample/reducev.rs
+  ai_agent 389,417
+"backlog/tasks/b-174 - Full-nohalo-EWA-2D-interpolation-parity.md"
+  s_ced0b1c3abf5fb::t_7f861be3e07ee3 1-30
+src/domain/ops/resample/reduceh.rs
+  ai_agent 390,418
+"backlog/archive/tasks/b-173 - Nohalo-interpolation-parity-missing.md"
+  s_ced0b1c3abf5fb::t_7f861be3e07ee3 4,7
+src/domain/kernel.rs
+  s_ced0b1c3abf5fb::t_7f861be3e07ee3 23-28,50-51,118,131-143,184,186-200,206,282,286-298
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "08b3290d3ea3264c3394de8309732608cb3fd714",
+  "prompts": {},
+  "sessions": {
+    "s_ced0b1c3abf5fb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "7ae1f683-72b1-47f3-ba4c-95496ba2fdc7",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
