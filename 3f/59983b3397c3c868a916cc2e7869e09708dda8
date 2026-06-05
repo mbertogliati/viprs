@@ -1,0 +1,32 @@
+src/domain/ops/histogram.rs
+  s_ac450414cc4bd4::t_c471ccf5e3da37 6,18
+src/lib.rs
+  s_ac450414cc4bd4::t_3ae67b2966639f 65
+benches/histogram/hist_find_indexed.rs
+  s_ac450414cc4bd4::t_380e6488b6c951 1-66
+src/domain/ops/histogram/hist_find_indexed.rs
+  s_ac450414cc4bd4::t_d2a3025c391ff0 1-25,27-194,197-249,255-257,261-285,287-296
+  s_ac450414cc4bd4::t_6bfe534d1e5042 251-254
+  s_ac450414cc4bd4::t_2b1e5bf1a63794 26,195,250,258-260
+  s_ac450414cc4bd4::t_48edacf6c4f951 196
+Cargo.toml
+  s_ac450414cc4bd4::t_9f7bb31de18170 185-188
+"backlog/docs/doc-18 - ADR-041-—-Multi-source-reducer-design-for-hist_find_indexed.md"
+  s_ac450414cc4bd4::t_2ae35e35bc5c38 36-39,41-44,69-70,98-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3f59983b3397c3c868a916cc2e7869e09708dda8",
+  "prompts": {},
+  "sessions": {
+    "s_ac450414cc4bd4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017nG8QEUbccJoDHDpz1tWjW",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
