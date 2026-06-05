@@ -1,0 +1,35 @@
+src/domain/ops/resample/shrinkh.rs
+  s_9b6972b199853a::t_ab15192ec30f81 288-295,389-436
+src/domain/ops/resample/reduceh.rs
+  s_9b6972b199853a::t_ab15192ec30f81 18,35-40,49,60,81-105,115,128,135,137,139-142,150,207,210,220,238,253-276,300-349,359-392
+src/domain/ops/resample/reducev.rs
+  s_9b6972b199853a::t_ab15192ec30f81 18,36-41,50,61,82-109,119,132,139,141,143-146,154,211,214,224,242,257-280,304-353,363-396
+"backlog/tasks/b-104 - ReduceH-SIMD-paths-for-NEON-AVX2.md"
+  s_9b6972b199853a::t_ab15192ec30f81 1-30
+src/adapters/pipeline.rs
+  s_9b6972b199853a::t_ab15192ec30f81 1569,1574,1576-1594,1615,1620,1622-1640
+src/domain/ops/resample/sample_conv.rs
+  s_9b6972b199853a::t_ab15192ec30f81 106-190
+tests/golden/golden_libvips_test.rs
+  ai_agent 113,120-125,161-171,569-761
+src/domain/ops/resample/shrinkv.rs
+  s_9b6972b199853a::t_ab15192ec30f81 202,205-207,209,304-333
+src/domain/ops/resample/reduce_common.rs
+  s_9b6972b199853a::t_ab15192ec30f81 1,4-5,9-11,19,26-36,44-46,55-64,67-80,84,90-123,177-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4eb8017f729e4ea56a8a2fefaafff76f2b283644",
+  "prompts": {},
+  "sessions": {
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
