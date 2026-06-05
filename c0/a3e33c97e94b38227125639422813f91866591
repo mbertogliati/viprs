@@ -1,0 +1,26 @@
+benches/morphology/nearest.rs
+  s_2ef39deeadb637::t_3df4c98243bbc3 23-24,26
+benches/morphology/count_lines.rs
+  s_2ef39deeadb637::t_db164befda1cc6 24-27
+src/domain/ops/morphology/count_lines.rs
+  s_2ef39deeadb637::t_856b884b1d95db 12-15,19-20,32-35,45-46,56-62,109,112,122-171,199-226
+src/domain/ops/morphology/nearest.rs
+  s_2ef39deeadb637::t_dca25b475898ba 8-11,34-36,45,47-50,59,63-64,72,75-84,87-90,92-98,100-106,112-135,137-139,141-176,275-283
+  s_2ef39deeadb637::t_aa07353766e4a1 14-17,21-22,46,51,60-62,182,185,195-242,260-274,284-307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c0a3e33c97e94b38227125639422813f91866591",
+  "prompts": {},
+  "sessions": {
+    "s_2ef39deeadb637": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012NXpp6ZJAZ3iegYS6PWBjL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
