@@ -1,0 +1,27 @@
+src/domain/ops/conversion/embed.rs
+  s_16e4eca23ca9f8::t_c9b0bec187f237 6,12-174,177-183,187-211,215-220,229-232,245-260,270-272,275-288,294-296,299-312,317,324,328,330-338,342-356,362-401,407,414,417,420-421,426-427,429-431,434,441,496-563,570-587,604-605,607-616,629-632,638-694,699-700,707,714-717,722-759
+  s_16e4eca23ca9f8::t_2df6cabebc0760 212-214,221-228,233-244,289-293,329,617-623,695-698
+src/domain/error.rs
+  s_16e4eca23ca9f8::t_72a9ac73923770 113-114
+src/adapters/pipeline.rs
+  s_16e4eca23ca9f8::t_334388e5c7f283 1299-1321,1325,1327-1328,1330-1331,1333-1334,1336-1337,1339-1340,1342-1343,1345
+  s_16e4eca23ca9f8::t_1c6a60dff7c470 2835,2859,2870-2883
+"backlog/docs/doc-16 - ADR-039-—-Embed-repeat-and-mirror-full-source-demand.md"
+  s_16e4eca23ca9f8::t_db9e9a2319584e 1-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "90f0756ffe045934bd3489c477853f5418c395c1",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
