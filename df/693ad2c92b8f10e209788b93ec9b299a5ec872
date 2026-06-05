@@ -1,0 +1,11 @@
+src/domain/ops/convolution/conva.rs
+  ai_agent 550,555,557-568,631,651,653,656,660-661
+benches/convolution/conva.rs
+  ai_agent 7,12,14-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "df693ad2c92b8f10e209788b93ec9b299a5ec872",
+  "prompts": {}
+}
