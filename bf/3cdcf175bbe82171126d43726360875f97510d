@@ -1,0 +1,27 @@
+src/domain/kernel.rs
+  s_ced0b1c3abf5fb::t_cea85f037e65c2 32,159-162,193-281,430-456
+"backlog/archive/tasks/b-171 - VSQBS-interpolation-parity-missing.md"
+  s_ced0b1c3abf5fb::t_cea85f037e65c2 4,7
+"backlog/tasks/b-176 - VSQBS-reduce-family-still-uses-1D-quadratic-fallback.md"
+  s_ced0b1c3abf5fb::t_cea85f037e65c2 1-31
+src/domain/ops/resample/resize.rs
+  s_ced0b1c3abf5fb::t_cea85f037e65c2 131-134,139,219,222,242-258,381-415
+src/domain/ops/resample/affine.rs
+  ai_agent 181-206,336,543-565
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bf3cdcf175bbe82171126d43726360875f97510d",
+  "prompts": {},
+  "sessions": {
+    "s_ced0b1c3abf5fb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "7ae1f683-72b1-47f3-ba4c-95496ba2fdc7",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
