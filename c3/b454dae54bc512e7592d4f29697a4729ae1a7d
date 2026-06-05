@@ -1,0 +1,31 @@
+"backlog/docs/doc-15 - ADR-039-—-Source-direct-sampled-grid-demand-for-Subsample-point-mode.md"
+  s_16e4eca23ca9f8::t_30846f18a97a1a 1-33
+src/adapters/scheduler/rayon_scheduler.rs
+  s_16e4eca23ca9f8::t_0d86763c40a2c3 12,18,81-94,106-138,176-181,183,200-220,276,278,292-296,298-300,302,317-330,338,343-348
+  s_16e4eca23ca9f8::t_0f16ce0ca01ede 335
+src/domain/op.rs
+  s_16e4eca23ca9f8::t_bf3764a93910d6 48-111,283-292,511-512
+src/adapters/pipeline.rs
+  s_16e4eca23ca9f8::t_70b655f95a8e89 59,887,889,942,944
+src/domain/ops/conversion/subsample.rs
+  s_16e4eca23ca9f8::t_12ea5b727a481d 4,173-187,216-225
+  s_16e4eca23ca9f8::t_f3731cc3a5bf2c 239-240,243,307,316-330,359-436
+benches/conversion/subsample.rs
+  s_16e4eca23ca9f8::t_a5142d4be7be60 12-16,18-19,21-37,39,41-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c3b454dae54bc512e7592d4f29697a4729ae1a7d",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
