@@ -1,0 +1,25 @@
+src/domain/ops/colour.rs
+  s_72bf287cda23b2::t_93baf2fdb81293 7,35
+"backlog/docs/doc-21 - ADR-044-—-Use-littlecms2-adapter-boundary-for-ICC-operations.md"
+  s_72bf287cda23b2::t_93baf2fdb81293 8-51
+src/domain/error.rs
+  s_72bf287cda23b2::t_93baf2fdb81293 22-26,264-274
+src/domain/ops/colour/icc.rs
+  s_72bf287cda23b2::t_93baf2fdb81293 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "197481213ab4c5fbbe1d4bd9b396f2b1f59e33ae",
+  "prompts": {},
+  "sessions": {
+    "s_72bf287cda23b2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01LixofxAcDe6RitYjpuYYhu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
