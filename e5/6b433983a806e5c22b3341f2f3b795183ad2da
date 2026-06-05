@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-130 - Band-manipulation-ops-bandfold-bandunfold-bandbool.md"
+  s_f9190a8f5b8857::t_e8101ce05a89a5 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e56b433983a806e5c22b3341f2f3b795183ad2da",
+  "prompts": {},
+  "sessions": {
+    "s_f9190a8f5b8857": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01C74YkdHXcEQxYyTChTxhSc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
