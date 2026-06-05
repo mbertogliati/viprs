@@ -1,0 +1,23 @@
+"backlog/docs/doc-13 - ADR-037-—-FractSurf-octave-weighting-calibration.md"
+  s_7c00771bfbf550::t_dd4a62f8a2e423 8-24
+src/domain/ops/create/fractsurf.rs
+  s_7c00771bfbf550::t_48ba8bbbaec258 12,17-25,180,187,262-263,270-273,284-394,419-423,425-437
+"backlog/docs/doc-12 - ADR-036-—-FractSurf-spectral-synthesis-without-mandatory-FFT.md"
+  s_7c00771bfbf550::t_dd4a62f8a2e423 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0765f40f70261fa762fef8351d37443269e1652a",
+  "prompts": {},
+  "sessions": {
+    "s_7c00771bfbf550": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01E5fNcA3PAeUpo9x4LmhSXu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
