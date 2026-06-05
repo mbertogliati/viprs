@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-82 - Copy-con-metadata-—-headers-y-propiedades-de-imagen.md"
+  s_445b0edb3269aa::t_5fdb59f7d3f4c5 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "214725cd51ba69e5d0996750f38d0ce05b5efc66",
+  "prompts": {},
+  "sessions": {
+    "s_445b0edb3269aa": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_016Uzm6bUptyjfd2Yr76p8fF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
