@@ -1,0 +1,27 @@
+"backlog/tasks/b-141 - LoadOptions-max_dimension-and-no_rotate-in-codec-adapters.md"
+  s_6631d2118eec46::t_e159141b80c306 1-26
+src/adapters/codecs/shrink_on_load.rs
+  s_6631d2118eec46::t_e159141b80c306 98
+src/adapters/codecs/jpeg.rs
+  ai_agent 10-16,79-80,82-88,90,124-137,148-149,162-163,165,180-325,369-380,384,389,392-400,415-420,543-585,699-762
+src/adapters/codecs/webp.rs
+  s_6631d2118eec46::t_e159141b80c306 186
+src/adapters/codecs/png.rs
+  s_6631d2118eec46::t_e159141b80c306 524
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6f0317c4dddde352c6158142291fa08ca289a3b4",
+  "prompts": {},
+  "sessions": {
+    "s_6631d2118eec46": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BAYNvSMjzoDcxozkzJwKd6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
