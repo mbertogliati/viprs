@@ -1,0 +1,20 @@
+"backlog/archive/tasks/b-131 - Backfill-criterion-benches-for-implemented-ops-missing-them.md"
+  ai_agent 7
+  s_4766be17ee93a9::t_d5cd8e70b94bbe 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8c1433b1c7387781b3c7ee8eb9cbe1d39b0838d0",
+  "prompts": {},
+  "sessions": {
+    "s_4766be17ee93a9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014Q5LBJTAEQAyRZjUGRf6oJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
