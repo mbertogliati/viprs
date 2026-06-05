@@ -1,0 +1,45 @@
+src/domain/ops/create/gaussnoise.rs
+  s_502926a6093e7d::t_9cff1e9e4ad4e9 14,22-29,70
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-13,15-21,30-69,71-179
+benches/create/eye.rs
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-39
+src/domain/ops/create/eye.rs
+  s_502926a6093e7d::t_9cff1e9e4ad4e9 12,19-26
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-11,13-18,27-179
+benches/create/gaussnoise.rs
+  s_502926a6093e7d::t_d99d2fb9cf0c32 5,7,13,17,19,21-24,29
+Cargo.toml
+  s_502926a6093e7d::t_d99d2fb9cf0c32 618-626,642-644
+src/domain/ops/create/fractsurf.rs
+  s_502926a6093e7d::t_01cdccb5047966 14
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-13,15-254
+benches/create/mandelbrot.rs
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-39
+src/domain/ops/create/mandelbrot.rs
+  s_502926a6093e7d::t_d1ca16f8661e14 129,145-155,180,182
+  s_502926a6093e7d::t_9cff1e9e4ad4e9 12,18-25
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-11,13-17,26-128,130-144,156-179,181,183-185
+benches/create/fractsurf.rs
+  s_502926a6093e7d::t_d99d2fb9cf0c32 1-14,16-40
+  s_502926a6093e7d::t_01cdccb5047966 15
+src/lib.rs
+  s_502926a6093e7d::t_d99d2fb9cf0c32 46-47
+src/domain/ops/create.rs
+  s_502926a6093e7d::t_d99d2fb9cf0c32 2-3,5,7,12-13,15,17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ad37227ae982ac919eb38b93eb1c8193223fd80a",
+  "prompts": {},
+  "sessions": {
+    "s_502926a6093e7d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017u58yuF3WXE9goDM9v8LPV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
