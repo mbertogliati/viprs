@@ -1,0 +1,47 @@
+src/domain/ops/conversion/autorot.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-418
+"backlog/tasks/b-144 - Autorot-raw-EXIF-orientation-removal-parity.md"
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-29
+"backlog/archive/tasks/b-142 - Conversion-ops-falsecolour-subsample-gamma-byteswap-autorot.md"
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-19
+benches/conversion/autorot.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-39
+benches/conversion/byteswap.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-40
+benches/conversion/gamma.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-40
+src/domain/ops/conversion/gamma.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-197
+src/domain/ops/conversion/falsecolour.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-534
+"backlog/tasks/b-145 - Subsample-point-mode-demand-region-overfetch.md"
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-29
+src/domain/ops/conversion/subsample.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-366
+src/lib.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 14,17,28,44-47,53-54,56
+src/domain/ops/conversion/byteswap.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-193
+benches/conversion/falsecolour.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-39
+benches/conversion/subsample.rs
+  s_16e4eca23ca9f8::t_7feba48291ffe2 1-39
+Cargo.toml
+  s_16e4eca23ca9f8::t_7feba48291ffe2 430-453
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a761a6151e23ca833ba00aef9b6763e373119627",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
