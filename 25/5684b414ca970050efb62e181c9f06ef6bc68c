@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-77 - Advanced-colour-ops-LCh-scRGB-dE76-dE00.md"
+  s_a52b8cbb185be7::t_a2914d57307116 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "255684b414ca970050efb62e181c9f06ef6bc68c",
+  "prompts": {},
+  "sessions": {
+    "s_a52b8cbb185be7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012iF99zXLtUYfoBqSjUCT4c",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
