@@ -1,0 +1,47 @@
+benches/create/masks.rs
+  s_f0f579e73748a7::t_0d6ef4a8a83efd 21
+  s_f0f579e73748a7::t_6aaf1fe37e5f18 1-15,22-74
+src/domain/ops/create/tonelut.rs
+  s_f0f579e73748a7::t_d6c96c0a0e211f 86-98
+  s_f0f579e73748a7::t_6aaf1fe37e5f18 1-85,99-282
+src/domain/ops/create/frequency_mask.rs
+  s_16e4eca23ca9f8::t_80331f0ae16e7d 1-360,362-388,401-715,718-734,737-785,788-818
+  s_f0f579e73748a7::t_0a8ff23dec79cd 716-717,735-736
+  s_f0f579e73748a7::t_d826c5eb9d4775 389-400,786-787
+src/domain/ops/create/invertlut.rs
+  s_f0f579e73748a7::t_d6c96c0a0e211f 7,187
+  s_f0f579e73748a7::t_0a8ff23dec79cd 190-196
+  s_f0f579e73748a7::t_6aaf1fe37e5f18 1-6,8-186,188-189,197-282
+src/lib.rs
+  s_f0f579e73748a7::t_d826c5eb9d4775 49-53
+src/domain/ops/create.rs
+  s_f0f579e73748a7::t_6aaf1fe37e5f18 5,10-11,14,22-26,31-32,35
+Cargo.toml
+  s_f0f579e73748a7::t_6aaf1fe37e5f18 770-773
+src/domain/ops/create/logmat.rs
+  s_f0f579e73748a7::t_6aaf1fe37e5f18 1-262
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "39e8b3669ed9b06a141a6823bbb5053c18bcb14a",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_f0f579e73748a7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UUpvEMvDh6gFBPEZMvqjbv",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
