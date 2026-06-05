@@ -1,0 +1,19 @@
+src/adapters/sources/decoder_source.rs
+  s_9b6972b199853a::t_2f7bfb29378453 421-423
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ed077f87f96a9f5d4c079db17298092ad7be085d",
+  "prompts": {},
+  "sessions": {
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
