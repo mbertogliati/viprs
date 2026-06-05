@@ -1,0 +1,31 @@
+"backlog/tasks/b-177 - Exact-LBB-reduce-parity-for-ReduceH-ReduceV.md"
+  s_ced0b1c3abf5fb::t_7a750eb49b7356 1-29
+src/domain/ops/resample/resize.rs
+  s_fa5e6c4aa5f9b9::t_4b9d1e1ca2060c 95-117,391-401
+"backlog/archive/tasks/b-172 - LBB-interpolation-parity-missing.md"
+  s_ced0b1c3abf5fb::t_7a750eb49b7356 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7a220af1f56d64cbd70cccede8a9efd0cebb2dbd",
+  "prompts": {},
+  "sessions": {
+    "s_ced0b1c3abf5fb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "7ae1f683-72b1-47f3-ba4c-95496ba2fdc7",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fa5e6c4aa5f9b9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XyvQ5kDBs1WnfHJv84AZDv",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
