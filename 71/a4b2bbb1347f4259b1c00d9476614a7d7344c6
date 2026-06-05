@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-79 - Advanced-resample-ops-reduceh-and-reducev.md"
+  s_cda56d005f3e1f::t_310d2ebbb9f343 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "71a4b2bbb1347f4259b1c00d9476614a7d7344c6",
+  "prompts": {},
+  "sessions": {
+    "s_cda56d005f3e1f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PcYuRmF9zNFUCJkeVRFGKV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
