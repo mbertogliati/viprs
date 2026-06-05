@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-132 - PNG-compression-options-WebP-animation-decode.md"
+  s_ebd5ca27ecd873::t_15614bc378006a 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4ec6198127ddb2ab28e894a92a4eb6e21d5b0eb9",
+  "prompts": {},
+  "sessions": {
+    "s_ebd5ca27ecd873": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KxYZryGmXZtu7yHLZJrUv6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
