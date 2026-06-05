@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-78 - Convolution-parity-—-sharpen-convsep-correlation-edge-and-canny.md"
+  s_0dde315ff56505::t_d2f2507c5e87ee 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "98c642e74b2733d70783fb78ab103364dedf07e9",
+  "prompts": {},
+  "sessions": {
+    "s_0dde315ff56505": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017ZtasuVURawGf3Guvxhzwr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
