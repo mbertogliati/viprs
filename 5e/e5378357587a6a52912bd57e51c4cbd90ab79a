@@ -1,0 +1,23 @@
+Cargo.toml
+  s_5186cccdd35bf8::t_4d638a0d0d7a48 596-603
+benches/mosaicing/mosaic.rs
+  s_5186cccdd35bf8::t_4d638a0d0d7a48 2-107
+benches/mosaicing/merge.rs
+  s_5186cccdd35bf8::t_4d638a0d0d7a48 2-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5ee5378357587a6a52912bd57e51c4cbd90ab79a",
+  "prompts": {},
+  "sessions": {
+    "s_5186cccdd35bf8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XwQ8LJy8ChubVHHAVdJ3bT",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
