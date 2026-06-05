@@ -1,0 +1,44 @@
+src/domain/ops/conversion/subsample.rs
+  s_16e4eca23ca9f8::t_bd68bfa09f844e 1-366
+src/domain/ops/conversion/autorot.rs
+  s_16e4eca23ca9f8::t_135b3f0cb8a11a 1-418
+benches/conversion/subsample.rs
+  s_16e4eca23ca9f8::t_09a8b8a4063e47 2-39
+src/domain/ops/conversion/gamma.rs
+  s_16e4eca23ca9f8::t_9b72ddf5d0c0c5 1-129,131-197
+benches/conversion/gamma.rs
+  s_16e4eca23ca9f8::t_09a8b8a4063e47 2-40
+src/domain/ops/conversion.rs
+  s_16e4eca23ca9f8::t_e1ac351dea062f 3,11,16-17,21,25,33,38-39,43
+benches/conversion/autorot.rs
+  s_16e4eca23ca9f8::t_09a8b8a4063e47 2-39
+src/domain/ops/conversion/byteswap.rs
+  s_16e4eca23ca9f8::t_c3dfbe2f5a9fe0 1-126,128-193
+src/lib.rs
+  s_16e4eca23ca9f8::t_73780e6f9e7326 44-47
+src/domain/ops/conversion/falsecolour.rs
+  s_16e4eca23ca9f8::t_2f489a336844dd 1-424,426-439,441-534
+benches/conversion/falsecolour.rs
+  s_16e4eca23ca9f8::t_09a8b8a4063e47 2-39
+benches/conversion/byteswap.rs
+  s_16e4eca23ca9f8::t_09a8b8a4063e47 2-40
+Cargo.toml
+  s_16e4eca23ca9f8::t_59b4c00d4e65b0 390-394,396-413
+  s_16e4eca23ca9f8::t_c31ea889d6174a 395
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d08e46db28053a22cfe21ee26bba8081812e315f",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
