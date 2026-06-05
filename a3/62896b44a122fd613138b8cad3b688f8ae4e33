@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-67 - HEIF-implementar-encode-AVIF-HEIF-10-bit-support.md"
+  s_357ac28bc8f901::t_23a20f07a448f4 4,7
+"backlog/archive/tasks/b-75 - ForeignRegistry-—-load-save-con-opciones.md"
+  s_357ac28bc8f901::t_23a20f07a448f4 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a362896b44a122fd613138b8cad3b688f8ae4e33",
+  "prompts": {},
+  "sessions": {
+    "s_357ac28bc8f901": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TWsEyzEMdEWyPNmPrJSXst",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
