@@ -1,0 +1,39 @@
+benches/arithmetic/find_trim.rs
+  s_872517468cf02e::t_e30200264adc9a 2-32
+benches/arithmetic/complex_conj.rs
+  s_872517468cf02e::t_e30200264adc9a 1-3,6-24
+  s_872517468cf02e::t_f62845e1ffc9d9 5
+benches/arithmetic/complex_imag.rs
+  s_872517468cf02e::t_e30200264adc9a 1-3,6-24
+  s_872517468cf02e::t_f62845e1ffc9d9 5
+benches/conversion/arrayjoin.rs
+  s_872517468cf02e::t_e30200264adc9a 1-3,6-41
+benches/conversion/ifthenelse.rs
+  s_872517468cf02e::t_e30200264adc9a 1-3,5-42
+Cargo.toml
+  s_872517468cf02e::t_7e3874a6ad032d 343
+  s_872517468cf02e::t_e30200264adc9a 91-119,333-342
+benches/arithmetic/complex_form.rs
+  s_872517468cf02e::t_e30200264adc9a 1-4,6-44
+benches/arithmetic/measure.rs
+  s_872517468cf02e::t_e30200264adc9a 2-32
+benches/arithmetic/complex_real.rs
+  s_872517468cf02e::t_f62845e1ffc9d9 5
+  s_872517468cf02e::t_e30200264adc9a 1-3,6-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ce7c47109a7adae0a5c674fd505bef00c81496e1",
+  "prompts": {},
+  "sessions": {
+    "s_872517468cf02e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VcPSJQUva2pa4kGUMPJHVr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
