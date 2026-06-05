@@ -1,0 +1,38 @@
+src/domain/ops/arithmetic/divide.rs
+  s_07e3a76383e685::t_0a28f787f88c9f 335-339,362-366
+  s_07e3a76383e685::t_111e1cbd29cc33 9-17,73-82,129-130,132-173,183,215
+  s_07e3a76383e685::t_d3fcb5a8ac5094 131
+Cargo.toml
+  s_07e3a76383e685::t_2e2475d0ddc359 22,40
+  s_07e3a76383e685::t_a4d897892cafa1 29
+src/domain/ops/arithmetic/subtract.rs
+  s_07e3a76383e685::t_74567d1071b2d4 502-503,552,596-598,618,629,634-635,657,664-668
+  s_07e3a76383e685::t_33f6c5a4499798 183,189
+  s_07e3a76383e685::t_5e4441abbc4916 11-16,19-21,83-104,141,181-182,184-188,190-270,280,312,349,385,423
+"backlog/docs/doc-10 - ADR-031-—-SIMD-abstraction-pulp-vs-std-arch.md"
+  s_07e3a76383e685::t_117fbe52face6c 8-63
+src/domain/ops/arithmetic/multiply.rs
+  s_07e3a76383e685::t_bed85f19f89727 137
+  s_07e3a76383e685::t_00f24141d4bd43 347-348,362,381-382,404,411-415
+  s_07e3a76383e685::t_a931db54ef7a8d 11-16,19-21,69-78,109,135-136,138-179,191,233,270
+src/domain/ops/arithmetic/add.rs
+  s_07e3a76383e685::t_3b989a07d55945 537-538,555,587,606-607,623,634,639-640,654,667,674-678
+  s_07e3a76383e685::t_954eca55633396 11-16,19-21,81-102,146,195-196,198-202,204-284,294,326,363,398,435
+  s_07e3a76383e685::t_cc02ca8601dd08 197,203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7e0f4fb818d06ad3ec9bb66f564b45cdc9bdb323",
+  "prompts": {},
+  "sessions": {
+    "s_07e3a76383e685": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019PfNYaqJbwaPeW1kTtgmA7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
