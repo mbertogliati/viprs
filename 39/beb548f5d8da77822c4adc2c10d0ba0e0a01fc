@@ -1,0 +1,41 @@
+benches/convolution/convasep.rs
+  s_16e4eca23ca9f8::t_ca4b68aa4e290c 1-41
+benches/convolution/conv.rs
+  s_16e4eca23ca9f8::t_ca4b68aa4e290c 1-49
+src/domain/ops/convolution/fastcor.rs
+  s_16e4eca23ca9f8::t_b4ab0ae2931ee4 1-228
+benches/convolution/edge.rs
+  s_16e4eca23ca9f8::t_ca4b68aa4e290c 1-39
+src/domain/ops/convolution/edge.rs
+  s_16e4eca23ca9f8::t_f2c64f8a46cb0a 1-193
+src/domain/ops/convolution.rs
+  s_16e4eca23ca9f8::t_5a14965921cadc 4,7,10-11,20,22,25-26
+src/domain/ops/convolution/conv.rs
+  s_16e4eca23ca9f8::t_e0059eb98faa33 17,103-105,107,112
+  s_16e4eca23ca9f8::t_45c6a9c16d7b13 1-16,18-102,106,108-111,113-191
+src/domain/ops/convolution/convasep.rs
+  s_16e4eca23ca9f8::t_ebc9cea2eb3d21 38-46,267,293-297,299,303-307,309-314,316
+  s_16e4eca23ca9f8::t_b23e20c1a1d21b 329,334-335,340,345,356,358-359,364,368,380,385-386,389,392,403,405-406,409,411
+  s_16e4eca23ca9f8::t_36e4ac645ca94c 273-280,298,300,308,315
+  s_16e4eca23ca9f8::t_91b0cc1ec5904b 1-37,47-266,268-272,281-292,301-302,317-328,330-333,336-339,341-344,346-355,357,360-363,365-367,369-379,381-384,387-388,390-391,393-402,404,407-408,410,412-485
+benches/convolution/fastcor.rs
+  s_16e4eca23ca9f8::t_ca4b68aa4e290c 1-54
+Cargo.toml
+  s_16e4eca23ca9f8::t_cb986f5ea514cb 240-243,254-258,289-296
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "39beb548f5d8da77822c4adc2c10d0ba0e0a01fc",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
