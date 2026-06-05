@@ -1,0 +1,26 @@
+src/adapters/pipeline.rs
+  s_55fb5a5e18cc90::t_b1f2c8d969b573 581-596
+  s_55fb5a5e18cc90::t_3fb810d065eaa8 1945-1950,1952-1958,1960-1963,1965-1973,1975-1983
+tests/golden.rs
+  s_55fb5a5e18cc90::t_6fb937e2eae2a4 1,5,32-33,140-145,310,313
+  s_55fb5a5e18cc90::t_dab488f385172a 305
+  s_55fb5a5e18cc90::t_0056538436443b 146,311,316,319
+  s_55fb5a5e18cc90::t_2d32d577baef07 2-4,6-7,9-19,21-31,34-139,147-253,255-274,276-304,306-309,312,314-315,317-318,320-355,357-367,369-378,380-383
+  s_55fb5a5e18cc90::t_c0e9d02dc36550 8,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "df65627baa30fbfb0d4d518b4e994df88bf78452",
+  "prompts": {},
+  "sessions": {
+    "s_55fb5a5e18cc90": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D2DxGfaU61DjGFPK2Qy7jK",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
