@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-112 - Colour-conversion-completeness-HSV-LCh-de76-LabS-coverage.md"
+  s_7d486cf0509b26::t_c4f3d334efd585 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aa7a218365cc308445939eb533522b408dd84406",
+  "prompts": {},
+  "sessions": {
+    "s_7d486cf0509b26": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0127scuzvYi1skFKCHGLW33T",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
