@@ -1,0 +1,36 @@
+benches/conversion/bandbool.rs
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 2,22
+src/domain/ops/conversion/bandbool.rs
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 16,19,24-25,30-35,50-52,57,70,114,205,216,223,231,238,247,255,263,267-282,296,313
+benches/conversion/bandunfold.rs
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 2-6,8-39
+src/domain/ops/conversion/bandfold.rs
+  s_c7a3f0cdc8b4f6::t_5ffcc61c7e8a07 175,225
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 1-174,176-224,226-274
+src/domain/ops/conversion/bandunfold.rs
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 1-45,47-55,57-187,189-247,249-292,300-303
+  s_c7a3f0cdc8b4f6::t_5ffcc61c7e8a07 188,248
+  s_c7a3f0cdc8b4f6::t_5c4d9b42a4d4c0 293-299
+src/domain/ops/conversion.rs
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 4,9,20-21,26
+benches/conversion/bandfold.rs
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 2-6,8-40
+Cargo.toml
+  s_c7a3f0cdc8b4f6::t_db2e23c6fdbb5c 358-361,372-374
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e3186190b7cdbb6472a0d412b1db2cb1d16179a6",
+  "prompts": {},
+  "sessions": {
+    "s_c7a3f0cdc8b4f6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017M96qUrXDuomcKJXzzTBr8",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
