@@ -1,0 +1,53 @@
+src/domain/ops/colour/srgb_to_scrgb.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 1-137
+src/domain/ops/colour/lch_to_lab.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 1-89
+src/adapters/pipeline.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 6-9,32,1689-1698,1719-1728
+  s_a52b8cbb185be7::t_9a3154aa26a6e8 2326-2361
+src/domain/ops/colour/de76.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 1-101
+benches/colour/lch_to_lab.rs
+  s_a52b8cbb185be7::t_f189807e491b29 1-43
+"backlog/tasks/b-77 - Advanced-colour-ops-LCh-scRGB-dE76-dE00.md"
+  s_a52b8cbb185be7::t_59316ebb88c11e 1-27
+src/domain/ops/colour.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 2-3,5,7-9,12,17-18,20,22-23,26
+benches/colour/scrgb_to_srgb.rs
+  s_a52b8cbb185be7::t_f189807e491b29 1-43
+benches/colour/de76.rs
+  s_a52b8cbb185be7::t_f189807e491b29 1-6,8-39
+src/domain/ops/colour/de00.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 1-185
+src/domain/ops/colour/scrgb_to_srgb.rs
+  s_a52b8cbb185be7::t_8ea61daec83cf7 102
+  s_a52b8cbb185be7::t_b6801bca941a92 1-101,103-123
+Cargo.toml
+  s_a52b8cbb185be7::t_f189807e491b29 165-193
+src/domain/ops/colour/lab_to_lch.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 1-119
+src/domain/ops/colour/math.rs
+  s_a52b8cbb185be7::t_b6801bca941a92 1-47
+benches/colour/lab_to_lch.rs
+  s_a52b8cbb185be7::t_f189807e491b29 1-43
+benches/colour/srgb_to_scrgb.rs
+  s_a52b8cbb185be7::t_f189807e491b29 1-43
+benches/colour/de00.rs
+  s_a52b8cbb185be7::t_f189807e491b29 1-6,8-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eb60d792845dc68306a821718dde7842e6b776ab",
+  "prompts": {},
+  "sessions": {
+    "s_a52b8cbb185be7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012iF99zXLtUYfoBqSjUCT4c",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
