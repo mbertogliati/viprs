@@ -1,0 +1,19 @@
+"backlog/docs/doc-18 - ADR-041-—-Multi-source-reducer-design-for-hist_find_indexed.md"
+  s_ac450414cc4bd4::t_b86bc403839fb3 8-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0f53adf61c0fedd58b37a1c5e7b7a43ab74780f0",
+  "prompts": {},
+  "sessions": {
+    "s_ac450414cc4bd4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017nG8QEUbccJoDHDpz1tWjW",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
