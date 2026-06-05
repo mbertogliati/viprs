@@ -1,0 +1,31 @@
+"backlog/docs/doc-20 - ADR-043-—-Temporary-separable-nohalo-approximation.md"
+  s_3af1e1956d50a6::t_5d551c459fd3d6 8-38
+src/domain/ops/resample/affine.rs
+  s_3af1e1956d50a6::t_e0d5ee8ac33189 482-516
+  s_3af1e1956d50a6::t_ef4f800209f08b 529
+src/domain/ops/resample/reduceh.rs
+  s_3af1e1956d50a6::t_ef4f800209f08b 287,315
+src/domain/ops/resample/reduce_common.rs
+  s_3af1e1956d50a6::t_ef4f800209f08b 228
+src/domain/kernel.rs
+  s_3af1e1956d50a6::t_ef4f800209f08b 184,186-200,206,282,286-298
+  s_3af1e1956d50a6::t_8169064c1a672d 23-28,50-51,118,131-143
+src/domain/ops/resample/reducev.rs
+  s_3af1e1956d50a6::t_ef4f800209f08b 291,319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "46b0472a079bc692ce453660655e37df4df050bd",
+  "prompts": {},
+  "sessions": {
+    "s_3af1e1956d50a6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01N43BDaj2juB5oYRExnsPZo",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
