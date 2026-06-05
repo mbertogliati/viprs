@@ -1,0 +1,29 @@
+"backlog/archive/tasks/b-151 - ReduceH-SIMD-paths-for-NEON-AVX2.md"
+  s_ced0b1c3abf5fb::t_1c3cdbf895dd9d 4,7
+Cargo.toml
+  s_ced0b1c3abf5fb::t_1c3cdbf895dd9d 406-409
+src/domain/ops/resample/reduce_simd.rs
+  s_ced0b1c3abf5fb::t_1c3cdbf895dd9d 1-1139
+benches/resample/reduce_h.rs
+  s_ced0b1c3abf5fb::t_1c3cdbf895dd9d 1
+benches/resample/reduceh.rs
+  s_ced0b1c3abf5fb::t_1c3cdbf895dd9d 1-2,8-11,15,42-69
+src/domain/ops/resample.rs
+  s_ced0b1c3abf5fb::t_1c3cdbf895dd9d 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b1364b383d797a0b05deaa3ae202d29de47bbc35",
+  "prompts": {},
+  "sessions": {
+    "s_ced0b1c3abf5fb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "7ae1f683-72b1-47f3-ba4c-95496ba2fdc7",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
