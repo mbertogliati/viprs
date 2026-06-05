@@ -1,0 +1,52 @@
+src/domain/ops/arithmetic/complex_conj.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-80
+src/domain/ops/arithmetic.rs
+  s_0e187d747de9ec::t_90c1207912fef9 7-11,15,19,21,23,30,39-43,47,51,53,55,62
+src/domain/ops/arithmetic/complex_imag.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-19,21-139
+  s_0e187d747de9ec::t_0363a9c8e9616f 20
+src/domain/ops/arithmetic/complex_form.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-156
+src/domain/ops/arithmetic/polar.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-69
+Cargo.toml
+  s_0e187d747de9ec::t_da97e85f017363 81-89
+src/domain/ops/arithmetic/sum.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-176
+benches/arithmetic/clamp.rs
+  s_0e187d747de9ec::t_da97e85f017363 1-46
+src/domain/ops/arithmetic/clamp.rs
+  s_0e187d747de9ec::t_6a047c2d48d55c 136-138
+  s_0e187d747de9ec::t_90c1207912fef9 1-135,139-142
+benches/arithmetic/sum.rs
+  s_0e187d747de9ec::t_da97e85f017363 1-49
+src/domain/ops/arithmetic/rect.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-69
+src/lib.rs
+  s_0e187d747de9ec::t_da97e85f017363 35-39
+src/domain/ops/arithmetic/measure.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-97,99-112,115-117,119-121
+  s_0e187d747de9ec::t_af1d74067ba908 98,113-114,118
+src/domain/ops/arithmetic/find_trim.rs
+  s_0e187d747de9ec::t_af1d74067ba908 148,168
+  s_0e187d747de9ec::t_90c1207912fef9 1-147,149-167,169-177
+src/domain/ops/arithmetic/complex_real.rs
+  s_0e187d747de9ec::t_90c1207912fef9 1-19,21-145
+  s_0e187d747de9ec::t_0363a9c8e9616f 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "68743d9d1f86fa33a2626d0cb66396c37eacd99f",
+  "prompts": {},
+  "sessions": {
+    "s_0e187d747de9ec": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D4LnzFX6FCXRSgcF7JYQRG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
