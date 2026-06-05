@@ -1,0 +1,28 @@
+src/domain/ops/conversion/ifthenelse.rs
+  s_16e4eca23ca9f8::t_e120020fd1a6a4 203,205
+  s_16e4eca23ca9f8::t_539269ef9d9680 12,14-15,44,59-89,121-147,182-202,204,206-210,264,274-312,348-358
+  s_16e4eca23ca9f8::t_35b5350f7668b5 174,216,220,226,232,238,244,250,256
+src/domain/error.rs
+  s_16e4eca23ca9f8::t_4414a16dbe0cd7 140-145
+src/adapters/pipeline.rs
+  s_16e4eca23ca9f8::t_c2909c191b1de2 2522-2550,3354-3361,3363-3404
+  s_16e4eca23ca9f8::t_e5bd4b1ccbf955 175-191,585-589,707,709,715-718
+src/domain/op.rs
+  s_16e4eca23ca9f8::t_3433d4d538d46a 270-293
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c24e46dc5639839f7afd83b870824d99363a8e0d",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
