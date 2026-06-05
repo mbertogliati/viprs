@@ -1,0 +1,44 @@
+benches/conversion/msb.rs
+  s_53a77672afd705::t_5321524e13d019 1-54
+src/domain/ops/conversion/scale.rs
+  s_53a77672afd705::t_5321524e13d019 1-171,173-244
+src/lib.rs
+  s_53a77672afd705::t_5321524e13d019 45-46
+src/adapters/pipeline.rs
+  s_53a77672afd705::t_5321524e13d019 30,33,58,1515-1545,1636-1639,1641,1644,1647,1650,1653-1661,2745-2799
+src/domain/ops/conversion/rot45.rs
+  s_16e4eca23ca9f8::t_e706d8fcb922be 1-66,68-86,95-96,120,126-129,154-155,158,208,211-265,276-303,305-359
+  s_53a77672afd705::t_deed579109bd81 67,87-94,97-119,121-125,130-148,150-153,156-157,159-202,204-207,209-210,266-275,304
+src/domain/ops/conversion.rs
+  s_53a77672afd705::t_5321524e13d019 22,25-26,53,56-57
+src/domain/ops/conversion/msb.rs
+  s_53a77672afd705::t_5321524e13d019 1-190
+benches/conversion/scale.rs
+  s_53a77672afd705::t_5321524e13d019 1-8,10-62
+Cargo.toml
+  s_53a77672afd705::t_5321524e13d019 195-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5fa5fb97aebd4c928718a2aaf03d9356bb47bb51",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_53a77672afd705": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QQMJeS71DaT9cPSqkDYQiA",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
