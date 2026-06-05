@@ -1,0 +1,29 @@
+src/domain/ops/conversion/autorot.rs
+  s_16e4eca23ca9f8::t_0804f78558a448 81,380,382-384,387,392-397,425-430
+src/domain/image.rs
+  s_16e4eca23ca9f8::t_86c2ad4cd555db 205-211,236-307,309-374
+  s_16e4eca23ca9f8::t_ef104548a1c7af 546-580,622-627
+tests/fixtures/autorot/exif_ifd0_orientation_6.hex
+  s_16e4eca23ca9f8::t_32b1ae0d356cae 1-7
+tests/fixtures/autorot/exif_ifd0_without_orientation.hex
+  s_16e4eca23ca9f8::t_207c7395370c46 8
+  s_16e4eca23ca9f8::t_32b1ae0d356cae 1-7,9
+"backlog/tasks/b-144 - Autorot-raw-EXIF-orientation-removal-parity.md"
+  s_16e4eca23ca9f8::t_27e6bc61469300 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4a3abe6139e9fbc8c5522f9089ab1ed5fa2c8628",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
