@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-72 - Affine-benchmark-panics-in-RayonScheduler.md"
+  s_187a159e9be3e3::t_41af8a58b445e0 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "045951dc1d9a12b6ee46cdd98c236c2c2e1e70d0",
+  "prompts": {},
+  "sessions": {
+    "s_187a159e9be3e3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Cw2wrCmDnKTJBXfPnB2gXr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
