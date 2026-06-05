@@ -1,0 +1,35 @@
+tests/golden/golden.rs
+  s_25863b08c6877a::t_dd4313fa8cf5ee 210-214
+  s_25863b08c6877a::t_a08e2be5a1f2e5 2,5,8-87,90-102,109-178,180-190,192-209,215-284,286-301,303-358,362-387
+tests/golden/golden_libvips_test.rs
+  s_25863b08c6877a::t_0bdafb46148cd9 1-2,5-10,15-62,64-142,144-160,162-163,165-183,185-186,188-206,208-209,211-229,231-232,234-270,272-317,319,321-410,413-424
+  s_25863b08c6877a::t_681c8dbd8408b4 63,411-412
+  s_25863b08c6877a::t_23b74699a7a8b8 271
+  s_25863b08c6877a::t_668570ac7a4c50 3-4,11-14
+  s_25863b08c6877a::t_76e29db610b230 161,164,184,187,207,210,230,233
+scripts/generate_golden_fixtures.sh
+  s_25863b08c6877a::t_f6d673e4cbc1a2 87
+  s_25863b08c6877a::t_b7858a567f4405 1-86,88-123
+tests/golden/add_test.rs
+  s_25863b08c6877a::t_0fc3a5afdaa652 1,4
+tests/golden.rs
+  s_25863b08c6877a::t_3160efc258299d 4-5
+tests/golden/linear_test.rs
+  s_25863b08c6877a::t_3109bf43669e38 1,5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3b33ef4ab5cfe1663ac63b796433630f764abc0d",
+  "prompts": {},
+  "sessions": {
+    "s_25863b08c6877a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Aw5a26hNNQCDwdLNrDy4E7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
