@@ -1,0 +1,76 @@
+src/domain/ops/boolean/rshift.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 100-111
+src/domain/ops/arithmetic/add_images.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 329-339,412-425,459-466,468-470,489-491
+  s_fa7d6efc76f9d5::t_0395a701aec5a1 467,471-481
+src/domain/ops/arithmetic/sin.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 89-100
+src/domain/ops/arithmetic/atan.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 89-100
+src/domain/ops/convolution/scharr.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 133-151
+src/domain/ops/arithmetic/cos.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 89-100
+src/domain/ops/arithmetic/exp.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 87-98
+src/domain/ops/arithmetic/sqrt.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 89-100
+src/domain/ops/boolean/or.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 96-107
+src/domain/ops/arithmetic/remainder.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 81,118-140
+src/domain/ops/boolean/and.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 96-107
+src/domain/ops/arithmetic/power.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 111-122
+src/domain/ops/conversion/cast.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 149,222-243
+src/domain/ops/conversion/bandbool.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 201,263-282
+src/domain/ops/convolution/prewitt.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 133-151
+src/domain/ops/arithmetic/sign.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 88-99
+src/domain/ops/arithmetic/asin.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 90-101
+src/domain/ops/arithmetic/log.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 101-112
+src/domain/ops/boolean/lshift.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 100-111
+src/domain/ops/boolean/xor.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 106-117
+src/domain/ops/arithmetic/acos.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 90-101
+src/domain/ops/arithmetic/tan.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 87-98
+src/domain/ops/convolution/sobel.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 133-151
+src/domain/ops/arithmetic/divide.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 83-84,86,126-148
+src/domain/ops/convolution/convsep.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 201,236-313
+src/domain/ops/convolution/conv2d.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 339-350,370-380,382-388
+src/domain/ops/arithmetic/abs.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 87-98
+src/domain/ops/convolution/sharpen.rs
+  s_fa7d6efc76f9d5::t_77f62052f49d14 157-198
+src/domain/ops/conversion/bandmean.rs
+  s_fa7d6efc76f9d5::t_45343f521afc2b 244,304-340
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "82771e460bcd93e3e2b39524ae1467fff63f7160",
+  "prompts": {},
+  "sessions": {
+    "s_fa7d6efc76f9d5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JPS3mbcMdrkodtGJwhfcFB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
