@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-71 - Median-rank-filter-—-histogram-fast-path-for-large-U8-windows.md"
+  s_a7c7891a60b00c::t_45c22a1a92d96c 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "73179dd5cccabe0991a58b8d51d97dd30f63fa04",
+  "prompts": {},
+  "sessions": {
+    "s_a7c7891a60b00c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018m7PTZHQaitf7JsnaT2kd7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
