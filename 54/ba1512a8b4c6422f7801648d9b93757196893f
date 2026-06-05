@@ -1,0 +1,26 @@
+Cargo.toml
+  s_f3ceed9f2fb7cf::t_cfda8700c21bbc 6-8,32
+include/viprs.h
+  s_f3ceed9f2fb7cf::t_cfda8700c21bbc 1-22
+src/lib.rs
+  s_f3ceed9f2fb7cf::t_cfda8700c21bbc 9-10
+src/ffi.rs
+  s_f3ceed9f2fb7cf::t_7f19dc9d627a2a 116,136,147,156
+  s_f3ceed9f2fb7cf::t_cfda8700c21bbc 1-115,117-135,137-146,148-155,157-165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "54ba1512a8b4c6422f7801648d9b93757196893f",
+  "prompts": {},
+  "sessions": {
+    "s_f3ceed9f2fb7cf": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RSKyYVy1M1d4NUfWhYa88D",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
