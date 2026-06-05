@@ -1,0 +1,39 @@
+benches/conversion/bandrank.rs
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1-43
+src/domain/ops/conversion/bandmean.rs
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1-90,92-257,259-271,273-322
+  s_94738ce1426fe3::t_63fa9680336151 91
+src/domain/ops/conversion.rs
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1,3-4,8,10-11
+src/domain/ops/conversion/bandbool.rs
+  s_94738ce1426fe3::t_63fa9680336151 117,128
+  s_94738ce1426fe3::t_05639a8a14c7d3 69
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1-8,10-54,56,59-67,70-71,73-87,89-100,102,104-109,116,121,140,142,149,151,154,160,167-169,177-178,181,186-187,196-275
+  s_94738ce1426fe3::t_0af22af98029c8 58
+  s_94738ce1426fe3::t_8f2133eb38d2c4 9,55,57,68,72,88,101,103,118-120,122-127,129-139,141,143-148,150,152-153,155-159,161-166,170-176,179-180,182-185,188-195
+  s_94738ce1426fe3::t_d90b611ce5477e 110-115
+benches/conversion/bandmean.rs
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1-43
+benches/conversion/bandbool.rs
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1-43
+Cargo.toml
+  s_94738ce1426fe3::t_9e6b3c097a4b90 220-233
+src/domain/ops/conversion/bandrank.rs
+  s_94738ce1426fe3::t_9e6b3c097a4b90 1-158,160-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e7359dd0c6e49f88a5976bd4da8badde8c5fddb2",
+  "prompts": {},
+  "sessions": {
+    "s_94738ce1426fe3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017eVBDCtTc3jBoj94fvhajf",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
