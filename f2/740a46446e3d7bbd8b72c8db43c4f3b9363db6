@@ -1,0 +1,42 @@
+src/domain/ops/histogram.rs
+  s_16e4eca23ca9f8::t_7011d2e401f44c 5,16,22-24
+src/lib.rs
+  s_16e4eca23ca9f8::t_4fc5f4df3654ae 40-44,63-64
+benches/arithmetic/stats.rs
+  s_16e4eca23ca9f8::t_d17c9f203814c1 1-53
+Cargo.toml
+  s_16e4eca23ca9f8::t_672328d1800cb2 100-103
+src/domain/ops/arithmetic.rs
+  s_16e4eca23ca9f8::t_b23cdfd191b266 25,59-62
+src/domain/ops/histogram/hist_find_facades.rs
+  s_16e4eca23ca9f8::t_7788512c0f478f 1-296
+tests/golden/golden_libvips_test.rs
+  s_16e4eca23ca9f8::t_b856b11ff88707 5-6,17,461
+  s_16e4eca23ca9f8::t_3b9f4dfeb07842 153-197,199-204
+  s_16e4eca23ca9f8::t_392ecfa897aff4 241-278,280-309
+  s_16e4eca23ca9f8::t_64d342f5532939 198
+  s_16e4eca23ca9f8::t_f164e8e4eb27a8 279
+  s_16e4eca23ca9f8::t_a0786730f79c3b 22
+  s_16e4eca23ca9f8::t_c2217826faed63 3
+src/domain/ops/arithmetic/reduce_facades.rs
+  s_16e4eca23ca9f8::t_7fe370870bd2b3 17,159,412-413,419-420,520-524,765-768
+  s_16e4eca23ca9f8::t_099ec6a98cf511 1-16,18-94,96-139,141-158,160-199,204-280,285-388,390-393,395-411,414-418,421-460,462-464,469-519,525-764,769-861
+  s_16e4eca23ca9f8::t_7f6a49595bbea5 95,140,200-203,281-284,461,465-468
+  s_16e4eca23ca9f8::t_b6f0165c5b6553 389,394
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f2740a46446e3d7bbd8b72c8db43c4f3b9363db6",
+  "prompts": {},
+  "sessions": {
+    "s_16e4eca23ca9f8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e9901-70a5-7d60-ae82-8007b2c3ea3e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
