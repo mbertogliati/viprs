@@ -1,0 +1,59 @@
+src/domain/ops/histogram.rs
+  s_b8cb314549d811::t_e691f533b03f31 3,5,8-9,13,15,18-19
+"backlog/archive/tasks/b-96 - Histogram-completeness-—-case-entropy-ismonotonic-percent-stdif.md"
+  s_b8cb314549d811::t_e691f533b03f31 4,7
+src/domain/ops/histogram/clahe.rs
+  s_b8cb314549d811::t_e691f533b03f31 197-210,228-229,260-261,318-322
+src/domain/ops/histogram/stdif.rs
+  s_b8cb314549d811::t_e691f533b03f31 1-216
+"backlog/archive/tasks/b-90 - Metadata-propagation-through-CompiledPipeline-output.md"
+  s_b8cb314549d811::t_e691f533b03f31 4,7
+"backlog/tasks/b-103 - Stdif-integral-image-optimization.md"
+  s_b8cb314549d811::t_e691f533b03f31 1-31
+Cargo.toml
+  s_9b6972b199853a::t_209d864c5e4710 528-529
+  s_b8cb314549d811::t_e691f533b03f31 530-536
+"backlog/tasks/b-99 - Morphology-completeness-—-labelregions-countlines-nearest-rank.md"
+  s_b8cb314549d811::t_e691f533b03f31 4,7
+benches/histogram/hist_entropy.rs
+  s_b8cb314549d811::t_e691f533b03f31 1-73
+src/domain/ops/histogram/hist_ismonotonic.rs
+  s_b8cb314549d811::t_e691f533b03f31 1-105
+src/domain/ops/histogram/hist_entropy.rs
+  s_b8cb314549d811::t_e691f533b03f31 1-116
+src/lib.rs
+  s_b8cb314549d811::t_e691f533b03f31 39-42
+benches/histogram/stdif.rs
+  s_b8cb314549d811::t_e691f533b03f31 1-46
+"backlog/archive/tasks/b-74 - GIF-encoder-libvips-quantizer-parity.md"
+  s_b8cb314549d811::t_e691f533b03f31 9-10
+  ai_agent 8,11
+src/domain/ops/histogram/hist_percent.rs
+  s_b8cb314549d811::t_e691f533b03f31 1-123
+"backlog/tasks/b-100 - Metadata-propagation-through-CompiledPipeline-output.md"
+  s_b8cb314549d811::t_e691f533b03f31 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "de1a3ca51a8c72438c5ac1fb477834425926b1be",
+  "prompts": {},
+  "sessions": {
+    "s_9b6972b199853a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "73d3399d-eeac-46fa-89e5-edc6d2fa92d9",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b8cb314549d811": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WydFec9sjVN3hKg5yAHKVC",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
