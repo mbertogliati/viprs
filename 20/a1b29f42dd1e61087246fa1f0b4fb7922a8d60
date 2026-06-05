@@ -1,0 +1,71 @@
+src/domain/ops/arithmetic/divide.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 92-96
+"backlog/archive/tasks/b-56 - C-API-FFI-boundary-—-habilitar-bindings-desde-otros-lenguajes.md"
+  s_f3ceed9f2fb7cf::t_622347737cb970 4,7
+"backlog/archive/tasks/b-107 - Create-source-generators-parity.md"
+  s_357ac28bc8f901::t_2e50d9aacae5ad 1-31
+benches/histogram/stdif.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 1
+"backlog/tasks/b-110 - Raise-low-op-coverage-to-policy-floor.md"
+  ai_agent 1-29
+proptest-regressions/domain/ops/convolution/conva.txt
+  ai_agent 1-7
+AGENTS.md
+  ai_agent 1-436
+src/domain/ops/resample/reduceh.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 17
+src/adapters/scheduler/rayon_scheduler.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 833
+"backlog/tasks/b-106 - Resize-decomposition-parity-and-coverage.md"
+  ai_agent 1-31
+"backlog/archive/tasks/b-108 - Draw-primitives-parity.md"
+  s_357ac28bc8f901::t_2e50d9aacae5ad 1-31
+src/domain/kernel.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 99
+"backlog/tasks/b-105 - Evaluar-migración-de-std-arch-manual-a-pulp-para-reducir-boilerplate-SIMD-y-habilitar-AVX-512-types-faltantes.md"
+  ai_agent 1-90
+src/domain/ops/resample/reducev.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 17
+"backlog/tasks/b-105 - Pre-size-op-scratch-buffers-before-process_region.md"
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 4,7
+src/adapters/pipeline.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 42,55
+benches/resample/mapim.rs
+  s_3e08af9c11a73e::t_2d79eaaf2b613b 1
+"backlog/archive/tasks/b-109 - Benchmark-coverage-for-implemented-ops.md"
+  ai_agent 1-30
+"backlog/tasks/b-111 - Missing-convolution-ops-conv-convasep-edge-fastcor.md"
+  ai_agent 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "20a1b29f42dd1e61087246fa1f0b4fb7922a8d60",
+  "prompts": {},
+  "sessions": {
+    "s_357ac28bc8f901": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TWsEyzEMdEWyPNmPrJSXst",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_3e08af9c11a73e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WTVuSu6wWRf4axKujYDsq5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_f3ceed9f2fb7cf": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RSKyYVy1M1d4NUfWhYa88D",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
