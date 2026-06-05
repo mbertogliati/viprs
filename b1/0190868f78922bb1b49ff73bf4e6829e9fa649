@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-65 - Implement-HistEqual-TileReducer-CLAHE-Op.md"
+  s_c735d8dbda9a28::t_ce9031c871de68 4,7
+"backlog/archive/tasks/b-83 - Histogram-core-—-hist_find-hist_norm-hist_cum-hist_match.md"
+  s_c735d8dbda9a28::t_ce9031c871de68 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b10190868f78922bb1b49ff73bf4e6829e9fa649",
+  "prompts": {},
+  "sessions": {
+    "s_c735d8dbda9a28": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UqLzPkLP6zBcgB39Sg2hhS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
