@@ -1,0 +1,121 @@
+"backlog/tasks/b-84 - Create-CI-parity-gate-and-release-criteria-for-100-percent-libvips-target.md"
+  s_86c44658ee33a8::t_b26da42bcd3103 7-11
+  s_86c44658ee33a8::t_89c7957946518e 12
+"backlog/tasks/b-86 - Optimize-hot-paths-to-surpass-libvips-on-prioritized-workloads.md"
+  s_86c44658ee33a8::t_89c7957946518e 7-12
+"backlog/tasks/b-79 - Close-option-level-parity-for-existing-codecs.md"
+  s_86c44658ee33a8::t_89c7957946518e 7-12
+"backlog/tasks/b-71 - Close-convolution-and-morphology-parity.md"
+  s_86c44658ee33a8::t_89c7957946518e 12
+  s_86c44658ee33a8::t_b056e890430093 7-11
+xtask/Cargo.toml
+  s_86c44658ee33a8::t_c5029608511cdd 1-9
+  s_86c44658ee33a8::t_2fce84be50fc8f 10
+"backlog/tasks/b-77 - Close-draw-histogram-and-reducer-parity.md"
+  s_86c44658ee33a8::t_89c7957946518e 7-12
+"backlog/tasks/b-83 - Eliminate-false-confidence-tests-and-enforce-test-honesty-policy.md"
+  s_86c44658ee33a8::t_b26da42bcd3103 7-11
+  s_86c44658ee33a8::t_89c7957946518e 12
+"backlog/tasks/b-64 - Implement-ICC-colour-management-parity-with-libvips.md"
+  s_86c44658ee33a8::t_97de8ff4eae0ca 1-6,8-11,13-35
+  s_86c44658ee33a8::t_89c7957946518e 7,12
+"backlog/tasks/b-66 - Implement-cross-tile-connected-components-merge-for-labelregions.md"
+  s_86c44658ee33a8::t_97de8ff4eae0ca 1-6,8-11,13-35
+  s_86c44658ee33a8::t_89c7957946518e 7,12
+"backlog/tasks/b-82 - Expand-libvips-differential-and-golden-coverage-across-all-implemented-operations.md"
+  s_86c44658ee33a8::t_89c7957946518e 9,14
+  s_86c44658ee33a8::t_173d9af471c501 1-8,10-13,15-34
+Cargo.toml
+  s_86c44658ee33a8::t_99f9adc713b62c 1-3
+"backlog/tasks/b-74 - Close-colour-module-parity-beyond-ICC.md"
+  s_86c44658ee33a8::t_b056e890430093 7-11
+  s_86c44658ee33a8::t_89c7957946518e 12
+"backlog/tasks/b-81 - Run-full-allocation-path-audit-and-enforce-streaming-memory-contracts.md"
+  s_86c44658ee33a8::t_89c7957946518e 7-12
+"backlog/archive/tasks/b-67 - Replace-self-bootstrapped-subtract-goldens-with-libvips-derived-fixtures.md"
+  s_4f88405e2b7ee0::t_fe32919d043f7f 1-35
+"backlog/tasks/b-78 - Implement-foreign-codec-parity-phase-2.md"
+  s_86c44658ee33a8::t_89c7957946518e 7-12
+"backlog/tasks/b-72 - Build-full-libvips-viprs-parity-matrix-and-coverage-dashboard.md"
+  s_86c44658ee33a8::t_b26da42bcd3103 7-11
+  s_86c44658ee33a8::t_89c7957946518e 12
+xtask/src/main.rs
+  s_86c44658ee33a8::t_bb569b1165f55a 1-22
+"backlog/tasks/b-88 - Port-libvips-upstream-test-cases-into-viprs-functional-suite.md"
+  s_86c44658ee33a8::t_b26da42bcd3103 1-31
+Cargo.lock
+  ai_agent 2262-2270
+"backlog/tasks/b-73 - Close-conversion-structural-and-create-parity-gaps.md"
+  s_86c44658ee33a8::t_b056e890430093 7-11
+  s_86c44658ee33a8::t_89c7957946518e 12
+"backlog/tasks/b-68 - Establish-continuous-head-to-head-performance-tracking-against-libvips.md"
+  s_86c44658ee33a8::t_89c7957946518e 7,12
+  s_86c44658ee33a8::t_97de8ff4eae0ca 1-6,8-11,13-35
+"backlog/tasks/b-65 - Remove-animated-WebP-full-frame-shrink-fallback-and-implement-native-semantics.md"
+  s_c70cb117742da4::t_1f607f180013c6 4,7
+  s_86c44658ee33a8::t_97de8ff4eae0ca 1-3,5-6,8-11,13-35
+  s_86c44658ee33a8::t_89c7957946518e 12
+"backlog/tasks/b-87 - Benchmark-performance-directly-against-libvips-C-library.md"
+  s_86c44658ee33a8::t_b26da42bcd3103 1-31
+"backlog/tasks/b-75 - Close-arithmetic-boolean-relational-and-LUT-parity-gaps.md"
+  s_86c44658ee33a8::t_89c7957946518e 12
+  s_86c44658ee33a8::t_b056e890430093 11
+"backlog/tasks/b-69 - Close-codec-surface-gap-with-libvips-foreign-module.md"
+  s_86c44658ee33a8::t_97de8ff4eae0ca 1-6,8-11,13-35
+  s_86c44658ee33a8::t_89c7957946518e 7,12
+.cargo/config.toml
+  s_86c44658ee33a8::t_5439d1120a881c 1-2
+"backlog/tasks/b-70 - Close-resample-parity-for-kernels-and-affine-semantics.md"
+  s_86c44658ee33a8::t_b056e890430093 7,11
+  s_86c44658ee33a8::t_89c7957946518e 12
+  s_86c44658ee33a8::t_c75ebc6028fd54 1-6,8-10,13-32
+"backlog/tasks/b-80 - Close-freqfilt-and-mosaicing-parity-and-numerical-stability-gaps.md"
+  s_86c44658ee33a8::t_89c7957946518e 7-12
+"backlog/tasks/b-85 - Resolve-dangling-backlog-references-and-stale-B-IDs-in-source-comments.md"
+  s_86c44658ee33a8::t_89c7957946518e 12
+  s_86c44658ee33a8::t_b056e890430093 7-11
+xtask/src/bench.rs
+  s_86c44658ee33a8::t_34d2b9066ec537 13
+  s_86c44658ee33a8::t_2e191d3b960e7b 8,10-11
+  s_86c44658ee33a8::t_f05c839615e33a 130-133,135-136,138-140,148,157,167-168
+  s_86c44658ee33a8::t_0bab8c4a2ed20e 87-88
+  s_86c44658ee33a8::t_bff22b4e1c84bf 1-7,9,14-86,89-129,134,137,141-146,149-150,152-154,158-166,169-307
+  s_86c44658ee33a8::t_f65a58a0701ca5 12
+  s_86c44658ee33a8::t_99aaca1de61377 147,151,155-156
+"backlog/tasks/b-76 - Implement-foreign-codec-parity-phase-1.md"
+  s_86c44658ee33a8::t_89c7957946518e 12
+  s_86c44658ee33a8::t_dad8c1a428bf37 1-6,8-10,13-32
+  s_86c44658ee33a8::t_b056e890430093 7,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eaf61e08133ee3e6ba2dd57f6a0358f435f4d9e6",
+  "prompts": {},
+  "sessions": {
+    "s_4f88405e2b7ee0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01JZh3YjiurrxahrrgMZHu4N",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_86c44658ee33a8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "28220fef-28a0-4ebc-a05e-76fefed82ab2",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c70cb117742da4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01LLTrQ9mzSG7U993ERw3uQ2",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
