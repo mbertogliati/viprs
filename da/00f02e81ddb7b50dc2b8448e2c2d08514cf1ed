@@ -1,0 +1,33 @@
+CLAUDE.md
+  s_86c44658ee33a8::t_e7a52ba0d0d872 534
+  s_86c44658ee33a8::t_84c437bb8ca6e6 568-591
+Cargo.toml
+  s_86c44658ee33a8::t_dfd6f25e9756bb 37-38
+  s_86c44658ee33a8::t_e76d4bfa5ba85f 1108-1112
+benches/iai/pipeline.rs
+  ai_agent 1-96
+xtask/src/perf.rs
+  s_86c44658ee33a8::t_a3cfa9271893e5 463-464,466-512,514-539,569
+.gitignore
+  s_86c44658ee33a8::t_c9cb9588d32296 8
+examples/dhat_profile.rs
+  ai_agent 1-99
+Cargo.lock
+  ai_agent 6-13,171-194,502-538,720-725,779-814,942-947,1015-1023,1074-1079,1203-1211,1224-1246,1340-1361,1675-1683,1722-1742,1797-1802,2023-2028,2187,2190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "da00f02e81ddb7b50dc2b8448e2c2d08514cf1ed",
+  "prompts": {},
+  "sessions": {
+    "s_86c44658ee33a8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "28220fef-28a0-4ebc-a05e-76fefed82ab2",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
