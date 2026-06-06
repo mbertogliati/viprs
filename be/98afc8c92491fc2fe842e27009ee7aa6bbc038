@@ -1,0 +1,34 @@
+src/domain/ops/colour/decmc.rs
+  s_b5f43253531bd5::t_23b8b8d9e450b7 10-20,84,86,94
+src/domain/ops/colour/lab_to_srgb.rs
+  s_b5f43253531bd5::t_23b8b8d9e450b7 10,15-18,21
+src/domain/ops/colour/srgb_to_xyz.rs
+  s_b5f43253531bd5::t_23b8b8d9e450b7 10,15-18,21
+src/domain/ops/colour/bridge.rs
+  s_b5f43253531bd5::t_55b503149581e6 20,22,27-28,59-60,64-67,81-83,152-181,183-199,210,212,298-332,334-347
+src/domain/ops/colour/srgb_to_lab.rs
+  s_b5f43253531bd5::t_23b8b8d9e450b7 10,15-19,22
+src/adapters/pipeline.rs
+  s_b5f43253531bd5::t_7a2e03888d9a6f 2364-2378,2380,2382-2383,2388-2389,2393-2395,2398-2404,2413-2414,2416-2417,2423-2424,2428-2429,2503,2515,2526-2621
+  s_b5f43253531bd5::t_ef85f3ffa00695 2651,2654,2658,3912-3990
+src/domain/ops/colour/xyz_to_srgb.rs
+  s_b5f43253531bd5::t_23b8b8d9e450b7 10,15-17,20
+src/domain/colorspace.rs
+  s_b5f43253531bd5::t_d093fd0db66c23 7-8,34,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "be98afc8c92491fc2fe842e27009ee7aa6bbc038",
+  "prompts": {},
+  "sessions": {
+    "s_b5f43253531bd5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_018Xfo5UWcmaWHKd8Z7vhXZt",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
