@@ -1,0 +1,23 @@
+tests/golden/golden_libvips_test.rs
+  s_dd414f21510a5a::t_76b4dc968cfed0 1003-1035
+src/domain/ops/conversion/gamma.rs
+  s_dd414f21510a5a::t_72d22a4a793a90 10,83-86,200,202-207,213,238-261
+  s_dd414f21510a5a::t_78f37f4a78d3be 190,196
+  s_dd414f21510a5a::t_7567f4cb6ae9e8 15-16,21-25,30-34,39-43,48-52,57-61,66-70,75-79,155,208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a3d4b2d14e88e5dace36fa61f7d76cc860fd30bc",
+  "prompts": {},
+  "sessions": {
+    "s_dd414f21510a5a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UntwoJAgTNeSx15RQ8MnXu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
