@@ -1,0 +1,19 @@
+xtask/README.md
+  s_86c44658ee33a8::t_2d008a35f6fb90 1-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "505886c8509bfcabb474db3a28ae0a813c3c726d",
+  "prompts": {},
+  "sessions": {
+    "s_86c44658ee33a8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "28220fef-28a0-4ebc-a05e-76fefed82ab2",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
