@@ -1,0 +1,49 @@
+"backlog/tasks/b-85 - Resolve-dangling-backlog-references-and-stale-B-IDs-in-source-comments.md"
+  s_733ac233637e79::t_11948d7c03c30d 7,18,20-33,35-38,41-43
+docker/Dockerfile
+  s_86c44658ee33a8::t_5964bad1ac8b7c 3,6-10,15-17,33,36-37
+xtask/src/perf.rs
+  s_86c44658ee33a8::t_f9da0d994599d9 387,389-390,403-413,428
+xtask/README.md
+  s_86c44658ee33a8::t_799f39284743d9 158,165,170-193,203-204
+"backlog/archive/tasks/b-74 - Close-colour-module-parity-beyond-ICC.md"
+  s_733ac233637e79::t_93bc966ebaff23 4,7
+docker/scripts/entrypoint.sh
+  s_86c44658ee33a8::t_2b282e65e1eb93 4-6,8-9,16,41-45,47-92,97-127,130-131,136-150,152,154,157,165,167,170-181,185-186,188-189
+"backlog/tasks/b-94 - Close-HEIF-writer-callback-safety-gap.md"
+  s_733ac233637e79::t_21d8dfe6099262 2-4,6,8,10-11,17,19-22,25-27
+"backlog/archive/tasks/b-75 - Close-arithmetic-boolean-relational-and-LUT-parity-gaps.md"
+  s_733ac233637e79::t_93bc966ebaff23 4,7
+"backlog/archive/tasks/b-71 - Close-convolution-and-morphology-parity.md"
+  s_733ac233637e79::t_93bc966ebaff23 4,7
+"backlog/tasks/b-83 - Eliminate-false-confidence-tests-and-enforce-test-honesty-policy.md"
+  s_733ac233637e79::t_238b75335678d0 7,18,20-22,24-27,29-30,32-37,40-42
+"backlog/tasks/b-81 - Run-full-allocation-path-audit-and-enforce-streaming-memory-contracts.md"
+  s_733ac233637e79::t_4401521a2ce034 7,18,20-25,27-31,33-36,39-42
+"backlog/tasks/b-93 - Fix-per-tile-heap-allocations-in-histogram-and-scheduler-hot-paths.md"
+  s_733ac233637e79::t_ca304249809bd6 2-3,6,8,11,17,19-22,24,27-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7999b6b8094bc362e69dec167887746b3eb02d1c",
+  "prompts": {},
+  "sessions": {
+    "s_733ac233637e79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "978c85c6-a321-4e6e-ad2f-4256ad8640fb",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_86c44658ee33a8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "28220fef-28a0-4ebc-a05e-76fefed82ab2",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
