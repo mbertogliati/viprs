@@ -1,0 +1,9 @@
+src/adapters/sources/decoder_source.rs
+  ai_agent 18-21,66-114,249,251-252,286-288,292,359,368-370,372,376-379,385,397-399,476-486,543,745,762-766,770-799,889,952-961,968
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e3c4f400c39cf9ea4d6a80730a1481f27fee63c5",
+  "prompts": {}
+}
