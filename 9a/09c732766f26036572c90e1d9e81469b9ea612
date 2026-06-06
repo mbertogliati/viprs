@@ -1,0 +1,24 @@
+"backlog/docs/doc-26 - ADR-049-—-ICC-management-via-lcms2.md"
+  s_808d9f92eedf28::t_77418314387092 8-57
+src/domain/ops/colour/icc.rs
+  s_808d9f92eedf28::t_cdd1244826cb74 214-235
+  s_808d9f92eedf28::t_64493064776f6d 306-360
+Cargo.toml
+  s_808d9f92eedf28::t_29e26a84cc7c6e 34,57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9a09c732766f26036572c90e1d9e81469b9ea612",
+  "prompts": {},
+  "sessions": {
+    "s_808d9f92eedf28": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UVgUqCwjUMCdWfzmcwbiDS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
