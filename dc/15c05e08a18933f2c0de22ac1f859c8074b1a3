@@ -1,0 +1,21 @@
+tests/golden_convolution_morphology.rs
+  s_3fd417eeba6ecd::t_8f784814537994 393-397
+  s_3fd417eeba6ecd::t_5ebd3fd015aa80 1-14,16-18,20-86,88-103,105-291,313-326,328-337,343-365,367,370,372-392,398,400-455,457-488,490-507,509-535,537-541
+  s_3fd417eeba6ecd::t_6e514a3113e541 292-312,368-369,371,399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "dc15c05e08a18933f2c0de22ac1f859c8074b1a3",
+  "prompts": {},
+  "sessions": {
+    "s_3fd417eeba6ecd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0197zbd5gKHY3Ha7QMZv8jWF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
