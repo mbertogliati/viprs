@@ -1,0 +1,21 @@
+src/domain/ops/lut/map_lut.rs
+  s_0df8d47c06c482::t_c3ba7d05da4460 18-69,255,273,316,404
+  s_0df8d47c06c482::t_0d985d1175aa44 13,15,74-75,81-82,88-111,115-153,254,268,272,315,362,364,366,403,412,447-450,460,550-577
+  s_0df8d47c06c482::t_416128dfd08ffc 6,461
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8a3fcaf2fce5a765b3c4f5477bab999fa6f66db3",
+  "prompts": {},
+  "sessions": {
+    "s_0df8d47c06c482": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BnebkCCcc2VC9hcb1HW2BJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
