@@ -1,0 +1,19 @@
+"backlog/docs/doc-23 - ADR-047-—-Morphology-whole-image-demand-for-global-reducers.md"
+  s_851188e01e213f::t_c84ed662fc9e91 8-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ee02e5beac223efb95b86d49d9fd29bb71c23e43",
+  "prompts": {},
+  "sessions": {
+    "s_851188e01e213f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01573XDMJPueQTwLhDfRHbND",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
