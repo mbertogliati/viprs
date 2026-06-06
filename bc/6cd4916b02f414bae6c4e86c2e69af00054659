@@ -1,0 +1,26 @@
+"backlog/tasks/b-91 - OperationCache-existe-pero-no-está-conectada-al-pipeline-—-código-muerto-que-sugiere-funcionalidad-inexistente.md"
+  s_86c44658ee33a8::t_693d2d8b23d5e2 1-38
+tools/bench-vs-libvips/libvips_runner.c
+  s_86c44658ee33a8::t_a5548b7ca9d67e 124-126,171
+  s_86c44658ee33a8::t_42ac9a40d73f10 40,43-48,51,55,60,62-63,66,75,77-78,81,90,92-93
+  s_86c44658ee33a8::t_73b59e292fabca 96,101-102,105-106,109,111,114,116
+  s_86c44658ee33a8::t_58d5730da964e9 184
+xtask/src/bench.rs
+  s_86c44658ee33a8::t_0abbc1878af962 99-102,105,113,133,171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bc6cd4916b02f414bae6c4e86c2e69af00054659",
+  "prompts": {},
+  "sessions": {
+    "s_86c44658ee33a8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "28220fef-28a0-4ebc-a05e-76fefed82ab2",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
