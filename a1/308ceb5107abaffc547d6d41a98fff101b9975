@@ -1,0 +1,49 @@
+src/domain/ops/morphology/dilate.rs
+  s_006fb8b98ab3d3::t_369cbdff51e9a0 182-191,368-382,417-440
+src/domain/ops/convolution/canny.rs
+  s_006fb8b98ab3d3::t_af6dbcdfe8840c 222-240
+  s_006fb8b98ab3d3::t_c748b8473a8d35 10,14,30,69
+src/domain/ops/convolution/sharpen.rs
+  s_006fb8b98ab3d3::t_c748b8473a8d35 10,14,30
+  s_006fb8b98ab3d3::t_2fec732678053d 90-91
+src/domain/ops/morphology/count_lines.rs
+  s_006fb8b98ab3d3::t_c748b8473a8d35 2,4,7-10,16,21-36,42-43,45,51-52,59-60,62-65,67,70-73,76,78-89,91,93-103,105,107
+  s_006fb8b98ab3d3::t_d95dd903ddf00b 55-56,111,120,124-125,193,197-198,206,219-221,223-228,247-249,271-275
+  s_006fb8b98ab3d3::t_2fec732678053d 109-110
+  s_006fb8b98ab3d3::t_f4c0ddc49709d7 121,126,131-136,140-151,153,155-165,167,170,172-175,178,181,185-192,194-196,199-200,204-205,210-215,217-218,222,232-234,236-239,241-245,254,262,264-269
+src/domain/ops/morphology/erode.rs
+  s_006fb8b98ab3d3::t_1790ab9f85e4a4 161-170,277-291,326-349
+src/domain/ops/convolution/sobel.rs
+  s_006fb8b98ab3d3::t_c748b8473a8d35 8,13,84-88
+  s_006fb8b98ab3d3::t_6460b89d3038da 101,156-161,163-172
+src/domain/ops/convolution/gauss_blur.rs
+  s_006fb8b98ab3d3::t_c748b8473a8d35 38,50-52,54,65,78-82,97-106
+  s_006fb8b98ab3d3::t_17a6aea22e26b2 854-874
+src/domain/ops/convolution/conv2d.rs
+  s_006fb8b98ab3d3::t_c385b4f708ec47 236-248,393-408,430-456
+src/domain/ops/morphology/rank.rs
+  s_006fb8b98ab3d3::t_aa998c4b71ede0 239,242-250,418-427,429,431-464
+  s_006fb8b98ab3d3::t_5bfde4c7b15fb8 428,430
+src/domain/ops/convolution/convsep.rs
+  s_006fb8b98ab3d3::t_3f3b10ae860ab5 390
+  s_006fb8b98ab3d3::t_c748b8473a8d35 20-21,30-36,38,40-41,101,112-113,122-128,130,132-133,193,209-214,216-218
+  s_006fb8b98ab3d3::t_bc2497eec4401b 279-306,370-380,382-389,391-405,435-452
+src/domain/ops/convolution/common.rs
+  s_006fb8b98ab3d3::t_c748b8473a8d35 120-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a1308ceb5107abaffc547d6d41a98fff101b9975",
+  "prompts": {},
+  "sessions": {
+    "s_006fb8b98ab3d3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_016tn3BsVWBQ1nsFDRZ87DZB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
