@@ -1,0 +1,29 @@
+src/domain/ops/resample/reduce_common.rs
+  s_3a3dca8defa2a5::t_795c2a8a21132b 1-3,16-29
+src/adapters/pipeline.rs
+  s_3a3dca8defa2a5::t_795c2a8a21132b 1836,1838,1841,1844,1847,1850,1853,1883,1885,1888,1891,1894,1897,1900,2814-2829
+src/domain/ops/resample/reduceh.rs
+  s_3a3dca8defa2a5::t_795c2a8a21132b 10,20,32-34,37,145-151,153,156,224,238-240,258-260,278-280,302-304,330-332,358-360,388-390,467,477,499-513
+src/domain/ops/resample/reducev.rs
+  s_3a3dca8defa2a5::t_795c2a8a21132b 9,18,31-33,36,144-150,152,155,223,237-239,257-259,277-279,301-303,329-331,357-359,387-389,466,476,498-512
+"backlog/archive/tasks/b-176 - VSQBS-reduce-family-still-uses-1D-quadratic-fallback.md"
+  s_3a3dca8defa2a5::t_795c2a8a21132b 4,7
+src/domain/kernel.rs
+  s_3a3dca8defa2a5::t_795c2a8a21132b 174-176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b5cfdc654222fad8f3c260fe3857effd480684e1",
+  "prompts": {},
+  "sessions": {
+    "s_3a3dca8defa2a5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01EL3CTV8u2mdXL5TvdCUNbj",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
