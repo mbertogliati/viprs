@@ -1,0 +1,25 @@
+src/adapters/codecs/pnm.rs
+  s_7626c22763e8be::t_39489aba702e0d 470
+  s_7626c22763e8be::t_aaf54d47bad9d6 493-640
+"backlog/tasks/b-69 - Close-codec-surface-gap-with-libvips-foreign-module.md"
+  s_7626c22763e8be::t_7e83fa5d66c1d9 24-39
+src/adapters/codecs/registry.rs
+  s_7626c22763e8be::t_044fb28f135d25 420-421,424-431
+  s_7626c22763e8be::t_b64f7474861164 20,22,34-35,44-45,56,58,72,74,121,123,183,185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "367890fea8fe69b32cfd8680a0eb99896b37b84d",
+  "prompts": {},
+  "sessions": {
+    "s_7626c22763e8be": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KzKB4Kvz6dnCx9xGB18mvW",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
