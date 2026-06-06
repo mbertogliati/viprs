@@ -1,0 +1,30 @@
+"backlog/tasks/b-94 - Close-HEIF-writer-callback-safety-gap.md"
+  s_733ac233637e79::t_21d8dfe6099262 4
+src/adapters/codecs/heif_support.rs
+  s_48d2a68b4d6d71::t_3b5f2d182d87e2 56-62,89-96,141-144,257-290,292-313
+  s_48d2a68b4d6d71::t_571077a1f76e8d 291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f7a190de402d7838c892a21822ed8db72406b76d",
+  "prompts": {},
+  "sessions": {
+    "s_48d2a68b4d6d71": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01N4B3aoGRGcW8QrYKsGt41J",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_733ac233637e79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "978c85c6-a321-4e6e-ad2f-4256ad8640fb",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
