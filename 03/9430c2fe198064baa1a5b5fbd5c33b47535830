@@ -1,0 +1,20 @@
+src/adapters/codecs/heif_support.rs
+  s_48d2a68b4d6d71::t_3b5f2d182d87e2 56-62,89-96,141-144,257-290,292-313
+  s_48d2a68b4d6d71::t_571077a1f76e8d 291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "039430c2fe198064baa1a5b5fbd5c33b47535830",
+  "prompts": {},
+  "sessions": {
+    "s_48d2a68b4d6d71": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01N4B3aoGRGcW8QrYKsGt41J",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
