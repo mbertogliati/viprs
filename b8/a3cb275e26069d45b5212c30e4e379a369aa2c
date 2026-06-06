@@ -1,0 +1,23 @@
+src/domain/ops/conversion/smartcrop.rs
+  s_7e2120293566c8::t_32e2546ff315e7 230-233,242-243,270,277-280,284-285,287,291,357,365-370,376-377,381-383,388-392,399-400,410-544,547-553,556-569,572-588
+  s_7e2120293566c8::t_bd351a0327b11a 667-668,679-684,695,706-708,711-712,826-828,830-831,836-854,856,859-864,867-891,914-919,921-922,927-930
+  s_7e2120293566c8::t_e9429c9d102f8f 152-154,163
+  s_7e2120293566c8::t_2ebae27e28435e 685-694,696-705,710,829,855,857-858,865-866,892-913,923-926
+  s_7e2120293566c8::t_033515e40690cf 832-835
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b8a3cb275e26069d45b5212c30e4e379a369aa2c",
+  "prompts": {},
+  "sessions": {
+    "s_7e2120293566c8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01J6T5n5JNMQisthejA3WDhK",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
