@@ -1,0 +1,35 @@
+"backlog/tasks/b-72 - Build-full-libvips-viprs-parity-matrix-and-coverage-dashboard.md"
+  ai_agent 7,18
+src/adapters/codecs/jxl.rs
+  s_733ac233637e79::t_07014ba04ab007 1-315
+"backlog/tasks/b-84 - Create-CI-parity-gate-and-release-criteria-for-100-percent-libvips-target.md"
+  ai_agent 7,11,18
+src/adapters/codecs.rs
+  s_733ac233637e79::t_07014ba04ab007 17,58-60,93-94
+Cargo.toml
+  s_733ac233637e79::t_36cd9e8bcec170 29
+"backlog/archive/tasks/b-110 - Evaluate-JPEG-XL-codec-dependency-strategy.md"
+  s_733ac233637e79::t_07014ba04ab007 4,7
+src/adapters/codecs/registry.rs
+  s_733ac233637e79::t_07014ba04ab007 42-43,448-449
+"backlog/docs/doc-26 - ADR-049-—-JPEG-XL-decode-only-dependency-strategy.md"
+  s_733ac233637e79::t_07014ba04ab007 1-51
+Cargo.lock
+  ai_agent 60-73,267-276,1059-1060,1062,1064,1068-1069,1071-1075,1078-1079,1081-1194,1197-1207,1211-1212,1214,1216-1233,1236-1253,2578-2596,2741
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b769b28ee9659292a952bd43dc73f1d69cb6b7b1",
+  "prompts": {},
+  "sessions": {
+    "s_733ac233637e79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "978c85c6-a321-4e6e-ad2f-4256ad8640fb",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
