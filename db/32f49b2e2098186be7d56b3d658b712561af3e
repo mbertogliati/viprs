@@ -1,0 +1,23 @@
+"backlog/docs/doc-9 - ADR-029-—-Packed-single-input-MapIm-bridge.md"
+  s_7d3ab7512b00b7::t_2c773c4ea71b93 32
+benches/resample/mapim.rs
+  s_7d3ab7512b00b7::t_9ef8808ba174b2 25
+src/domain/ops/resample/mapim.rs
+  s_7d3ab7512b00b7::t_e3243d34916d92 23,162,344-372,394,398-421,437
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "db32f49b2e2098186be7d56b3d658b712561af3e",
+  "prompts": {},
+  "sessions": {
+    "s_7d3ab7512b00b7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DMJwEKaQUKnGvG6Xk8PzTi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
