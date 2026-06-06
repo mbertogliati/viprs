@@ -1,0 +1,20 @@
+src/domain/ops/draw.rs
+  s_1b94d966c220b9::t_9726b07f954952 18,710-712,724-753,770-839
+  s_1b94d966c220b9::t_a4c679b9eb9f25 713-723,754-769
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7dae2b4ddfc5a9a959986096fef61692fd7f13fc",
+  "prompts": {},
+  "sessions": {
+    "s_1b94d966c220b9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D3ZDg4rjeJ9ir9ejawxLHs",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
