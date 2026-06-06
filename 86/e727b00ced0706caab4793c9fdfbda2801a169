@@ -1,0 +1,31 @@
+src/domain/ops/freqfilt/phasecor.rs
+  s_e0e7d45ead5100::t_9d4c77e252d0e2 210-211
+  s_e0e7d45ead5100::t_9627eab553375b 155
+  s_e0e7d45ead5100::t_d1efd2bc01c2db 31,187
+  s_e0e7d45ead5100::t_44b72750dad6f4 170,213
+src/domain/ops/mosaicing/match_op.rs
+  s_e0e7d45ead5100::t_a4606ce293b3f2 476-512
+  s_e0e7d45ead5100::t_fc819bb69e3894 174-178,181-184,206-207,212-217,225-277,279-280
+src/domain/ops/mosaicing/merge.rs
+  s_e0e7d45ead5100::t_d49dfad79383de 57-60,63-67,69-71,73,80-82,84-86
+  s_e0e7d45ead5100::t_eb923053352ba4 1079,1094
+  s_e0e7d45ead5100::t_263b8025342f47 1048-1052,1054,1056-1078,1080-1093
+  s_e0e7d45ead5100::t_8041ee3b7cf89f 767-798,800-844,846-878
+  s_e0e7d45ead5100::t_cf02ff791bec1e 181-209,211-290,293,296-303,305-307,312-320
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "86e727b00ced0706caab4793c9fdfbda2801a169",
+  "prompts": {},
+  "sessions": {
+    "s_e0e7d45ead5100": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DMAeoFLNP7jkcTwatgmQ26",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
