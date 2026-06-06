@@ -1,0 +1,21 @@
+scripts/generate_golden_fixtures.sh
+  s_4f88405e2b7ee0::t_464cffb188fb3b 29-32,47-58,64-67,70-79,84,101-104,115-119
+tests/golden/subtract_test.rs
+  s_4f88405e2b7ee0::t_032484160605f9 1,4-6,13,16,24,27-29,35,54-77,82,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1ce9be238054a955d52581b168058ba50df2f623",
+  "prompts": {},
+  "sessions": {
+    "s_4f88405e2b7ee0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01JZh3YjiurrxahrrgMZHu4N",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
