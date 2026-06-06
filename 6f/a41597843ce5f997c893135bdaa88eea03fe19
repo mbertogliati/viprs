@@ -1,0 +1,21 @@
+src/domain/ops/mosaicing/tie_points.rs
+  s_7efde1bdac8796::t_734b4d22657bda 232-243
+src/domain/ops/mosaicing/remosaic.rs
+  s_7efde1bdac8796::t_734b4d22657bda 87-88,90,134-156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6fa41597843ce5f997c893135bdaa88eea03fe19",
+  "prompts": {},
+  "sessions": {
+    "s_7efde1bdac8796": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_013BDrjoKBo8wcyHzFsZDNwU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
