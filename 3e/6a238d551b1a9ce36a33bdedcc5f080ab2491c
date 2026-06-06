@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-89 - Extend-maplut-parity-to-multiband-and-selected-band-semantics.md"
+  s_733ac233637e79::t_22c1b7fdf9463e 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3e6a238d551b1a9ce36a33bdedcc5f080ab2491c",
+  "prompts": {},
+  "sessions": {
+    "s_733ac233637e79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "978c85c6-a321-4e6e-ad2f-4256ad8640fb",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
