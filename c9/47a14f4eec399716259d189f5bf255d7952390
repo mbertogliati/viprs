@@ -1,0 +1,23 @@
+src/domain/ops/convolution/canny.rs
+  s_2ab9d85dce642a::t_879755dac251bb 64-75,232,241-244,249-256,260,262,269-287
+  s_2ab9d85dce642a::t_b32e90032c3e48 266
+  s_2ab9d85dce642a::t_aff40c99250662 257-259,261,263-265,267-268
+tests/golden_convolution_morphology.rs
+  s_2ab9d85dce642a::t_f7742eaba5501d 394
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c947a14f4eec399716259d189f5bf255d7952390",
+  "prompts": {},
+  "sessions": {
+    "s_2ab9d85dce642a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01HUWSEddXYkFEtT1LzNf46M",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
