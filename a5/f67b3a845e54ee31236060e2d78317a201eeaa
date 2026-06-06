@@ -1,0 +1,32 @@
+src/domain/ops/resample.rs
+  s_26414787165722::t_1d2f82934a69dc 26
+"backlog/docs/doc-9 - ADR-029-—-Packed-single-input-MapIm-bridge.md"
+  s_26414787165722::t_5e87a5e640d46c 9
+src/domain/ops/resample/mapim.rs
+  s_26414787165722::t_dd9b28089fa06d 219
+  s_26414787165722::t_ff9c997c121a63 403,408-412,416,418-419,426
+  s_26414787165722::t_3bfc27821affe6 7,13,15-17,21-22,24,34-36,41-42,44,62-63,67-68,72-74,77-78,84-85,91-98,107,113-120,133-136,144-189,192-193,200,213,217-218,220,223-259,261,264-265,267-272,276,280,284-289,296,299-312,314,317-318,320-322,324-328,333-391,400,413-415,417,420-425,427-429,432-442,447-456,461-472,477-495,502-506,508
+  s_26414787165722::t_97fec2510607b3 106
+  s_26414787165722::t_c24a974fd687b7 8,260,262-263,266,331-332,507,509-516,521
+"backlog/docs/doc-24 - ADR-047-—-MapIm-multi-source-root-plumbing.md"
+  s_26414787165722::t_ba00b9b8cef041 2-9,11-25
+  s_26414787165722::t_fc8806d26d54c2 10
+benches/resample/mapim.rs
+  s_26414787165722::t_0265f0d688fb59 4,7,11-12,15,18-29,33,35-36,39-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a5f67b3a845e54ee31236060e2d78317a201eeaa",
+  "prompts": {},
+  "sessions": {
+    "s_26414787165722": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_TxEagApka6m9jcZMnujj41bb",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
