@@ -1,0 +1,27 @@
+"backlog/tasks/b-148 - MapIm-multi-source-root-plumbing.md"
+  s_fe375ae924c5ef::t_acc1553a182e08 4,7
+"backlog/tasks/b-149 - DecoderSource-eager-path-strips-decode-time-shrink-and-retains-full-frame.md"
+  ai_agent 1-33
+"backlog/tasks/b-151 - Animated-WebP-shrink-on-load-still-decodes-full-canvas-frames.md"
+  ai_agent 1-33
+"backlog/tasks/b-152 - Subsample-point-mode-Op-contract-still-overfetches-a-bounding-box.md"
+  ai_agent 1-34
+"backlog/tasks/b-153 - Subsample-point-mode-Op-contract-still-overfetches-a-bounding-box.md"
+  ai_agent 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3c91e362c613035ada2cf6bc00a9b1cbb69683f7",
+  "prompts": {},
+  "sessions": {
+    "s_fe375ae924c5ef": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0178xxjWVKjgCcvn5EUARfr4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
