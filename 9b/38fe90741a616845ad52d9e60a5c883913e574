@@ -1,0 +1,23 @@
+benches/arithmetic/hough_line.rs
+  s_3b6a24edfd5041::t_121b713015f57a 1-61
+src/domain/reducers/hough.rs
+  s_3b6a24edfd5041::t_6c143cabba709c 1-4,6-324,359-388,434-461
+  s_3b6a24edfd5041::t_19cd798dbddd91 325-358,389-433
+  s_3b6a24edfd5041::t_1c0f43bf9df4ad 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9b38fe90741a616845ad52d9e60a5c883913e574",
+  "prompts": {},
+  "sessions": {
+    "s_3b6a24edfd5041": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VGXkJ3GJyQoybYAN7VHqJ8",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
