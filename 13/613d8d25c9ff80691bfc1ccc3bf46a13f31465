@@ -1,0 +1,27 @@
+src/domain/ops/histogram.rs
+  s_943998fe3c2e5a::t_54f39b3b69281c 21
+"backlog/archive/tasks/b-104 - Close-histogram-output-type-promotion-parity.md"
+  s_943998fe3c2e5a::t_4f88c78de937d6 25-28
+src/domain/ops/histogram/hist_norm.rs
+  s_943998fe3c2e5a::t_54f39b3b69281c 12-27,31-36,38-51,54,58,63,69,72,74,77,91,108,120,124,127,129,133-134,136,142,148,153-175,179-185,202,213
+src/domain/ops/histogram/hist_cum.rs
+  s_943998fe3c2e5a::t_54f39b3b69281c 17-48,65,67,70,84,90,99,101-103,106-112,114-116,118,124,130,148-171,185
+src/lib.rs
+  s_943998fe3c2e5a::t_54f39b3b69281c 68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "13613d8d25c9ff80691bfc1ccc3bf46a13f31465",
+  "prompts": {},
+  "sessions": {
+    "s_943998fe3c2e5a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0119Zx3MNx9Bqj1PKDKoyqtL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
