@@ -1,0 +1,23 @@
+backlog/docs/release-criteria.md
+  s_84577a834e1db9::t_6c0ae15b2b3967 1-16
+scripts/ci_parity_check.sh
+  s_84577a834e1db9::t_6c0ae15b2b3967 1-190
+Makefile
+  s_84577a834e1db9::t_6c0ae15b2b3967 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "78418dfe88e166536a84f43fd9a54ee8c7d65612",
+  "prompts": {},
+  "sessions": {
+    "s_84577a834e1db9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01W6LoJUr2N1fhUNwgHyj7UG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
