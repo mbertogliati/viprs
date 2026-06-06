@@ -1,0 +1,25 @@
+src/adapters/codecs/heif_support.rs
+  s_af3d20aa06ab7f::t_b10d23a7f8f302 83,87
+src/adapters/sources/decoder_source.rs
+  s_af3d20aa06ab7f::t_c65d46fbf8d219 23,31-32,222
+src/domain/ops/morphology/nearest.rs
+  s_af3d20aa06ab7f::t_b10d23a7f8f302 36
+src/domain/ops/morphology/count_lines.rs
+  s_af3d20aa06ab7f::t_b10d23a7f8f302 48-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ba44879bd868070d946439f2f8b99707e9a4097d",
+  "prompts": {},
+  "sessions": {
+    "s_af3d20aa06ab7f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01EiwtfdVzUe6285Tte2QAkS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
