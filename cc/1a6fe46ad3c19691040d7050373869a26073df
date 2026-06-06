@@ -1,0 +1,32 @@
+"backlog/docs/doc-25 - ADR-048-—-Pipeline-integrated-operation-tile-cache.md"
+  s_37fc29f091b874::t_f0cc62ef275e1d 8-24
+src/domain/error.rs
+  s_37fc29f091b874::t_e55076e99a3ab4 167-168,179-180
+src/adapters.rs
+  s_37fc29f091b874::t_e55076e99a3ab4 1
+src/adapters/cache.rs
+  s_37fc29f091b874::t_e55076e99a3ab4 1-6,8-98,100,102-105,107,109-119,121,123-133,135,137-185
+src/adapters/pipeline.rs
+  s_37fc29f091b874::t_ca251b923d403b 190
+  s_37fc29f091b874::t_5935314da8484d 330-332
+  s_37fc29f091b874::t_7c6c50f95620cc 3454-3474,3566-3607,3609-3639
+  s_37fc29f091b874::t_e55076e99a3ab4 2-5,71-74,106,123,139,158,167,176,181-183,185-189,191-199,263,339-341,355-357,612,669,674,743-750,764,866,878,896,911-914,937,963-969,994,1071,1287-1294
+src/adapters/scheduler/rayon_scheduler.rs
+  s_37fc29f091b874::t_3f20c1140e7e19 289,302-309,384-387,401-413,455-457,500-502
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cc1a6fe46ad3c19691040d7050373869a26073df",
+  "prompts": {},
+  "sessions": {
+    "s_37fc29f091b874": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RWhN4YfRXmiVcfpZ4kF9Dp",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
