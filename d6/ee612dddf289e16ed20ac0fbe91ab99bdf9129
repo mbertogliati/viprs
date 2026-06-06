@@ -1,0 +1,79 @@
+src/domain/ops/arithmetic/sin.rs
+  s_4b44c3adf756d1::t_b6195bdeb41e3f 9,75-76
+src/domain/ops/arithmetic/abs.rs
+  s_4b44c3adf756d1::t_fd86a5d0bcbe64 65-68,102-112
+src/domain/ops/arithmetic/multiply.rs
+  s_4b44c3adf756d1::t_9974ca5ad4357e 5,22-25,39,60-61,63-65,133-155,326
+  s_4b44c3adf756d1::t_d5e5b23f70fa77 332-335,356-394,411-440
+src/domain/ops/arithmetic/cos.rs
+  s_4b44c3adf756d1::t_b6195bdeb41e3f 9,75-76
+src/domain/format.rs
+  s_4b44c3adf756d1::t_df98b1bfd130cd 347-348
+  s_4b44c3adf756d1::t_45d86b02e7f97f 81-85,93,135,139,143,147,151,155,166-170,174-178,186,228,232,236,240,244,248,358-362,368-372,378-382,388-392,398-402,408-412,418-527,552-556,566-570,580-584,664-668,675-679,686-690,913,920-921,924-929,948-958
+src/domain/ops/relational.rs
+  s_4b44c3adf756d1::t_9a3030745ea429 15,17-34
+src/domain/ops/arithmetic/asin.rs
+  s_4b44c3adf756d1::t_b6195bdeb41e3f 9,76,84-85
+src/domain/ops/relational/more_eq.rs
+  s_4b44c3adf756d1::t_149a5b1f34014d 76-77,79,92,94,97,105,107,110,122,124,128
+  s_4b44c3adf756d1::t_afa9d9da91f4ee 7,14-15,42,56,59
+src/domain/ops/relational/not_equal.rs
+  s_4b44c3adf756d1::t_149a5b1f34014d 76-77,79,91,93,96,104,106,109,121,123,127
+  s_4b44c3adf756d1::t_afa9d9da91f4ee 7,14-15,42,56,59
+"backlog/tasks/b-75 - Close-arithmetic-boolean-relational-and-LUT-parity-gaps.md"
+  s_4b44c3adf756d1::t_dd00025ae707ed 1-32
+src/domain/ops/arithmetic/subtract.rs
+  s_4b44c3adf756d1::t_904f19c1f6df79 5,23-25,39,60-61,63-65,158-180,262,274,288,292,295,334,336,346,359,364,367,413
+  s_4b44c3adf756d1::t_c1f2aff6da9d5c 419-422,460-498,515-534,553,556,607,622,626
+src/domain/ops/relational/more.rs
+  s_4b44c3adf756d1::t_afa9d9da91f4ee 7,14-15,42,56,59
+  s_4b44c3adf756d1::t_149a5b1f34014d 76-77,79,92,94,97,105,107,110,122,124,128
+src/domain/ops/arithmetic/add.rs
+  s_4b44c3adf756d1::t_45e745d940e802 435,472-476,481-504,524-554,573,637,641
+  s_4b44c3adf756d1::t_0879d27fb5be34 507
+  s_4b44c3adf756d1::t_3fd7698bc64631 5,24-27,45,68-69,71-73,173-195,205,286,298,312,319,358,360,370,383,391
+src/domain/ops/relational/less_eq.rs
+  s_4b44c3adf756d1::t_afa9d9da91f4ee 7,14-15,42,56,59
+  s_4b44c3adf756d1::t_149a5b1f34014d 76-77,79,92,94,97,105,107,110,122,124,128
+src/domain/ops/arithmetic/sign.rs
+  s_4b44c3adf756d1::t_fd86a5d0bcbe64 66-69,103-113
+src/domain/ops/arithmetic/rhs_broadcast.rs
+  s_4b44c3adf756d1::t_42fcfda13077a9 1-11,13-25
+src/domain/ops/arithmetic/divide.rs
+  s_4b44c3adf756d1::t_dd848d1867b54e 22-23,32,48,79-80,87-88,91-94,105,112-115,126,129,139,155-169
+  s_4b44c3adf756d1::t_a2c3a59f56de12 335,344,375-388
+src/domain/ops/arithmetic/remainder.rs
+  s_4b44c3adf756d1::t_0445ee541fe1ca 12-13,54-58,66-97
+  s_4b44c3adf756d1::t_5635678ec5db00 159-170
+src/domain/ops/arithmetic.rs
+  s_4b44c3adf756d1::t_79c59ab61f3a6b 27
+src/domain/ops/relational/less.rs
+  s_4b44c3adf756d1::t_149a5b1f34014d 76-77,79,92,94,97,105,107,110,122,124,128
+  s_4b44c3adf756d1::t_afa9d9da91f4ee 7,14-15,42,56,59
+src/domain/ops/arithmetic/acos.rs
+  s_4b44c3adf756d1::t_b6195bdeb41e3f 9,76,84-85
+src/domain/ops/arithmetic/atan.rs
+  s_4b44c3adf756d1::t_b6195bdeb41e3f 9,76,84
+src/domain/ops/relational/equal.rs
+  s_4b44c3adf756d1::t_149a5b1f34014d 80-83,95,97,100,108,110,113-126,138,140,144
+  s_4b44c3adf756d1::t_afa9d9da91f4ee 7,14-15,46,60,63
+src/domain/ops/arithmetic/tan.rs
+  s_4b44c3adf756d1::t_b6195bdeb41e3f 9
+  s_4b44c3adf756d1::t_9442aa4aceee78 76-77,102-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d6ee612dddf289e16ed20ac0fbe91ab99bdf9129",
+  "prompts": {},
+  "sessions": {
+    "s_4b44c3adf756d1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01NCauCoaHxZYZfEhFC39Eh1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
