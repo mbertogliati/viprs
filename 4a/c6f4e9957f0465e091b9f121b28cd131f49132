@@ -1,0 +1,25 @@
+src/adapters/codecs.rs
+  s_733ac233637e79::t_75b3834eb6deab 14,47-49,88-89
+Cargo.toml
+  s_733ac233637e79::t_75b3834eb6deab 27,54
+"backlog/tasks/b-112 - Preserve-OpenEXR-layer-metadata-parity.md"
+  s_733ac233637e79::t_75b3834eb6deab 1-30
+src/adapters/codecs/exr.rs
+  s_733ac233637e79::t_75b3834eb6deab 1-576
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4ac6f4e9957f0465e091b9f121b28cd131f49132",
+  "prompts": {},
+  "sessions": {
+    "s_733ac233637e79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "978c85c6-a321-4e6e-ad2f-4256ad8640fb",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
