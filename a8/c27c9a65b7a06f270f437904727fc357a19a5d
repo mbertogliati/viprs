@@ -1,0 +1,24 @@
+"backlog/tasks/b-89 - Extend-maplut-parity-to-multiband-and-selected-band-semantics.md"
+  s_6ff6e42ff1fa1f::t_70e9b19a3708ea 4
+"backlog/tasks/b-97 - Close-maplut-parity-for-signed-and-float-index-casting.md"
+  s_6ff6e42ff1fa1f::t_8197269902d2c5 17-27
+src/domain/ops/lut/map_lut.rs
+  s_6ff6e42ff1fa1f::t_fefa5cbb2cbfa1 13-14
+  s_6ff6e42ff1fa1f::t_b28dc7b3201295 221-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a8c27c9a65b7a06f270f437904727fc357a19a5d",
+  "prompts": {},
+  "sessions": {
+    "s_6ff6e42ff1fa1f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Ctwvn6zaH6jKqRqgzghk8g",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
