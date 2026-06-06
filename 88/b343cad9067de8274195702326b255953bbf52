@@ -1,0 +1,21 @@
+"backlog/docs/doc-15 - ADR-039-—-Source-direct-sampled-grid-demand-for-Subsample-point-mode.md"
+  s_4238663cd5d669::t_26eae0f7b2a7e5 15,21,31
+src/domain/ops/conversion/subsample.rs
+  s_4238663cd5d669::t_5fd883bb7c7fb8 52-58,61,78-98,118-130,200-212,347,351-352,371-376
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "88b343cad9067de8274195702326b255953bbf52",
+  "prompts": {},
+  "sessions": {
+    "s_4238663cd5d669": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014orxhkovRvDz9mzA8Xbqab",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
