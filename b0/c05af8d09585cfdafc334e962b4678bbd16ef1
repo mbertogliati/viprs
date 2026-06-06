@@ -1,0 +1,19 @@
+src/domain/ops/morphology/labelregions.rs
+  s_47ef4dbc7e6e4e::t_1da2918e00bcb9 8,76-77,104-105,130-158,160-184,240-297,348-383
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b0c05af8d09585cfdafc334e962b4678bbd16ef1",
+  "prompts": {},
+  "sessions": {
+    "s_47ef4dbc7e6e4e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_013CAa5XhMU47MDmyVWn7DRG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
