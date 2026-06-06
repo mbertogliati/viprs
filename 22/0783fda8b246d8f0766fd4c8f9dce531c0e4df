@@ -1,0 +1,29 @@
+"backlog/docs/doc-22 - ADR-046-—-Full-2D-nohalo-affine-interpolation.md"
+  s_bcc54d7856c0ae::t_e2a9e56a897875 1-29
+Cargo.toml
+  s_bcc54d7856c0ae::t_e2a9e56a897875 441-444
+"backlog/archive/tasks/b-174 - Full-nohalo-EWA-2D-interpolation-parity.md"
+  s_bcc54d7856c0ae::t_e2a9e56a897875 4,7
+benches/resample/nohalo.rs
+  s_bcc54d7856c0ae::t_e2a9e56a897875 1-51
+"backlog/docs/doc-20 - ADR-043-—-Temporary-separable-nohalo-approximation.md"
+  s_bcc54d7856c0ae::t_e2a9e56a897875 9
+src/domain/ops/resample/affine.rs
+  s_bcc54d7856c0ae::t_e2a9e56a897875 494-519,679,687,747-800,1037,1095-1130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "220783fda8b246d8f0766fd4c8f9dce531c0e4df",
+  "prompts": {},
+  "sessions": {
+    "s_bcc54d7856c0ae": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011KRXBbrHVsCA7kQMdSTJo6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
