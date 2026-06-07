@@ -1,0 +1,9 @@
+src/domain/ops/resample/shrink.rs
+  ai_agent 7,73-77,109-115,123-129,139-149,180-249,448-460
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "241c20cd34a419c6d30947115ac4a6d3e03ec7a3",
+  "prompts": {}
+}
