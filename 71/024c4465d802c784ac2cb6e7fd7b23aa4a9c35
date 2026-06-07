@@ -1,0 +1,43 @@
+src/test_support.rs
+  s_cbec5dce86e88f::t_cacae0bb417d4f 41-44
+src/adapters/codecs.rs
+  s_cbec5dce86e88f::t_8d228ce859494e 7
+Cargo.toml
+  s_cbec5dce86e88f::t_358da3c8ef92fc 24,63
+src/adapters/codecs/jpeg.rs
+  s_cbec5dce86e88f::t_c2959361ebf3a6 1,7,15-16,18,35-38,40-80,84-88,92-101,103-105,107,111-113,126-150
+  s_cbec5dce86e88f::t_b90b2d36756fae 39,114-122,124-125
+  s_cbec5dce86e88f::t_200cdacc077920 266
+  s_cbec5dce86e88f::t_dc4906b974ea9d 571-623,656-667,669-672,676,682-690,692,695-717,729,750,771-787,819-826,828-830,832,835-867,869,871-878,880,882
+  s_cbec5dce86e88f::t_bc3a41fd6d5d34 818
+  s_cbec5dce86e88f::t_cf7702f0699eef 1380-1381
+  s_cbec5dce86e88f::t_91315be1ad9f96 1419,1428,1505,1514
+  s_cbec5dce86e88f::t_a41d05f773f9ac 1357-1361
+  s_cbec5dce86e88f::t_27983994e9d5a2 262-263,265,269,271,377-379,381-423,425-438
+src/adapters/codecs/shrink_on_load.rs
+  s_cbec5dce86e88f::t_6367c8d94bf819 7-8,20,232,236
+  s_cbec5dce86e88f::t_827813123d6d5a 1
+tests/e2e_images.rs
+  s_cbec5dce86e88f::t_c231f3b43cc1b5 19-21
+  s_cbec5dce86e88f::t_60af30b504408d 213,217
+"backlog/docs/doc-17 - ADR-040-—-Native-JPEG-WebP-shrink-on-load-backends.md"
+  s_cbec5dce86e88f::t_0201246a623682 11
+"backlog/docs/doc-35 - ADR-052-—-JPEG-backend-via-libjpeg-turbo.md"
+  s_cbec5dce86e88f::t_153c21c53c4729 8-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "71024c4465d802c784ac2cb6e7fd7b23aa4a9c35",
+  "prompts": {},
+  "sessions": {
+    "s_cbec5dce86e88f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AaztK6JhmKNxJvnPCEQWuU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
