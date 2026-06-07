@@ -1,0 +1,20 @@
+src/adapters/codecs/exr.rs
+  s_537648b3214edd::t_1ccd8dab228500 35,206-214,300,350-360
+  s_537648b3214edd::t_d6ebea40bb0c6a 566-578,580-584,586-588,734-736,742-746,753-768,775-788
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e0b1d99592a24dceba5a1bfd3a7b54b1161bd90e",
+  "prompts": {},
+  "sessions": {
+    "s_537648b3214edd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_kfWL8HhY9ewNTDj1hrh4xl7U",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
