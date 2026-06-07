@@ -1,0 +1,25 @@
+tools/bench-vs-libvips/README.md
+  s_694cd1129fe994::t_4467122f767cc5 42
+tools/bench-vs-libvips/libvips_runner.c
+  s_694cd1129fe994::t_67bcf34769b2e6 37,137-139,209-228,271-278,330-336,442,485-488
+xtask/src/bench.rs
+  s_694cd1129fe994::t_f590c087b03b46 8,191,242-244,365,372,399-403,410-416,457-465,513-521,1275-1288
+"backlog/archive/tasks/b-166 - P-008-—-Baseline-performance-JPEG-2000-jpeg2k-openjpeg-Rust-bindings-vs-OpenJPEG-de-libvips.md"
+  s_694cd1129fe994::t_6a7dc8c54227bb 30-32,36-37,40-53,55-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ab08d8940bc03dac2c5f2647abcce60b8b35fe55",
+  "prompts": {},
+  "sessions": {
+    "s_694cd1129fe994": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SZZnzuNyxtr5HSwHHRJE9S",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
