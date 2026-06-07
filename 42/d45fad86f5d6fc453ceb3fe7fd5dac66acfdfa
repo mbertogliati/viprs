@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-259 - Benchmark-the-composite-Shrink-op-directly.md"
+  s_87669fca7a1aa2::t_533f19503e0f46 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "42d45fad86f5d6fc453ceb3fe7fd5dac66acfdfa",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
