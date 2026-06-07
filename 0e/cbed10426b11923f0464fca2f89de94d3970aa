@@ -1,0 +1,23 @@
+src/domain/ops/resample/mapim.rs
+  s_00f3591afb72a3::t_71a4415466bee6 317
+  s_00f3591afb72a3::t_8f75cf8e8ef1c2 64-65,69-70,72,147,149-152,155-156,190-199,300-301,316,318-389,397-411,415,469-478,489,491-492,502,511-516,531,540-545,674-685,721
+  s_00f3591afb72a3::t_477d873f74ebda 390-396
+  s_00f3591afb72a3::t_3a5532bf262db0 1032-1055,1463-1478
+  s_00f3591afb72a3::t_0fe162580900d2 890-955,961-968,970-975,978,981,986-993,995-997,1001-1004,1012-1013,1023,1026-1027
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0ecbed10426b11923f0464fca2f89de94d3970aa",
+  "prompts": {},
+  "sessions": {
+    "s_00f3591afb72a3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_013LxF36ZDxA3XEy369TjWJL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
