@@ -1,0 +1,19 @@
+"backlog/tasks/b-257 - Add-HDR-CICP→scRGB-benchmarks-and-boundary-coverage.md"
+  s_2b5db879df51bb::t_7e1fe006fc7313 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0a3db421a4881101619555bd081ff69fd5a1bd9d",
+  "prompts": {},
+  "sessions": {
+    "s_2b5db879df51bb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Lf3PvaNcugWZWrqoJARnEh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
