@@ -1,0 +1,26 @@
+"backlog/archive/tasks/b-240 - Return-typed-errors-from-FFT-contract-violations.md"
+  ai_agent 1-19
+src/domain/ops/freqfilt/invfft.rs
+  s_eec5d2da1f7352::t_5fc5d52d72419b 254,256-259,261,264,267,269,272,276,286-288,290-297,299-301
+src/domain/op.rs
+  s_eec5d2da1f7352::t_5fc5d52d72419b 273-284
+src/domain/ops/freqfilt/fwfft.rs
+  s_eec5d2da1f7352::t_5fc5d52d72419b 293,295,297-298,300,303,307-308,311,315,322-324,326-333,335-337
+  s_eec5d2da1f7352::t_8fdbee81b3bf17 296
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e85173981e7740a5af8ecd4dbe6b717404fab178",
+  "prompts": {},
+  "sessions": {
+    "s_eec5d2da1f7352": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XosLAUMPzuUZZecin2kE4h",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
