@@ -1,0 +1,21 @@
+src/adapters/codecs/jp2k.rs
+  s_c16757c16d0b47::t_320141fa03c94f 777,782
+  s_c16757c16d0b47::t_f23231b5d921f4 7,351-362,592-615,621-624,649-665,676-682
+  s_c16757c16d0b47::t_4ecaf43bff872d 11-12,106-151,154-195,198-240,242-249,251-260,262-339,341,773-776,778-781,783-793
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0402ef87190b1f3b88d58da743ff564b6adcb7b1",
+  "prompts": {},
+  "sessions": {
+    "s_c16757c16d0b47": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SVxourfu16J6B9ir31Hc1C",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
