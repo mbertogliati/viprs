@@ -1,0 +1,49 @@
+docs/PERFORMANCE.md
+  ai_agent 13,22-64
+"backlog/archive/tasks/b-238 - P-014-—-Missing-scenarios-large-8192x8192-upscale-gauss_blur-colour-conversion-16-bit-RGBA.md"
+  ai_agent 1-21
+"backlog/archive/tasks/b-230 - reduce_h-NEON-accumulation-uses-store-reload-anti-pattern-instead-of-NEON-horizontal-add.md"
+  ai_agent 6,9,20
+"backlog/archive/tasks/b-237 - P-013-—-dhat_profile-solo-soporta-invert-add-alloc-metric-imposible-para-thumbnail-resize-sharpen.md"
+  ai_agent 1-21
+"backlog/archive/tasks/b-231 - Implement-`shrink`-op-—-integer-factor-downscale-wrapper.md"
+  ai_agent 4,7,19
+"backlog/archive/tasks/b-234 - Audit-and-complete-ICC-profile-transform-icc_transform-import-export-apply.md"
+  ai_agent 6,9,21
+"backlog/archive/tasks/b-232 - Expose-avg-min-max-deviate-as-public-standalone-reducer-ops.md"
+  ai_agent 4,7,19
+"backlog/archive/tasks/b-235 - P-011-—-Gap-resize-0.5x-viprs-5.43x-más-lento-que-libvips.md"
+  ai_agent 1-19
+"backlog/tasks/b-236 - P-012-—-Benchmark-lie-thumbnail-E2E-usa-shrink-on-load-en-libvips-pero-no-en-viprs.md"
+  ai_agent 1-47
+"backlog/tasks/b-238 - P-025-—-Investigate-sharpen-sigma2.0-2.20x-gap-vs-libvips.md"
+  ai_agent 4,7
+"backlog/archive/tasks/b-233 - Add-missing-colour-conversions-to-colourspace-router-CICP2scRGB-scRGB2BW-via-RGB-path.md"
+  ai_agent 6,9,21
+"backlog/tasks/b-240 - Eliminate-thumbnail-full-image-scheduler-source-copy-overhead.md"
+  ai_agent 1-30
+"backlog/archive/tasks/b-239 - P-015-—-Residual-thumbnail-no-cache-gap-after-ShrinkH-ShrinkV-fast-path.md"
+  s_f221338612d72a::t_eacb8055daa924 1-19
+"backlog/archive/tasks/b-229 - P-010-—-Baseline-performance-ShrinkH-ShrinkV-vs-libvips-vips_shrinkh.md"
+  ai_agent 4,7,18
+"backlog/tasks/b-235 - P-022-—-Investigate-gauss_blur-3.68x-gap-vs-libvips.md"
+  ai_agent 4,7
+"backlog/tasks/b-237 - P-024-—-Investigate-thumbnail-target100-6.44x-gap-vs-libvips.md"
+  ai_agent 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "284003b0d8717ebd77c0ebd9d1bb35e6dfe80763",
+  "prompts": {},
+  "sessions": {
+    "s_f221338612d72a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014D36zJrjp6NKzbeooQSnxR",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
