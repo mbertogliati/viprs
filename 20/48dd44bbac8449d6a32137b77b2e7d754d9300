@@ -1,0 +1,29 @@
+src/domain/ops/colour/uhdr2scrgb.rs
+  s_073f060f312224::t_bb94515d785164 1-2,4-6,8-34,36-45,47,51-72,74-348,352-360
+  s_073f060f312224::t_18b5aa33101ddc 7,48-50
+  s_073f060f312224::t_d1dfbfb797c3e0 349-351
+  s_073f060f312224::t_a6f56c137b9aa7 35
+docs/PARITY_MATRIX.md
+  s_073f060f312224::t_ce75b98fdfa2a0 89,124
+src/domain/ops/colour.rs
+  s_073f060f312224::t_bb94515d785164 2,34,43-46
+src/domain/ops/colour/cicp2scrgb.rs
+  s_073f060f312224::t_4c4155d63869dd 201
+  s_073f060f312224::t_bb94515d785164 1-5,7-200,202-526,528-653
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2048dd44bbac8449d6a32137b77b2e7d754d9300",
+  "prompts": {},
+  "sessions": {
+    "s_073f060f312224": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AaEVSsdMg8avsAF7VP4Psy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
