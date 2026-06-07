@@ -1,0 +1,40 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_360ddd8cbc7fd7::t_5a8a32eb1739e8 317
+  s_360ddd8cbc7fd7::t_81df6176c9aaac 323-329,521-526
+  s_360ddd8cbc7fd7::t_27af45ad4995b0 316,318
+src/adapters/codecs/registry.rs
+  s_360ddd8cbc7fd7::t_032f4c21ae799e 92
+src/domain/op.rs
+  s_360ddd8cbc7fd7::t_f527f05930e9e4 17
+  s_360ddd8cbc7fd7::t_e5733c60a5938f 234-248
+  s_360ddd8cbc7fd7::t_75529ed1ab03b5 407-417
+  s_360ddd8cbc7fd7::t_51815c490682d9 617-624,626
+src/domain/error.rs
+  s_360ddd8cbc7fd7::t_a08d74739b9c44 84-101
+src/domain/ops/freqfilt/fwfft.rs
+  s_360ddd8cbc7fd7::t_7f9e9d7e641801 287-290,299-330,332-338
+  s_360ddd8cbc7fd7::t_f62009a91b5919 331
+  s_360ddd8cbc7fd7::t_af665a7a0e7246 203
+  s_360ddd8cbc7fd7::t_e6f52733894420 9,129-152,155,158
+src/domain/ops/freqfilt/invfft.rs
+  s_360ddd8cbc7fd7::t_779c42066c77f7 251-254,260-267,269-288,290-299,301-307
+  s_360ddd8cbc7fd7::t_243a43f809ba12 169
+  s_360ddd8cbc7fd7::t_c9af3e7239d8ef 300
+  s_360ddd8cbc7fd7::t_c745f12da82c08 9,94-117,120,123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a84310183b6900414b47c2b8457a573e2931a59c",
+  "prompts": {},
+  "sessions": {
+    "s_360ddd8cbc7fd7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_TXpwByPw9un4zt8g7uQ4aThN",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
