@@ -1,0 +1,31 @@
+"backlog/tasks/b-263 - P-034-—-resize-0.5-with-cache-gap-5.48x-vs-libvips.md"
+  s_b08659169e47fa::t_cd4a247d42dab3 2-4,6,11,22,26,29-34,37,40-45,50,53,56-58
+"backlog/tasks/b-264 - P-035-—-colourspace-with-cache-gap-3.89x-vs-libvips.md"
+  s_dafae0a5b8adf0::t_766413920ec7c6 1-59
+"backlog/archive/tasks/b-261 - Raise-Analyze-codec-coverage-above-the-90-floor.md"
+  ai_agent 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b818e2788b5fe8d44d99373cb8f929e84d16d33e",
+  "prompts": {},
+  "sessions": {
+    "s_b08659169e47fa": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_013kGXtxMSKpxqxCiQd342jv",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_dafae0a5b8adf0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0155WAyK58muEwrvBDnpXqu3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
