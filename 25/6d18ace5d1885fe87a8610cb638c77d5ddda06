@@ -1,0 +1,21 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_6c71b6945714e8::t_8eddc0ea553f6e 66,543,557,568
+"backlog/tasks/b-161 - Scheduler-clippy-cleanup-gap.md"
+  s_6c71b6945714e8::t_01b4622e4e70b4 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "256d18ace5d1885fe87a8610cb638c77d5ddda06",
+  "prompts": {},
+  "sessions": {
+    "s_6c71b6945714e8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_SrSnGBUI32wdHifssxG58nG6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
