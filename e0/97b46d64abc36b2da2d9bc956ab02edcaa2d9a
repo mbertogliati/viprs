@@ -1,0 +1,19 @@
+"backlog/tasks/b-191 - Dcraw-probe-falls-back-to-a-full-decode.md"
+  s_1d251651eaeaaf::t_cb0949a6898fe4 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e097b46d64abc36b2da2d9bc956ab02edcaa2d9a",
+  "prompts": {},
+  "sessions": {
+    "s_1d251651eaeaaf": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_CnnSTjM1f7cCLxluZjchLIIu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
