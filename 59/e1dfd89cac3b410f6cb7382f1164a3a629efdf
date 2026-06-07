@@ -1,0 +1,20 @@
+src/adapters/codecs/webp.rs
+  s_9d073b1c29c5dc::t_9bb4d034c00860 908-963,1032,1047-1054,1059-1064
+  s_9d073b1c29c5dc::t_69778ae33b90e7 1055-1058
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "59e1dfd89cac3b410f6cb7382f1164a3a629efdf",
+  "prompts": {},
+  "sessions": {
+    "s_9d073b1c29c5dc": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_K8822n0PlFrNiLZl5OpMmdJw",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
