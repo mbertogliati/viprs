@@ -1,0 +1,21 @@
+docs/PERFORMANCE.md
+  s_db2416e3a217b0::t_c98a3d5a7e0040 1-82
+"backlog/archive/tasks/b-229 - reduce_h_u8_neon-and-reduce_h_u16_neon-fall-back-to-scalar-for-bands-1-RGB-images-never-use-SIMD-in-horizontal-reduce.md"
+  s_db2416e3a217b0::t_c98a3d5a7e0040 75,77-104,108-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "26c3c1c221792b73a6540554dadd56061fede5c1",
+  "prompts": {},
+  "sessions": {
+    "s_db2416e3a217b0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XL98pWzUeGTWfmdYWBwTxi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
