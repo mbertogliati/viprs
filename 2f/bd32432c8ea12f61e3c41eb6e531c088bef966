@@ -1,0 +1,9 @@
+"backlog/archive/tasks/b-241 - Implement-SIMD-fixed-point-gauss_blur-fast-path.md"
+  ai_agent 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2fbd32432c8ea12f61e3c41eb6e531c088bef966",
+  "prompts": {}
+}
