@@ -1,0 +1,24 @@
+"backlog/docs/doc-33 - ADR-053-—-UHDR-EXIF-only-gainmap-metadata-unsupported-without-vendor-mapping.md"
+  s_da52d272e8a13b::t_f3e2d1965af7af 8-48
+src/adapters/codecs/jpeg.rs
+  s_da52d272e8a13b::t_39ff3d5abf05ea 23,241,410,467-489
+src/adapters/codecs/uhdr.rs
+  s_da52d272e8a13b::t_9e1ee1e4c8a2e4 866-876,878-879,881,888-892,909-911,927-931
+  s_da52d272e8a13b::t_550bbfeb455c7e 424-426,434,446-447,449-452,506-509,578,588-593,607-626,628-665,778-781,851-865,880,882-887,893-908,912-914,916-926,932-946
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "eb50545e9cb4e3639ecfc3db54ef8d954ed4d875",
+  "prompts": {},
+  "sessions": {
+    "s_da52d272e8a13b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QkZBBXynxBAzRVE6Kpge9V",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
