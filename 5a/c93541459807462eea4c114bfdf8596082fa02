@@ -1,0 +1,83 @@
+"backlog/tasks/b-248 - P-066-—-Affine-family-resample-ops-have-no-libvips-baseline-scenarios.md"
+  ai_agent 1-37
+"backlog/tasks/b-236 - Revisar-inconsistencias-en-benchmark-production-workflows-scenario-set.md"
+  ai_agent 1-30
+"backlog/tasks/b-244 - P-062-—-ShrinkH-2-is-1.38x-1.70x-3.19x-slower-and-degrades-badly-at-scale.md"
+  ai_agent 1-50
+"backlog/tasks/b-256 - Tests-robustez-formatos-edge-case-CMYK-16-bit-palette-animado.md"
+  ai_agent 1-18
+"backlog/tasks/b-237 - Restore-draw-op-coverage-above-the-90-floor.md"
+  ai_agent 1-34
+"backlog/tasks/b-233 - P-060-—-JP2K-decode-1.23x-slower-at-2048-investigate-codec-backend.md"
+  ai_agent 1-29
+"backlog/tasks/b-260 - Soak-test-estabilidad-sostenida-N5000-iteraciones.md"
+  ai_agent 1-18
+"backlog/archive/tasks/b-255 - Hardening-robustez-y-edge-cases-para-producción.md"
+  ai_agent 1-69
+"backlog/tasks/b-258 - Tests-robustez-error-recovery-y-cleanup-no-leaks.md"
+  ai_agent 1-18
+"backlog/tasks/b-246 - P-064-—-Composite-shrink-2x2-loses-at-512-2048-before-recovering-at-8192.md"
+  ai_agent 1-45
+docs/ai/agents/chaos_monkey.md
+  ai_agent 1-291
+"backlog/tasks/b-251 - P-069-—-Convolution-benchmark-coverage-stops-at-gauss_blur-and-sharpen.md"
+  ai_agent 1-37
+"backlog/tasks/b-261 - Tests-robustez-imágenes-corruptas-y-truncadas.md"
+  ai_agent 1-18
+"backlog/tasks/b-257 - Tests-robustez-dimensiones-patológicas.md"
+  ai_agent 2-3,6,8,11,17
+"backlog/tasks/b-235 - Reemplazar-fixtures-sintéticos-por-imágenes-reales-en-resoluciones-productivas.md"
+  ai_agent 1-77
+"backlog/tasks/b-243 - P-061-—-Resize-0.5-remains-slower-than-libvips-across-512-2048-8192-no-E2E-sizes.md"
+  ai_agent 1-52
+"backlog/tasks/b-247 - P-065-—-Production-workflow-scenarios-are-still-2.55x-5.51x-slower-at-2048.md"
+  ai_agent 1-50
+"backlog/tasks/b-241 - Add-SAFETY-comments-to-remaining-unsafe-blocks.md"
+  ai_agent 1-33
+"backlog/archive/tasks/b-238 - Restore-MapLut-coverage-above-the-90-floor.md"
+  ai_agent 1-34
+"backlog/tasks/b-249 - P-067-—-Embed-and-extract-area-have-no-libvips-baseline-benchmarks.md"
+  ai_agent 1-37
+"backlog/tasks/b-262 - Tests-robustez-imagenes-adversariales-decompression-bombs-EXIF-malformado.md"
+  ai_agent 1-18
+"backlog/tasks/b-230 - Tests-de-integración-honestos-para-pipelines-complejos-multi-stage.md"
+  ai_agent 1-57
+"backlog/tasks/b-245 - P-063-—-Linear-2.0-5.0-stays-slower-than-libvips-across-all-standard-sizes.md"
+  ai_agent 1-50
+"backlog/tasks/b-252 - P-070-—-Colourspace-benchmarks-have-a-512px-gap-and-major-scenario-matrix-blind-spots.md"
+  ai_agent 1-54
+"backlog/tasks/b-259 - Tests-robustez-idempotencia-y-determinismo-del-output.md"
+  ai_agent 1-18
+tests/chaos_monkey.rs
+  s_fb8134ae563515::t_f2f518a1031a5c 6-7,73,75-78,106,108-111,220-222,227,254-255
+"backlog/tasks/b-268 - P-071-—-Morphology-dilate-erode-kernels-remain-slower-than-libvips.md"
+  s_f47dbce0f30e48::t_2a30347c93c48d 1-35
+"backlog/archive/tasks/b-239 - Restore-relational-op-coverage-above-the-90-floor.md"
+  ai_agent 1-40
+tests/pipeline_integration.rs
+  s_fb8134ae563515::t_f2f518a1031a5c 6-7,77,79-82,159-160,255-257,259,263-270,284-286,309-312,314,372,382,385-388,390,397,407,410-413,415,424-431
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5ac93541459807462eea4c114bfdf8596082fa02",
+  "prompts": {},
+  "sessions": {
+    "s_f47dbce0f30e48": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Wy7oG8dsQGgQVGBU5baFMP",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fb8134ae563515": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UVMDNatDAAc3uGFuutCqQJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
