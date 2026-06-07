@@ -1,0 +1,21 @@
+"backlog/tasks/b-263 - P-034-—-resize-0.5-with-cache-gap-5.48x-vs-libvips.md"
+  s_87669fca7a1aa2::t_5f63452b8ccaf0 4,7
+"backlog/tasks/b-265 - P-035-—-colourspace-with-cache-gap-3.89x-vs-libvips.md"
+  s_87669fca7a1aa2::t_5f63452b8ccaf0 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4d6d999831abba4410e69e1183792d55bc35167e",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
