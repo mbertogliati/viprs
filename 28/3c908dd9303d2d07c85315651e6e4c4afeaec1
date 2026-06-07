@@ -1,0 +1,20 @@
+src/domain/ops/convolution/sharpen.rs
+  s_0b553403dcb3c5::t_5c10b817821ab7 14,35-42,67-71,89-93,140,165-175,178,182,184-208,217-222,235,260-270,273-276,278,282,284-305,313-318,359-360,382-383,409,441-442,510-511,535-536,583-584,615-616
+  s_0b553403dcb3c5::t_e9903f1d97150b 408
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "283c908dd9303d2d07c85315651e6e4c4afeaec1",
+  "prompts": {},
+  "sessions": {
+    "s_0b553403dcb3c5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01X8sVNx38yhWM99wCqnAHE4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
