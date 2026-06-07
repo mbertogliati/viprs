@@ -1,0 +1,69 @@
+xtask/README.md
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 70
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 60,67-68
+  s_b59582d8d2d8ab::t_c407a30a567a11 69
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 62
+tools/bench-vs-libvips/libvips_runner.c
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 1149
+  s_4ec0bb91d1ce2c::t_45d35afbb6e6c1 95-109,155-162,201,217-218,220-221,223-264,316-323,328-330,342-343,345-351,442-445,472-484,501-503,661-662,664-667,716-723,738-744,766-779,787-793,824-826,829-837,998,1002-1003,1005,1009-1010,1089-1092,1109-1118,1124-1127,1142-1143,1145-1148,1150-1153
+  s_b59582d8d2d8ab::t_c407a30a567a11 37,198-200,202-210,219,222,344,660,663,827-828,1144
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 1088
+xtask/src/bench.rs
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 416,517
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 414-415,419,512-516,518-530,533-537
+  s_b59582d8d2d8ab::t_c407a30a567a11 531-532
+xtask/src/bench/pipeline.rs
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 379
+  s_b59582d8d2d8ab::t_c407a30a567a11 371,373-375
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 9,11,15,250-251,253,277-278,280,283-305,307-309,311-314,317-320,323-326,329-332,335-345,361-364,370,372,376-378,380-387
+  s_4ec0bb91d1ce2c::t_ed0b2afb22b725 14,279,306
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 249,252
+xtask/src/bench/helpers.rs
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 75-82
+xtask/src/bench/args.rs
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 120
+  s_b59582d8d2d8ab::t_c407a30a567a11 42,117
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 41,105-107
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 103-104,108-116,118-119
+tools/bench-vs-libvips/README.md
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 46
+  s_b59582d8d2d8ab::t_c407a30a567a11 54
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 55
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 51-53
+xtask/src/bench/runner.rs
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 12,104-105,107-130,244-336
+src/domain/ops/structural/zoom.rs
+  s_b59582d8d2d8ab::t_888a20c47c8371 42-53,74-79,82-83,85-86,195-196,198-199,217-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4d5dcc5acd9795c8ef15582d16f399b50501ed68",
+  "prompts": {},
+  "sessions": {
+    "s_2b4f7b2417a5a4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GBbyyYsBW4tGHGueFtXmjt",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4ec0bb91d1ce2c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018MCV6jDt5A7KNi4gxzQZYM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b59582d8d2d8ab": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0178k7owKyfnVxg47bm7simJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
