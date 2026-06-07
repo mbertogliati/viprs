@@ -1,0 +1,24 @@
+xtask/src/bench.rs
+  s_226f7b11e4b958::t_50ed05b73d9f51 3,7,161-162,169-171,179-180,188-201,216-217,246-266,272-274,276-279,281-282,284-297,299-300,302-311,330,344-368,377-385,416-424,432,446-448,460-462,479-480,492,494,502-503,520,522,529-530,591-597,601-602,640-648,786-792,809-810,828-830,832-865
+  s_226f7b11e4b958::t_8efe7ceab7db7f 402-403,406-408
+xtask/src/main.rs
+  s_226f7b11e4b958::t_d81f0a3134cd70 18
+tools/bench-vs-libvips/libvips_runner.c
+  s_226f7b11e4b958::t_ead8548779abf4 36,132,134,140-142,146-148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e0e690ae69d9f14f15dea739cce33d8eddefc80b",
+  "prompts": {},
+  "sessions": {
+    "s_226f7b11e4b958": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01CJbxbvS3WVbG44fVjdBDL3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
