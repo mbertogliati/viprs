@@ -1,0 +1,31 @@
+src/adapters/codecs.rs
+  s_78e54b2a6da220::t_9b642028dfe16f 20
+src/adapters/codecs/jxl.rs
+  s_78e54b2a6da220::t_9b642028dfe16f 3,5-7,11,128,155,191,306-312
+  s_78e54b2a6da220::t_5a74f9239ba7a7 129-130,133-154,156
+Cargo.toml
+  s_78e54b2a6da220::t_5a74f9239ba7a7 42
+  s_78e54b2a6da220::t_9b642028dfe16f 76
+"backlog/docs/doc-26 - ADR-049-—-JPEG-XL-decode-only-dependency-strategy.md"
+  s_78e54b2a6da220::t_1eb1580966bdab 9
+docs/PARITY_MATRIX.md
+  s_78e54b2a6da220::t_1eb1580966bdab 352
+"backlog/docs/doc-36 - ADR-055-—-JPEG-XL-decode-backend-via-libjxl.md"
+  s_78e54b2a6da220::t_1eb1580966bdab 8-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1aec8a414d084d4664e1d7de351b8304b36f9843",
+  "prompts": {},
+  "sessions": {
+    "s_78e54b2a6da220": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018iVNBGVPkzTdbrfKRVkvXh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
