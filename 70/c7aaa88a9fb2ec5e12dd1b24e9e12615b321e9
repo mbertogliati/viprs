@@ -1,0 +1,43 @@
+xtask/src/common.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-15
+xtask/src/perf/hw.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-242
+xtask/src/bench/runner.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-811
+xtask/src/perf/alloc.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-129
+xtask/src/bench/pipeline.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-107
+xtask/src/perf/simd.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-336
+xtask/src/perf/args.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-118
+xtask/src/main.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 2
+xtask/src/bench/helpers.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-233
+xtask/src/bench.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-5,7,10,15,18,29,36,44,48,75-78,80-81
+xtask/src/perf.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 11-14,16,18-19,36-37,39-40,42-43,45-46,48,50
+xtask/src/bench/types.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-69
+xtask/src/bench/args.rs
+  s_ce3b7ef0311012::t_c1de43bed6c5cc 1-166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "70c7aaa88a9fb2ec5e12dd1b24e9e12615b321e9",
+  "prompts": {},
+  "sessions": {
+    "s_ce3b7ef0311012": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01B55A58Ns1GwqMqSk5SWxr9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
