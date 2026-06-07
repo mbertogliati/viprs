@@ -1,0 +1,31 @@
+"backlog/tasks/b-150 - FFT-ops-silently-zero-output-on-contract-mismatch-in-release-builds.md"
+  s_182c2741644824::t_458d9dc8df6a53 4,7
+src/domain/error.rs
+  s_182c2741644824::t_458d9dc8df6a53 84-101
+src/adapters/scheduler/rayon_scheduler.rs
+  s_182c2741644824::t_458d9dc8df6a53 316-318,323-329,521-526
+src/adapters/codecs/registry.rs
+  ai_agent 46-47,93,181-184
+src/domain/ops/freqfilt/fwfft.rs
+  s_182c2741644824::t_458d9dc8df6a53 9,129-152,155-156,158,203,209,287-290,299-338
+src/domain/op.rs
+  s_182c2741644824::t_458d9dc8df6a53 17,234-248,407-417,616-625
+src/domain/ops/freqfilt/invfft.rs
+  s_182c2741644824::t_458d9dc8df6a53 9,94-117,120-121,123,169,176,251-254,260-305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "886aee70b485a6eb16a9bb19cc0c4a113ae9f3db",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
