@@ -1,0 +1,21 @@
+src/adapters/codecs/mat.rs
+  ai_agent 1-889
+src/adapters/codecs/nifti.rs
+  ai_agent 1-784
+"backlog/tasks/b-125 - FITS-codec-via-cfitsio-fitsload-fitssave.md"
+  ai_agent 1-34
+"backlog/docs/doc-28 - ADR-051-—-Scientific-codec-dependency-strategy-pure-Rust-MAT-v5-and-NIfTI-1-defer-FITS-and-MAT-v7.3.md"
+  ai_agent 1-100
+src/adapters/codecs.rs
+  ai_agent 20-21,70,72,114,116
+"backlog/tasks/b-127 - NIfTI-split-file-layout-support-.hdr-.img.md"
+  ai_agent 1-35
+"backlog/tasks/b-126 - MAT-v7.3-codec-via-HDF5-matload-HDF5-backend.md"
+  ai_agent 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6fd11772f58f7736b98c2955363481a01e1eef73",
+  "prompts": {}
+}
