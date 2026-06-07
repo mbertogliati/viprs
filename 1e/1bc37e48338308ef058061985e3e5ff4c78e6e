@@ -1,0 +1,17 @@
+xtask/src/bench.rs
+  ai_agent 16,19,26,28-29,31-34,36-76,79-92,94-120,133-134,137,205-225,370-434
+xtask/src/bench/helpers.rs
+  ai_agent 1,13,96-100,148-252
+xtask/src/bench/args.rs
+  ai_agent 2,14-19,41-44,77-82,136-138,161-169,185-189,197-199
+xtask/src/bench/runner.rs
+  ai_agent 18-19,21,24,613-614,617-638,663,679-681,694-703,735,747-749,754,770,773-777,779-787,789-811,813
+xtask/src/bench/types.rs
+  ai_agent 44-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1e1bc37e48338308ef058061985e3e5ff4c78e6e",
+  "prompts": {}
+}
