@@ -1,0 +1,35 @@
+"backlog/tasks/b-142 - Implement-ImageMagick-fallback-loaders-and-savers.md"
+  s_20bc236b078f8e::t_edd3f86b8ecaac 25-28
+src/adapters/codecs.rs
+  s_20bc236b078f8e::t_04d747a04d4146 22,69-71,117-121
+src/ports/codec.rs
+  s_20bc236b078f8e::t_ecf9bb5b0e5a20 277-286
+Cargo.toml
+  s_20bc236b078f8e::t_0c89eaa87a9bf1 66
+src/adapters/codecs/registry.rs
+  s_20bc236b078f8e::t_fb2fdcac4d5f98 824,830-834,850,855-856
+  s_20bc236b078f8e::t_8cc8379cbc4fa1 556,714-724
+  s_20bc236b078f8e::t_5361d6d2082401 406-413,472-479
+  s_20bc236b078f8e::t_f7f673db0aad1d 38-39
+  s_20bc236b078f8e::t_1256b620fa5d74 531-532,540-543
+  s_20bc236b078f8e::t_57e65b7bb0e23f 112
+  s_20bc236b078f8e::t_6a9e22b09468f2 627-667
+src/adapters/codecs/magick.rs
+  s_20bc236b078f8e::t_1bb9bc6ca0b882 1-222,224,226-404
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "648f8fe4a8266ca7f500f9cff2257a4734d43ab0",
+  "prompts": {},
+  "sessions": {
+    "s_20bc236b078f8e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_oVECHOVWrCunSPRpPmAE6b96",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
