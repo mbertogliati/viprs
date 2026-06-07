@@ -1,0 +1,17 @@
+tools/bench-vs-libvips/libvips_runner.c
+  ai_agent 37,261-264,290-338,619-636,832-845,1021-1022,1141-1162
+xtask/src/bench/pipeline.rs
+  ai_agent 18,320-337,370-383
+xtask/src/bench/args.rs
+  ai_agent 47-48,68-69,124-126
+xtask/src/bench.rs
+  ai_agent 29,652-665,699-708
+xtask/src/bench/helpers.rs
+  ai_agent 105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "edfaad2db272d304cf228cfc6e6f2533760bd9d4",
+  "prompts": {}
+}
