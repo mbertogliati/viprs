@@ -1,0 +1,37 @@
+src/adapters/codecs/shrink_on_load.rs
+  s_60f8fed33b7c7b::t_d3709540517c2d 1,7-8,20,232,236
+"backlog/docs/doc-35 - ADR-052-—-JPEG-backend-via-libjpeg-turbo.md"
+  s_60f8fed33b7c7b::t_d3709540517c2d 1-51
+src/adapters/codecs/jpeg.rs
+  s_60f8fed33b7c7b::t_d3709540517c2d 1,7,15-16,18,35-80,84-88,92-107,111-150,262-263,265-266,269,271,377-440,571-623,656-667,669-672,676,682-690,692,695-717,729,750,771-787,818-826,828-830,832,835-869,871-878,880,882,1357-1361,1380-1381,1419,1428,1505,1514
+Cargo.lock
+  ai_agent 183,186,226,228,777-782,883,989,991,1045-1053,1341,1343,1427,1429,1803,1920,2119,2160,2280,2311,2465,2738-2760,2909,3030,3158
+Cargo.toml
+  s_60f8fed33b7c7b::t_d3709540517c2d 24,62
+src/test_support.rs
+  s_60f8fed33b7c7b::t_d3709540517c2d 41-44
+"backlog/docs/doc-17 - ADR-040-—-Native-JPEG-WebP-shrink-on-load-backends.md"
+  s_60f8fed33b7c7b::t_d3709540517c2d 11
+src/adapters/codecs.rs
+  s_60f8fed33b7c7b::t_d3709540517c2d 7
+tests/e2e_images.rs
+  s_60f8fed33b7c7b::t_d3709540517c2d 19-21,213,217
+"backlog/tasks/b-237 - Benchmark-cache-asymmetry-for-JPEG-invert.md"
+  s_60f8fed33b7c7b::t_d3709540517c2d 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "64b86d5a675f056dccc2f798eec806620ed1440a",
+  "prompts": {},
+  "sessions": {
+    "s_60f8fed33b7c7b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "261deac0-a8f6-4f10-a951-25dfa18c266e",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
