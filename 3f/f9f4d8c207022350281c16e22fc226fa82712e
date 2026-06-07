@@ -1,0 +1,11 @@
+"backlog/archive/tasks/b-257 - Add-HDR-CICP→scRGB-benchmarks-and-boundary-coverage.md"
+  ai_agent 4,7,18
+"backlog/tasks/b-266 - Design-review-GaussBlurH-V-Op-signature-—-Output-type-broken-by-B-241-U8-fast-path.md"
+  ai_agent 1-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3ff9f4d8c207022350281c16e22fc226fa82712e",
+  "prompts": {}
+}
