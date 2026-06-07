@@ -1,0 +1,28 @@
+tests/libvips_parity.rs
+  s_d3c9b84c7df7e7::t_516b88262a9f42 13-23
+  s_d3c9b84c7df7e7::t_28f4f0efb06d5f 115-754
+  s_d3c9b84c7df7e7::t_31c3b31e974528 886-888,893-894,896-919,921
+  s_d3c9b84c7df7e7::t_2f43593379592e 964-971,973
+  s_d3c9b84c7df7e7::t_9656c3382e507c 799,890
+tests/golden.rs
+  s_d3c9b84c7df7e7::t_869a332117b997 274
+  s_d3c9b84c7df7e7::t_379bc0aff36f88 10,22
+"backlog/archive/tasks/b-88 - Port-libvips-upstream-test-cases-into-viprs-functional-suite.md"
+  s_d3c9b84c7df7e7::t_b4fff38703fd18 29-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7f3e7d81f935af0d7abf715bc67cd1f8090fa9e8",
+  "prompts": {},
+  "sessions": {
+    "s_d3c9b84c7df7e7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DdRQqX7bpkpu6hhNu41Vdh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
