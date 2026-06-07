@@ -1,0 +1,23 @@
+src/domain/ops/convolution/spcor.rs
+  s_edf3db84bbb06f::t_6e5d047420d72f 8,14-19,27,31-36,38,45,49,55-56,58,62-63,72-74,82-96,99-106,141-143,146,158-159,165,175,179,183-184,188,205-214,218,222-225,229-231,236-238,241,243,245-248,255,260,262,272-274,276,278-280,292-298,301-308
+Cargo.toml
+  s_edf3db84bbb06f::t_6e5d047420d72f 1141-1142
+benches/convolution/spcor.rs
+  s_edf3db84bbb06f::t_6e5d047420d72f 3,8,19-29,32-33,42,61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8fcb22f6ad83753c9ef076f7781d087027ac13a8",
+  "prompts": {},
+  "sessions": {
+    "s_edf3db84bbb06f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PF3kE61qsd1vYsU2yqQW6S",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
