@@ -1,0 +1,21 @@
+Cargo.toml
+  s_76a039de988499::t_44cf847fff1b23 357-360
+benches/conversion/rot45.rs
+  s_76a039de988499::t_44cf847fff1b23 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3eb3c6aad5a7f3c38e33240142af036d26134baf",
+  "prompts": {},
+  "sessions": {
+    "s_76a039de988499": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AsEY3MAE2q3XCQxzgGT2DR",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
