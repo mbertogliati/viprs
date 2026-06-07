@@ -1,0 +1,49 @@
+"backlog/archive/tasks/b-251 - Stop-animated-WebP-decode-from-cloning-the-full-RGBA-canvas-per-frame.md"
+  s_1e2af443e4a92c::t_b6268bcbc8c0cc 1-19
+"backlog/tasks/b-244 - P-028-—-Benchmark-lie-load-with-cache-compares-cache-hit-vs-uncached-decode.md"
+  ai_agent 4,7
+"backlog/tasks/b-242 - P-026-—-Benchmark-lie-no-e2e-reuses-different-work-per-iteration.md"
+  ai_agent 4,7
+"backlog/tasks/b-255 - Exercise-ReduceOp-with-mixed-pixels-and-shrink-factors-above-one.md"
+  ai_agent 1-32
+"backlog/tasks/b-243 - P-027-—-Benchmark-lie-thread-count-is-not-pinned-across-backends.md"
+  ai_agent 4,7
+"backlog/tasks/b-254 - Add-non-constant-thumbnail-tests-that-distinguish-Lanczos3-output.md"
+  ai_agent 1-32
+"backlog/tasks/b-256 - Document-or-lint-runtime-dyn-dispatch-in-the-domain-colour-dispatcher.md"
+  ai_agent 1-32
+"backlog/tasks/b-253 - Make-integer-PipelineBuilder-linear-match-libvips-clip-semantics.md"
+  ai_agent 1-33
+"backlog/tasks/b-257 - Verify-shrink-on-load-resource-savings-instead-of-only-pixel-equivalence.md"
+  ai_agent 1-32
+"backlog/tasks/b-252 - Match-libvips-alpha-scaling-when-colour-conversions-preserve-extra-bands.md"
+  ai_agent 1-32
+"backlog/archive/tasks/b-249 - Make-libvips-parity-tests-fail-explicitly-when-libvips-is-unavailable.md"
+  s_d8de55d8ddcf1d::t_dcb1996948709c 1-19
+"backlog/tasks/b-250 - Remove-per-tile-heap-allocation-from-PNG-region-decoding.md"
+  ai_agent 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e04742a7ca386f0fdf9f02abe6c96a6d67180bea",
+  "prompts": {},
+  "sessions": {
+    "s_1e2af443e4a92c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QcuCftdsxU14X1SGgkevVb",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d8de55d8ddcf1d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01V7faQTwQ4eT53tSGhkyRGJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
