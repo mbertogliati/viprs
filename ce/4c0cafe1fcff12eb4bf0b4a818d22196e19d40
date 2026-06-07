@@ -1,0 +1,24 @@
+src/domain/reducers/label_regions.rs
+  s_b9d9011738ea1d::t_132a34d6aea2ac 178-187,250-272
+  s_b9d9011738ea1d::t_018357c5272212 273-282
+"backlog/docs/doc-27 - ADR-050-—-TileReducer-scratch-state-API-to-eliminate-per-tile-heap-allocations.md"
+  s_b9d9011738ea1d::t_9298004fe5d316 107-109
+"backlog/tasks/b-122 - Migrate-LabelRegionsReducer-to-scratch-state-API-B-86.1-follow-up.md"
+  s_b9d9011738ea1d::t_96a01d727a75f1 26-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ce4c0cafe1fcff12eb4bf0b4a818d22196e19d40",
+  "prompts": {},
+  "sessions": {
+    "s_b9d9011738ea1d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_3OoXUFmcqfmP8F0NA9ekAOYL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
