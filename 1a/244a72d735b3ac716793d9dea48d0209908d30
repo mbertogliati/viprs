@@ -1,0 +1,19 @@
+src/adapters/codecs/png.rs
+  s_fcfcb3c0da6e83::t_6d01cc0bc9c95c 13,55-65,786,806,1105-1106,1108-1122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1a244a72d735b3ac716793d9dea48d0209908d30",
+  "prompts": {},
+  "sessions": {
+    "s_fcfcb3c0da6e83": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TsvAyRNkZLdJPXoQnFQDoo",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
