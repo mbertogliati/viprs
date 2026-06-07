@@ -1,0 +1,29 @@
+"backlog/tasks/b-214 - P-013-—-Completar-matriz-baseline-TIFF-para-encode-JPEG-in-TIFF-U16-y-F32.md"
+  s_87bc9e6946dd10::t_e223f5e9f3ccb6 4,7,20-27,29-45,47-50
+"backlog/tasks/b-217 - P-015-—-Investigar-gap-10x-en-save-tiff-LZW-frente-a-libvips.md"
+  s_87bc9e6946dd10::t_e223f5e9f3ccb6 1-39
+"backlog/tasks/b-219 - P-017-—-Investigar-gap-10x-en-decode-JPEG-in-TIFF-frente-a-libvips.md"
+  s_87bc9e6946dd10::t_e223f5e9f3ccb6 1-40
+"backlog/tasks/b-221 - P-019-—-Investigar-gap-2x-en-decode-F32-TIFF-frente-a-libvips.md"
+  s_87bc9e6946dd10::t_e223f5e9f3ccb6 1-40
+"backlog/tasks/b-218 - P-016-—-Investigar-gap-50x-en-save-tiff-JPEG-frente-a-libvips.md"
+  s_87bc9e6946dd10::t_e223f5e9f3ccb6 1-39
+"backlog/tasks/b-220 - P-018-—-Investigar-gap-3x-en-decode-U16-TIFF-frente-a-libvips.md"
+  s_87bc9e6946dd10::t_e223f5e9f3ccb6 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cc32afc1443c75bbadece6f769e16ef56afd5a84",
+  "prompts": {},
+  "sessions": {
+    "s_87bc9e6946dd10": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QAxpS9YenL2r1HKkz4mgK3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
