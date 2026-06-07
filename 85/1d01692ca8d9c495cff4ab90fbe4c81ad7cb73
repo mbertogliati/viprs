@@ -1,0 +1,21 @@
+src/domain/ops/freqfilt/fwfft.rs
+  s_cce91f04dc062c::t_f9abc69419610c 34-38,44-45,47-48,70-71,168,171
+src/domain/ops/freqfilt/invfft.rs
+  s_cce91f04dc062c::t_fe7558ee529781 16,28-29,126,129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "851d01692ca8d9c495cff4ab90fbe4c81ad7cb73",
+  "prompts": {},
+  "sessions": {
+    "s_cce91f04dc062c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NDQfuL7NUti4sZTDgw5e1o",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
