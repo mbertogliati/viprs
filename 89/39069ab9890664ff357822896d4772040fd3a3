@@ -1,0 +1,33 @@
+tests/golden_libvips_test.rs
+  s_7a31a532637f92::t_39e74277debc26 361-383
+  s_7a31a532637f92::t_25273b1cea6da0 336-360,384,525-530,533-536,542-566
+  s_7a31a532637f92::t_ff681ea6ad9b8b 531-532
+  s_7a31a532637f92::t_487a116a0a9042 385-386,388-393,483
+  s_7a31a532637f92::t_59a8a0694e7680 537,541
+  s_7a31a532637f92::t_03b864c39dffa2 13,15-19,25,387,394-421,423,425-433,435-447,450-459,461-472,475-480,482,484-485,538-540
+src/adapters/pipeline.rs
+  s_7a31a532637f92::t_c2011706e4cbdd 1937,1984
+"backlog/tasks/b-127 - ResizeOp-missing-gap-parameter-applies-more-box-filter-shrink-than-libvips-default.md"
+  s_7a31a532637f92::t_60abcdded93126 6,32-34
+src/domain/ops/resample/resize.rs
+  s_7a31a532637f92::t_b78e8acf85ebe3 158-167,169-175,178-184,186-190
+  s_7a31a532637f92::t_7d40771cec3566 493-494,509-515
+  s_7a31a532637f92::t_e48408c519f3e2 442
+  s_7a31a532637f92::t_64e82cefe7dfdf 60,67,71-82,91-96,102,108-114,249-257,263-267,269-278,410,414,417-423,433-441,443-472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8939069ab9890664ff357822896d4772040fd3a3",
+  "prompts": {},
+  "sessions": {
+    "s_7a31a532637f92": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_1EUE6Bf62SQpu5WjdHZKgjOj",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
