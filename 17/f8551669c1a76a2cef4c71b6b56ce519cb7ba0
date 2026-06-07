@@ -1,0 +1,29 @@
+"backlog/archive/tasks/b-258 - Replace-LabQ→sRGB-determinism-only-coverage-with-parity-tests-and-a-benchmark.md"
+  s_b59582d8d2d8ab::t_68d45080d82d8a 4,7,18,22,24-28,31-33
+"backlog/archive/tasks/b-255 - Exercise-ReduceOp-with-mixed-pixels-and-shrink-factors-above-one.md"
+  s_d8691963a5f9ad::t_b6d5caa2a3c4a2 4,7,11-12,36-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "17f8551669c1a76a2cef4c71b6b56ce519cb7ba0",
+  "prompts": {},
+  "sessions": {
+    "s_b59582d8d2d8ab": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0178k7owKyfnVxg47bm7simJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d8691963a5f9ad": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Xud29FmisGbVCNAGgtt9b4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
