@@ -1,0 +1,21 @@
+src/adapters/codecs/tiff.rs
+  s_8099259be01208::t_f103dcb5351012 1811-1817
+  s_8099259be01208::t_c2b8a4bd1acaa9 1833-1840
+  s_8099259be01208::t_1f1aedeba444db 1810,1828-1832,1841-1850,1861
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6ccb323168fa2b418f30bd7322fc7c064a6ed651",
+  "prompts": {},
+  "sessions": {
+    "s_8099259be01208": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_nlEQ7prJPZNcMJbhVoGBpAlO",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
