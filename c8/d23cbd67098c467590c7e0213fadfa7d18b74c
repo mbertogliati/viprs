@@ -1,0 +1,21 @@
+src/adapters/pipeline.rs
+  s_eac0c355ee8bbc::t_9d76550e990f19 135,152,172,177-180,849,1039,1357-1363
+src/adapters/scheduler/rayon_scheduler.rs
+  s_eac0c355ee8bbc::t_b9c0bcb31f4024 264,266-294,627-632,692-697,767-797,875-977,1173,1212-1283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c8d23cbd67098c467590c7e0213fadfa7d18b74c",
+  "prompts": {},
+  "sessions": {
+    "s_eac0c355ee8bbc": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01S8H9W3pgu9fgPCqfiGkdEZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
