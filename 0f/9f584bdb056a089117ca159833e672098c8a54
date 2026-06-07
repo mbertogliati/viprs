@@ -1,0 +1,43 @@
+src/domain/ops/mosaicing/tie_points.rs
+  s_04e5a60c14fa87::t_f72c8da96fa201 2,50-54,93,141,159-161,168-169
+src/domain/ops/mosaicing/auto_mosaic.rs
+  s_04e5a60c14fa87::t_f72c8da96fa201 1-60,65-75,77-89,91-114
+  s_04e5a60c14fa87::t_b2fd91bb5bd509 61-64
+  s_04e5a60c14fa87::t_75d0e8a1c3a8e3 90
+src/domain/ops/mosaicing.rs
+  s_04e5a60c14fa87::t_f72c8da96fa201 5,11,17,23
+src/domain/error.rs
+  s_04e5a60c14fa87::t_f72c8da96fa201 184-201
+src/domain/ops/mosaicing/lrmosaic.rs
+  s_04e5a60c14fa87::t_f72c8da96fa201 1-7,9-73,75-141,168-181,183-189,191-193,208-209,223-224
+  s_04e5a60c14fa87::t_8676b8441440cb 142-167,210-219,221-222
+  s_04e5a60c14fa87::t_b66b313c146a78 182,190,194-207
+  s_04e5a60c14fa87::t_75d0e8a1c3a8e3 74
+"backlog/archive/tasks/b-226 - Implement-auto-tie-point-detection-for-lrmosaic-tbmosaic.md"
+  s_04e5a60c14fa87::t_f32f114988bc81 4-24
+src/domain/ops/mosaicing/tbmosaic.rs
+  s_04e5a60c14fa87::t_b66b313c146a78 182,190,194-207
+  s_04e5a60c14fa87::t_75d0e8a1c3a8e3 74
+  s_04e5a60c14fa87::t_8676b8441440cb 142-167,210-219,221-222
+  s_04e5a60c14fa87::t_f72c8da96fa201 1-7,9-73,75-141,168-181,183-189,191-193,208-209,223-224
+docs/PARITY_MATRIX.md
+  s_04e5a60c14fa87::t_f72c8da96fa201 315,324
+src/lib.rs
+  s_04e5a60c14fa87::t_f72c8da96fa201 73-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0f9f584bdb056a089117ca159833e672098c8a54",
+  "prompts": {},
+  "sessions": {
+    "s_04e5a60c14fa87": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UHBMy9XNSrJiMYcRGuGQRP",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
