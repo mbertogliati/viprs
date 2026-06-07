@@ -1,0 +1,19 @@
+"backlog/tasks/b-195 - B-195-—-Implementar-sinkdisc-escritura-streaming-a-disco-sin-materializar-en-memoria.md"
+  s_1589f6a19ac2d3::t_5f65972bf86183 28-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7112412146a6f6a475994d52e19eefad93ba6499",
+  "prompts": {},
+  "sessions": {
+    "s_1589f6a19ac2d3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d1ff4214-4e41-4ea7-97dc-e1f4c58a73f3",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
