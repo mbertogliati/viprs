@@ -1,0 +1,39 @@
+"backlog/archive/tasks/b-248 - P-032-—-Missing-scenarios-parameter-matrix-for-thumbnail-targets-and-blur-sigma.md"
+  s_87669fca7a1aa2::t_17bc389c71f9ae 6,9,20
+"backlog/tasks/b-259 - Benchmark-the-composite-Shrink-op-directly.md"
+  s_87669fca7a1aa2::t_5b6f3d1b3720c3 4,7
+"backlog/tasks/b-261 - Raise-Analyze-codec-coverage-above-the-90-floor.md"
+  s_87669fca7a1aa2::t_5b6f3d1b3720c3 4,7
+"backlog/tasks/b-260 - Add-missing-create-op-benchmarks-for-FrequencyMask-Logmat-InvertLut-and-ToneLut.md"
+  s_87669fca7a1aa2::t_5b6f3d1b3720c3 6,9
+"backlog/tasks/b-263 - Raise-Rot-op-coverage-above-90-with-all-angle-region-checks.md"
+  s_87669fca7a1aa2::t_5b6f3d1b3720c3 4,7
+"backlog/tasks/b-264 - P-033-—-invert-with-cache-gap-2.76x-vs-libvips.md"
+  s_87669fca7a1aa2::t_5b6f3d1b3720c3 4,7
+"backlog/archive/tasks/b-252 - Match-libvips-alpha-scaling-when-colour-conversions-preserve-extra-bands.md"
+  s_4ec0bb91d1ce2c::t_4dae178566458f 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4f38d6e0eaf2767bcba1061ca095c50ffd156a36",
+  "prompts": {},
+  "sessions": {
+    "s_4ec0bb91d1ce2c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018MCV6jDt5A7KNi4gxzQZYM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
