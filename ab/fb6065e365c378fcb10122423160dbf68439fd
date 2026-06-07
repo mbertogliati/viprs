@@ -1,0 +1,27 @@
+tools/bench-vs-libvips/libvips_runner.c
+  s_182c2741644824::t_74474140fb30c8 40-61,63-64,66,74-75,89-90,106-119,122-124,128-130,136-138,140-141,150-152,193-215,219,224,228,232,234,237-238,262,295
+"backlog/tasks/b-152 - xtask-bench-thumbnail-panics-on-non-tile-aligned-widths.md"
+  s_182c2741644824::t_74474140fb30c8 1-27
+tools/bench-vs-libvips/README.md
+  s_182c2741644824::t_74474140fb30c8 26-27,32-33
+xtask/src/bench.rs
+  s_182c2741644824::t_74474140fb30c8 273,275-278,280-291,323,327,337
+xtask/README.md
+  s_182c2741644824::t_74474140fb30c8 14-17,62,65,87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "abfb6065e365c378fcb10122423160dbf68439fd",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
