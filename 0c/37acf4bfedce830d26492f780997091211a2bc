@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-205 - B-205-—-Implementar-histogram-ops-faltantes-hist_plot-case-hist_find_ndim.md"
+  s_ec6e53c8905949::t_66505da9e0f4e1 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0c37acf4bfedce830d26492f780997091211a2bc",
+  "prompts": {},
+  "sessions": {
+    "s_ec6e53c8905949": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0183N3vv4nWFReSx95gNzjtq",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
