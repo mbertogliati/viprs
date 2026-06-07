@@ -1,0 +1,23 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_a8767ef3814b67::t_d1333a64e2e4bc 608-612,641,646-650,652,679,681,686-690,692,699,1135-1219
+src/ports/scheduler.rs
+  s_a8767ef3814b67::t_e9cf9521482a0f 95-100
+"backlog/tasks/b-123 - Update-RayonScheduler-run_with_reducer-to-use-accumulate_into-scratch-API.md"
+  s_a8767ef3814b67::t_aa20473cdb2e47 4,27-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9ba5d172afc7ddd80a3d547ad9a06cc40d4b073e",
+  "prompts": {},
+  "sessions": {
+    "s_a8767ef3814b67": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_uXGDhhWql6RoXo8wA2i480g3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
