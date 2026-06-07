@@ -1,0 +1,26 @@
+src/adapters/pipeline.rs
+  s_477eecd31edaed::t_8333e06721771e 3020-3056
+  s_477eecd31edaed::t_96e058005bccda 1963-1966,1969-1975,2048-2051,2054-2060
+src/domain/ops/resample/shrinkv.rs
+  s_477eecd31edaed::t_faf66220bfc181 4-5,37,46-51,55,59-65,138-142,158-161,163-164,166,246,256-257,275,282,293-300,334,337-338,377-382,386,414,417-425
+  s_477eecd31edaed::t_027639b4a1adf9 402
+src/domain/ops/resample/shrinkh.rs
+  s_477eecd31edaed::t_8b7d656e722f49 4-5,124,133-138,142,146-152,220-224,245-248,250-251,253,332,342-343,360,367,378-385,419,422-423,454,489-492,519,522-530
+  s_477eecd31edaed::t_cc746593873aa8 507
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3c8aa6eec20c987c142c67c807ee8a17da5ba7e6",
+  "prompts": {},
+  "sessions": {
+    "s_477eecd31edaed": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_52soqaH7E6t3iNh5MoHCymNy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
