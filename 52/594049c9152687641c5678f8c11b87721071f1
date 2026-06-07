@@ -1,0 +1,31 @@
+"backlog/tasks/b-139 - Implement-openslide-whole-slide-loader-backend.md"
+  s_182c2741644824::t_813bad76c822f3 1-28
+"backlog/tasks/b-140 - Implement-dzsave-deepzoom-exporter-backend.md"
+  s_182c2741644824::t_813bad76c822f3 1-28
+"backlog/archive/tasks/b-118 - Implement-document-slide-and-fallback-loader-parity.md"
+  s_182c2741644824::t_813bad76c822f3 4,7,18-38
+"backlog/tasks/b-138 - Implement-pdfium-poppler-document-loader-backend.md"
+  s_182c2741644824::t_813bad76c822f3 1-28
+"backlog/tasks/b-141 - Implement-dcraw-libraw-camera-loader-backend.md"
+  s_182c2741644824::t_813bad76c822f3 1-28
+"backlog/tasks/b-142 - Implement-ImageMagick-fallback-loaders-and-savers.md"
+  s_182c2741644824::t_813bad76c822f3 1-28
+src/adapters/codecs/registry.rs
+  ai_agent 43,47-48,54,58-59,63,67-68,71-119,123-133,143-158,163-168,404,692,699-717,739-782
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "52594049c9152687641c5678f8c11b87721071f1",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
