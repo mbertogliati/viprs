@@ -1,0 +1,34 @@
+src/domain/ops/draw/draw_mask.rs
+  s_90f9b7cbf32164::t_6bc2d59e9494f1 346
+  s_90f9b7cbf32164::t_378ba34a05c300 386-418
+  s_90f9b7cbf32164::t_f26c05cf4283f1 270,276-281,319-345,347-362,367-385,462-467,469-471,473-482
+  s_90f9b7cbf32164::t_f493d8d13d1f78 363-366
+  s_90f9b7cbf32164::t_913ad6918baa5c 468,472
+src/domain/ops/draw/draw_image.rs
+  s_90f9b7cbf32164::t_758bf0f67e0686 408-460,462-471,473-524,554-573,621-626,628-630,632-642
+  s_90f9b7cbf32164::t_c81e76547bf04d 627,631
+  s_90f9b7cbf32164::t_942219a252d6bb 461
+  s_90f9b7cbf32164::t_3ae9906af6f589 472
+  s_90f9b7cbf32164::t_a5e3eac90d3b55 525-553
+src/domain/ops/draw/draw_smudge.rs
+  s_90f9b7cbf32164::t_1d4262612714a9 374,377
+  s_90f9b7cbf32164::t_17e3193473ca47 311,424,432,441
+  s_90f9b7cbf32164::t_5dcbda64d34c6a 393-422
+  s_90f9b7cbf32164::t_8410a0d589e016 315-318,344-373,375-376,378-392,423,425-431,433-440,442-443,463-485
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2b8ce8dcd421c63d92bb7064dca6c34a1dd8583a",
+  "prompts": {},
+  "sessions": {
+    "s_90f9b7cbf32164": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011Ba4YVZJ2bZi3TjwaZvn5K",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
