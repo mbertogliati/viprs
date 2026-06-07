@@ -1,0 +1,67 @@
+src/domain/reducers/hough.rs
+  s_4e8cc250122d16::t_5329c01d272a2b 96-159
+  s_4e8cc250122d16::t_4971bab9e62c8d 278-280
+  s_4e8cc250122d16::t_b6f857971ca3b6 49-52
+  s_4e8cc250122d16::t_7973cdff578b31 316-369
+src/domain/reducers/hist_equal.rs
+  s_4e8cc250122d16::t_6aaa8e164cce64 27-28,50-92
+src/domain/ops/histogram/hist_find_indexed.rs
+  s_4e8cc250122d16::t_7ee4f57200183f 207
+src/domain/reducers/getpoint.rs
+  s_4e8cc250122d16::t_e3e0dfa4c7c2c7 25-28
+"backlog/docs/doc-27 - ADR-050-—-TileReducer-scratch-state-API-to-eliminate-per-tile-heap-allocations.md"
+  s_4e8cc250122d16::t_fd275f887c5c2f 8-110
+src/domain/reducer.rs
+  s_4e8cc250122d16::t_7792fdfcdcc4fd 190
+  s_4e8cc250122d16::t_6c8049af7766b3 256
+  s_4e8cc250122d16::t_54e3a429a7dac3 4,31,33-48,64,70-80,85-88,91-117,122
+src/domain/ops/arithmetic/find_trim.rs
+  s_4e8cc250122d16::t_871cbb74535ce1 69
+src/domain/ops/histogram/hist_find_facades.rs
+  s_4e8cc250122d16::t_bc016961e68348 284
+  s_4e8cc250122d16::t_7c078a51ae4433 127
+src/domain/ops/mosaicing/global_balance.rs
+  s_4e8cc250122d16::t_19ba140f87fe67 199-204
+src/domain/reducers/histogram.rs
+  s_4e8cc250122d16::t_45337296e1feb7 42-43,46-47,69-109
+src/domain/reducers/label_regions.rs
+  s_4e8cc250122d16::t_0896c70967012a 60-63
+src/domain/ops/morphology/count_lines.rs
+  s_4e8cc250122d16::t_4daaad4eb1365f 95
+src/domain/ops/arithmetic/measure.rs
+  s_4e8cc250122d16::t_2d5dd62278746c 43-45,61-86,88-89
+  s_4e8cc250122d16::t_3047268fce7795 87
+src/domain/reducers/stats.rs
+  s_4e8cc250122d16::t_765ec61fa0d3e2 91-131,133-136
+  s_4e8cc250122d16::t_6cd056f79c37b2 132
+  s_4e8cc250122d16::t_163e80d0d62bfa 66-67
+src/adapters/scheduler/rayon_scheduler.rs
+  s_4e8cc250122d16::t_9e513af39a97e7 902
+  s_4e8cc250122d16::t_de51cae381d1be 977
+  s_4e8cc250122d16::t_bc478ffc2ffaef 1086
+src/domain/ops/arithmetic/reduce_facades.rs
+  s_4e8cc250122d16::t_7a6b39d84d535c 138
+  s_4e8cc250122d16::t_2655dc9281e889 268
+  s_4e8cc250122d16::t_5953731c35f33f 577
+  s_4e8cc250122d16::t_d46ce76eb890b0 92
+  s_4e8cc250122d16::t_c546714fb59709 491
+  s_4e8cc250122d16::t_31dcbc26075522 727
+  s_4e8cc250122d16::t_1e9229deda49e4 186
+  s_4e8cc250122d16::t_f2190ca99aa95b 663
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "53f80fcc5e4b6c33a99ad6b6771e938c5ab7f69b",
+  "prompts": {},
+  "sessions": {
+    "s_4e8cc250122d16": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b72ce7cc-0bdc-4eac-ad8a-75b5c19ff4fa",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
