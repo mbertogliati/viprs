@@ -1,0 +1,23 @@
+docs/ai/agents/performance_engineer.md
+  s_87669fca7a1aa2::t_fa38370df1ed8c 31-79
+  s_87669fca7a1aa2::t_453279377ef807 143-154
+  s_87669fca7a1aa2::t_cc7f8c17bd9d12 279-283,286,292,299,302
+  s_87669fca7a1aa2::t_edecd93d52f560 306-307
+  s_87669fca7a1aa2::t_e23bb0e8b0d4ea 323-326
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4fe7caf784352f6a5be52e8ceebf5633a825a221",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
