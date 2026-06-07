@@ -1,0 +1,29 @@
+src/adapters/codecs/dcraw.rs
+  s_182c2741644824::t_3cfc13921e7ce2 1-679
+tests/fixtures/images/camera-stub.nef
+  s_182c2741644824::t_3cfc13921e7ce2 1
+docs/PARITY_MATRIX.md
+  s_182c2741644824::t_3cfc13921e7ce2 368
+src/adapters/codecs.rs
+  ai_agent 22,74-75,135-136
+src/adapters/codecs/registry.rs
+  s_182c2741644824::t_3cfc13921e7ce2 46-47,114,294,298-302,306,334-337,380-391,625-626,962,968,973-979
+"backlog/tasks/b-141 - Implement-dcraw-libraw-camera-loader-backend.md"
+  s_182c2741644824::t_3cfc13921e7ce2 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aa82ed7df65880050ed2d7b96ce120f8b5ab708d",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
