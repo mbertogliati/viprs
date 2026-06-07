@@ -1,0 +1,32 @@
+src/adapters/codecs/heif_support.rs
+  s_4e8cc250122d16::t_2be39166e11088 272-286
+  s_4e8cc250122d16::t_470ede8e078c19 12-14,19-20
+  s_4e8cc250122d16::t_e202994a98cd4f 350-356
+src/adapters/codecs/avif.rs
+  s_4e8cc250122d16::t_7baba78bfa0383 738-772,774-797
+  s_4e8cc250122d16::t_3c26b1d1124693 232
+  s_4e8cc250122d16::t_7765e16707dd89 773
+  s_4e8cc250122d16::t_28499e6e204890 90-92
+  s_4e8cc250122d16::t_67637c9ce76c13 305
+src/adapters/codecs/heif.rs
+  s_4e8cc250122d16::t_44c0687e4abf62 764
+  s_4e8cc250122d16::t_cbc555deeb029c 239
+  s_4e8cc250122d16::t_500f662423da27 314
+  s_4e8cc250122d16::t_714060783185cf 726-763,765-769,771-788
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "43e6165bba0b978af74ac937d1ba03f7d2547127",
+  "prompts": {},
+  "sessions": {
+    "s_4e8cc250122d16": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b72ce7cc-0bdc-4eac-ad8a-75b5c19ff4fa",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
