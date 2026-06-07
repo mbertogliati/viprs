@@ -1,0 +1,47 @@
+"backlog/archive/tasks/b-246 - P-064-—-Composite-shrink-2x2-loses-at-512-2048-before-recovering-at-8192.md"
+  ai_agent 1-48
+.copilot/merger.log
+  ai_agent 1
+"backlog/archive/tasks/b-247 - P-065-—-Production-workflow-scenarios-are-still-2.55x-5.51x-slower-at-2048.md"
+  ai_agent 1-50
+"backlog/archive/tasks/b-243 - P-061-—-Resize-0.5-remains-slower-than-libvips-across-512-2048-8192-no-E2E-sizes.md"
+  ai_agent 1-52
+"backlog/archive/tasks/b-250 - P-068-—-Morphology-operations-have-zero-viprs-vs-libvips-benchmark-coverage.md"
+  ai_agent 1-37
+"backlog/archive/tasks/b-252 - P-070-—-Colourspace-benchmarks-have-a-512px-gap-and-major-scenario-matrix-blind-spots.md"
+  ai_agent 1-54
+"backlog/archive/tasks/b-249 - P-067-—-Embed-and-extract-area-have-no-libvips-baseline-benchmarks.md"
+  ai_agent 1-37
+"backlog/tasks/b-270 - P-067-—-PNG-production-workflows-remain-1.80x–4.92x-slower-at-2048-after-workflow-builder-fix.md"
+  ai_agent 1-38
+"backlog/tasks/b-274 - P-069-—-Affine-family-resample-baselines-trail-libvips.md"
+  ai_agent 1-18
+"backlog/tasks/b-271 - P-068-—-Embed-and-extract_area-lag-behind-libvips-no-E2E-baselines.md"
+  ai_agent 1-32
+xtask/src/bench/runner.rs
+  ai_agent 5,8,15-16,18-19,31,35-37,278-281,695-874,955
+xtask/src/bench.rs
+  ai_agent 701,704,706-715
+"backlog/tasks/b-272 - P-072-—-Generic-convolution-and-edge-baselines-remain-slower-than-libvips.md"
+  ai_agent 1-38
+"backlog/tasks/b-269 - P-066-—-AVIF-workflow-encode-still-1.75x-slower-at-2048-after-path-backed-source-fix.md"
+  ai_agent 1-36
+xtask/src/bench/args.rs
+  ai_agent 47-48,125-135
+xtask/src/bench/pipeline.rs
+  ai_agent 1,6,25-56,277-278,293-317
+tools/bench-vs-libvips/libvips_runner.c
+  ai_agent 29-36,45,103-164,302-313,343,345-349,420-450,667-707,858-871,930-936,1111-1112,1127,1160-1183,1223-1236,1278-1281,1334,1368-1369
+tools/bench-vs-libvips/README.md
+  ai_agent 55-56
+xtask/src/bench/helpers.rs
+  ai_agent 121-137,243
+.copilot/merger_watch.sh
+  ai_agent 1-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f3811bb108acf143b20f5f94a738297933c342c7",
+  "prompts": {}
+}
