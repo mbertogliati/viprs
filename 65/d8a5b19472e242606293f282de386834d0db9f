@@ -1,0 +1,19 @@
+"backlog/tasks/b-154 - Align-JPEG-WebP-default-quality-with-libvips.md"
+  s_d5786a36a2058b::t_62d6914810f3ea 17-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "65d8a5b19472e242606293f282de386834d0db9f",
+  "prompts": {},
+  "sessions": {
+    "s_d5786a36a2058b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_oAIKpur0SEpsDmXJ4RdMHnVF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
