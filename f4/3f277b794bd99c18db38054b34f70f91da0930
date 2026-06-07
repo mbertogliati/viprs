@@ -1,0 +1,34 @@
+tools/bench-vs-libvips/libvips_runner.c
+  s_1ad8286e126549::t_25b16631d1ad94 85,96-104,144,155-159,161,189-190,223-224
+src/domain/ops/arithmetic/invert.rs
+  s_1ad8286e126549::t_c550a7cce433ef 184,195,205,208,263,274,282-283,291
+src/adapters/sinks/memory.rs
+  s_1ad8286e126549::t_09c21e70e9288b 114-121
+src/adapters/sources/memory.rs
+  s_1ad8286e126549::t_d8a3e4af114250 80-99
+xtask/src/bench.rs
+  s_1ad8286e126549::t_946ef28778e550 230-233,239-272,274-293
+  s_1ad8286e126549::t_0114543b654c68 346,348
+  s_1ad8286e126549::t_c65732b74e092d 378,380
+  s_1ad8286e126549::t_5baa6fdc9f8e9e 273
+src/adapters/scheduler/rayon_scheduler.rs
+  s_1ad8286e126549::t_cf6a9db2f2efc9 281-300
+  s_1ad8286e126549::t_8c5b0bcb7798e3 586,641
+  s_1ad8286e126549::t_ca2427a71af57c 273-280,301-336
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f43f277b794bd99c18db38054b34f70f91da0930",
+  "prompts": {},
+  "sessions": {
+    "s_1ad8286e126549": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_loaIHsrZZlDaggzSexaBEhfx",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
