@@ -1,0 +1,9 @@
+"backlog/tasks/b-229 - reduce_h_u8_neon-and-reduce_h_u16_neon-fall-back-to-scalar-for-bands-1-RGB-images-never-use-SIMD-in-horizontal-reduce.md"
+  ai_agent 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bc08b2e1b7ce71c15bc26c14af7f1aee9a8d7ccb",
+  "prompts": {}
+}
