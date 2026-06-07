@@ -1,33 +1,25 @@
-"backlog/tasks/b-262 - Tests-robustez-imagenes-adversariales-decompression-bombs-EXIF-malformado.md"
-  s_a257614eb77534::t_a12f0e36b6dce1 4,7
+"backlog/tasks/b-269 - P-066-—-AVIF-workflow-encode-still-1.75x-slower-at-2048-after-path-backed-source-fix.md"
+  ai_agent 6,9
+"backlog/tasks/b-254 - BUG-chained-thumbnails-use-source-dimensions-instead-of-intermediate-output.md"
+  ai_agent 4,7
+"backlog/tasks/b-257 - Tests-robustez-dimensiones-patológicas.md"
+  ai_agent 4,7
+"backlog/tasks/b-241 - Add-SAFETY-comments-to-remaining-unsafe-blocks.md"
+  ai_agent 4,7
 benches/colour/matrix.rs
   ai_agent 1-237
+"backlog/tasks/b-261 - Tests-robustez-imágenes-corruptas-y-truncadas.md"
+  ai_agent 4,7
 Cargo.toml
   ai_agent 222-225
-"backlog/tasks/b-261 - Tests-robustez-imágenes-corruptas-y-truncadas.md"
-  s_a257614eb77534::t_a12f0e36b6dce1 4,7
-"backlog/tasks/b-269 - P-066-—-AVIF-workflow-encode-still-1.75x-slower-at-2048-after-path-backed-source-fix.md"
-  s_a257614eb77534::t_a12f0e36b6dce1 6,9
-"backlog/tasks/b-257 - Tests-robustez-dimensiones-patológicas.md"
-  s_a257614eb77534::t_a12f0e36b6dce1 4,7
+"backlog/tasks/b-262 - Tests-robustez-imagenes-adversariales-decompression-bombs-EXIF-malformado.md"
+  ai_agent 4,7
 "backlog/tasks/b-268 - P-071-—-Morphology-dilate-erode-kernels-remain-slower-than-libvips.md"
-  s_a257614eb77534::t_a12f0e36b6dce1 4,7
-"backlog/tasks/b-254 - BUG-chained-thumbnails-use-source-dimensions-instead-of-intermediate-output.md"
-  s_a257614eb77534::t_a12f0e36b6dce1 4,7
+  ai_agent 4,7
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.5.3",
   "base_commit_sha": "d9d9a102d62daf85a8ed96f55e20fd590743b2df",
-  "prompts": {},
-  "sessions": {
-    "s_a257614eb77534": {
-      "agent_id": {
-        "tool": "github-copilot-cli",
-        "id": "e327ca34-9087-4b00-895a-6e46b6289843",
-        "model": "unknown"
-      },
-      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
-    }
-  }
+  "prompts": {}
 }
