@@ -1,0 +1,27 @@
+"backlog/tasks/b-142 - Implement-ImageMagick-fallback-loaders-and-savers.md"
+  s_182c2741644824::t_e080d30b96b458 4,7,25-28
+src/adapters/codecs/magick.rs
+  s_182c2741644824::t_e080d30b96b458 1-404
+src/adapters/codecs.rs
+  ai_agent 23,72-73,122-126
+src/ports/codec.rs
+  s_182c2741644824::t_e080d30b96b458 277-286
+src/adapters/codecs/registry.rs
+  s_182c2741644824::t_e080d30b96b458 40-41,115,409-416,475-484,536-537,545-548,561,632-675,719-731,829,835-839,855,860-861
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "82f6ba790d576c0de627e01cc83f91c4e9b1069c",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
