@@ -1,0 +1,53 @@
+"backlog/tasks/b-248 - P-032-—-Missing-scenarios-parameter-matrix-for-thumbnail-targets-and-blur-sigma.md"
+  s_44da17d5b60252::t_a331a5dc92c96e 1-37
+"backlog/archive/tasks/b-237 - P-024-—-Investigate-thumbnail-target100-6.44x-gap-vs-libvips.md"
+  s_c956a91d169657::t_de32dc77c7e86e 1-52
+"backlog/tasks/b-243 - P-027-—-Benchmark-lie-thread-count-is-not-pinned-across-backends.md"
+  s_1edfddf02a0f35::t_d0125d4ac2b7b6 1-35
+"backlog/tasks/b-241 - Implement-SIMD-fixed-point-gauss_blur-fast-path.md"
+  s_87669fca7a1aa2::t_39e77ce70db71f 4,7
+"backlog/tasks/b-247 - P-031-—-Missing-scenarios-upscale-HSV-arithmetic-and-chained-pipelines.md"
+  s_1edfddf02a0f35::t_d0125d4ac2b7b6 1-36
+"backlog/archive/tasks/b-240 - Eliminate-thumbnail-full-image-scheduler-source-copy-overhead.md"
+  s_1edfddf02a0f35::t_6a7cf7d426e0aa 4,7,18,20,22-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "65c7646814bc6349aefa63b334f0b4b811a34434",
+  "prompts": {},
+  "sessions": {
+    "s_1edfddf02a0f35": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_015ZCKMdTT6R8suQntNN93YZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_44da17d5b60252": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Csz7zhb9eXNgzpawA7U1Zs",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c956a91d169657": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_MIbs56kWjwNashmjCOss2NvE",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
