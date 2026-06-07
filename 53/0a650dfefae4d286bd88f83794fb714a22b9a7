@@ -1,0 +1,13 @@
+src/adapters/codecs.rs
+  ai_agent 26,103,170
+Cargo.lock
+  ai_agent 93-100,383-391,1030,1694-1709,1716-1734,1999-2013,3182
+src/adapters/codecs/registry.rs
+  ai_agent 44-45,760-761
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "530a650dfefae4d286bd88f83794fb714a22b9a7",
+  "prompts": {}
+}
