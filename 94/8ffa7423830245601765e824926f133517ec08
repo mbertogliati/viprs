@@ -1,0 +1,11 @@
+"backlog/tasks/b-259 - Benchmark-the-composite-Shrink-op-directly.md"
+  ai_agent 1-33
+"backlog/tasks/b-258 - Replace-LabQ→sRGB-determinism-only-coverage-with-parity-tests-and-a-benchmark.md"
+  ai_agent 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "948ffa7423830245601765e824926f133517ec08",
+  "prompts": {}
+}
