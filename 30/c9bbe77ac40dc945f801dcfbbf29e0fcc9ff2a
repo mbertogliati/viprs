@@ -1,0 +1,23 @@
+src/adapters/codecs/registry.rs
+  s_50739bc5bfaa64::t_9a36ca8ffcebe9 536
+  s_50739bc5bfaa64::t_16717763557130 644
+  s_50739bc5bfaa64::t_b0d8d81e12cb85 1049-1063
+"backlog/archive/tasks/b-143 - DeepZoom-exporter-only-supports-U8-bands.md"
+  s_50739bc5bfaa64::t_6536a12e77a973 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "30c9bbe77ac40dc945f801dcfbbf29e0fcc9ff2a",
+  "prompts": {},
+  "sessions": {
+    "s_50739bc5bfaa64": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_2tgp74xxHjo8kE9ivjvmIrUF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
