@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-206 - B-206-—-Implementar-LabS2LabQ-conversion-directa-LabS-a-LabQ.md"
+  s_81c323896d42c4::t_5c9c35195991c3 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2135b63a73c46c30ee37d8f35a92087b99f82bb7",
+  "prompts": {},
+  "sessions": {
+    "s_81c323896d42c4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01EtHcrrShXbtvs2hSW3QcSu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
