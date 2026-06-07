@@ -1,0 +1,26 @@
+"backlog/tasks/b-229 - B-270-—-BUG-reduceh-slice-panic-en-pipeline-thumbnail→sharpen-range-end-index-out-of-bounds.md"
+  s_60f8fed33b7c7b::t_8ff0abb94270eb 6,9
+"backlog/tasks/b-233 - P-060-—-JP2K-decode-1.23x-slower-at-2048-investigate-codec-backend.md"
+  s_60f8fed33b7c7b::t_27f43b28a7df16 1-28
+"backlog/tasks/b-232 - P-059-—-JXL-decode-3–4.5x-slower-jxl-oxide-pure-Rust-vs-libjxl-C-reference.md"
+  s_60f8fed33b7c7b::t_27f43b28a7df16 1-3,5-6,8-46
+  s_60f8fed33b7c7b::t_e40c6f447d6527 4,7
+"backlog/archive/tasks/b-155 - Agregar-fixtures-y-tests-con-dimensiones-no-potencia-de-2-para-mayor-resiliencia.md"
+  s_60f8fed33b7c7b::t_91b1a942253c1c 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cd6f670b6566436ff5fc938faa3d66072537ad9e",
+  "prompts": {},
+  "sessions": {
+    "s_60f8fed33b7c7b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "261deac0-a8f6-4f10-a951-25dfa18c266e",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
