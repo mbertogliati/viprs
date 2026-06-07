@@ -1,0 +1,15 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  ai_agent 498-501
+src/domain/ops/resample/thumbnail.rs
+  ai_agent 156-164
+tests/robustness_dims.rs
+  ai_agent 1-280
+src/adapters/pipeline.rs
+  ai_agent 567-574,806-813
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "19d9e7fb0942def478d4c5b7bdd74a982345ee99",
+  "prompts": {}
+}
