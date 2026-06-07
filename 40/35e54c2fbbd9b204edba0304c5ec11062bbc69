@@ -1,0 +1,19 @@
+"backlog/docs/doc-32 - ADR-052-—-Sparse-demand-propagation-design.md"
+  s_1528d76b960061::t_e7189c24d4d591 8-151
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4035e54c2fbbd9b204edba0304c5ec11062bbc69",
+  "prompts": {},
+  "sessions": {
+    "s_1528d76b960061": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01712BGg3tqJ325bjXzeDYGc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
