@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-121 - Sharpen-op-uses-simple-unsharp-mask-libvips-sharpen-uses-6-parameter-piecewise-LabS-transfer-function.md"
+  s_182c2741644824::t_d2b47a0cd9088d 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aed8da21e27d9d861ede00871bd3e65066c925a5",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
