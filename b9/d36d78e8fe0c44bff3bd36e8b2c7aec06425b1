@@ -1,0 +1,31 @@
+"backlog/tasks/b-143 - DeepZoom-exporter-only-supports-U8-bands.md"
+  s_182c2741644824::t_2aa6a84991cd8a 1-18
+docs/PARITY_MATRIX.md
+  s_182c2741644824::t_2aa6a84991cd8a 366,413
+src/adapters/codecs/registry.rs
+  ai_agent 48-49,110,463-466,501-540,962,967-969,971-972,990-1015
+Cargo.lock
+  ai_agent 953
+"backlog/tasks/b-140 - Implement-dzsave-deepzoom-exporter-backend.md"
+  s_182c2741644824::t_2aa6a84991cd8a 4,7,25-28
+src/adapters/codecs.rs
+  s_182c2741644824::t_2aa6a84991cd8a 87-88
+src/adapters/codecs/deepzoom.rs
+  s_182c2741644824::t_2aa6a84991cd8a 1-675
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b9d36d78e8fe0c44bff3bd36e8b2c7aec06425b1",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
