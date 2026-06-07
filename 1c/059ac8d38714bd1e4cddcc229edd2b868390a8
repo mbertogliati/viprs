@@ -1,0 +1,23 @@
+src/adapters/sinks.rs
+  s_14f5800b49d696::t_d2ee0a0ac6706a 1
+src/adapters/sinks/file_sink.rs
+  s_14f5800b49d696::t_d2ee0a0ac6706a 1-12,14-134,136-248,250,252-282,284,286-400,402-441
+Cargo.toml
+  s_14f5800b49d696::t_d2ee0a0ac6706a 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1c059ac8d38714bd1e4cddcc229edd2b868390a8",
+  "prompts": {},
+  "sessions": {
+    "s_14f5800b49d696": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TFXHGVfy8pCppy5t5pZ2Hy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
