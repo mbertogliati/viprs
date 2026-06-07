@@ -1,0 +1,25 @@
+src/domain/ops/resample/mapim.rs
+  s_4e8cc250122d16::t_90499a737f7e50 893,895,898-900
+  s_4e8cc250122d16::t_d2239ea2593484 17-29,35-40,42,59-60,64,86,104-121,137-160,162-170,191-194,225-238,244-285,292,294-302,589-804,892,894,896-897,901-914
+  s_4e8cc250122d16::t_87fd43011a15bc 61-63
+  s_4e8cc250122d16::t_4cab6e4041a0b4 41,43-49
+  s_4e8cc250122d16::t_c9be93fce11b21 161
+  s_4e8cc250122d16::t_1e435363653e4a 87
+  s_4e8cc250122d16::t_0902f0ed2df833 286-291,293
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1399d7062f4428ef70fea843106a09afb9ec6db2",
+  "prompts": {},
+  "sessions": {
+    "s_4e8cc250122d16": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b72ce7cc-0bdc-4eac-ad8a-75b5c19ff4fa",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
