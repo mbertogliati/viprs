@@ -1,0 +1,24 @@
+xtask/src/perf/alloc.rs
+  s_139d7dfcefca0e::t_0b5c95f51d27a8 18,20-21,102-103,109,113,122-123
+docs/PERFORMANCE.md
+  s_139d7dfcefca0e::t_0b5c95f51d27a8 77-78
+examples/dhat_profile.rs
+  s_139d7dfcefca0e::t_0b5c95f51d27a8 12,15-17,26-27,34,37-38,41-43,67-97,109,113,115-125,127-145,149-169,171-172,174-176
+  s_139d7dfcefca0e::t_468db37edc5467 33,59-63,65-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "67895c293fb49be712f2dcef4bee904e0a21f5dc",
+  "prompts": {},
+  "sessions": {
+    "s_139d7dfcefca0e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_015jeXGj6Bj2tzKfbMXzQKmL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
