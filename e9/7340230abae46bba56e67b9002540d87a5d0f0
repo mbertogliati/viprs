@@ -1,0 +1,21 @@
+tests/libvips_parity.rs
+  s_87669fca7a1aa2::t_e6dc68f4a7ff9c 24,1115-1210
+src/domain/ops/convolution/gauss_blur.rs
+  s_87669fca7a1aa2::t_e6dc68f4a7ff9c 21-22,26-27,32,42-111,119,126-129,153-154,161-162,227-825,830-832,834-835,840,846-882,884-885,897-995,1023,1025-1030,1033,1037-1039,1067,1069-1074,1077,1083-1084,1106-1107,1147-1180,1243-1328,1656,1659,1664-1766,1768-1801,1805-1962,2024-2036
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e97340230abae46bba56e67b9002540d87a5d0f0",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
