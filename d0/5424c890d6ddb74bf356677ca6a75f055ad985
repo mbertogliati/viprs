@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-196 - B-196-—-Implementar-sequential-access-hint-para-pipelines-lineales.md"
+  s_eac0c355ee8bbc::t_4a16b083f00d7a 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d05424c890d6ddb74bf356677ca6a75f055ad985",
+  "prompts": {},
+  "sessions": {
+    "s_eac0c355ee8bbc": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01S8H9W3pgu9fgPCqfiGkdEZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
