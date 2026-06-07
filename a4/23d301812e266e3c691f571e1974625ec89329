@@ -1,0 +1,19 @@
+docs/ai/agents/orchestrator.md
+  s_d674ef83da6309::t_6f258179a68a48 7-30,36-72,80-82,85-87,89-97,109-125,131-132,138-139,141,145-159,191,199-202,208-211,214,216
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a423d301812e266e3c691f571e1974625ec89329",
+  "prompts": {},
+  "sessions": {
+    "s_d674ef83da6309": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "3bf75ef1-1d88-4944-ae4a-5a173403bc61",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
