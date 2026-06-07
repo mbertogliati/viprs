@@ -1,0 +1,19 @@
+"backlog/tasks/b-262 - Raise-Matrix-codec-coverage-above-the-90-floor.md"
+  s_4b63765bd98759::t_616c63a39aba74 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a8562189a6ae8bb52f585b7af668e0bced67b887",
+  "prompts": {},
+  "sessions": {
+    "s_4b63765bd98759": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Hq5RUgeWQxKzmnmtTL3n9v",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
