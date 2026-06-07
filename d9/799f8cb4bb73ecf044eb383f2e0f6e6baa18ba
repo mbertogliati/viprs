@@ -1,0 +1,9 @@
+"backlog/tasks/b-149 - Igualar-condiciones-de-benchmark-viprs-vs-libvips-I-O-parity-imagen-1024x1024.md"
+  ai_agent 17,19,21-23,25,29,31-32,34,36,39,41,43-44,46,48-49,52,55-57,62-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d9799f8cb4bb73ecf044eb383f2e0f6e6baa18ba",
+  "prompts": {}
+}
