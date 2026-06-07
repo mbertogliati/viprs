@@ -1,0 +1,27 @@
+"backlog/tasks/b-227 - Investigar-gap-no-cache-en-save-tiff-LZW-2048-frente-a-libvips.md"
+  s_3d875850cc2311::t_521a9d27b643d0 1-41
+"backlog/archive/tasks/b-217 - P-015-—-Investigar-gap-10x-en-save-tiff-LZW-frente-a-libvips.md"
+  s_3d875850cc2311::t_3888abf4bf151e 7,51-53
+"backlog/archive/tasks/b-221 - P-019-—-Investigar-gap-2x-en-decode-F32-TIFF-frente-a-libvips.md"
+  s_3d875850cc2311::t_3888abf4bf151e 7,20-23,26-28,33-34
+"backlog/tasks/b-226 - Investigar-tail-latency-y-RSS-del-cache-en-decode-F32-TIFF.md"
+  s_3d875850cc2311::t_521a9d27b643d0 1-41
+"backlog/archive/tasks/b-224 - P-020-—-Rebaselinar-gaps-TIFF-medidos-con-target-debug-xtask.md"
+  s_3d875850cc2311::t_521a9d27b643d0 4,7,18,20-22,24-30,32-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "732b3bf71403f30cd4b8c22f8787734898be1e50",
+  "prompts": {},
+  "sessions": {
+    "s_3d875850cc2311": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VsEakLzrEkeevKacuZ59Uy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
