@@ -1,0 +1,21 @@
+src/adapters/codecs/tiff.rs
+  s_2297b310e18580::t_3602c59f42355a 14,65,75,1955-1966
+"backlog/archive/tasks/b-217 - P-015-—-Investigar-gap-10x-en-save-tiff-LZW-frente-a-libvips.md"
+  s_2297b310e18580::t_03a9986dcac689 47-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ee4eb52dc8e8b30b5217bbee5399a9b7035084ce",
+  "prompts": {},
+  "sessions": {
+    "s_2297b310e18580": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JJm9rqhMDtDrevRnta7co6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
