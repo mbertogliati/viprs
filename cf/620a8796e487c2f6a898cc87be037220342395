@@ -1,0 +1,31 @@
+"backlog/tasks/b-141 - MapImOp-source-read-plan-over-fetches-full-source-for-every-output-tile.md"
+  ai_agent 1-33
+"backlog/tasks/b-139 - MapImOp-default-premultiplied-flag-diverges-from-libvips.md"
+  ai_agent 1-33
+"backlog/tasks/b-147 - TileCache-lock-poisoning-currently-panics-instead-of-returning-typed-error.md"
+  ai_agent 1-33
+"backlog/tasks/b-149 - Igualar-condiciones-de-benchmark-viprs-vs-libvips-I-O-parity-imagen-1024x1024.md"
+  ai_agent 1-87
+"backlog/archive/tasks/b-138 - Soporte-de-cache-en-comparativa-cargo-xtask-bench-vs-libvips.md"
+  ai_agent 1-77
+"backlog/tasks/b-148 - DynFusedOp-relies-on-debug_assert-for-non-empty-op-chain-invariant.md"
+  ai_agent 2-3,6,10-11,17,21,23,25,27,30-32
+"backlog/tasks/b-144 - TIFF-SubIFD-shrink-test-checks-shape-only-not-selected-level-pixel-fidelity.md"
+  ai_agent 2-3,6,11,17,21,23,25,27,30-32
+"backlog/tasks/b-142 - DecoderSource-set_shrink_on_load-reports-success-without-decode-time-shrink.md"
+  ai_agent 1-33
+"backlog/tasks/b-146 - Library-code-still-contains-unwrap-and-expect-panic-paths-outside-tests.md"
+  ai_agent 1-33
+"backlog/tasks/b-145 - PNG-compression-level-encode-test-misses-round-trip-pixel-integrity.md"
+  ai_agent 1-33
+"backlog/tasks/b-143 - WebP-native-shrink-test-validates-dimensions-but-not-scaled-sample-values.md"
+  ai_agent 2-3,6,8,11,17-32
+"backlog/tasks/b-140 - MapImOp-uses-FullImage-demand-hint-and-breaks-tile-bounded-memory-contract.md"
+  ai_agent 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cf620a8796e487c2f6a898cc87be037220342395",
+  "prompts": {}
+}
