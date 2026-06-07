@@ -1,0 +1,65 @@
+xtask/src/bench.rs
+  s_cd65cf2e551266::t_99aecf6dbf2c62 8,13,19,274,276-280,290-294
+  s_cd65cf2e551266::t_dc497527ad1a57 2,273,275,281-289,295-326
+"backlog/archive/tasks/b-155 - Agregar-fixtures-y-tests-con-dimensiones-no-potencia-de-2-para-mayor-resiliencia.md"
+  ai_agent 1-66
+xtask/Cargo.toml
+  s_44d4e060f28fc8::t_aa0036ecebae5a 10
+tools/bench-vs-libvips/libvips_runner.c
+  s_cd65cf2e551266::t_81c552ed4c3e2a 37
+  s_cd65cf2e551266::t_9500295e9c090a 165-169
+  s_cd65cf2e551266::t_ffe557793b5f9d 288-291
+  s_cd65cf2e551266::t_78372340caa077 104-113
+  s_537648b3214edd::t_4c499a15bfec87 202-257
+Cargo.toml
+  s_1b06c806df8a79::t_e10b99a2ad7a16 868-873
+  s_dc6fefd769e121::t_9f862a93ffb343 874-878
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ff9ade2fac0552c82b9149c72ba6ac3b36090661",
+  "prompts": {},
+  "sessions": {
+    "s_1b06c806df8a79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_rFIFwbDWNewG1mH5iROSPCe9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_44d4e060f28fc8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_Yv07GJlcH2yZAqfqsiXhWuDz",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_537648b3214edd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_kfWL8HhY9ewNTDj1hrh4xl7U",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd65cf2e551266": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_TayLaJ6S9J7kWo0380OdIAW6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_dc6fefd769e121": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_Dik5M9UGqT7GSBWS6Rii98ju",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
