@@ -1,0 +1,47 @@
+"backlog/tasks/b-195 - B-195-—-Implementar-sinkdisc-escritura-streaming-a-disco-sin-materializar-en-memoria.md"
+  s_1589f6a19ac2d3::t_225bb6d7df835f 1-34
+"backlog/tasks/b-199 - B-199-—-Implementar-mosaicing-avanzado-lrmosaic-tbmosaic-lrmerge-tbmerge.md"
+  s_1589f6a19ac2d3::t_f641a5bf6f1e6e 1-36
+"backlog/tasks/b-208 - B-208-—-Implementar-convolution-spcor-spatial-correlation-normalizada.md"
+  s_1589f6a19ac2d3::t_8c01e9448d8a8c 1-31
+"backlog/tasks/b-194 - P-011-—-Viprs-tile-cache-ineficaz-en-pipeline-E2E-RSS-562MB-y-sin-speedup-vs-libvips-6x-más-rápido-con-cache.md"
+  ai_agent 1-58
+"backlog/tasks/b-205 - B-205-—-Implementar-histogram-ops-faltantes-hist_plot-case-hist_find_ndim.md"
+  s_1589f6a19ac2d3::t_41320014fc5189 1-34
+"backlog/tasks/b-200 - B-200-—-Implementar-arithmetic-ops-faltantes-maxpair-minpair-math2-profile-project.md"
+  s_1589f6a19ac2d3::t_c8facc59ba0d29 1-44
+"backlog/tasks/b-207 - B-207-—-Implementar-resample-quadratic-transformación-cuadrática-de-imagen.md"
+  s_1589f6a19ac2d3::t_17ce85d15bd415 1-31
+"backlog/tasks/b-203 - B-203-—-Implementar-codec-openslide-para-microscopía-digital.md"
+  s_1589f6a19ac2d3::t_9799537c04fbf4 1-33
+"backlog/tasks/b-201 - B-201-—-Implementar-generadores-faltantes-perlin-worley-sdf-point-text.md"
+  s_1589f6a19ac2d3::t_3480f384d15a8a 1-43
+"backlog/tasks/b-196 - B-196-—-Implementar-sequential-access-hint-para-pipelines-lineales.md"
+  s_1589f6a19ac2d3::t_150911d8a94dd5 1-32
+"backlog/tasks/b-197 - B-197-—-Implementar-operation-cache-para-reutilización-de-resultados-computados.md"
+  s_1589f6a19ac2d3::t_3c1d8fdff2839f 1-34
+"backlog/tasks/b-202 - B-202-—-Implementar-colourspace-dispatcher-centralizado.md"
+  s_1589f6a19ac2d3::t_2d459db2aa69aa 1-37
+"backlog/tasks/b-206 - B-206-—-Implementar-LabS2LabQ-conversion-directa-LabS-a-LabQ.md"
+  s_1589f6a19ac2d3::t_f71744048efe37 1-27
+"backlog/tasks/b-198 - B-198-—-Implementar-reorder-optimización-del-grafo-de-operaciones.md"
+  s_1589f6a19ac2d3::t_290521ce551f9b 1-30
+"backlog/tasks/b-204 - B-204-—-Implementar-colour-CICP2scRGB-y-uhdr2scRGB.md"
+  s_1589f6a19ac2d3::t_9fb8bc173872de 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1ff0e0442607b015a83dd5860404b20b829e05a2",
+  "prompts": {},
+  "sessions": {
+    "s_1589f6a19ac2d3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d1ff4214-4e41-4ea7-97dc-e1f4c58a73f3",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
