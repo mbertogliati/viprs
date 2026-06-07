@@ -1,0 +1,26 @@
+src/domain/ops/colour/icc.rs
+  s_4e8cc250122d16::t_a81e1d71d2f27f 674
+  s_4e8cc250122d16::t_de0a2d33c99901 623
+  s_4e8cc250122d16::t_94ef024202e1f2 785-787,801-877,880,897,911,955-1287
+  s_4e8cc250122d16::t_3552ce81129954 4,6-7
+  s_4e8cc250122d16::t_780237c2d5e3d7 3
+Cargo.toml
+  s_4e8cc250122d16::t_8dcbb942b51b9d 36
+  s_4e8cc250122d16::t_b95a8f19e35dc8 61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bf944709550d5a2338473a273196ae9f3a86688d",
+  "prompts": {},
+  "sessions": {
+    "s_4e8cc250122d16": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b72ce7cc-0bdc-4eac-ad8a-75b5c19ff4fa",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
