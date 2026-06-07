@@ -1,0 +1,22 @@
+src/adapters/sources/memory.rs
+  s_1edfddf02a0f35::t_c91ac6eceb81a1 89-96
+  s_1edfddf02a0f35::t_77db9b578aabd0 109-113,115-150
+src/adapters/scheduler/rayon_scheduler.rs
+  s_1edfddf02a0f35::t_c91ac6eceb81a1 490-506,958-962,1028-1032
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "90612b18eff8718f4e218228856311577a414bae",
+  "prompts": {},
+  "sessions": {
+    "s_1edfddf02a0f35": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_015ZCKMdTT6R8suQntNN93YZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
