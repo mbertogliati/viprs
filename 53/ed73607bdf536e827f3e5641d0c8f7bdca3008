@@ -1,0 +1,9 @@
+tests/robustness_codecs.rs
+  ai_agent 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "53ed73607bdf536e827f3e5641d0c8f7bdca3008",
+  "prompts": {}
+}
