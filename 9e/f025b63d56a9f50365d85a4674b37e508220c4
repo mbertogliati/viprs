@@ -1,0 +1,21 @@
+"backlog/tasks/b-172 - Tiff-grayscale-alpha-is-rejected-even-though-libvips-supports-it.md"
+  s_a73d28c1cdc2a1::t_e2dc62d8d5f3f8 1-31
+"backlog/tasks/b-173 - Tiff-save-path-is-missing-libvips-premultiply-alpha-option.md"
+  s_a73d28c1cdc2a1::t_71b18cf91467dc 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9ef025b63d56a9f50365d85a4674b37e508220c4",
+  "prompts": {},
+  "sessions": {
+    "s_a73d28c1cdc2a1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_Dd3YhaofHqA3o0ggqNacEAyE",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
