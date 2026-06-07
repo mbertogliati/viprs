@@ -1,0 +1,28 @@
+src/domain/ops/arithmetic/complex_form.rs
+  s_80a3059bb0e7b6::t_c4e08853753b5b 71-73
+  s_d2e95ec24c1933::t_7919d32e094687 195,198,202-210,212-217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "da528e0cb020b5720ab73c1cea69e82baad8c355",
+  "prompts": {},
+  "sessions": {
+    "s_80a3059bb0e7b6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_CZ39oA15zaxUAumgxxxgev2p",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d2e95ec24c1933": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e33423e5-1067-4c1a-909a-e2a890eff1b4",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
