@@ -1,0 +1,25 @@
+src/domain/ops/resample.rs
+  s_a5513dc1345dbe::t_b45edba202b6eb 16,28
+benches/resample/quadratic.rs
+  s_a5513dc1345dbe::t_b45edba202b6eb 1-54
+"backlog/tasks/b-207 - B-207-—-Implementar-resample-quadratic-transformación-cuadrática-de-imagen.md"
+  s_a5513dc1345dbe::t_b45edba202b6eb 4,7
+src/domain/ops/resample/quadratic.rs
+  s_a5513dc1345dbe::t_b45edba202b6eb 1-610
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e596c418b2386601afaee3641af4fdc2cbcb9900",
+  "prompts": {},
+  "sessions": {
+    "s_a5513dc1345dbe": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XDgGwFRhFE2m4i5Z3o7iFd",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
