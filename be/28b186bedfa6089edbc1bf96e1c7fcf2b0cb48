@@ -1,0 +1,29 @@
+tests/fixtures/images/pdf-two-pages-72pt-144pt.pdf
+  s_182c2741644824::t_e6ccf913ee1c1e 1-41
+src/adapters/codecs/registry.rs
+  ai_agent 32-33,80,82,540-541,770,782,790,802,809-848
+tests/fixtures/images/pdf-single-page-72pt.pdf
+  s_182c2741644824::t_e6ccf913ee1c1e 1-29
+src/adapters/codecs/pdf_poppler.rs
+  s_182c2741644824::t_e6ccf913ee1c1e 1-510
+"backlog/tasks/b-138 - Implement-pdfium-poppler-document-loader-backend.md"
+  s_182c2741644824::t_e6ccf913ee1c1e 4,7
+src/adapters/codecs.rs
+  ai_agent 19,75-76,130-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "be28b186bedfa6089edbc1bf96e1c7fcf2b0cb48",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
