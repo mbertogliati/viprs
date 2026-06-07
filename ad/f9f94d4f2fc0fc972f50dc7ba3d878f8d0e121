@@ -1,0 +1,57 @@
+tools/bench-vs-libvips/libvips_runner.c
+  s_60f8fed33b7c7b::t_3b50f09279fe06 37,280-284,614-681,803-809,1054-1077
+xtask/src/bench/pipeline.rs
+  s_60f8fed33b7c7b::t_3b50f09279fe06 324-333
+"backlog/archive/tasks/b-241 - P-053-—-AVIF-decode-6.4x-slower-goes-through-image-crate-abstraction-layers-instead-of-libheif-rs-directly.md"
+  ai_agent 1-30
+"backlog/archive/tasks/b-237 - Benchmark-cache-asymmetry-for-JPEG-invert.md"
+  ai_agent 4,7,18
+xtask/src/bench/runner.rs
+  s_60f8fed33b7c7b::t_3b50f09279fe06 7-10,14-15,685-809,915-927,1223,1231,1303-1315,1319,1343,1353
+"backlog/archive/tasks/b-240 - P-052-—-JPEG-decoder-5-7x-slower-than-libvips-at-scale-e2e-gap-dominates-all-ops.md"
+  ai_agent 1-63
+"backlog/archive/tasks/b-243 - P-055-—-JPEG-encode-decode-both-pure-Rust-jpeg-encoder-jpeg-decoder-no-SIMD-IDCT-—-should-use-libjpeg-turbo.md"
+  ai_agent 1-28
+"backlog/archive/tasks/b-245 - AVIF-cached-E2E-still-lags-after-libheif-direct-decode.md"
+  ai_agent 1-19
+"backlog/archive/tasks/b-242 - P-054-—-PNG-decode-1.67x-slower-verify-libspng-feature-is-active-in-bench-pure-Rust-fallback-has-no-SIMD-inflate.md"
+  ai_agent 1-35
+"backlog/archive/tasks/b-239 - P-051-—-Tile-cache-RSS-explosion-viprs-uses-10x-more-memory-than-libvips-with-cache-enabled.md"
+  ai_agent 1-25
+xtask/src/bench/helpers.rs
+  s_60f8fed33b7c7b::t_3b50f09279fe06 54-90,119-123,197-204,363,380
+"backlog/archive/tasks/b-244 - P-056-—-PNG-no-cache-decode-1.356x-slower-at-2048-after-libspng-enabled-investigate-spng-crate-overhead-vs-libvips.md"
+  ai_agent 1-21
+"backlog/tasks/b-229 - B-270-—-BUG-reduceh-slice-panic-en-pipeline-thumbnail→sharpen-range-end-index-out-of-bounds.md"
+  s_d5b4a0ab8d3e8f::t_85f447275893ec 1-50
+xtask/src/bench/args.rs
+  s_60f8fed33b7c7b::t_3b50f09279fe06 47-48,56,155-162
+"backlog/tasks/b-230 - Tests-de-integración-honestos-para-pipelines-complejos-multi-stage.md"
+  s_d5b4a0ab8d3e8f::t_bce0f9db376b74 1-56
+"backlog/archive/tasks/b-246 - P-057-—-with-cache-bench-rebuild-per-iteration-gives-fresh-op_id-→-cache-always-cold-tile-accumulation-causes-9x-RSS.md"
+  ai_agent 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "adf9f94d4f2fc0fc972f50dc7ba3d878f8d0e121",
+  "prompts": {},
+  "sessions": {
+    "s_60f8fed33b7c7b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "261deac0-a8f6-4f10-a951-25dfa18c266e",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d5b4a0ab8d3e8f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "fee0eff4-dd66-4513-9025-f59d3cfab914",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
