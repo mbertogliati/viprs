@@ -1,0 +1,27 @@
+xtask/src/bench/runner.rs
+  ai_agent 11,25
+"backlog/archive/tasks/b-267 - Add-a-criterion-benchmark-for-Rot45Op.md"
+  s_76a039de988499::t_89049255717a00 4,7
+xtask/src/bench/helpers.rs
+  ai_agent 151
+src/domain/ops/structural/zoom.rs
+  ai_agent 42-46,67-70,73-74,76-77,186-187,189-190
+tools/bench-vs-libvips/libvips_runner.c
+  ai_agent 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d8acbfc9ab893abf98505450145fcc01e6048c5c",
+  "prompts": {},
+  "sessions": {
+    "s_76a039de988499": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AsEY3MAE2q3XCQxzgGT2DR",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
