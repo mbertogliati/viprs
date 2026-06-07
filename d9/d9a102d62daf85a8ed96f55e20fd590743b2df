@@ -1,0 +1,37 @@
+Cargo.toml
+  ai_agent 222-225
+"backlog/tasks/b-262 - Tests-robustez-imagenes-adversariales-decompression-bombs-EXIF-malformado.md"
+  ai_agent 4,7
+benches/colour/matrix.rs
+  ai_agent 1-237
+tools/bench-vs-libvips/libvips_runner.c
+  ai_agent 29-36,45-46,103-104,109-112,122-123,128,138,142-152,154-155,165,170,180,185,195,199-212,215-230,302-313,343,345-349,420-421,424-426,428-429,438,442,451,455,464,468,477,481,490,494,497-501,503-509,667-707,858-871,930-936,1111-1112,1127,1160-1182,1223-1236,1278-1281,1334,1368-1369
+"backlog/tasks/b-269 - P-066-—-AVIF-workflow-encode-still-1.75x-slower-at-2048-after-path-backed-source-fix.md"
+  ai_agent 6,9
+xtask/src/bench/runner.rs
+  ai_agent 5,8,15-16,18-19,35-37,278-281,583,634,684-864
+"backlog/tasks/b-254 - BUG-chained-thumbnails-use-source-dimensions-instead-of-intermediate-output.md"
+  ai_agent 4,7
+"backlog/tasks/b-241 - Add-SAFETY-comments-to-remaining-unsafe-blocks.md"
+  ai_agent 4,7
+"backlog/tasks/b-274 - P-069-—-Affine-family-resample-baselines-trail-libvips.md"
+  ai_agent 1-18
+"backlog/tasks/b-257 - Tests-robustez-dimensiones-patológicas.md"
+  ai_agent 4,7
+xtask/src/bench/pipeline.rs
+  ai_agent 25-55,277-278,293-317
+"backlog/tasks/b-268 - P-071-—-Morphology-dilate-erode-kernels-remain-slower-than-libvips.md"
+  ai_agent 4,7
+xtask/src/bench/args.rs
+  ai_agent 47-48,125-135
+xtask/src/bench/helpers.rs
+  ai_agent 121-137,243
+"backlog/tasks/b-261 - Tests-robustez-imágenes-corruptas-y-truncadas.md"
+  ai_agent 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d9d9a102d62daf85a8ed96f55e20fd590743b2df",
+  "prompts": {}
+}
