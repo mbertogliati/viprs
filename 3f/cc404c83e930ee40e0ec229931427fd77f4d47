@@ -1,0 +1,21 @@
+Cargo.toml
+  s_0127302a74a0d4::t_1f994a77898d02 237-240
+benches/fused_op.rs
+  s_0127302a74a0d4::t_1f994a77898d02 1-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3fcc404c83e930ee40e0ec229931427fd77f4d47",
+  "prompts": {},
+  "sessions": {
+    "s_0127302a74a0d4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Rp9brraF1dm7FsCkSWSKew",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
