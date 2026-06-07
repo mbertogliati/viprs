@@ -1,0 +1,26 @@
+tools/bench-vs-libvips/README.md
+  s_a0c998178a4d08::t_f5c79b312db6a6 43
+xtask/src/bench.rs
+  s_a0c998178a4d08::t_809197d1463a7c 434-437
+  s_a0c998178a4d08::t_41604bcd04fc89 8,192,243-245,374,383,411-415,428,431-433,486-494,560-568,1352-1363
+xtask/README.md
+  s_a0c998178a4d08::t_0c7961cdbe05aa 104-106
+tools/bench-vs-libvips/libvips_runner.c
+  s_a0c998178a4d08::t_a32fef78e39b46 37,140-142,215-234,317-324,399-405,519,567-570
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "988fe34d14290f50c00dfdce571bf5731c1c27e5",
+  "prompts": {},
+  "sessions": {
+    "s_a0c998178a4d08": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01YCynJCjBqDz3NULJDWuac7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
