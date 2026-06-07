@@ -1,0 +1,19 @@
+src/adapters/cache.rs
+  s_b41a8105b8068d::t_286178b76e68ef 2,4-7,33-35,38-39,41-42,46-47,50-53,55-64,67-70,86,93,104,107,110-112,115,120-122,126-127,131-142,147,150
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7bfe0bd4e7c5eda0f1de7d5db6ed3e7f044f6810",
+  "prompts": {},
+  "sessions": {
+    "s_b41a8105b8068d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0189niPHAmMn4eZkxTa8uPEi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
