@@ -1,0 +1,27 @@
+"backlog/tasks/b-233 - Add-missing-colour-conversions-to-colourspace-router-CICP2scRGB-scRGB2BW-via-RGB-path.md"
+  s_863f5055258ee1::t_19049772d8a580 1-45
+Cargo.lock
+  ai_agent 1220-1221
+"backlog/tasks/b-232 - Expose-avg-min-max-deviate-as-public-standalone-reducer-ops.md"
+  s_863f5055258ee1::t_c71298fb864fc4 1-43
+"backlog/tasks/b-231 - Implement-`shrink`-op-—-integer-factor-downscale-wrapper.md"
+  s_863f5055258ee1::t_2e3da1beb5cec0 1-39
+"backlog/tasks/b-234 - Audit-and-complete-ICC-profile-transform-icc_transform-import-export-apply.md"
+  s_863f5055258ee1::t_c50e1ee500a72a 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "8ac760091a5f777e8316e5191be8e5cef9f469f1",
+  "prompts": {},
+  "sessions": {
+    "s_863f5055258ee1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e420a800-7f7f-4904-857a-c7fb67c463fb",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
