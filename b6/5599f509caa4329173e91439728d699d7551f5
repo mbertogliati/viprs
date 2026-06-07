@@ -1,0 +1,54 @@
+tools/bench-vs-libvips/README.md
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 54
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 61-63
+  s_b59582d8d2d8ab::t_c407a30a567a11 64
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 65
+src/domain/ops/structural/zoom.rs
+  s_b59582d8d2d8ab::t_888a20c47c8371 42-53,74-79,82-83,85-86,195-196,198-199,217-222
+xtask/README.md
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 108,115-116
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 110
+  s_b59582d8d2d8ab::t_c407a30a567a11 117
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 118
+xtask/src/bench/runner.rs
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 11,160-161,163-186,300-311,313-331,333-345,348-354,357-374
+tools/bench-vs-libvips/libvips_runner.c
+  s_4ec0bb91d1ce2c::t_45d35afbb6e6c1 95-109,170-177,216,232-233,235-236,238-279,336-343,348-350,362-363,365-371,462-465,505-517,534-536,694-695,697-700,749-756,771-777,806-819,827-833,864-866,869-877,1038,1043-1044,1046,1050-1051,1130-1133,1156-1165,1171-1174,1189-1190,1192-1195,1197-1200
+  s_b59582d8d2d8ab::t_c407a30a567a11 213-215,217-225,234,237,364,693,696,867-868,1191
+  s_2b4f7b2417a5a4::t_7767ddc0885eae 1129
+  s_4ec0bb91d1ce2c::t_f950dd7e33b673 1196
+xtask/src/bench/helpers.rs
+  s_4ec0bb91d1ce2c::t_5cc528021ba471 151-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b65599f509caa4329173e91439728d699d7551f5",
+  "prompts": {},
+  "sessions": {
+    "s_2b4f7b2417a5a4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GBbyyYsBW4tGHGueFtXmjt",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4ec0bb91d1ce2c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018MCV6jDt5A7KNi4gxzQZYM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b59582d8d2d8ab": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0178k7owKyfnVxg47bm7simJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
