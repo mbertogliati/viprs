@@ -1,0 +1,9 @@
+"backlog/archive/tasks/b-150 - BUG-rayon_scheduler-panics-with-slice-out-of-bounds-on-thumbnail-of-images-larger-than-512x512.md"
+  ai_agent 1-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "83d7ce62cfab50cdb7faddd6c4cfedd92ffdc67b",
+  "prompts": {}
+}
