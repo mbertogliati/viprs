@@ -1,0 +1,108 @@
+"backlog/tasks/b-163 - P-005-—-Baseline-performance-AVIF-ravif-Rust-vs-libheifdav1d-rav1e-C.md"
+  ai_agent 1-43
+"backlog/tasks/b-165 - P-007-—-Baseline-performance-TIFF-tiff-crate-Rust-vs-libtiff-C.md"
+  ai_agent 1-44
+xtask/src/bench.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 650,678,758-773,825-829,927-934,998-1002
+"backlog/tasks/b-161 - P-002-—-Baseline-performance-PNG-png-crate-Rust-vs-libspng-libpng.md"
+  ai_agent 1-41
+"backlog/tasks/b-164 - P-006-—-Baseline-performance-HEIF-HEIC-libheif-rs-bindings-vs-libheif-de-libvips.md"
+  ai_agent 1-44
+"backlog/tasks/b-171 - MapIm-premultiply-path-does-not-blend-in-premultiplied-space.md"
+  ai_agent 4,7
+"backlog/tasks/b-168 - P-010-—-Baseline-performance-OpenEXR-exr-crate-Rust-vs-OpenEXR-C.md"
+  ai_agent 1-44
+src/domain/reducers/label_regions.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 273-277,282-288
+benches/codecs/avif.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 74-86,100-112
+src/domain/ops/resample/reduce.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 186-190
+src/adapters/codecs.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 78-79,139-140
+src/domain/ops/resample/mapim.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 3,145-158,195-196,272-273,285-301,309,888-919
+src/adapters/codecs/registry.rs
+  s_59257d2373f1af::t_ebb9288146a677 34-35,620-621
+Cargo.toml
+  s_cd65cf2e551266::t_b7ac30bf153d5b 1153-1156
+src/adapters/scheduler/rayon_scheduler.rs
+  s_182c2741644824::t_8e7a87d427267d 123
+benches/codecs/heif.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 5-6,106-118
+xtask/Cargo.toml
+  s_59257d2373f1af::t_505987009a23c3 11
+  s_8383f92deedaae::t_091a921a781d8d 8
+src/adapters/codecs/gif.rs
+  ai_agent 286-287
+"backlog/tasks/b-162 - P-004-—-Baseline-performance-GIF-gif-crate-Rust-vs-giflib-C.md"
+  ai_agent 1-41
+"backlog/tasks/b-167 - P-009-—-Baseline-performance-JPEG-XL-jxl-oxide-Rust-vs-libjxl-C.md"
+  ai_agent 1-44
+"backlog/tasks/b-160 - P-003-—-Baseline-performance-WebP-libwebp-sys-bindings-vs-libwebp-de-libvips.md"
+  ai_agent 1-40
+benches/codecs/tiff.rs
+  s_165e7f9ecf88dc::t_448f87ef07d798 74-86,100-112
+  s_44d4e060f28fc8::t_11e2a7f5993a9e 94
+  s_44d4e060f28fc8::t_9758d1fe1b64c9 48,68
+"backlog/tasks/b-166 - P-008-—-Baseline-performance-JPEG-2000-jpeg2k-openjpeg-Rust-bindings-vs-OpenJPEG-de-libvips.md"
+  ai_agent 1-43
+"backlog/tasks/b-159 - P-001-—-Baseline-performance-JPEG-jpeg-decoder-Rust-vs-libjpeg-turbo.md"
+  ai_agent 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "431b9bc0b1a421f4046b4626fc7ef54abb5fa11c",
+  "prompts": {},
+  "sessions": {
+    "s_165e7f9ecf88dc": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_nMYGA0Xb3siIsvk4GXXgJ4IE",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_44d4e060f28fc8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_Yv07GJlcH2yZAqfqsiXhWuDz",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_59257d2373f1af": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_Ye032HfNa8pWnAM19wiOJ3Ea",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_8383f92deedaae": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_kCR31uHGCosL3cwm4oGMGTtb",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd65cf2e551266": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_TayLaJ6S9J7kWo0380OdIAW6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
