@@ -1,0 +1,19 @@
+"backlog/tasks/b-223 - Bench-perf-should-require-release-builds.md"
+  s_d2899e78b6328e::t_650cb128c86a7b 17-18,20-22,24-25,27-28,31,33-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0c55face55f0cd8b31c185d6b04b77ab1a232db3",
+  "prompts": {},
+  "sessions": {
+    "s_d2899e78b6328e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01K3eWzN8ekWBLhW3PGcVAmC",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
