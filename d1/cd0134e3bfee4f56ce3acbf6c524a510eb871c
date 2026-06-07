@@ -1,0 +1,19 @@
+"backlog/tasks/b-240 - Eliminate-thumbnail-full-image-scheduler-source-copy-overhead.md"
+  s_87669fca7a1aa2::t_a4dc25316c2c93 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d1cd0134e3bfee4f56ce3acbf6c524a510eb871c",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
