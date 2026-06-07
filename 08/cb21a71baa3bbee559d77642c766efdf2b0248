@@ -1,0 +1,21 @@
+Cargo.toml
+  s_75ab1445cd8a18::t_2c210b427bb31c 30
+src/adapters/codecs/tiff.rs
+  s_75ab1445cd8a18::t_5761b64b7ca9cf 211-214,219-232,237,361
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "08cb21a71baa3bbee559d77642c766efdf2b0248",
+  "prompts": {},
+  "sessions": {
+    "s_75ab1445cd8a18": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KuktMUU4Gro4E9uMtXgbVT",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
