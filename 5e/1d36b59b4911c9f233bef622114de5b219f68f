@@ -1,0 +1,23 @@
+Cargo.toml
+  s_87669fca7a1aa2::t_4060ea75afd92f 1272-1288
+.cargo/config.toml
+  s_87669fca7a1aa2::t_caa8afc905250c 3-8
+tools/bench-vs-libvips/Makefile
+  s_87669fca7a1aa2::t_3a7b640c2c3366 3-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5e1d36b59b4911c9f233bef622114de5b219f68f",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
