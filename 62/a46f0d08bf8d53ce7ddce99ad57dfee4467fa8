@@ -1,0 +1,9 @@
+src/domain/ops/resample/thumbnail.rs
+  ai_agent 480-512
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "62a46f0d08bf8d53ce7ddce99ad57dfee4467fa8",
+  "prompts": {}
+}
