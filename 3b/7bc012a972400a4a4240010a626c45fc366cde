@@ -1,0 +1,19 @@
+src/domain/ops/arithmetic/measure.rs
+  s_8cf355407084b5::t_6ae05f521912ce 154-210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3b7bc012a972400a4a4240010a626c45fc366cde",
+  "prompts": {},
+  "sessions": {
+    "s_8cf355407084b5": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DfKRCkqR3WFbUrNSanzRZ8",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
