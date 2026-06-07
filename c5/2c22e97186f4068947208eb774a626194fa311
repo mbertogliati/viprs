@@ -1,0 +1,23 @@
+benches/colour/cicp2scrgb.rs
+  s_d8691963a5f9ad::t_b9d2255b1dbc68 1-107
+Cargo.toml
+  s_d8691963a5f9ad::t_b9d2255b1dbc68 472-475
+src/domain/ops/colour/cicp2scrgb.rs
+  s_d8691963a5f9ad::t_7d6f9250026856 569-570,584-599,636-659,682-715,717-728,750-772,802-847,849-852,854-857,859-863,865-868,870-873,875-878,880-883,885-888,890-911,913-919,924-947
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c52c22e97186f4068947208eb774a626194fa311",
+  "prompts": {},
+  "sessions": {
+    "s_d8691963a5f9ad": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Xud29FmisGbVCNAGgtt9b4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
