@@ -1,0 +1,33 @@
+docs/PARITY_MATRIX.md
+  s_182c2741644824::t_d78ddc4002a5e7 363-364,410
+src/adapters/codecs/uhdr.rs
+  s_182c2741644824::t_d78ddc4002a5e7 1-246
+src/adapters/codecs/registry.rs
+  ai_agent 30-31,42-43,72,82,524-525,528-532,871,880
+src/adapters/codecs.rs
+  ai_agent 20-21,79-83,139-143
+"backlog/docs/doc-29 - ADR-001-JP2K-UHDR-codec-dependency-strategy.md"
+  s_182c2741644824::t_d78ddc4002a5e7 1-21
+src/adapters/codecs/jp2k.rs
+  s_182c2741644824::t_d78ddc4002a5e7 1-529
+Cargo.lock
+  ai_agent 254-257,560,1038,1041-1042,1154-1167,1704-1727,1815,1917,2165,2206,2320,2351,2502-2507,2954,2961,3091,3225
+"backlog/tasks/b-117 - Implement-JPEG-2000-and-Ultra-HDR-codec-parity.md"
+  s_182c2741644824::t_d78ddc4002a5e7 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2001863399f3a75a1b42a1349432500a9c685717",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
