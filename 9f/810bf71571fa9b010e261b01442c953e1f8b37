@@ -1,0 +1,43 @@
+"backlog/tasks/b-257 - Verify-shrink-on-load-resource-savings-instead-of-only-pixel-equivalence.md"
+  s_54379449e3c30d::t_fe38f4eaf29c84 4,7
+"backlog/tasks/b-246 - P-030-—-Missing-scenarios-grayscale-RGBA-and-non-RGB-compute-baselines.md"
+  s_87669fca7a1aa2::t_f6424b430a8bcb 4,7
+"backlog/archive/tasks/b-253 - Make-integer-PipelineBuilder-linear-match-libvips-clip-semantics.md"
+  s_ec6529e70913ce::t_89dc911d6de6dd 4,7,18
+"backlog/tasks/b-252 - Match-libvips-alpha-scaling-when-colour-conversions-preserve-extra-bands.md"
+  s_ec6529e70913ce::t_2b64ac665e881e 4,7
+"backlog/tasks/b-258 - Eliminate-external-tile-cache-injection-from-benchmark-pipeline-builder.md"
+  s_54379449e3c30d::t_fe38f4eaf29c84 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9f810bf71571fa9b010e261b01442c953e1f8b37",
+  "prompts": {},
+  "sessions": {
+    "s_54379449e3c30d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01FgVKNKnFQv6fUfF4xvtL1b",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_ec6529e70913ce": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UcDa6vPZ15GUHG216zTMed",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
