@@ -1,0 +1,22 @@
+"backlog/docs/doc-30 - ADR-001-—-MapIm-premultiplied-interpolation-uses-padded-scratch.md"
+  s_a92f45b9eaf13b::t_cab73bb38013e6 8-25
+src/domain/ops/resample/mapim.rs
+  s_a92f45b9eaf13b::t_4888a05e13f90f 889-921
+  s_a92f45b9eaf13b::t_1e439119653b8a 146-158,195-196,272-273,285-301,309
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "34561acce0071aad8be6c88ac9f73c3fb5dc192a",
+  "prompts": {},
+  "sessions": {
+    "s_a92f45b9eaf13b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_kLEntmWvfI17rHMXT39BW1j4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
