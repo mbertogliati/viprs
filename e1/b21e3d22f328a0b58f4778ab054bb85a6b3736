@@ -1,0 +1,32 @@
+src/domain/ops/resample/reduce_simd.rs
+  s_48f2e9c9c0c94b::t_78cae48af3b835 2139-2149,2166-2167,2178-2179
+  s_48f2e9c9c0c94b::t_ef0e8ce4ebbe54 261-262,269-278,288-295,297,1170-1171,1180,1183-1184,1186-1194,1203-1206,1238-1273
+src/domain/ops/resample/reducev.rs
+  s_48f2e9c9c0c94b::t_9df9a1d5d0d974 308,328,438
+  s_48f2e9c9c0c94b::t_6d7c757629cea4 94-99
+  s_48f2e9c9c0c94b::t_f5d4bdaa66cad4 29-33,62,76-88,91,93,100-109,116-117,288
+src/domain/ops/resample/reduce_common.rs
+  s_48f2e9c9c0c94b::t_6447a4cf66acea 11-12,62,64-72,80-81,109,115,125-134,254,263,281
+src/domain/ops/resample/reduce.rs
+  s_48f2e9c9c0c94b::t_4a5f8e9d500596 366
+"backlog/tasks/b-234 - P-061-—-Thumbnail-no-E2E-gap-now-dominated-by-ShrinkH.md"
+  s_48f2e9c9c0c94b::t_356b73d0573be9 1-24
+src/domain/ops/resample/reduceh.rs
+  s_48f2e9c9c0c94b::t_ac59173b561ba3 95-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e1b21e3d22f328a0b58f4778ab054bb85a6b3736",
+  "prompts": {},
+  "sessions": {
+    "s_48f2e9c9c0c94b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XEC1PULdCRB7ixQhimjqBy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
