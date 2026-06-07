@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-268 - Benchmark-FusedOp-against-sequential-pixel-local-chains.md"
+  s_fbec4573879478::t_db378282869a0a 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c6368518efd10ef13260d73944c27f30a01cea72",
+  "prompts": {},
+  "sessions": {
+    "s_fbec4573879478": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "35895bfd-6248-43f8-968f-96b9e5e285e4",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
