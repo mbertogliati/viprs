@@ -1,0 +1,19 @@
+src/domain/ops/conversion/rot.rs
+  s_bc48c4c3abc273::t_ca6a18893e6665 207-210,223-278,305-479
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a7a5c55cd1d831e315a4cd823f4d9b5b277e7549",
+  "prompts": {},
+  "sessions": {
+    "s_bc48c4c3abc273": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01E5r1YcbHxr7Vv265jvaQcy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
