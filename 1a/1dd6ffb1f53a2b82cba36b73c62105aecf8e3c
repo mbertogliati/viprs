@@ -1,0 +1,41 @@
+docker/scripts/profile.sh
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-191
+xtask/src/profile/cachegrind.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-73
+xtask/src/perf/hw.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 1,8,10-13,16,19,47
+xtask/src/profile.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-57
+docker/scripts/dhat_profile.sh
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-122
+xtask/src/profile/args.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-118
+xtask/src/profile/dhat.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-90
+xtask/src/perf/args.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 57-98
+xtask/src/profile/samply.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 1-118
+xtask/src/main.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 4,6,17-44,49
+xtask/src/perf.rs
+  s_87669fca7a1aa2::t_ba14f05df233b8 12
+xtask/README.md
+  s_87669fca7a1aa2::t_ba14f05df233b8 218-273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1a1dd6ffb1f53a2b82cba36b73c62105aecf8e3c",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
