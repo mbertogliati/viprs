@@ -1,0 +1,25 @@
+src/domain/error.rs
+  s_eb70ed7f0b272a::t_a4cc5c7443d387 86-103
+src/domain/ops/freqfilt/phasecor.rs
+  s_eb70ed7f0b272a::t_d5f75875ec12d0 1,4,78-82,94-100,103-107,113-116,122-125,131-134,141,150-151,160-161,170,315,320-342,346,352-374,378,385-407,409-414,419-443
+  s_eb70ed7f0b272a::t_4188756415a85e 142-149,152-159,162-169,415-418
+src/domain/ops/freqfilt/freqmult.rs
+  s_eb70ed7f0b272a::t_cd8aa79deba0b4 5,9,85-89,101-107,110-114,120-123,129-132,138-141,146-152,154-162,164-172,174-175,293,298-320,324,330-352,356,363-385,387-394,396-421
+  s_eb70ed7f0b272a::t_23af66b46d79af 81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2887a7f4895f2197fb78e1b2ea0dfab248adc901",
+  "prompts": {},
+  "sessions": {
+    "s_eb70ed7f0b272a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_pnLCVpOjX7srMWCbzxpVxnE1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
