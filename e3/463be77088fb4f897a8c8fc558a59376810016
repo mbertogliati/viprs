@@ -1,0 +1,23 @@
+src/domain/ops/arithmetic/linear.rs
+  s_ec6529e70913ce::t_b367cc291e2dcd 110
+  s_ec6529e70913ce::t_54f0cc7370b51a 1,18-20,24-67,74,107-109,111,127-128,136,228,234,236-237,246,263,347,380,396-470
+src/adapters/pipeline.rs
+  s_ec6529e70913ce::t_1950ee67fb0fd8 3183-3204
+  s_ec6529e70913ce::t_4a43e93157bc2e 1505-1507,1512,1516,1520,1524,1528,1532
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e3463be77088fb4f897a8c8fc558a59376810016",
+  "prompts": {},
+  "sessions": {
+    "s_ec6529e70913ce": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UcDa6vPZ15GUHG216zTMed",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
