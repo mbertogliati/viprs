@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-200 - B-200-—-Implementar-arithmetic-ops-faltantes-maxpair-minpair-math2-profile-project.md"
+  s_ece539a3ac4796::t_f96fa98e9d1006 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2cae47952f57f148bd30efa075e7f9811164a322",
+  "prompts": {},
+  "sessions": {
+    "s_ece539a3ac4796": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QYwpRbZi5uVnJFQaL4ZvZH",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
