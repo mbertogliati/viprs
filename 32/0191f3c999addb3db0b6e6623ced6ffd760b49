@@ -1,0 +1,35 @@
+src/domain/ops/histogram/hist_find_facades.rs
+  s_ec6e53c8905949::t_c554c4957fc1d2 1-2
+src/domain/reducers/histogram.rs
+  s_ec6e53c8905949::t_534dcbe4a07cfe 6,27-85,87-139,242-287,291-292,308-348
+  s_ec6e53c8905949::t_bead9e89463901 86
+src/domain/ops/histogram.rs
+  s_ec6e53c8905949::t_026e067615ed22 1,12,15,26
+src/lib.rs
+  s_ec6e53c8905949::t_e21abfaef7e841 66-69,81,84
+  s_ec6e53c8905949::t_3568a98d147d9f 82-83
+src/domain/ops/histogram/hist_plot.rs
+  s_ec6e53c8905949::t_4b747a55a0a68b 385
+  s_ec6e53c8905949::t_a71a7b7ffcf11a 386
+  s_ec6e53c8905949::t_fc038c9d81444e 1-384,387-413
+src/domain/ops/histogram/case.rs
+  s_ec6e53c8905949::t_3e95504e844126 1-187,189-214
+src/domain/reducers.rs
+  s_ec6e53c8905949::t_7c172cc1475daf 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "320191f3c999addb3db0b6e6623ced6ffd760b49",
+  "prompts": {},
+  "sessions": {
+    "s_ec6e53c8905949": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0183N3vv4nWFReSx95gNzjtq",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
