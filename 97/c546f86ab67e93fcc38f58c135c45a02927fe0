@@ -1,0 +1,32 @@
+"backlog/tasks/b-140 - Implement-dzsave-deepzoom-exporter-backend.md"
+  s_a4baffcce4243d::t_67323ea13d3d3a 4,7,25-28
+src/adapters/codecs/registry.rs
+  s_a4baffcce4243d::t_b16de0b510cb22 38-39,97,446-449,474-511
+  s_a4baffcce4243d::t_7c3b761b383a5c 810-812,834-859
+docs/PARITY_MATRIX.md
+  s_a4baffcce4243d::t_e68c87d6d3da4d 365,412
+src/adapters/codecs/deepzoom.rs
+  s_a4baffcce4243d::t_e0c0aeecbd28d8 7,133,279-283,285,287
+  s_a4baffcce4243d::t_79bece344911ad 1-6,8-132,134-278,286,288-324,330-335,343-346,348-412,414-416,418-485,608-654,675
+  s_a4baffcce4243d::t_52efdf7da95552 670-671
+  s_a4baffcce4243d::t_4c69147b65a2f8 325-329,336-342,347,486-607
+  s_a4baffcce4243d::t_973dcd113a4cad 655-669,672-674
+Cargo.toml
+  s_a4baffcce4243d::t_2fcc32e0d66d75 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "97c546f86ab67e93fcc38f58c135c45a02927fe0",
+  "prompts": {},
+  "sessions": {
+    "s_a4baffcce4243d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_OvMBX6sjmx84xvismQXrFQP2",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
