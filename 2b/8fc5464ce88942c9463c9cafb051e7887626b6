@@ -1,0 +1,23 @@
+src/adapters/codecs/registry.rs
+  s_c6b031967565ff::t_ae8e8459f1b49c 10,447
+  s_c6b031967565ff::t_ec788f28937c2b 41-99,333-334,373-375,607-643
+  s_c6b031967565ff::t_6a877745b63ccc 647-665
+"backlog/tasks/b-78 - Implement-foreign-codec-parity-phase-2.md"
+  s_c6b031967565ff::t_272ac9106a653f 29-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2b8fc5464ce88942c9463c9cafb051e7887626b6",
+  "prompts": {},
+  "sessions": {
+    "s_c6b031967565ff": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_nopF2V9iCv8gcaAkZLoaK6GS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
