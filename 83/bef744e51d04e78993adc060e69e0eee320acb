@@ -1,0 +1,11 @@
+"backlog/archive/tasks/b-68 - Establish-continuous-head-to-head-performance-tracking-against-libvips.md"
+  ai_agent 7
+"backlog/archive/tasks/b-87 - Benchmark-performance-directly-against-libvips-C-library.md"
+  ai_agent 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "83bef744e51d04e78993adc060e69e0eee320acb",
+  "prompts": {}
+}
