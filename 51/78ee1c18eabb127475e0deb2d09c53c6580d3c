@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-263 - Raise-Rot-op-coverage-above-90-with-all-angle-region-checks.md"
+  s_bc48c4c3abc273::t_e75ccbab0a96b0 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5178ee1c18eabb127475e0deb2d09c53c6580d3c",
+  "prompts": {},
+  "sessions": {
+    "s_bc48c4c3abc273": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01E5r1YcbHxr7Vv265jvaQcy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
