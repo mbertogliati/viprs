@@ -1,0 +1,26 @@
+benches/resample/quadratic.rs
+  s_a5513dc1345dbe::t_b8105eee3f05e2 1-54
+Cargo.toml
+  s_a5513dc1345dbe::t_b8105eee3f05e2 234-237
+src/domain/ops/resample.rs
+  s_a5513dc1345dbe::t_d47fed6281d6e8 16,28
+src/domain/ops/resample/quadratic.rs
+  s_a5513dc1345dbe::t_6f8551ba693ea2 330-336
+  s_a5513dc1345dbe::t_d47fed6281d6e8 1-329,337-467,469-610
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "22650855204465d0a938e28d94a3700cc1827feb",
+  "prompts": {},
+  "sessions": {
+    "s_a5513dc1345dbe": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XDgGwFRhFE2m4i5Z3o7iFd",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
