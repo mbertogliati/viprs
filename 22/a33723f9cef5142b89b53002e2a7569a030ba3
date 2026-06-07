@@ -1,0 +1,31 @@
+"backlog/tasks/b-264 - P-033-—-invert-with-cache-gap-2.76x-vs-libvips.md"
+  s_2bb342e46580af::t_c35e0632ab1f52 1-75
+"backlog/tasks/b-263 - Raise-Rot-op-coverage-above-90-with-all-angle-region-checks.md"
+  s_7249af5522dae7::t_f43143d4410e56 1-33
+"backlog/tasks/b-262 - Raise-Matrix-codec-coverage-above-the-90-floor.md"
+  ai_agent 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "22a33723f9cef5142b89b53002e2a7569a030ba3",
+  "prompts": {},
+  "sessions": {
+    "s_2bb342e46580af": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0182P5fdRF4wbCrxoP2dzabk",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_7249af5522dae7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01E3AWCiCLPQ2Afbh6NtBPD5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
