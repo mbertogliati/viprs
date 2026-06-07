@@ -1,0 +1,29 @@
+"backlog/archive/tasks/b-238 - P-025-—-Investigate-sharpen-sigma2.0-2.20x-gap-vs-libvips.md"
+  s_5aaf8a97b7e26f::t_b4144ce9a29937 4,7,18
+"backlog/archive/tasks/b-235 - P-022-—-Investigate-gauss_blur-3.68x-gap-vs-libvips.md"
+  s_5c114575d44473::t_399b9ad9836231 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1577c1d9dadf387b9cbdf5fd0b06c5b0809c72e4",
+  "prompts": {},
+  "sessions": {
+    "s_5aaf8a97b7e26f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KGedXAVf8H5C3RHerYjw67",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_5c114575d44473": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_013abUJK2wyFpfydQh9PUHBt",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
