@@ -1,0 +1,20 @@
+src/domain/ops/colour/icc.rs
+  s_9cc8b51e67c087::t_9d72687010ec19 1597,1605-1606,1608,1617-1618
+  s_9cc8b51e67c087::t_e40610963868aa 1061-1063,1073-1075,1161,1185,1187,1194,1202-1206,1214-1218,1260,1304,1324,1346,1367,1395,1415,1435,1455,1460-1596,1598-1604,1607,1609-1616,1619-1706
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "72d28bd70775f8b3a23a5000ac833a02b38ffb61",
+  "prompts": {},
+  "sessions": {
+    "s_9cc8b51e67c087": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_saDE7Njd8zXfWixPaI6We80w",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
