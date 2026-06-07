@@ -1,0 +1,32 @@
+src/domain/colorspace.rs
+  s_80d2146ff4e28d::t_cadd437e883bd6 8-9,49-50,70-71,129-130,153,197-198
+src/domain/ops/colour/scrgb_to_bw.rs
+  s_80d2146ff4e28d::t_4304ee1e2ba566 2-3,16-43,63
+src/domain/ops/colour/cicp2scrgb.rs
+  s_80d2146ff4e28d::t_662e8ae925f210 6-7,270,304-360
+src/domain/colour_dispatcher.rs
+  s_80d2146ff4e28d::t_85b0aad9c0159a 88-122
+  s_80d2146ff4e28d::t_6b76628494bf10 418,450-482,484-488,491,494-502,504-510
+  s_80d2146ff4e28d::t_ab284f7ceb3b69 4-7,12-15,60
+  s_80d2146ff4e28d::t_f0719ed01f93fc 195-200,241-244
+  s_80d2146ff4e28d::t_2e5343976689a7 483,489-490,492-493
+src/adapters/pipeline.rs
+  s_80d2146ff4e28d::t_990c3af3026123 4463-4563,4565-4592
+  s_80d2146ff4e28d::t_c5c7f5104390ed 4564
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9205a0708b56d1846831eda15657d32444ae49c8",
+  "prompts": {},
+  "sessions": {
+    "s_80d2146ff4e28d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Q3sUmzsXznKXNi1uPkv7Tp",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
