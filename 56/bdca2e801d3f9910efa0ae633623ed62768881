@@ -1,0 +1,39 @@
+"backlog/tasks/b-258 - Eliminate-external-tile-cache-injection-from-benchmark-pipeline-builder.md"
+  s_863f5055258ee1::t_083c55efb61354 1-44
+"backlog/archive/tasks/b-250 - Remove-per-tile-heap-allocation-from-PNG-region-decoding.md"
+  s_87669fca7a1aa2::t_d9a7cdcc0e6b4f 1-19
+xtask/src/bench/runner.rs
+  s_d8de55d8ddcf1d::t_dcb1996948709c 532-537,541,547
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "56bdca2e801d3f9910efa0ae633623ed62768881",
+  "prompts": {},
+  "sessions": {
+    "s_863f5055258ee1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e420a800-7f7f-4904-857a-c7fb67c463fb",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d8de55d8ddcf1d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01V7faQTwQ4eT53tSGhkyRGJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
