@@ -1,0 +1,32 @@
+"backlog/tasks/b-229 - P-010-—-Baseline-performance-ShrinkH-ShrinkV-vs-libvips-vips_shrinkh.md"
+  s_d674ef83da6309::t_22892d14de3a59 1-36
+docs/ai/agents/performance_engineer.md
+  s_d674ef83da6309::t_2d0c6ebf328fdd 1-168
+AGENTS.md
+  s_d674ef83da6309::t_b51044519ee31a 245
+  s_d674ef83da6309::t_bc5917f7538c85 17-20,23
+docs/ai/agents/orchestrator.md
+  s_d674ef83da6309::t_a86a89bd3c96f8 1-121
+"backlog/tasks/b-230 - reduce_h-NEON-accumulation-uses-store-reload-anti-pattern-instead-of-NEON-horizontal-add.md"
+  s_d674ef83da6309::t_269a2af142d55a 1-34
+docs/ai/README.md
+  s_d674ef83da6309::t_8f4a2cf73d70d2 13-16,21-26,33
+docs/ai/agents/developer.md
+  s_d674ef83da6309::t_70e3e18d1d5969 1,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7f52b51256d81fe53adb6c2da118b32641d1e703",
+  "prompts": {},
+  "sessions": {
+    "s_d674ef83da6309": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "3bf75ef1-1d88-4944-ae4a-5a173403bc61",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
