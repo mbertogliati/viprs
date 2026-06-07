@@ -1,0 +1,21 @@
+tests/robustness_codecs.rs
+  ai_agent 1-79
+tests/chaos_monkey_2.rs
+  s_eee0457960bc5b::t_6ed9e4cdd32ff0 1-611
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "279fa95f13770e3c46b827b2d1f05de967842bc1",
+  "prompts": {},
+  "sessions": {
+    "s_eee0457960bc5b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Lo5NhKsGA9NHsq6e2nTnUL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
