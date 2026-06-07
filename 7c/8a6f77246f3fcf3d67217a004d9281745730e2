@@ -1,0 +1,25 @@
+"backlog/tasks/b-146 - Library-code-still-contains-unwrap-and-expect-panic-paths-outside-tests.md"
+  s_33d7ccd6202e64::t_ddbba8f22dd4ff 31-33
+src/adapters/sources/tile_cache.rs
+  s_33d7ccd6202e64::t_e275f73af1693f 376-391,393-395
+  s_33d7ccd6202e64::t_72d47ac3fc4de1 392
+src/adapters/scheduler/rayon_scheduler.rs
+  s_33d7ccd6202e64::t_7027ffe70e6c33 1020-1028,1030-1033
+  s_33d7ccd6202e64::t_ac94e696790714 1029
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7c8a6f77246f3fcf3d67217a004d9281745730e2",
+  "prompts": {},
+  "sessions": {
+    "s_33d7ccd6202e64": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_DQuv4VzuCmcqHmmotYV7pJGf",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
