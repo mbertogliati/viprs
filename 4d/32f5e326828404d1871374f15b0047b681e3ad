@@ -1,0 +1,29 @@
+Cargo.toml
+  s_427638b1051502::t_4a49ae9f1cf87f 46,77
+src/adapters/codecs/openslide.rs
+  s_427638b1051502::t_d5896754ac2cfc 302-303,413-420
+  s_427638b1051502::t_ec04e7f9b4afbf 1-191,194-216,222-253,255-301,304-412,421-533
+  s_427638b1051502::t_e2cf10499f793d 192-193,217-221
+src/adapters/codecs/registry.rs
+  s_427638b1051502::t_7b5f62cc33e3c9 99,105,442-446,609-611,613
+  s_427638b1051502::t_99b991c1bdc20d 977-982,988-993,998-1003,1007-1012
+  s_427638b1051502::t_2a8dfd8b199a30 1017-1029
+src/adapters/codecs.rs
+  s_427638b1051502::t_37b192311a0db9 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4d32f5e326828404d1871374f15b0047b681e3ad",
+  "prompts": {},
+  "sessions": {
+    "s_427638b1051502": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QKqb1piRKG5ixy2v7Vjthq",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
