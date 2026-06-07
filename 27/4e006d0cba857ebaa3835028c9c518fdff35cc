@@ -1,0 +1,31 @@
+"backlog/tasks/b-267 - Add-a-criterion-benchmark-for-Rot45Op.md"
+  s_87669fca7a1aa2::t_a9e73ad6e2118f 1-3,5-34
+"backlog/tasks/b-268 - Benchmark-FusedOp-against-sequential-pixel-local-chains.md"
+  s_fbec4573879478::t_8a161ad20b19da 4-7
+"backlog/tasks/b-269 - Raise-MeasureOp-coverage-above-the-90-floor-with-scratch-path-tests.md"
+  s_87669fca7a1aa2::t_5e5f15ddb005d1 4-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "274e006d0cba857ebaa3835028c9c518fdff35cc",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fbec4573879478": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "35895bfd-6248-43f8-968f-96b9e5e285e4",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
