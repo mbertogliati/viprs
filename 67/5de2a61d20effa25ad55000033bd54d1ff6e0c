@@ -1,0 +1,40 @@
+examples/dhat_profile.rs
+  s_5b63a1437d00d1::t_b2aad551cd097a 1-4
+.github/workflows/lint-no-unwrap.yml
+  s_5b63a1437d00d1::t_0efdb7c257f910 1-23
+src/adapters/sources/tile_cache.rs
+  s_5b63a1437d00d1::t_981a7e0454292c 176-178,195-197
+src/domain/ops/morphology/dilate.rs
+  s_5b63a1437d00d1::t_85f31e618722cd 84-87
+src/adapters/dyn_fused.rs
+  s_5b63a1437d00d1::t_52d45e4358cb7a 105,109,115,119,136,140
+  s_5b63a1437d00d1::t_6a9cc45d0137a1 106-108,110,116-118,120,137-139,141
+src/adapters/codecs/mat.rs
+  s_5b63a1437d00d1::t_d2bdd3eedfcc9b 454-459
+Cargo.toml
+  s_5b63a1437d00d1::t_e2f52bdfa0273a 12-15
+"backlog/tasks/b-137 - Enforce-no-unwrap-expect-outside-tests-with-automated-lints.md"
+  s_5b63a1437d00d1::t_505e5d8eb8f1df 31-33
+src/adapters/scheduler/rayon_scheduler.rs
+  s_5b63a1437d00d1::t_cceb9b92f2866a 414-418
+clippy.toml
+  s_5b63a1437d00d1::t_63561dfa8c394b 1-2
+src/adapters/pipeline.rs
+  s_5b63a1437d00d1::t_011f492766523c 399-405,407-411
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "675de2a61d20effa25ad55000033bd54d1ff6e0c",
+  "prompts": {},
+  "sessions": {
+    "s_5b63a1437d00d1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_nVQMeIxf8WmY60F3URfRSYfu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
