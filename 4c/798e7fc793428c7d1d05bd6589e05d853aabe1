@@ -1,0 +1,23 @@
+AGENTS.md
+  s_d674ef83da6309::t_80bdd1f8af65f7 19
+docs/ai/README.md
+  s_d674ef83da6309::t_edd407e7c5034b 25
+docs/ai/agents/merger.md
+  s_d674ef83da6309::t_cdba46649fb19f 1-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4c798e7fc793428c7d1d05bd6589e05d853aabe1",
+  "prompts": {},
+  "sessions": {
+    "s_d674ef83da6309": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "3bf75ef1-1d88-4944-ae4a-5a173403bc61",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
