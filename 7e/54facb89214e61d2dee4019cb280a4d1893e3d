@@ -1,0 +1,9 @@
+"backlog/tasks/b-256 - Document-or-lint-runtime-dyn-dispatch-in-the-domain-colour-dispatcher.md"
+  ai_agent 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7e54facb89214e61d2dee4019cb280a4d1893e3d",
+  "prompts": {}
+}
