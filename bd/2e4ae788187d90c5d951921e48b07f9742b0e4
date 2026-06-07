@@ -1,0 +1,23 @@
+xtask/src/bench.rs
+  ai_agent 8,20,192,243-245,369-372,378,413,433-437,471-479,536-544,697-718,722,1321-1330
+"backlog/archive/tasks/b-168 - P-010-—-Baseline-performance-OpenEXR-exr-crate-Rust-vs-OpenEXR-C.md"
+  s_209b49c2ae4c57::t_c36ac0de9ccf80 4,7,20-23,25-30,32-37,39-42,46-47,49
+tools/bench-vs-libvips/libvips_runner.c
+  ai_agent 37,134-136,224-235,244-251,302-309,354-360,479,520-523
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bd2e4ae788187d90c5d951921e48b07f9742b0e4",
+  "prompts": {},
+  "sessions": {
+    "s_209b49c2ae4c57": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JHsopVF3Dep9fn1gQL8T94",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
