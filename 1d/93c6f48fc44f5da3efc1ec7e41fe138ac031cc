@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-203 - B-203-—-Implementar-codec-openslide-para-microscopía-digital.md"
+  s_427638b1051502::t_12159bee22cba4 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1d93c6f48fc44f5da3efc1ec7e41fe138ac031cc",
+  "prompts": {},
+  "sessions": {
+    "s_427638b1051502": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QKqb1piRKG5ixy2v7Vjthq",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
