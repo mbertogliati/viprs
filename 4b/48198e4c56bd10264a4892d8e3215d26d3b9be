@@ -1,0 +1,30 @@
+src/domain/ops/resample/thumbnail.rs
+  s_31038cfbff4d8c::t_ecc619b49724b2 468-501
+src/adapters/pipeline.rs
+  s_31038cfbff4d8c::t_34815ec5498027 2477-2492
+  s_31038cfbff4d8c::t_23a17dd582f619 1954-1962,1967-1973,1975-1979,1982-1986,1989-1993,1996-2000,2003-2007,2010-2014,2044-2052,2057-2062,2065-2069,2072-2076,2079-2083,2086-2090,2093-2097,2100-2105
+  s_31038cfbff4d8c::t_291e78b3ead7ef 1107,1124,1134,1160,2177-2183,2185-2196,2201-2208,2211-2218,2221-2228,2231-2238,2241-2248,2251-2258,2261-2268,2500,2502-2515
+  s_31038cfbff4d8c::t_343b367ef173c0 2434,2501
+src/domain/ops/resample/reducev.rs
+  s_31038cfbff4d8c::t_59bfdb4dbf6a9f 467-474
+  s_31038cfbff4d8c::t_a399bc76567454 138,150,157,180
+src/domain/ops/resample/reduceh.rs
+  s_31038cfbff4d8c::t_a60772da6fb15d 139,151,158,181
+  s_31038cfbff4d8c::t_e78bb71b996b31 468-475
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4b48198e4c56bd10264a4892d8e3215d26d3b9be",
+  "prompts": {},
+  "sessions": {
+    "s_31038cfbff4d8c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_MhzYQhjPytDRvUYjBT67PIyv",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
