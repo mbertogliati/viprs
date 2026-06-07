@@ -1,0 +1,31 @@
+"backlog/tasks/b-247 - P-031-—-Missing-scenarios-upscale-HSV-arithmetic-and-chained-pipelines.md"
+  s_87669fca7a1aa2::t_1131a6da4c4c0f 4,7
+"backlog/tasks/b-245 - P-029-—-Missing-baseline-save-exr-libvips-side-fails-at-iteration-0.md"
+  s_a4dd90ce916e11::t_93c3e72341cca2 4,7
+"backlog/tasks/b-248 - P-032-—-Missing-scenarios-parameter-matrix-for-thumbnail-targets-and-blur-sigma.md"
+  s_87669fca7a1aa2::t_1131a6da4c4c0f 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2b0f069c8c404ccd4034c51bf602540e7de83918",
+  "prompts": {},
+  "sessions": {
+    "s_87669fca7a1aa2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "d27b43b3-0d01-434b-9da3-b0767760fcb4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_a4dd90ce916e11": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Hy9YeE2ArW8Y3UshjNj2LS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
