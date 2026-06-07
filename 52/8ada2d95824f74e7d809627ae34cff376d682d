@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-266 - Design-review-GaussBlurH-V-Op-signature-—-Output-type-broken-by-B-241-U8-fast-path.md"
+  s_a80ee4e573ae85::t_23731030b7b8df 6,9,14-18,59-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "528ada2d95824f74e7d809627ae34cff376d682d",
+  "prompts": {},
+  "sessions": {
+    "s_a80ee4e573ae85": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018iq5VSWw69oiHe3fjvHkih",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
