@@ -1,0 +1,23 @@
+Cargo.toml
+  s_ce3b7ef0311012::t_01c92d3b9afe73 84
+src/adapters/codecs/registry.rs
+  s_ce3b7ef0311012::t_01c92d3b9afe73 15,51-52,754
+src/adapters/codecs.rs
+  s_ce3b7ef0311012::t_01c92d3b9afe73 29,101-102,166-167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e4da4984dfe65681318243c52accfba636a2ca48",
+  "prompts": {},
+  "sessions": {
+    "s_ce3b7ef0311012": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01B55A58Ns1GwqMqSk5SWxr9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
