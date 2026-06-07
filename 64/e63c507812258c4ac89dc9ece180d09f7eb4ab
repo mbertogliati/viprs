@@ -1,0 +1,21 @@
+tests/bench_fixtures_smoke.rs
+  s_41e5db00e0caeb::t_b07a32f1c32756 83
+  s_41e5db00e0caeb::t_fd035a29998027 1-49,51-82,84-114
+  s_41e5db00e0caeb::t_c70ec942fb6b5e 50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "64e63c507812258c4ac89dc9ece180d09f7eb4ab",
+  "prompts": {},
+  "sessions": {
+    "s_41e5db00e0caeb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_a1naE8GN2tWl3SH8E2dT3rjK",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
