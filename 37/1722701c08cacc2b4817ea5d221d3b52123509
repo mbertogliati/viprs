@@ -1,0 +1,39 @@
+benches/create/perlin.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-39
+src/domain/ops/create/worley.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-262
+src/domain/ops/create.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 13-15,18,38-40,43
+src/domain/ops/create/point.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-192
+benches/create/sdf.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-51
+benches/create/point.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-40
+src/domain/ops/create/sdf.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-11,13-15,17-262
+benches/create/worley.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-39
+Cargo.toml
+  s_bb6372dad0594f::t_fe78eaa6defe5e 883-896,902-904
+src/lib.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 55
+src/domain/ops/create/perlin.rs
+  s_bb6372dad0594f::t_fe78eaa6defe5e 1-233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "371722701c08cacc2b4817ea5d221d3b52123509",
+  "prompts": {},
+  "sessions": {
+    "s_bb6372dad0594f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_017etuXH88WD6Px1QS8JMWXr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
