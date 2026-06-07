@@ -1,0 +1,38 @@
+src/domain/ops/colour/de76.rs
+  s_4e8cc250122d16::t_a450b8e84b1deb 130-180
+src/domain/ops/colour/de00.rs
+  s_4e8cc250122d16::t_2c6f830730a5ae 185-232
+src/domain/ops/conversion/cast.rs
+  s_4e8cc250122d16::t_f599b961d75b6c 245-302
+src/domain/ops/arithmetic/linear.rs
+  s_4e8cc250122d16::t_a3d7b4819154bc 309-354
+src/domain/ops/colour/lab_to_xyz.rs
+  s_4e8cc250122d16::t_35c5480aa67982 104-177
+src/domain/ops/colour/srgb_to_lab.rs
+  s_4e8cc250122d16::t_0cc6988d8e5cea 118-155,162,164-168,170-177,185-189,194-222
+  s_4e8cc250122d16::t_79ceb49cea3f9d 156-161,163,169,178-184,190-193
+src/domain/ops/arithmetic/invert.rs
+  s_4e8cc250122d16::t_f0a7d493dd433b 448-497
+src/domain/ops/arithmetic/sin.rs
+  s_4e8cc250122d16::t_2c6c0321b091b8 123-189
+src/domain/ops/arithmetic/add_images.rs
+  s_4e8cc250122d16::t_96d029b490943e 522-579
+src/domain/ops/arithmetic/cos.rs
+  s_4e8cc250122d16::t_9c50ce44eab740 123-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1f1cd3669a5878267f0df61af061b2fd073595b7",
+  "prompts": {},
+  "sessions": {
+    "s_4e8cc250122d16": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b72ce7cc-0bdc-4eac-ad8a-75b5c19ff4fa",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
