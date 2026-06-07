@@ -1,0 +1,25 @@
+"backlog/docs/doc-11 - ADR-029-—-FFT-scratch-sharing-and-opaque-plans.md"
+  s_447ce983b71e83::t_d10b20d6c56bbf 9,25,48-51
+src/domain/ops/freqfilt/invfft.rs
+  s_447ce983b71e83::t_df3a999b368311 25,29
+src/domain/ops/freqfilt/fwfft.rs
+  s_447ce983b71e83::t_6d3d783a31d7ae 60,64
+"backlog/docs/doc-7 - ADR-034-—-FFT-ops-as-adapter-level-whole-image-transforms.md"
+  s_447ce983b71e83::t_3f2e1321afca09 36-42,52-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4c388893cc57301928158412980de9ecc2827f33",
+  "prompts": {},
+  "sessions": {
+    "s_447ce983b71e83": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_PM3EnICKHhkrg0Q4K3FI2eMk",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
