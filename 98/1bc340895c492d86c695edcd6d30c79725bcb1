@@ -1,0 +1,36 @@
+src/domain/ops/resample/reduce_simd.rs
+  s_db2416e3a217b0::t_5129cd3a1e726d 385,388-434,436,582,585-633,635,774,777-778,781-824,827,829
+  s_0a6d4877a7dbac::t_4ebb7de1a8b67e 825
+  s_0a6d4877a7dbac::t_12efeb8c40c3ea 1663-1728,1730-1738,1740-1773,1775-1783,1785-1818,1820-1828,1830-1833,1867-1908,1932-1946
+  s_0a6d4877a7dbac::t_4d8b0b4575e245 386,435,451,583,654
+  s_0a6d4877a7dbac::t_b0f36edb3d907a 1472
+  s_0a6d4877a7dbac::t_ef7b14107d1125 1475-1492,1494-1547,1549-1557,1559-1567,1569-1592,1594-1602,1604-1612,1614-1637,1639-1647,1649-1657,1659-1662,1834-1866,1909-1931,1947-1991
+  s_db2416e3a217b0::t_95f69cd5c461d6 700-713,761-773,775-776,779-780,826,828,830-843
+  s_db2416e3a217b0::t_c6a8d17ffbd14b 497-510,569-581,584,634,636-653,655-666
+  s_db2416e3a217b0::t_806c3a2558d215 305-318,372-384,387,437-450,452-463
+  s_0a6d4877a7dbac::t_4c250f9c758aa5 931
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "981bc340895c492d86c695edcd6d30c79725bcb1",
+  "prompts": {},
+  "sessions": {
+    "s_0a6d4877a7dbac": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01CMfwX6YBxcs9gwN4vusyao",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_db2416e3a217b0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XL98pWzUeGTWfmdYWBwTxi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
