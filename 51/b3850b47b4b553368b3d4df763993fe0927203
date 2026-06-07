@@ -1,0 +1,21 @@
+"backlog/tasks/b-139 - MapImOp-default-premultiplied-flag-diverges-from-libvips.md"
+  s_9ed9e0f52aea01::t_2032e5b32cd31e 4
+src/domain/ops/resample/mapim.rs
+  s_9ed9e0f52aea01::t_5bd1ea9e3791e0 1011-1069
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "51b3850b47b4b553368b3d4df763993fe0927203",
+  "prompts": {},
+  "sessions": {
+    "s_9ed9e0f52aea01": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_VoKu7g4S0XcBSXN1wPSpqDDc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
