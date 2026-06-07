@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-242 - P-026-—-Benchmark-lie-no-e2e-reuses-different-work-per-iteration.md"
+  s_54379449e3c30d::t_64284d64b88b1f 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a8729b8f2612e0ac17c47130dfbba91ed7d185d5",
+  "prompts": {},
+  "sessions": {
+    "s_54379449e3c30d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01FgVKNKnFQv6fUfF4xvtL1b",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
