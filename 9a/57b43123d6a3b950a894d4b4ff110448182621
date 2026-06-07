@@ -1,0 +1,19 @@
+"backlog/tasks/b-228 - Cached-xtask-bench-does-not-reuse-tile-cache.md"
+  s_bde1a04e191f1b::t_c09d3e4f785dd6 17-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9a57b43123d6a3b950a894d4b4ff110448182621",
+  "prompts": {},
+  "sessions": {
+    "s_bde1a04e191f1b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TpqkrSiMyEpqSmTEYfrPsA",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
