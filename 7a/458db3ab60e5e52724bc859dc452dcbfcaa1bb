@@ -1,0 +1,13 @@
+"backlog/archive/tasks/b-252 - P-070-—-Colourspace-benchmarks-have-a-512px-gap-and-major-scenario-matrix-blind-spots.md"
+  ai_agent 1-54
+Cargo.toml
+  ai_agent 222-225
+benches/colour/matrix.rs
+  ai_agent 1-237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7a458db3ab60e5e52724bc859dc452dcbfcaa1bb",
+  "prompts": {}
+}
