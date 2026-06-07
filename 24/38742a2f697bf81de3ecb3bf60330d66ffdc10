@@ -1,0 +1,31 @@
+"backlog/tasks/b-270 - P-067-—-PNG-production-workflows-remain-1.80x–4.92x-slower-at-2048-after-workflow-builder-fix.md"
+  s_a257614eb77534::t_21f5afb51c0149 6,9
+src/adapters/pipeline.rs
+  ai_agent 1798-1799,2664-2666,2688,2690-2691,3080,3082,3084,3133-3174,4384-4433
+tests/chaos_monkey_2.rs
+  s_eee0457960bc5b::t_699ad7cd3dd018 1,216,239,284,300,380,444,453,538-547,577-578
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2438742a2f697bf81de3ecb3bf60330d66ffdc10",
+  "prompts": {},
+  "sessions": {
+    "s_a257614eb77534": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e327ca34-9087-4b00-895a-6e46b6289843",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_eee0457960bc5b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Lo5NhKsGA9NHsq6e2nTnUL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
