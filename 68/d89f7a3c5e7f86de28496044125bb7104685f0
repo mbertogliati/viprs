@@ -1,0 +1,20 @@
+src/domain/ops/resample/reduce_simd.rs
+  s_46b64ff1b21216::t_60ea76d7518e3c 413,420-421,423-434,436,799,806-807,809-820,822,824
+  s_46b64ff1b21216::t_b85bc1fa557ab5 451,730,845
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "68d89f7a3c5e7f86de28496044125bb7104685f0",
+  "prompts": {},
+  "sessions": {
+    "s_46b64ff1b21216": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TTwAeF5AJ7PgiHgAREmffW",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
