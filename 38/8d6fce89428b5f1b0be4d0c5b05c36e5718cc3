@@ -1,0 +1,27 @@
+Cargo.lock
+  ai_agent 137-144,719-728,2838
+src/adapters/codecs.rs
+  s_182c2741644824::t_8615ad6ded9e19 22,69-71,117-118
+src/adapters/codecs/registry.rs
+  ai_agent 24-25,54,407,409-411,516-517
+Cargo.toml
+  s_182c2741644824::t_8615ad6ded9e19 41,67
+src/adapters/codecs/fits.rs
+  s_182c2741644824::t_8615ad6ded9e19 1-811
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "388d6fce89428b5f1b0be4d0c5b05c36e5718cc3",
+  "prompts": {},
+  "sessions": {
+    "s_182c2741644824": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "38d36a49-0120-4872-bb53-9d3b01b31769",
+        "model": "auto"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
