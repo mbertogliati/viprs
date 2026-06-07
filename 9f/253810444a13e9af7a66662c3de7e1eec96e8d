@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-207 - B-207-—-Implementar-resample-quadratic-transformación-cuadrática-de-imagen.md"
+  s_a5513dc1345dbe::t_325fabe49f7a34 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9f253810444a13e9af7a66662c3de7e1eec96e8d",
+  "prompts": {},
+  "sessions": {
+    "s_a5513dc1345dbe": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XDgGwFRhFE2m4i5Z3o7iFd",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
