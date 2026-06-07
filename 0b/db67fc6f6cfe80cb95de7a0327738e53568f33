@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-228 - P-021-—-Reduce-TIFF-LZW-encode-gap-below-2x-or-replace-weezl.md"
+  ai_agent 1-41
+"backlog/archive/tasks/b-204 - B-204-—-Implementar-colour-CICP2scRGB-y-uhdr2scRGB.md"
+  ai_agent 1-36
+"backlog/archive/tasks/b-228 - Cached-xtask-bench-does-not-reuse-tile-cache.md"
+  ai_agent 1-30
+"backlog/archive/tasks/b-84 - Create-CI-parity-gate-and-release-criteria-for-100-percent-libvips-target.md"
+  ai_agent 1-19
+"backlog/archive/tasks/b-226 - Cache-comparison-misleading-en-e2e-mode-—-viprs-OperationTileCache-no-cruza-iteraciones.md"
+  ai_agent 1-39
+src/adapters/codecs/registry.rs
+  ai_agent 15,54-55,758
+"backlog/archive/tasks/b-171 - MapIm-premultiply-path-does-not-blend-in-premultiplied-space.md"
+  ai_agent 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0bdb67fc6f6cfe80cb95de7a0327738e53568f33",
+  "prompts": {}
+}
