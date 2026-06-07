@@ -1,0 +1,21 @@
+"backlog/tasks/b-122 - Migrate-LabelRegionsReducer-to-scratch-state-API-B-86.1-follow-up.md"
+  s_2b8abf8ac4d5f7::t_5d4b23ff6cae7f 4
+src/domain/reducers/label_regions.rs
+  s_2b8abf8ac4d5f7::t_f889f8f662e9c6 14-15,59,61-62,66-72,74-97,103-105,110-111,114-115,157-184,213-239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "39d072b66a71cdc0ac2a0d7c2eb264eaddceab55",
+  "prompts": {},
+  "sessions": {
+    "s_2b8abf8ac4d5f7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_EeXDsdPVuuDvsYMzuxhJlrRM",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
