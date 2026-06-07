@@ -1,0 +1,19 @@
+src/domain/reducers/getpoint.rs
+  s_a2a6ce85e8929c::t_ab89e5e9b59f30 25-28,56-96,175-204
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f054ec2e83e67541e5d77297656766d4206dbf3f",
+  "prompts": {},
+  "sessions": {
+    "s_a2a6ce85e8929c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01LDGWc7Z8qqKLYqLG9EqgWj",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
