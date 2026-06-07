@@ -1,0 +1,31 @@
+"backlog/archive/tasks/b-257 - Verify-shrink-on-load-resource-savings-instead-of-only-pixel-equivalence.md"
+  s_a60a3f36493868::t_3c7dccae5a621f 4,7,18
+"backlog/archive/tasks/b-246 - P-030-—-Missing-scenarios-grayscale-RGBA-and-non-RGB-compute-baselines.md"
+  s_fc16474748e797::t_3ef6d5927d8cc1 4,7,18
+"backlog/archive/tasks/b-254 - Add-non-constant-thumbnail-tests-that-distinguish-Lanczos3-output.md"
+  ai_agent 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d398af1bd84a6bdd74b818e345fcccb8f5461039",
+  "prompts": {},
+  "sessions": {
+    "s_a60a3f36493868": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019qtCQp67jdgo5gN3kzvn7J",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fc16474748e797": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01L2kkis8A2nyqPPvMnfzUwR",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
