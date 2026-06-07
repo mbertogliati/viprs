@@ -1,0 +1,21 @@
+src/domain/ops/colour/srgb_to_lab.rs
+  s_f1dddbca6e30e4::t_624abf1400f593 59-60,65,69,72-116,121-122,128-134,155-160,162-177,179-180
+"backlog/tasks/b-132 - sRGB-to-Lab-conversion-tests-use-1.0-unit-tolerance-loose-enough-to-mask-illuminant-or-gamma-parameter-errors.md"
+  s_f1dddbca6e30e4::t_d2841853727fee 33-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d6218406e7bf66d8197748fa30722b03251babb0",
+  "prompts": {},
+  "sessions": {
+    "s_f1dddbca6e30e4": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_Jj78niQXqgUJt1RpL8YvGVgg",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
