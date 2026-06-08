@@ -1,0 +1,31 @@
+src/domain/ops/arithmetic/invert.rs
+  s_dd4af937b1f52f::t_11549fc4bda77b 11-12,50,55,68,79,89,96,107-171,180,186,198,206,209,221,223,235,241-243,249,257,303,316,322,329,336,360-361,536,590
+src/domain/ops/arithmetic/subtract.rs
+  s_dd4af937b1f52f::t_11549fc4bda77b 5,23-25,38-39,42,56,104-111,131-141,161,167,172,177,263-300,337-373,413-418,423,464,468,470,473,477,481,483,486,491-499,520-522,524-546,548-574,610-644
+docs/ai/agents/developer.md
+  s_dd4af937b1f52f::t_11549fc4bda77b 232-263
+GUIDELINES.md
+  s_dd4af937b1f52f::t_11549fc4bda77b 373-380
+docs/ai/agents/performance_engineer.md
+  s_dd4af937b1f52f::t_11549fc4bda77b 17-28
+docs/PERFORMANCE.md
+  s_dd4af937b1f52f::t_11549fc4bda77b 15,88-89,114-115,120-126,138,207-208,210,212-214,216-233,236-240
+src/adapters/codecs/jpeg.rs
+  s_dd4af937b1f52f::t_11549fc4bda77b 809-813
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ac0bbc6bd62417bf0642ae22092486b3a1d1379e",
+  "prompts": {},
+  "sessions": {
+    "s_dd4af937b1f52f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f75b6f55-d407-4dea-ba50-968e9972707a",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
