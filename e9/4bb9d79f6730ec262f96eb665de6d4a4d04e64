@@ -1,0 +1,19 @@
+xtask/src/bench/helpers.rs
+  s_dd4af937b1f52f::t_820f8fb74299eb 80-83,164,167,169,172,174,177,179,182,184,187,189,192,194,228,468,567-581,648,710,714,718
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e94bb9d79f6730ec262f96eb665de6d4a4d04e64",
+  "prompts": {},
+  "sessions": {
+    "s_dd4af937b1f52f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f75b6f55-d407-4dea-ba50-968e9972707a",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
