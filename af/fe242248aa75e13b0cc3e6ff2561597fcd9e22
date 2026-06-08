@@ -1,0 +1,43 @@
+"backlog/tasks/b-247 - P-065-—-Production-workflow-scenarios-are-still-2.55x-5.51x-slower-at-2048.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-237 - Restore-draw-op-coverage-above-the-90-floor.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-241 - Add-SAFETY-comments-to-remaining-unsafe-blocks.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-269 - P-066-—-AVIF-workflow-encode-still-1.75x-slower-at-2048-after-path-backed-source-fix.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 6,9
+"backlog/tasks/b-233 - P-060-—-JP2K-decode-1.23x-slower-at-2048-investigate-codec-backend.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-258 - Tests-robustez-error-recovery-y-cleanup-no-leaks.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/archive/tasks/b-332 - JP2K-load-metadata-hard-codes-n_pages1-instead-of-the-pyramid-resolution-count.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 2-5,8-9,11,13-14,20
+"backlog/tasks/b-236 - Revisar-inconsistencias-en-benchmark-production-workflows-scenario-set.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-243 - P-061-—-Resize-0.5-remains-slower-than-libvips-across-512-2048-8192-no-E2E-sizes.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 6,9
+"backlog/tasks/b-249 - P-067-—-Embed-and-extract-area-have-no-libvips-baseline-benchmarks.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-268 - P-071-—-Morphology-dilate-erode-kernels-remain-slower-than-libvips.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+"backlog/tasks/b-252 - P-070-—-Colourspace-benchmarks-have-a-512px-gap-and-major-scenario-matrix-blind-spots.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 6,9
+"backlog/tasks/b-274 - P-069-—-Affine-family-resample-baselines-trail-libvips.md"
+  s_37bc74ff16188f::t_a3aca0aad45d03 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "affe242248aa75e13b0cc3e6ff2561597fcd9e22",
+  "prompts": {},
+  "sessions": {
+    "s_37bc74ff16188f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "abfcde40-36ab-4e2a-807a-18fd5c1f2b5a",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
