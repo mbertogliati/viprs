@@ -1,0 +1,20 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_1df3cb1a842d91::t_7ffba97f6fc25b 1910-1912,1926-1933,1942,1944,1961,1964
+  s_1df3cb1a842d91::t_6783a8b8cf91fc 1914-1922
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "460f6fb4b45db99387b9437b61366a81ffd4c46a",
+  "prompts": {},
+  "sessions": {
+    "s_1df3cb1a842d91": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019GNcgH7HRQdKwrDCiMKSN8",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
