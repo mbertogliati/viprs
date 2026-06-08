@@ -1,0 +1,31 @@
+"backlog/tasks/b-287 - P-077-—-Benchmark-multi-operation-pipelines-to-expose-scheduling-and-caching-gaps.md"
+  s_94c20964f38152::t_08acb90bb42442 1-64
+"backlog/tasks/b-292 - P-080-—-Audit-memory-allocation-in-pixel-path-verify-zero-alloc-pipeline-execution.md"
+  s_94c20964f38152::t_08acb90bb42442 1-84
+"backlog/tasks/b-329 - Affine-family-benchmark-gaps-after-libvips-baselines.md"
+  s_94c20964f38152::t_08acb90bb42442 1-18
+docs/ai/agents/merger.md
+  s_94c20964f38152::t_08acb90bb42442 100-127
+"backlog/tasks/b-293 - P-081-—-Demand-hints-and-tile-geometry-verify-viprs-respects-SMALLTILE-vs-FATSTRIP-vs-THINSTRIP.md"
+  s_94c20964f38152::t_08acb90bb42442 1-65
+"backlog/tasks/b-260 - Soak-test-estabilidad-sostenida-N5000-iteraciones.md"
+  s_94c20964f38152::t_08acb90bb42442 1-18
+"backlog/tasks/b-286 - P-076-—-Measure-and-reduce-lock-contention-target-4-locks-per-output-tile.md"
+  s_94c20964f38152::t_08acb90bb42442 1-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b99a21e5c75eb6d2ee223ad5b6234ff9cda054c8",
+  "prompts": {},
+  "sessions": {
+    "s_94c20964f38152": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ac69811b-8d66-402e-85a4-50ef8031fa96",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
