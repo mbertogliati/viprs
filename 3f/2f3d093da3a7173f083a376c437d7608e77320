@@ -1,0 +1,22 @@
+src/domain/ops/conversion/cast.rs
+  s_a1ed07360f3c23::t_5d68c15cbcbabf 12-19,25,133-172,176-181,185-188,197-199,209-211,227-228,256-257,284-339,535,569
+  s_a1ed07360f3c23::t_36fcb66e933ba1 389
+benches/conversion/cast.rs
+  s_a1ed07360f3c23::t_1ffbc93e01a880 20-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3f2f3d093da3a7173f083a376c437d7608e77320",
+  "prompts": {},
+  "sessions": {
+    "s_a1ed07360f3c23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TbC82AUAgCgSA28sauQjRA",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
