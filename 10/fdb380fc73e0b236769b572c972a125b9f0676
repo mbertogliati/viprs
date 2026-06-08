@@ -1,0 +1,21 @@
+Cargo.toml
+  s_8470b06d77c39e::t_307c515ecc97f0 262-265
+benches/pipeline/write_behind.rs
+  s_8470b06d77c39e::t_307c515ecc97f0 1-162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "10fdb380fc73e0b236769b572c972a125b9f0676",
+  "prompts": {},
+  "sessions": {
+    "s_8470b06d77c39e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01W64hXgEu587wJaEH6M8652",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
