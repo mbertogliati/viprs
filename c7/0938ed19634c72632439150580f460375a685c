@@ -1,0 +1,37 @@
+src/domain/ops/resample/reduceh.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 222
+src/adapters/codecs/webp.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 31,61,2473,2483
+src/domain/ops/resample/reducev.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 221
+src/adapters/pipeline.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 2969-2970,2992
+xtask/src/bench/runner.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 1471
+src/domain/ops/conversion/composite.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 278,283-292,294,296
+src/domain/ops/resample/reduce_common.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 169-170,184-185,330
+xtask/src/profile/samply.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 104,106-108,113-114
+src/domain/ops/arithmetic/measure.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 185-198
+src/adapters/codecs/gif.rs
+  s_dd4af937b1f52f::t_cd1fd3596822dd 298-299,574
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c70938ed19634c72632439150580f460375a685c",
+  "prompts": {},
+  "sessions": {
+    "s_dd4af937b1f52f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f75b6f55-d407-4dea-ba50-968e9972707a",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
