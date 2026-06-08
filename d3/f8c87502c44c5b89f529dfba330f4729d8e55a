@@ -1,0 +1,20 @@
+src/adapters/codecs/jp2k.rs
+  s_a50274cb42fa50::t_e4e1f6d6688dff 849-875,885,908,912,926-931,946-947,949-953,956-960
+  s_a50274cb42fa50::t_9cc3d8f2b96e9f 932-945,948,954
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d3f8c87502c44c5b89f529dfba330f4729d8e55a",
+  "prompts": {},
+  "sessions": {
+    "s_a50274cb42fa50": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Q7Vytw9u13PrX8KjMSU1Ld",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
