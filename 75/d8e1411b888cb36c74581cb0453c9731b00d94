@@ -1,0 +1,31 @@
+"backlog/tasks/b-335 - P-147-—-abs-sign-round-floor-ceil-arithmetic-ops-throughput-vs-libvips.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+"backlog/tasks/b-402 - P-151-—-gaussblur-2048px-gap-1.225x-slower-than-libvips.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+"backlog/tasks/b-334 - P-146-—-zoom-replicate-pixel-throughput-vs-libvips.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+"backlog/tasks/b-337 - P-149-—-median-3x3-NEON-optimization-currently-1.265x-slower-than-libvips.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+"backlog/tasks/b-336 - P-148-—-sharpen-chain-8192px-RSS-follow-up-B-332-tail.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+"backlog/tasks/b-338 - P-150-—-zoom-2x-NEON-fix-1.951x-3.202x-slower-than-libvips.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+"backlog/tasks/b-403 - P-152-—-hist_find-histogram-accumulation-throughput-vs-libvips.md"
+  s_b301469cfb046c::t_2c446673febb72 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "75d8e1411b888cb36c74581cb0453c9731b00d94",
+  "prompts": {},
+  "sessions": {
+    "s_b301469cfb046c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "9c61bd4c-64ca-442c-9121-d8636e9dac11",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
