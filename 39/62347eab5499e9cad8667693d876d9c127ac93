@@ -1,0 +1,19 @@
+src/domain/ops/resample/mapim.rs
+  s_37bc74ff16188f::t_07d73fabdaa070 1623-1624,1628-1629
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3962347eab5499e9cad8667693d876d9c127ac93",
+  "prompts": {},
+  "sessions": {
+    "s_37bc74ff16188f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "abfcde40-36ab-4e2a-807a-18fd5c1f2b5a",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
