@@ -1,0 +1,19 @@
+xtask/src/profile/samply.rs
+  s_cc8e13f23cd007::t_59854bc3ab4431 49-55,59,71,78,85-87,89,92,102-103,107-108,118-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "17e4b549e158951f56ec1158026eeb06710f7a88",
+  "prompts": {},
+  "sessions": {
+    "s_cc8e13f23cd007": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Uoo5PiANSCu8cy8ULbc4H6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
