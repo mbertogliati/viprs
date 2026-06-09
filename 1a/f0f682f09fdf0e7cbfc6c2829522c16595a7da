@@ -1,0 +1,36 @@
+src/adapters/sinks/memory.rs
+  s_fc99e0eb1d45f1::t_9f126380c03754 27,49
+  s_fc99e0eb1d45f1::t_f6dc8378030b78 135-171,211-212
+src/ports/sink.rs
+  s_fc99e0eb1d45f1::t_f574055dca44fc 1-2,25,27
+src/adapters/sinks/file_sink.rs
+  s_fc99e0eb1d45f1::t_283f5f8c6e9805 276-279
+src/adapters/scheduler/rayon_scheduler.rs
+  s_fc99e0eb1d45f1::t_0c3f4165efa4f7 436-445,447-448,470,475-481
+  s_fc99e0eb1d45f1::t_147567b3e36707 446,1941
+  s_fc99e0eb1d45f1::t_e11673276d5cb5 449-469,471-474,1944-1964,1967
+  s_fc99e0eb1d45f1::t_46740c35a716c2 1121-1136,1144-1148
+  s_fc99e0eb1d45f1::t_f043f46f9e2e6d 1137-1143
+  s_fc99e0eb1d45f1::t_afc55f7cafba7f 1931-1940,1942-1943,1965-1966,1968-1969
+  s_fc99e0eb1d45f1::t_dc243df9a29a2c 2794-2810,2812-2813,2815-2830,2840-2841
+  s_fc99e0eb1d45f1::t_f0787ccdbef617 2811,2814
+  s_fc99e0eb1d45f1::t_b817047d7ebb06 2831-2839
+src/adapters/sinks/double_buffer.rs
+  s_fc99e0eb1d45f1::t_4b71b6d393e1ba 445-448
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1af0f682f09fdf0e7cbfc6c2829522c16595a7da",
+  "prompts": {},
+  "sessions": {
+    "s_fc99e0eb1d45f1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01V2PSXNyJrexRQJi8eX4bYc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
