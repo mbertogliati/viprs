@@ -1,0 +1,19 @@
+benches/structural/zoom.rs
+  s_eea3c951f0f5cf::t_4cd9fc4dcb0a86 3-4,15-21,25-27,34-42,44-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2edbc49be03bdf5d84c39a4dadbc81ca34ed4be9",
+  "prompts": {},
+  "sessions": {
+    "s_eea3c951f0f5cf": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01K7vrMgz3hHk3qqej3ePhVo",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
