@@ -1,0 +1,23 @@
+"backlog/tasks/b-331 - P-082-—-Investigate-poor-4-thread-SMP-scaling-in-8192-kernel-only-benchmarks.md"
+  s_e391d0b030bb98::t_2d7dfee6c9584e 18,20,22,24-29,32-37
+src/adapters/scheduler/rayon_scheduler.rs
+  s_e391d0b030bb98::t_d50dfd44f2b918 243-302,324,355,426,455,1749-1750,1863-1864,1961,1998
+  s_e391d0b030bb98::t_6fe8e4671a2f44 2377-2387
+  s_e391d0b030bb98::t_60ff26a2c893e4 886-887,895-899,1517-1518,1526-1530
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2a54962b2db0ec02f32c2086a1f998657161f816",
+  "prompts": {},
+  "sessions": {
+    "s_e391d0b030bb98": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01R3usMvyMkhQ8AK4EbNp5JF",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
