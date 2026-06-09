@@ -1,0 +1,42 @@
+src/adapters/sources/memory.rs
+  s_85c131c207399e::t_be852c1202ba36 221-241
+  s_85c131c207399e::t_85ace9ff499186 155-170
+src/ports/source.rs
+  s_85c131c207399e::t_85ace9ff499186 68-76,157-158
+  s_85c131c207399e::t_096096babc1871 120-122
+xtask/src/bench/pipeline.rs
+  s_85c131c207399e::t_85ace9ff499186 501-516
+src/adapters/pipeline.rs
+  s_85c131c207399e::t_85ace9ff499186 1361,3746-3747
+src/adapters/scheduler/rayon_scheduler.rs
+  s_85c131c207399e::t_85ace9ff499186 805-809,1261,1269,1326,1328-1329,1336,1344,1534,1591-1593,1597-1609,1613,1615-1616,1676-1678,1680,1682
+  s_e9a008653372df::t_fbd2e788a2d439 1446,1815,1929
+  s_85c131c207399e::t_8f18eda048fb1e 1748-1785
+  s_85c131c207399e::t_3e5f99a58a0331 2387-2410
+  s_85c131c207399e::t_52fc11c906fd44 1361-1394,1404,1412-1413,1415-1445,1447-1458,1466,1694-1727,1737,1745-1746,1786-1814,1816-1827,1835
+  s_85c131c207399e::t_096096babc1871 714,718-721
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8875d52c5dd809f458ecb7153fe4033d2d3ec4b7",
+  "prompts": {},
+  "sessions": {
+    "s_85c131c207399e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_015LMAzSvQQF4YAB2TFPLRN1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_e9a008653372df": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01R84NJpE6bVkrnCWuqpaGZu",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
