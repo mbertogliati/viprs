@@ -1,0 +1,20 @@
+src/domain/ops/structural/zoom.rs
+  s_fdaf9719ffb5c0::t_6d31a215ad8198 206-258,363-367,378-381,383-392
+  s_fdaf9719ffb5c0::t_42c7a526614f5c 14-43,104-146,382,393-396
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d4866b4411310ae81b54adf685f5e65597e082cd",
+  "prompts": {},
+  "sessions": {
+    "s_fdaf9719ffb5c0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_016wFAHwzTGLPYEVhwgH68Wh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
