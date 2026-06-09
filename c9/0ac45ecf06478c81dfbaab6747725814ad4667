@@ -1,0 +1,31 @@
+xtask/src/perf.rs
+  s_4aade512599b52::t_d436e97654b1a8 37,46
+docs/PERFORMANCE.md
+  s_4aade512599b52::t_f573515411dcc5 97-99,105-108
+  s_4aade512599b52::t_47929daca06d49 156-157,163-165
+xtask/src/perf/simd.rs
+  s_4aade512599b52::t_d436e97654b1a8 7,12-14,19,27-34,36,38-43,46-48,52-53,58-66,69-70,72-78,81-84,86-129,132-133,198-200,202,226-231,237-409,412-448,451-463,465-517
+  s_4aade512599b52::t_f573515411dcc5 67,184-186
+  s_4aade512599b52::t_0c33662e977716 232-236
+xtask/README.md
+  s_4aade512599b52::t_f573515411dcc5 298,306
+  s_4aade512599b52::t_47929daca06d49 381
+xtask/src/perf/args.rs
+  s_4aade512599b52::t_d436e97654b1a8 73,75,77-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c90ac45ecf06478c81dfbaab6747725814ad4667",
+  "prompts": {},
+  "sessions": {
+    "s_4aade512599b52": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014GnCNR7KMrejUynVyRxQMe",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
