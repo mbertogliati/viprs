@@ -1,0 +1,36 @@
+"backlog/archive/tasks/b-406 - P-154-—-Poor-SIMD-coverage-most-ops-lack-vectorization-across-all-band-counts.md"
+  s_e2b66a01d0ec9e::t_d95416bf347386 1-59
+docs/ai/agents/performance_engineer.md
+  s_dd4af937b1f52f::t_84d7a27b7223d3 168-169,171-172,178,180-184
+docs/PERFORMANCE.md
+  s_dd4af937b1f52f::t_627bb22badff6e 186-188
+  s_dd4af937b1f52f::t_df462ef21a2f8c 133-136,147
+"backlog/archive/tasks/b-403 - P-151-—-Thread-contention-38-of-wall-time-in-lock-synchronization.md"
+  s_e2b66a01d0ec9e::t_d95416bf347386 1-50
+"backlog/archive/tasks/b-405 - P-153-—-Pipeline-copies-bytes-between-stages-implement-zero-copy-tile-handoff.md"
+  s_e2b66a01d0ec9e::t_d95416bf347386 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3f032f53aac1037a105fa29d79b5ffe7cc9892bd",
+  "prompts": {},
+  "sessions": {
+    "s_dd4af937b1f52f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f75b6f55-d407-4dea-ba50-968e9972707a",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_e2b66a01d0ec9e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f3af2e1e-a32c-4e6a-9909-4ef8d267049f",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
