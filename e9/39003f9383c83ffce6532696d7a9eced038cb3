@@ -1,0 +1,19 @@
+src/domain/ops/conversion/composite.rs
+  s_84af46ff10eb1f::t_b308cad3e59cd4 179-224,320-327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e939003f9383c83ffce6532696d7a9eced038cb3",
+  "prompts": {},
+  "sessions": {
+    "s_84af46ff10eb1f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NSiQsAmnpb1fixEFXhtGoK",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
