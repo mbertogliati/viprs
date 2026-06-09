@@ -1,0 +1,21 @@
+src/domain/ops/morphology/median.rs
+  s_f0a2d616de309d::t_7e842e72e52aab 229-232,242-244,246-253,256-261,338-340
+tools/bench-vs-libvips/libvips_runner.c
+  s_f0a2d616de309d::t_03deb45b83a6e7 56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a673c6a02e74b4579576265d76d7803593a14948",
+  "prompts": {},
+  "sessions": {
+    "s_f0a2d616de309d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014EAG3sGWmvyit8LUrpUemP",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
