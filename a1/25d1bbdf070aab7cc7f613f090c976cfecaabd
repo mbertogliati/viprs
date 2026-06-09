@@ -1,0 +1,23 @@
+docs/ai/agents/performance_developer.md
+  s_0ff14a240508bc::t_45269265acb259 185-187
+  s_0ff14a240508bc::t_785615994c9c10 181-184,188-203
+docs/PERFORMANCE.md
+  s_0ff14a240508bc::t_ecbc9a461f0396 254-260,277-366
+  s_0ff14a240508bc::t_158518c438cfd5 261-276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a125d1bbdf070aab7cc7f613f090c976cfecaabd",
+  "prompts": {},
+  "sessions": {
+    "s_0ff14a240508bc": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "27e12178-88af-42cb-a0ea-a2284847166a",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
