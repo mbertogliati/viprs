@@ -1,0 +1,19 @@
+src/adapters/pipeline.rs
+  s_e2b66a01d0ec9e::t_007ed5be1e7f5d 1372,3758-3759
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "55e806b83103cc53fdc0c790e77cb56dc2847588",
+  "prompts": {},
+  "sessions": {
+    "s_e2b66a01d0ec9e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f3af2e1e-a32c-4e6a-9909-4ef8d267049f",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
