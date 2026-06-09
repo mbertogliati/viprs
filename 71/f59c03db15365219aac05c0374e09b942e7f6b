@@ -1,0 +1,19 @@
+"backlog/tasks/b-273 - P-061-—-Resize-0.5-residual-no-E2E-gap-after-NEON-fast-paths.md"
+  s_d11058ace15d0b::t_00daf49dc2a619 4,7,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "71f59c03db15365219aac05c0374e09b942e7f6b",
+  "prompts": {},
+  "sessions": {
+    "s_d11058ace15d0b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0133osJL5NzfPwXb4FaGYh2g",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
