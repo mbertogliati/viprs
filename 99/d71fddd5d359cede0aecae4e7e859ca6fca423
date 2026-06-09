@@ -1,0 +1,33 @@
+"backlog/archive/tasks/b-410 - OpenEXR-page-selection-still-decodes-every-layer-before-slicing.md"
+  s_d5964146a5b2db::t_04eed11831a265 1-83
+src/adapters/codecs/exr.rs
+  s_d5964146a5b2db::t_f27ab47d1ff8a4 101,103,126-127
+  s_d5964146a5b2db::t_87d65248966a8b 432,434
+  s_d5964146a5b2db::t_a4bcff525f0def 1448-1458,1464-1466
+  s_d5964146a5b2db::t_0dcf077b3b5ec5 124-125
+  s_d5964146a5b2db::t_d34663227db2f1 13-16,18-20,22-24,28,30-33
+  s_d5964146a5b2db::t_10631fdb231d22 920-922,926,928,930,1493-1494
+  s_d5964146a5b2db::t_669d5e93cb9480 113-114,122
+  s_d5964146a5b2db::t_a0e7dc89d6e101 1459-1463,1467,1482-1486
+  s_d5964146a5b2db::t_5b9f326da17094 550-551,553-554,556-558,565-571,573-574
+  s_d5964146a5b2db::t_fc3a515504e82e 1491-1492
+  s_d5964146a5b2db::t_ede17547641eb6 108-109,116-119,121
+  s_d5964146a5b2db::t_74972a436d71d9 360-403,405-426,430-431,433,435-515
+  s_d5964146a5b2db::t_e2da0d66353168 104,110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "99d71fddd5d359cede0aecae4e7e859ca6fca423",
+  "prompts": {},
+  "sessions": {
+    "s_d5964146a5b2db": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GfHtW6XrZkgxrEJuUShW8f",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
