@@ -1,0 +1,20 @@
+benches/mosaicing/merge_family.rs
+  s_2844d537a784d7::t_d7df79f188c37f 7,9,129
+  s_2844d537a784d7::t_d04219c3d3d7f0 1-6,8,10-53,56-59,62-98,101-104,107-128,130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "73ec6595a780a9c00f82af6a1a1785a46d5c75c5",
+  "prompts": {},
+  "sessions": {
+    "s_2844d537a784d7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NvadGURyDwrqXGfv8bCwMr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
