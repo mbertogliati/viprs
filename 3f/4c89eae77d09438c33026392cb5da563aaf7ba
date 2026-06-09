@@ -1,0 +1,23 @@
+src/domain/ops/morphology/median.rs
+  s_7976ce751bc381::t_6396b1d6dc1cb3 411-431
+  s_7976ce751bc381::t_0ac291098993ac 392-393
+  s_7976ce751bc381::t_206cac5a70be1d 578-586,622-632
+  s_7976ce751bc381::t_c5d5c139853e92 491,495,499-502,507-516,520,527,531,536-543,545-547,555-562,633-647
+  s_7976ce751bc381::t_3b749f2ec35021 9,14-30,47,73,90-110,134-165,320-391,394-410,432-479
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3f4c89eae77d09438c33026392cb5da563aaf7ba",
+  "prompts": {},
+  "sessions": {
+    "s_7976ce751bc381": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019gSbVyFoFUmqYTwJnFAQvW",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
