@@ -1,0 +1,19 @@
+tools/bench-vs-libvips/libvips_runner.c
+  s_f37bbd3b46d86d::t_418e3b14676368 56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "884a957f5e319f821e987bb056dcb3ca30a58922",
+  "prompts": {},
+  "sessions": {
+    "s_f37bbd3b46d86d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Jx44xVkxZw7jUMjum4G4Gx",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
