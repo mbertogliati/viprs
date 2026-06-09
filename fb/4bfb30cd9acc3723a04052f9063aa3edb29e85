@@ -1,0 +1,23 @@
+tools/bench-vs-libvips/libvips_runner.c
+  s_aebecf3a632038::t_e1dea7e40ab7c6 56
+src/domain/ops/arithmetic/linear.rs
+  s_aebecf3a632038::t_cd9174e78e36d4 30-35,64-83,179-183,292-307,320-331,381-395,399-402,404,412-420,435-457,459-461,463-465,467-469,471-479
+  s_aebecf3a632038::t_9b306cfbb82650 397-398,403,405-411,421-434
+  s_aebecf3a632038::t_70ea5694658ee2 741-747,750-751,848-867,898-911
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fb4bfb30cd9acc3723a04052f9063aa3edb29e85",
+  "prompts": {},
+  "sessions": {
+    "s_aebecf3a632038": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DgDuRC1Tj4vzJUxGEmz5fj",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
