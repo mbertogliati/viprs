@@ -1,0 +1,24 @@
+src/domain/ops/resample/shrinkv.rs
+  s_dd4af937b1f52f::t_9a0f7699013492 180
+  s_dd4af937b1f52f::t_aaaa079bac8b53 256-294,297-304,306-310,316-317,337-346,353-354,360-361,366-369
+  s_dd4af937b1f52f::t_0ab318d56bbe54 9-10
+  s_dd4af937b1f52f::t_45a7b5fa106d7c 175-179,182,184-186
+  s_dd4af937b1f52f::t_3dd800d214c7f0 305,313-315,319
+  s_dd4af937b1f52f::t_d88a9fffa9f7e7 295-296,311-312,318,320-336,347-352,355-359,362-365
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "317f0d2581b1defaf881093645015733abdb85f2",
+  "prompts": {},
+  "sessions": {
+    "s_dd4af937b1f52f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f75b6f55-d407-4dea-ba50-968e9972707a",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
