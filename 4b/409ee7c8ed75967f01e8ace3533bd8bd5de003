@@ -1,0 +1,21 @@
+"backlog/tasks/b-402 - P-150-—-Investigate-median_blur-5x5-throughput-gap-vs-libvips.md"
+  s_193081131ababf::t_ca9df16eb3cb36 19
+"backlog/archive/tasks/b-335 - P-083-—-Investigate-median_blur-3x3-throughput-gap-vs-libvips.md"
+  s_193081131ababf::t_ca9df16eb3cb36 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4b409ee7c8ed75967f01e8ace3533bd8bd5de003",
+  "prompts": {},
+  "sessions": {
+    "s_193081131ababf": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XJJH8ULy7aAWuuAAmS9bsb",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
