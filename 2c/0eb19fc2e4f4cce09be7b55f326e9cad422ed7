@@ -1,0 +1,31 @@
+src/adapters/sources/generators/zone.rs
+  s_e2b66a01d0ec9e::t_2433260d024a8e 190-193
+src/adapters/sources/generators/sines.rs
+  s_e2b66a01d0ec9e::t_2433260d024a8e 226-229
+src/adapters/sources/generators/eye.rs
+  s_e2b66a01d0ec9e::t_2433260d024a8e 198-201
+"backlog/tasks/b-406 - P-155-—-Thumbnail-8192-source-read-path-regressed-to-114ms-p50-with-memmove-read_region-dominance.md"
+  s_e2b66a01d0ec9e::t_2433260d024a8e 4,43-101
+xtask/src/bench/pipeline.rs
+  s_e2b66a01d0ec9e::t_2433260d024a8e 452-468,1255-1277
+src/adapters/sources/generators/identity.rs
+  s_e2b66a01d0ec9e::t_2433260d024a8e 238-241
+src/adapters/sources/generators/grey.rs
+  s_e2b66a01d0ec9e::t_2433260d024a8e 202-205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2c0eb19fc2e4f4cce09be7b55f326e9cad422ed7",
+  "prompts": {},
+  "sessions": {
+    "s_e2b66a01d0ec9e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f3af2e1e-a32c-4e6a-9909-4ef8d267049f",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
