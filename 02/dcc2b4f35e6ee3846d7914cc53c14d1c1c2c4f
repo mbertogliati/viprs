@@ -1,0 +1,21 @@
+"backlog/tasks/b-555 - BUG-OpenSlide-metadata-divides-by-zero-for-zero-MPP.md"
+  s_d969698f553674::t_0f2104040a958e 1-37
+"backlog/tasks/b-554 - BUG-WebP-strip-region-decode-drops-alpha-channel.md"
+  s_d969698f553674::t_0f2104040a958e 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "02dcc2b4f35e6ee3846d7914cc53c14d1c1c2c4f",
+  "prompts": {},
+  "sessions": {
+    "s_d969698f553674": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01X53muuVugigrAQJ9q3XQjU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
