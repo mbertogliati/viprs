@@ -1,0 +1,21 @@
+"backlog/tasks/b-445 - PNG-8k-thumbnail-box-shrink-loop-SIMD-factor16-follow-up.md"
+  s_cd7c0938a6f24c::t_e6dae27cf63878 47-53
+"backlog/tasks/b-446 - FRICTION-B-445-task-metadata-mismatches-repo-state.md"
+  s_cd7c0938a6f24c::t_e6dae27cf63878 24-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "de253fd0de61516bb6861abf1ae5668106f2871c",
+  "prompts": {},
+  "sessions": {
+    "s_cd7c0938a6f24c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XCeq55FiXAcFu2w8q2oqV1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
