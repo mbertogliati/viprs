@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-439 - P-172-—-EXR-load-remains-24.55x–150.27x-slower-and-scaling-is-unstable.md"
+  s_eac7e9b2ed49a1::t_0c8d04897d49d7 4,58,60,96-105,113-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b464dc1a05dcc1f7be38f3fe31dbd17020cbf397",
+  "prompts": {},
+  "sessions": {
+    "s_eac7e9b2ed49a1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UQxVnm2DzESDAL5KZxDC7E",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
