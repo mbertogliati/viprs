@@ -1,0 +1,23 @@
+"backlog/tasks/b-494 - BUG-MemorySource-clamp-path-panics-on-zero-sized-sources.md"
+  s_c7601eaf7069de::t_4335f31b6e807a 4,7
+"backlog/tasks/b-492 - BUG-Subsample-accepts-zero-factors-and-panics.md"
+  s_c7601eaf7069de::t_4335f31b6e807a 4,7
+"backlog/tasks/b-493 - BUG-zero-band-multi-byte-pipelines-panic-in-ThreadBufferPool.md"
+  s_c7601eaf7069de::t_4335f31b6e807a 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "56f52db950d1def4ef70ad8c7faffd28ebf84be7",
+  "prompts": {},
+  "sessions": {
+    "s_c7601eaf7069de": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01HXjTVBvtncBwGpN1y3dCv1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
