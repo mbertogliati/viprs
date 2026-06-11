@@ -1,0 +1,37 @@
+"backlog/tasks/b-508 - B-508-—-HistPlot-lacks-benchmark-baseline.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-43
+"backlog/tasks/b-509 - B-506-—-BUG-shrink_h-accepts-factor0-and-panics.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-43
+"backlog/tasks/b-512 - B-508-—-BUG-ShrinkH-region-math-overflows-on-huge-factors.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-37
+"backlog/tasks/b-511 - B-506-—-Colour-micro-ops-still-violate-the-90-coverage-floor-and-test-contract.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-21
+"backlog/tasks/b-506 - Colour-micro-ops-still-violate-the-90-coverage-floor-and-test-contract.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-33
+"backlog/tasks/b-514 - B-508-—-JPEG-structural-validation-is-still-asymmetric-between-decode-and-probe.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-21
+"backlog/tasks/b-506 - B-506-—-Remaining-auto-mosaic-pipelines-lack-benchmark-baselines.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-43
+"backlog/tasks/b-510 - B-507-—-BUG-ShrinkV-region-math-overflows-on-huge-factors.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-37
+"backlog/tasks/b-513 - B-507-—-MAT-codec-coverage-has-regressed-below-the-repository-floor-again.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-19
+docs/PERFORMANCE.md
+  s_4dff66c8eec576::t_23d6c942000941 731,743-746
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "93c0769ef5c16b9ea157141d253ceb458fe70dc5",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
