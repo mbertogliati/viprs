@@ -1,0 +1,25 @@
+src/domain/ops/conversion/embed.rs
+  s_553c464e1a7f07::t_24817cb351c476 819-830,844-854
+src/domain/ops/colour/float_to_radiance.rs
+  s_553c464e1a7f07::t_423b7d3c6b16fe 132-145
+src/domain/ops/arithmetic/math2.rs
+  s_553c464e1a7f07::t_c9b85eb08cbebf 213-219
+src/domain/ops/arithmetic/reduce_facades.rs
+  s_553c464e1a7f07::t_09ee4e7faafbc0 609-616,738-744
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0d30add182c982ccc4f90f0dbd1dcabd50756d68",
+  "prompts": {},
+  "sessions": {
+    "s_553c464e1a7f07": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RRNagLBmvNBBxMNEhyLvAH",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
