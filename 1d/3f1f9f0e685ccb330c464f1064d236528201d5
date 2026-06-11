@@ -1,0 +1,19 @@
+"backlog/tasks/b-517 - FRICTION-chaos_monkey-workflow-references-missing-pipeline-test-path.md"
+  s_db8c81fe5e40ed::t_27ffcd9dfc9a8e 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1d3f1f9f0e685ccb330c464f1064d236528201d5",
+  "prompts": {},
+  "sessions": {
+    "s_db8c81fe5e40ed": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NP9j2HN54pFgZGEV8Wy9bt",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
