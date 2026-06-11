@@ -1,0 +1,21 @@
+docs/PERFORMANCE.md
+  s_5f6cefe790d692::t_39182ea4beb932 850-875
+"backlog/tasks/b-556 - P-—-perceptual_enhance-cyberpunk-4K-e2e-still-1.83×-slower-than-libvips-at-checkpoint-15.md"
+  s_5f6cefe790d692::t_9d057c2901f86a 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6b0cc1b8458d54efe4a5c8e47cffa6e94a8a719d",
+  "prompts": {},
+  "sessions": {
+    "s_5f6cefe790d692": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JF9tKZHPrBhUPA4ikpf16F",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
