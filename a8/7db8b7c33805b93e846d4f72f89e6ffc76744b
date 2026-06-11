@@ -1,0 +1,19 @@
+"backlog/tasks/b-405 - P-154-—-Thumbnail-8192-kernel-only-path-still-spends-67-percent-self-time-in-thread-waits-after-NEON.md"
+  s_d39dd04a64471e::t_d7de10e5a2e455 6,42-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a87db8b7c33805b93e846d4f72f89e6ffc76744b",
+  "prompts": {},
+  "sessions": {
+    "s_d39dd04a64471e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01MsXzVgzzGyQUYNLQNGRrZR",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
