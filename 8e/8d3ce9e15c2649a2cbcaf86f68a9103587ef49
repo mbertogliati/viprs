@@ -1,0 +1,54 @@
+src/domain/ops/resample/shrinkh.rs
+  s_1341ca691c9e4a::t_ef672286d2b154 1234-1236,1238-1281
+src/domain/ops/resample/affine.rs
+  s_1341ca691c9e4a::t_11b0fd94f816b7 2207-2237,2242-2261
+  s_1341ca691c9e4a::t_7dcf352258395a 2075-2206
+  s_1341ca691c9e4a::t_ab66fde60a51e6 2238-2241
+src/domain/ops/structural/rotate180.rs
+  s_1341ca691c9e4a::t_ef672286d2b154 115-124,126-134
+src/domain/ops/mosaicing/remosaic.rs
+  s_1341ca691c9e4a::t_ef672286d2b154 121-132
+src/domain/ops/mosaicing/global_balance.rs
+  s_1341ca691c9e4a::t_f5d566bf2d1f54 542
+  s_1341ca691c9e4a::t_ef672286d2b154 498-541,543-570
+src/domain/ops/mosaicing/lrmerge.rs
+  s_1341ca691c9e4a::t_f5d566bf2d1f54 179,198,200-203
+  s_1341ca691c9e4a::t_ef672286d2b154 177-178,180-189,192-197,199,204-213
+  s_1341ca691c9e4a::t_3bec5fa0f1ce47 190-191
+src/domain/ops/resample/shrink.rs
+  s_1341ca691c9e4a::t_ef672286d2b154 486-490,492-497,499-526
+  s_1341ca691c9e4a::t_f5d566bf2d1f54 498
+src/domain/ops/resample/quadratic.rs
+  s_1341ca691c9e4a::t_ef672286d2b154 593-597,599-634,639-664
+  s_1341ca691c9e4a::t_f5d566bf2d1f54 635-638
+src/domain/ops/structural/embed.rs
+  s_1341ca691c9e4a::t_f5d566bf2d1f54 423,425-426,432,436,442
+  s_1341ca691c9e4a::t_ef672286d2b154 398-422,424,427-431,433-435,437-441,443-444
+src/domain/ops/resample/mapim.rs
+  s_1341ca691c9e4a::t_11b0fd94f816b7 1226-1263,1265-1328
+  s_1341ca691c9e4a::t_ab66fde60a51e6 1264
+  s_1341ca691c9e4a::t_a64c126c08a56b 1329-1355
+  s_1341ca691c9e4a::t_7dcf352258395a 1111,1114-1116,1119-1190,1193-1225
+  s_1341ca691c9e4a::t_24502e15d4b981 1113,1117-1118,1191-1192
+  s_1341ca691c9e4a::t_aa1baddf3651df 1112
+src/domain/ops/mosaicing/tbmerge.rs
+  s_1341ca691c9e4a::t_ef672286d2b154 177-178,180-189,192-197,199,204-213
+  s_1341ca691c9e4a::t_f5d566bf2d1f54 179,198,200-203
+  s_1341ca691c9e4a::t_3bec5fa0f1ce47 190-191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8e8d3ce9e15c2649a2cbcaf86f68a9103587ef49",
+  "prompts": {},
+  "sessions": {
+    "s_1341ca691c9e4a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Db3DQZa8wEJnRVV4FGuEpQ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
