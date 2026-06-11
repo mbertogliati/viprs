@@ -1,0 +1,27 @@
+examples/dhat_profile.rs
+  s_cb5174c7eed290::t_c7e7d2a446c93a 135,139
+  s_cb5174c7eed290::t_f9b01a909637dd 38-39,55-65,73,78-80,84-86,91-93,99-101,108,116-118,120-121,123-125,128-131,134,138,182,186-187,190,192,194-195,197-199,202-205,208,214-216,240,246-253
+.github/workflows/lint-no-unwrap.yml
+  s_cb5174c7eed290::t_f9b01a909637dd 23-30
+AGENTS.md
+  s_cb5174c7eed290::t_f9b01a909637dd 84-86
+  s_cb5174c7eed290::t_8657e935f1a4d1 82-83
+Cargo.toml
+  s_cb5174c7eed290::t_a0b81f8b16c3c6 19-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "be72cbcad9b7b93144db38bc90d6852977149352",
+  "prompts": {},
+  "sessions": {
+    "s_cb5174c7eed290": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XWsBFc5FBz4bdLQFegTxrZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
