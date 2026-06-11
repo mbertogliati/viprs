@@ -1,0 +1,27 @@
+"backlog/tasks/b-473 - Arithmetic-coverage-still-remains-below-90-after-B-458.md"
+  s_4dff66c8eec576::t_4cc9c69decc5f8 4,7
+"backlog/tasks/b-474 - Colour-conversion-coverage-still-remains-below-90-after-B-459.md"
+  s_4dff66c8eec576::t_4cc9c69decc5f8 4,7
+"backlog/tasks/b-475 - Conversion-coverage-still-remains-below-90-after-B-461.md"
+  s_4dff66c8eec576::t_4cc9c69decc5f8 4,7
+"backlog/tasks/b-477 - Conv-and-median-SIMD-helpers-again-lack-local-SAFETY-explanations.md"
+  s_4dff66c8eec576::t_4cc9c69decc5f8 4,7
+"backlog/tasks/b-476 - ConvOp-line-coverage-is-still-below-the-90-gate.md"
+  s_4dff66c8eec576::t_4cc9c69decc5f8 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "14e731f087b3309be790ce60661e6e480e57a8fb",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
