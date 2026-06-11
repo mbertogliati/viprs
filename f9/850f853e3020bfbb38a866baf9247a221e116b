@@ -1,0 +1,29 @@
+src/domain/ops/histogram/hist_plot.rs
+  s_49587d68cc77d2::t_fb3b4a66003bf7 18,59-60,124,221-226
+  s_49587d68cc77d2::t_e3b4a21838afb2 399-400,402-419
+  s_4dff66c8eec576::t_c044cb41762429 401
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f9850f853e3020bfbb38a866baf9247a221e116b",
+  "prompts": {},
+  "sessions": {
+    "s_49587d68cc77d2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PS76SvE9uC377rPSEMUhsj",
+        "model": "unknown"
+      },
+      "human_author": null
+    },
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
