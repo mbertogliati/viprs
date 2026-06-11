@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-334 - P-083-—-Reduce-8192-RSS-for-thumbnail-multi-op-chains-after-ThinStrip-retile.md"
+  s_4e5ae9f7a7e534::t_9607d0c5eb4469 1-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "229b9c09b7088e9d04e2759b4cd3a8973cc664a4",
+  "prompts": {},
+  "sessions": {
+    "s_4e5ae9f7a7e534": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QqbuU5iVpo3ZCh6PzaKjBD",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
