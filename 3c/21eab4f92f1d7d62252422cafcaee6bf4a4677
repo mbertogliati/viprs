@@ -1,0 +1,23 @@
+docs/PERFORMANCE.md
+  s_cd77338129d715::t_12494c101a345e 735
+  s_cd77338129d715::t_00ab00f92e8e52 579-581,595-600,603-614,633-635
+src/domain/ops/resample/shrinkh.rs
+  s_cd77338129d715::t_bba848264053fc 22-23,25
+  s_cd77338129d715::t_7a4b1b15c420b4 315-320
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3c21eab4f92f1d7d62252422cafcaee6bf4a4677",
+  "prompts": {},
+  "sessions": {
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
