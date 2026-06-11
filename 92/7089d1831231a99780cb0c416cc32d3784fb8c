@@ -1,0 +1,29 @@
+src/adapters/codecs/deepzoom.rs
+  s_c9e6f273982ec2::t_0fc3109100e29c 94-102,108-121,158-159,165-184,189,194,222-223,225-232,234-235,237-275,278-281,336,357-360,369-382,387-390,397-400,403-420,423-424,430,432-437,445,556-569,571-572,574,576,579,582-598,603,607-608,612-613,616-666,687-939,941-963,1014-1067
+"backlog/archive/tasks/b-435 - DeepZoom-export-builds-the-full-tile-pyramid-eagerly-instead-of-streaming.md"
+  s_83010653f26e76::t_ba75917e6f7eca 1-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "927089d1831231a99780cb0c416cc32d3784fb8c",
+  "prompts": {},
+  "sessions": {
+    "s_83010653f26e76": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Wa5fyo5zU6RhiZFFxuQDrw",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
