@@ -1,0 +1,21 @@
+docs/PERFORMANCE.md
+  s_5bf47625cb53b0::t_66ad02e8f7fd1b 824-849
+"backlog/tasks/b-548 - P-—-perceptual_enhance-cyberpunk-4K-e2e-gap-regressed-to-1.76×-vs-libvips.md"
+  s_5bf47625cb53b0::t_c39c64a28651ab 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f50ec69c4f4d1fd7941ff442b2e5b164375f0d95",
+  "prompts": {},
+  "sessions": {
+    "s_5bf47625cb53b0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018LhaTa3JMwtiU96EVgRbTX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
