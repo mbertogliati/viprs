@@ -1,0 +1,38 @@
+"backlog/tasks/b-518 - Shrink-direct-constructors-still-permit-factor0-panic-paths.md"
+  s_260fbb4f0ed023::t_5a1cc446532437 4,7
+  s_bb0b29cbeb17f1::t_47a94a9280e314 1-3,5-6,8-34
+docs/PERFORMANCE.md
+  s_ec66a22be69c11::t_e2c9291fd06758 635,728,733,736,740-744,746-749
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "cb7e998c4174d06fdc2d5cbeb504c749877339b5",
+  "prompts": {},
+  "sessions": {
+    "s_260fbb4f0ed023": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KegKU5czX22zwvtHeq27nU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_bb0b29cbeb17f1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SsaweHjcAkdr1dZpXNAkfh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_ec66a22be69c11": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NEqcMTN27ev4epqAgtybbM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
