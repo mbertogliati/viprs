@@ -1,0 +1,77 @@
+"backlog/tasks/b-446 - HEIF-AVIF-decode-keeps-EXIF-orientation-metadata-instead-of-libvips-style-normalization.md"
+  s_ad5060d47a6951::t_e62c5c1b70c560 6,9
+"backlog/tasks/b-449 - No-automated-repository-guard-enforces-the-unwrap-expect-ban-outside-tests.md"
+  s_f87dc0164d840d::t_0e5c51b8b50f53 4,7
+"backlog/tasks/b-447 - HEIF-U8-decode-materializes-a-full-U16-image-before-producing-8-bit-output.md"
+  s_f48b029e4eeb02::t_b75404fc05ec06 4,7
+"backlog/tasks/b-451 - P-177-—-Arithmetic-input-diversity-matrix-omits-add-multiply.md"
+  s_c35095fcbd08ab::t_6b99dbe750cb4d 1-49
+src/adapters/codecs/png.rs
+  s_cd77338129d715::t_1112ad75e20d83 1574-1578
+  s_cd77338129d715::t_26fef71b208532 1579-1580
+  s_cd77338129d715::t_14edaadda559be 27
+"backlog/archive/tasks/b-445 - PNG-8k-thumbnail-box-shrink-loop-SIMD-factor16-follow-up.md"
+  s_bbd18ec8ada683::t_0c735d12490e65 4,41-67
+"backlog/tasks/b-448 - Vector-decoder-option-tests-only-validate-dimensions-not-rendered-pixels.md"
+  s_c35095fcbd08ab::t_633df74f3c5aab 4,7
+"backlog/tasks/b-450 - P-176-—-Zoom-head-to-head-baseline-lacks-mandatory-8192-scenario.md"
+  s_f87dc0164d840d::t_9c7e705672a0b6 1-51
+docs/PERFORMANCE.md
+  s_cd77338129d715::t_f6ce6e09cb44ab 453-456
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4fe0ad15d0e88e70fbbc2587b4979530f349a58a",
+  "prompts": {},
+  "sessions": {
+    "s_ad5060d47a6951": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01E96XwgsEWdmvQb6YnPzf5E",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_bbd18ec8ada683": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UbuLfXRGyDhqf656uFEVhS",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c35095fcbd08ab": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VbMGouLFvfQ3PDGmebHMWU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_f48b029e4eeb02": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Rkz1ftLB7ysnneZWDUYB1M",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_f87dc0164d840d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019fK45nzNZaLEUGSDsoCsuC",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
