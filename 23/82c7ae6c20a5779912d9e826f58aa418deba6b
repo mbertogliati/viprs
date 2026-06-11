@@ -1,0 +1,33 @@
+"backlog/tasks/b-528 - BUG-ReduceOp-required_input_region-wraps-max-coordinates.md"
+  s_bb478fdc691739::t_b5d0cfcf15f939 4,7
+"backlog/tasks/b-527 - BUG-DE00-pipeline-accepts-3-band-input-and-emits-zero-output.md"
+  s_bb478fdc691739::t_b5d0cfcf15f939 4,7
+"backlog/tasks/b-529 - BUG-auto_mosaic-benchmarks-panic-on-1x1-edge-size-inputs.md"
+  s_bb478fdc691739::t_b5d0cfcf15f939 4,7
+bench_names.txt
+  s_b477efa8b9ca07::t_9be422210467ca 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2382c7ae6c20a5779912d9e826f58aa418deba6b",
+  "prompts": {},
+  "sessions": {
+    "s_b477efa8b9ca07": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011mcNVQfVVXXJeGUf82KaeB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_bb478fdc691739": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TFX4wWejcjKVjCMUNbkgoY",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
