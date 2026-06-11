@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-439 - P-172-—-EXR-load-remains-24.55x–150.27x-slower-and-scaling-is-unstable.md"
+  s_c9e6f273982ec2::t_e42179f34278b8 1-109
+"backlog/tasks/b-444 - EXR-decode-still-full-materializes-and-repacks-channels.md"
+  s_c9e6f273982ec2::t_e42179f34278b8 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "bc4b5f6c4c989a35d3498bf5cc27aca756ecffb3",
+  "prompts": {},
+  "sessions": {
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
