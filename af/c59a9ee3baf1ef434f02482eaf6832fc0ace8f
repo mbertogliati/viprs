@@ -1,0 +1,21 @@
+"backlog/tasks/b-515 - ShrinkH-thumbnail-200-factor39-still-slower-than-libvips.md"
+  s_4dff66c8eec576::t_cee408fabd07e0 2-3
+"backlog/tasks/b-516 - P-191-—-JPEG-load-needs-sequential-scanline-source.md"
+  s_4dff66c8eec576::t_2339dad4fcfb95 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "afc59a9ee3baf1ef434f02482eaf6832fc0ace8f",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
