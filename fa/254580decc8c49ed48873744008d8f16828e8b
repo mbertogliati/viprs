@@ -1,0 +1,31 @@
+"backlog/tasks/b-436 - DeepZoom-save-rejects-non-U8-images-instead-of-libvips-style-uchar-export.md"
+  s_276186af6831b6::t_419ebd3be97e5d 1-18
+"backlog/tasks/b-435 - DeepZoom-export-builds-the-full-tile-pyramid-eagerly-instead-of-streaming.md"
+  s_276186af6831b6::t_419ebd3be97e5d 2-4,6,11,17
+"backlog/tasks/b-434 - P-PNG-THUMBNAIL-—-PNG-thumbnail-8k-11x-slower-streaming-TileImageDecoder-causes-ON²-re-decompress-per-tile.md"
+  s_cd77338129d715::t_46296a594e62e8 2,4-6,8,13,19-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fa254580decc8c49ed48873744008d8f16828e8b",
+  "prompts": {},
+  "sessions": {
+    "s_276186af6831b6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012cj83XAzi9A5KiaexfHn4T",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
