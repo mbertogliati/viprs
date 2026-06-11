@@ -1,0 +1,26 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_73f3c043ce24f3::t_c90b0b8ec7e1f0 1860,1877-1878,1903-1904,1906,1910
+  s_73f3c043ce24f3::t_692b456a951b49 1955-1957
+  s_73f3c043ce24f3::t_ef0d24b4a6ae22 1284,1306-1326
+src/domain/ops/conversion/subsample.rs
+  s_73f3c043ce24f3::t_a67ac2f0b8e331 486-531
+src/domain/op.rs
+  s_73f3c043ce24f3::t_b491d44ec86679 104,107-109,112-115
+  s_73f3c043ce24f3::t_266ef588325576 459,461-465
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "38be4fdc2e653855572adca6cd56e1fd6b03da35",
+  "prompts": {},
+  "sessions": {
+    "s_73f3c043ce24f3": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01B7bLJXLVs5NdyvqC3wHgfF",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
