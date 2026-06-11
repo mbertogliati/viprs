@@ -1,0 +1,19 @@
+"backlog/tasks/b-443 - P-172-—-JPEG-load-still-13.74x-slower-at-8192-after-decode-buffer-mmap-fix.md"
+  s_8a2b688329089d::t_e461983e074eb7 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c0b0ca18ffc60d22cafe2bd0d4bb1c0b545b6e24",
+  "prompts": {},
+  "sessions": {
+    "s_8a2b688329089d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NUvnQRkKiF33bpBRCEtSj9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
