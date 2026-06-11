@@ -1,0 +1,23 @@
+src/domain/error.rs
+  s_c9e6f273982ec2::t_971f5043717e2b 78-86
+src/adapters/codecs/exr.rs
+  s_c9e6f273982ec2::t_971f5043717e2b 14-15,33,35,58-59,64-111,113-118,533-535,538-554,1064-1100,1622-1645
+"backlog/archive/tasks/b-425 - OpenEXR-decode-should-return-typed-errors-instead-of-panicking-on-invalid-layer-indices.md"
+  s_c9e6f273982ec2::t_971f5043717e2b 1-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c9b7f2cd8487c7d7ad50fbb90c814cc5a4fb6b02",
+  "prompts": {},
+  "sessions": {
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
