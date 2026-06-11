@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-491 - perfshrinkh-eliminate-12.6-MB-tile-copy-—-full-row-borrow_region-ShrinkH-optimization.md"
+  s_cd77338129d715::t_48574f44cf675a 6,9,68-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "822ca93cfcde8e25c580b437ac2582f438ebf567",
+  "prompts": {},
+  "sessions": {
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
