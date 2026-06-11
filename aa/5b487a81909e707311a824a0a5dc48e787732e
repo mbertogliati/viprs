@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-444 - EXR-decode-still-full-materializes-and-repacks-channels.md"
+  s_15e121ce8587f1::t_4e734fae7e06e2 61-72,85-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "aa5b487a81909e707311a824a0a5dc48e787732e",
+  "prompts": {},
+  "sessions": {
+    "s_15e121ce8587f1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VKcqxjZXXcUCTpSkmAJoef",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
