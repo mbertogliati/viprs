@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-440 - P-173-—-Morphology-open-close-3×3-are-still-37x–53x-slower-than-libvips.md"
+  s_83010653f26e76::t_27106b51cd1e28 1-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2956a958360958c60d6a2a077da8de41d7ea9013",
+  "prompts": {},
+  "sessions": {
+    "s_83010653f26e76": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Wa5fyo5zU6RhiZFFxuQDrw",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
