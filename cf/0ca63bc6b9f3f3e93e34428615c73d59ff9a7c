@@ -1,0 +1,19 @@
+docs/ai/agents/performance_developer.md
+  s_3ed3fa5ceacd91::t_edd3ee2ab1f212 303-310
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "cf0ca63bc6b9f3f3e93e34428615c73d59ff9a7c",
+  "prompts": {},
+  "sessions": {
+    "s_3ed3fa5ceacd91": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "094f2a27-0d77-4997-857b-7ab89dab46f3",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
