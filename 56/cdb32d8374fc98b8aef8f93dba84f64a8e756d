@@ -1,0 +1,21 @@
+Cargo.toml
+  s_40cdb34f62dae0::t_913debc604a1c3 1175
+"backlog/tasks/b-447 - FRICTION-unpremultiply-bench-lacks-criterion-harness-for-merge-validation.md"
+  s_40cdb34f62dae0::t_913debc604a1c3 4,7,38-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "56cdb32d8374fc98b8aef8f93dba84f64a8e756d",
+  "prompts": {},
+  "sessions": {
+    "s_40cdb34f62dae0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Nzpg2r4jVDPNs6LWCTmt8d",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
