@@ -1,0 +1,19 @@
+"backlog/tasks/b-535 - BUG-hist_plot-vertical-zero-histograms-render-a-white-bar.md"
+  s_49587d68cc77d2::t_07706d2732834f 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b7f6934f67c18f52098bb5054b48542c483b7164",
+  "prompts": {},
+  "sessions": {
+    "s_49587d68cc77d2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PS76SvE9uC377rPSEMUhsj",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
