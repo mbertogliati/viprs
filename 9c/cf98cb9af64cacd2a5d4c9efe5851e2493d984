@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-436 - DeepZoom-save-rejects-non-U8-images-instead-of-libvips-style-uchar-export.md"
+  s_16ceee30ed3e6a::t_cf5459ff2a120e 1-19
+"backlog/archive/tasks/b-404 - P-152-—-LLVM-unfriendly-pixel-path-code-systematic-audit-and-fix.md"
+  s_16ceee30ed3e6a::t_cf5459ff2a120e 1-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9ccf98cb9af64cacd2a5d4c9efe5851e2493d984",
+  "prompts": {},
+  "sessions": {
+    "s_16ceee30ed3e6a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DofZKT9RVMd9rQMpgyMS66",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
