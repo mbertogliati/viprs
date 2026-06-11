@@ -1,0 +1,29 @@
+xtask/src/bench/runner.rs
+  s_c9e6f273982ec2::t_d98a33262d15a4 1569-1571,1573
+"backlog/archive/tasks/b-437 - P-170-—-Benchmark-lie-kernel-only-comparisons-still-warm-libvips-op-cache-across-iterations.md"
+  s_2cef9bf1a0a010::t_df19b920d8f56c 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "948f4e96dca8994d2f82695dd0e44e254050d1dc",
+  "prompts": {},
+  "sessions": {
+    "s_2cef9bf1a0a010": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011VoyqCCcbqVGZJeT1XMWju",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
