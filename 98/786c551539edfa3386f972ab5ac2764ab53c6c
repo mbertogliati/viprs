@@ -1,0 +1,23 @@
+src/domain/ops/resample/shrinkh.rs
+  s_d1e1bbfbc957b7::t_db5b39d5fe4fbb 216-231,233-234,236,318,320-321,323-336,354-355,357-358,360-371,373
+src/domain/ops/structural/premultiply.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 162-166,168-170,172-173,176-177,212
+src/domain/ops/structural/unpremultiply.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 70,146,149-159,161-163,166,169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "98786c551539edfa3386f972ab5ac2764ab53c6c",
+  "prompts": {},
+  "sessions": {
+    "s_d1e1bbfbc957b7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Y7bNspz5iabDWC4FqTBMVV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
