@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-332 - P-081-—-Multi-op-thumbnail-chains-regress-badly-without-cache.md"
+  s_2756396137ce04::t_5037b6d10025e8 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5b2d6bc816b096076d71fa50f80dc35d50f8b030",
+  "prompts": {},
+  "sessions": {
+    "s_2756396137ce04": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0177S8MD9VeLPKegou4LbYGV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
