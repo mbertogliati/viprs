@@ -1,0 +1,29 @@
+"backlog/tasks/b-444 - BUG-PNG-box-shrink-corrupts-grayscalealpha-images.md"
+  s_d6cfe7d86e6e06::t_075896dcf5f25a 1-43
+"backlog/tasks/b-445 - REVIEW-unwrap-guard-misses-example-binaries-and-can-be-lint-suppressed.md"
+  s_fabc7d46775820::t_6e37575c801fbb 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0a7bc797810f4c9831c30b0a0472401dfa77eadb",
+  "prompts": {},
+  "sessions": {
+    "s_d6cfe7d86e6e06": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AkXYLrwtqxJmmcZAmcuv6X",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fabc7d46775820": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KZm3MwnJcsasZVizDRguru",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
