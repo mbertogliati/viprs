@@ -1,0 +1,19 @@
+"backlog/tasks/b-525 - FFT-feature-gated-ops-bypass-the-default-coverage-gate.md"
+  s_6e3ffc2f7b6ef6::t_e934096c5d8cdb 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "91da5dad9c1de6eef874d19ec3c89efbe59fd5ff",
+  "prompts": {},
+  "sessions": {
+    "s_6e3ffc2f7b6ef6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Cx2w3JwDjnb1RBPj6uSuxX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
