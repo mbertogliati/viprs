@@ -1,0 +1,30 @@
+xtask/src/bench/runner.rs
+  s_bb6d2899520229::t_c0b4dfdcd4aa2e 86-89,421-428,833,836-838,1050,1053-1055
+xtask/src/bench/helpers.rs
+  s_bb6d2899520229::t_c0b4dfdcd4aa2e 159-238,813-816
+  s_bb6d2899520229::t_17ec50ce2bcb2d 251
+  s_bb6d2899520229::t_5804e947ff50d3 923-933,960-1028
+"backlog/archive/tasks/b-455 - P-179-—-SVG-PDF-vector-decoders-are-missing-from-the-head-to-head-comparison-matrix.md"
+  s_bb6d2899520229::t_573df7088a7c97 52-94
+xtask/src/bench/args.rs
+  s_bb6d2899520229::t_5804e947ff50d3 436-453
+  s_bb6d2899520229::t_c0b4dfdcd4aa2e 36,39-41,59,70,73-75,139-145
+"backlog/archive/tasks/b-454 - P-178-—-HEIF-AVIF-decode-family-lacks-canonical-512-2048-8192-head-to-head-matrix.md"
+  s_bb6d2899520229::t_573df7088a7c97 52-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5bc17eb9fc32f9fd9dd72cd0337f2f69a4b64227",
+  "prompts": {},
+  "sessions": {
+    "s_bb6d2899520229": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XH7NFZVXStuY7uemohd1MQ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
