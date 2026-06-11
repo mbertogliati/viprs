@@ -1,0 +1,33 @@
+"backlog/tasks/b-537 - P-—-perceptual_enhance-p95-spike-2.5x-libvips-on-5K-JPEGs-straggler-tile.md"
+  s_10c61fb05a4ec1::t_93be8e3ecf46a3 14,16-75
+  s_10c61fb05a4ec1::t_29cc02dc9612ad 1-13,15
+"backlog/tasks/b-538 - P-—-perceptual_enhance-p50-3-9-behind-libvips-on-4K-images-Lab-colourspace-round-trip-cost.md"
+  s_10c61fb05a4ec1::t_7cefd3e62075bb 16,18-69
+  s_10c61fb05a4ec1::t_ec38bcca13290b 1-15,17
+docs/PERFORMANCE.md
+  s_d7a4cd27eb40db::t_c27b7c3a1899d2 93-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "71a6d2dac7bb86f0a0d6b363f14b436abe3e323e",
+  "prompts": {},
+  "sessions": {
+    "s_10c61fb05a4ec1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "0fa8a4ef-ad07-48cd-a3c6-23e359098e94",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d7a4cd27eb40db": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Jc7Loqamti4bKa9NvoFFRm",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
