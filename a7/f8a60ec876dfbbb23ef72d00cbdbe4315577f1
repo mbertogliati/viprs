@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-479 - FRICTION-merger-validation-blocked-on-task-status-perf-gate.md"
+  s_3708a39a482602::t_30cbd83a644fa3 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a7f8a60ec876dfbbb23ef72d00cbdbe4315577f1",
+  "prompts": {},
+  "sessions": {
+    "s_3708a39a482602": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WhnMpmsNkyVN8qupxsu7KU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
