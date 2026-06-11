@@ -1,0 +1,23 @@
+benches/structural/embed.rs
+  s_5b494e105b1184::t_075749d1135c47 8,23
+benches/create/masks.rs
+  s_5b494e105b1184::t_448fdae0edac76 43
+benches/conversion/embed.rs
+  s_5b494e105b1184::t_448fdae0edac76 21-22,26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "168ff36e4c6e3d59e443f37dd9a8672839efc044",
+  "prompts": {},
+  "sessions": {
+    "s_5b494e105b1184": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018TxKH1C296AFYDRtdPwxcA",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
