@@ -1,0 +1,33 @@
+"backlog/tasks/b-500 - BUG-shrink-v-zero-factor-panics-instead-of-returning-builderror.md"
+  s_70a797fabb9db2::t_1da1f4dc582943 1-61
+"backlog/tasks/b-501 - BUG-shrink-v-accepts-zero-band-sources-and-builds-invalid-pipelines.md"
+  s_70a797fabb9db2::t_1da1f4dc582943 1-61
+src/domain/ops/resample/shrinkh.rs
+  s_cd77338129d715::t_164584cea6f0e7 1251,1255-1257,1259-1265
+  s_cd77338129d715::t_5eff8a8a44d246 312-314,316-318,320
+  s_cd77338129d715::t_45a43c20060ab7 821-824,842,848-867,869,873-875,906-924
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "41a5f5e4ca61fe64b2e69476e7440f0102323090",
+  "prompts": {},
+  "sessions": {
+    "s_70a797fabb9db2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WkyVXba3cp5c23VBxFgBQV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
