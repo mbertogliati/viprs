@@ -1,0 +1,54 @@
+docs/ai/agents/chaos_monkey.md
+  s_3ed3fa5ceacd91::t_d5728ec56a882f 12-47
+AGENTS.md
+  s_c9e6f273982ec2::t_99c47f051af0a1 17,25
+docs/ai/agents/feature_developer.md
+  s_3ed3fa5ceacd91::t_1f7b81a80109f8 10-65
+docs/ai/agents/performance_developer.md
+  s_3ed3fa5ceacd91::t_0e596cf4780763 13-85
+src/domain/ops/conversion/gamma.rs
+  s_c9e6f273982ec2::t_fc104a6b24f9c1 4,89,105,151-159,178-207,306-315,318-323
+docs/ai/agents/analyzer.md
+  s_3ed3fa5ceacd91::t_a19e00c797f9cf 13-47
+docs/ai/agents/performance_engineer.md
+  s_83010653f26e76::t_ea64aceff0e46f 19
+  s_3ed3fa5ceacd91::t_633ec70e3bbc2b 20-70
+docs/ai/agents/bug_solver.md
+  s_3ed3fa5ceacd91::t_d386628e902cdb 10-65
+docs/ai/agents/orchestrator.md
+  s_3ed3fa5ceacd91::t_00bb896f62180e 173-174,189-193
+docs/ai/agents/merger.md
+  s_3ed3fa5ceacd91::t_73e9edc76c18e1 15-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5854b73c465638e41f6d9cd583b6118ce3fce407",
+  "prompts": {},
+  "sessions": {
+    "s_3ed3fa5ceacd91": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "094f2a27-0d77-4997-857b-7ab89dab46f3",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_83010653f26e76": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Wa5fyo5zU6RhiZFFxuQDrw",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
