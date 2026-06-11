@@ -1,0 +1,29 @@
+"backlog/tasks/b-532 - Complex-operation-integration-test-flows-resilience-correctness-performance.md"
+  s_b5687b41b737e0::t_37b3bfb831bf8f 1-297
+"backlog/tasks/b-533 - FRICTION-benchmark-commands-still-resolve-the-unsupported-wrapper-toolchain.md"
+  s_b477efa8b9ca07::t_d1a626bde8790b 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "db6ee1a7896d02d1405a4d51f47a92707cd466c0",
+  "prompts": {},
+  "sessions": {
+    "s_b477efa8b9ca07": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011mcNVQfVVXXJeGUf82KaeB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b5687b41b737e0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "34a26dc4-7dae-4f14-acda-059b552a786a",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
