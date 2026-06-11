@@ -1,0 +1,24 @@
+src/adapters/codecs/svg.rs
+  s_258a30869ba78c::t_6fbe53a7f43ffd 205,209-221,247-249,255-256,258,262-263,265-267,273-274,276,283-285,291-292,294
+  s_258a30869ba78c::t_19fc9793cda596 206-208,251-252,257,269-270,275,281,287,293
+src/adapters/codecs/pdf_poppler.rs
+  s_258a30869ba78c::t_83ae5bb59d7a93 440,466-468,502-519,552-557
+  s_258a30869ba78c::t_9e5658400b4a60 385-408
+  s_258a30869ba78c::t_cd2eaa335d9314 444-465,469-501,520-551,558-561,580,597,613,620,630-633,650,666-674
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "70cca3c23bdfdb0b9a2c33e0b021fe4d80681a5a",
+  "prompts": {},
+  "sessions": {
+    "s_258a30869ba78c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D2kgjEHjq3NbPBmR6Ujb5v",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
