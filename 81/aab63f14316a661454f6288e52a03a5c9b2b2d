@@ -1,0 +1,68 @@
+src/adapters/codecs/png.rs
+  s_cd77338129d715::t_2115cc719b003a 655-657,662,685,693-694,733
+  s_cd77338129d715::t_ae80b9771bb9db 1359,1364-1370,1378-1381
+  s_cd77338129d715::t_7fcd23bbfbabec 1371-1377
+  s_cd77338129d715::t_53d7a972c0887e 650-654,658-661,663-684,686-692,695-732,734-735
+src/domain/ops/resample/thumbnail.rs
+  s_cd77338129d715::t_133368aeb7f78e 434
+  s_cd77338129d715::t_b02053925b0ca2 527,532,536
+  s_cd77338129d715::t_22166768de280d 575
+"backlog/tasks/b-438 - P-171-—-JPEG-load-regressed-to-24.20x-slower-at-8192-after-winning-at-512-640.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 4,7
+"backlog/tasks/b-439 - P-172-—-EXR-load-remains-24.55x–150.27x-slower-and-scaling-is-unstable.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 4,7
+xtask/src/bench/pipeline.rs
+  s_cd77338129d715::t_8f36a89edaaa37 777-778
+"backlog/tasks/b-441 - P-174-—-gamma-remains-11.92x-slower-at-8192-and-has-no-detectable-SIMD-path.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 4,7
+"backlog/tasks/b-443 - P-172-—-JPEG-load-still-13.74x-slower-at-8192-after-decode-buffer-mmap-fix.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 4,7
+"backlog/tasks/b-435 - DeepZoom-export-builds-the-full-tile-pyramid-eagerly-instead-of-streaming.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 4,7
+"backlog/tasks/b-444 - EXR-decode-still-full-materializes-and-repacks-channels.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 4,7
+docs/PERFORMANCE.md
+  s_cd77338129d715::t_0d55c7d1d3cb32 398-459
+"backlog/tasks/b-445 - PNG-8k-thumbnail-box-shrink-loop-SIMD-factor16-follow-up.md"
+  s_cd77338129d715::t_770ecca4ae9595 3,6,8,17-45
+src/adapters/pipeline.rs
+  s_cd77338129d715::t_14d87efe1d09a2 5420
+  s_cd77338129d715::t_74285967e6e241 5314
+src/adapters/sources/decoder_source.rs
+  s_cd77338129d715::t_6cc0d14952ba77 950-951,954-955,963,977,981-982
+  s_cd77338129d715::t_470d1a370706f8 978
+  s_cd77338129d715::t_af906e3beee597 169
+  s_cd77338129d715::t_c6fe4736fccee9 1147-1168
+  s_cd77338129d715::t_ae2ce36adac18e 956-962,964-976,979-980
+  s_cd77338129d715::t_1e85af07143a9d 56-63,72,79,81-83,163
+  s_cd77338129d715::t_fdfb9e44ec3419 89-90,104-135
+  s_cd77338129d715::t_a54c304bb0931c 87-88,92-103,136-162
+  s_cd77338129d715::t_4d77c7455d0a3f 1577,1608,1633,1635,1639-1642
+  s_cd77338129d715::t_c907daec7b735e 91
+"backlog/tasks/b-405 - P-154-—-Thumbnail-8192-kernel-only-path-still-spends-67-percent-self-time-in-thread-waits-after-NEON.md"
+  s_4dff66c8eec576::t_b8df0b6c0504a8 3-6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "81aab63f14316a661454f6288e52a03a5c9b2b2d",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
