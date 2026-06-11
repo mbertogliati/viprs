@@ -1,0 +1,51 @@
+"backlog/tasks/b-502 - ShrinkH-coverage-regressed-below-90-after-B-491.md"
+  s_c46483f77c8126::t_8aa01bac88492b 1-3,5-34
+"backlog/tasks/b-500 - BUG-shrink-v-zero-factor-panics-instead-of-returning-builderror.md"
+  s_95bf2292791201::t_352de4fc2c82c7 4,7
+"backlog/tasks/b-503 - P-190-—-JPEG-load-still-13.10x-slower-at-8192-with-no-active-owner.md"
+  s_b97ceaade1d5f6::t_64fce00548be67 1-52
+"backlog/tasks/b-505 - FRICTION-docs-PERFORMANCE.md-is-stale-after-B-499-follow-up-was-filed.md"
+  s_396cf8041a4182::t_04e7932d7774b8 1-37
+"backlog/tasks/b-501 - BUG-shrink-v-accepts-zero-band-sources-and-builds-invalid-pipelines.md"
+  s_95bf2292791201::t_352de4fc2c82c7 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ca009f03999d712e30e168d6f342f2623e88efd2",
+  "prompts": {},
+  "sessions": {
+    "s_396cf8041a4182": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VwbrNM7Yjmexk92VW3mrZ5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_95bf2292791201": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SdSnE9GEA21CkRySHnCR8S",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b97ceaade1d5f6": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JwLUfdYbAnS2bS6Jhy97P5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c46483f77c8126": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01HAsQccmJpVCz5gfQeF5FLe",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
