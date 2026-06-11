@@ -1,0 +1,19 @@
+src/domain/ops/resample/shrinkh.rs
+  s_cd77338129d715::t_60d98a30c4cd0d 335-362
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8797d5db94c4ebe75665a09310531bc228ddff4b",
+  "prompts": {},
+  "sessions": {
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
