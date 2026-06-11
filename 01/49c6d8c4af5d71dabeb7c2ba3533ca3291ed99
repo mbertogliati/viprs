@@ -1,0 +1,23 @@
+src/domain/ops/arithmetic/multiply.rs
+  s_dac02307ffa83c::t_35a78696130456 296-307,312,319,321-326
+  s_dac02307ffa83c::t_e81c49a47c8b6d 350-361,366,374,376-381
+  s_dac02307ffa83c::t_5241e713ae9b7d 67-68
+  s_dac02307ffa83c::t_233448f764e203 239-250,256,265,267-272
+  s_dac02307ffa83c::t_9d00e20b0ea139 174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0149c6d8c4af5d71dabeb7c2ba3533ca3291ed99",
+  "prompts": {},
+  "sessions": {
+    "s_dac02307ffa83c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_jJGddIdbnqGDPR9ugRWT86nT",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
