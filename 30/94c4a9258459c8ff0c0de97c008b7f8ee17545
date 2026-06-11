@@ -1,0 +1,21 @@
+"backlog/tasks/b-540 - BUG-chaos_monkey-rejection-tests-panic-after-expect_err.md"
+  s_1d486d74f89010::t_d4bd7439049d30 1-33
+"backlog/tasks/b-539 - BUG-chaos_monkey-integration-suite-does-not-compile-in-default-test-builds.md"
+  s_1d486d74f89010::t_7b5b7b4bc8700f 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3094c4a9258459c8ff0c0de97c008b7f8ee17545",
+  "prompts": {},
+  "sessions": {
+    "s_1d486d74f89010": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01K9XAYfz4eW2Yqvxz9ScZRZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
