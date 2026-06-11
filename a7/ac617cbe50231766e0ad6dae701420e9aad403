@@ -1,0 +1,19 @@
+src/domain/ops/relational/less.rs
+  s_65c1a40c57f044::t_a74368828b4948 57-64,67-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a7ac617cbe50231766e0ad6dae701420e9aad403",
+  "prompts": {},
+  "sessions": {
+    "s_65c1a40c57f044": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_e5HKMpx2HiG2cibSNKcQ4VAs",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
