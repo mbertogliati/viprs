@@ -1,0 +1,21 @@
+src/domain/ops/morphology/open.rs
+  s_c9e6f273982ec2::t_09a40a5fe347b2 7-10,20-27,51-53,57-58,74,99-105,108-146,187
+src/domain/ops/morphology/close.rs
+  s_c9e6f273982ec2::t_09a40a5fe347b2 7-10,17-24,48-50,54-55,71,96-102,105-143,184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1add0c5c92f2c9e9f4b566773bc690bd8d821638",
+  "prompts": {},
+  "sessions": {
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
