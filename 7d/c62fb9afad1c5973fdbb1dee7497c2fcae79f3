@@ -1,0 +1,27 @@
+src/adapters/codecs/jpeg.rs
+  s_2cef9bf1a0a010::t_54a982d5e4eb6e 1035-1040
+  s_2cef9bf1a0a010::t_f10e5cba4d6c9a 17-19,21-22,791-798,935,1024-1034,1041-1047
+  s_2cef9bf1a0a010::t_ee3ac8fd25b70e 1154-1155,1163-1164,1889-1913
+"backlog/archive/tasks/b-438 - P-171-—-JPEG-load-regressed-to-24.20x-slower-at-8192-after-winning-at-512-640.md"
+  s_2cef9bf1a0a010::t_4d19632d859039 57-99
+"backlog/tasks/b-443 - P-172-—-JPEG-load-still-13.74x-slower-at-8192-after-decode-buffer-mmap-fix.md"
+  s_2cef9bf1a0a010::t_4d19632d859039 2
+xtask/src/bench/pipeline.rs
+  s_2cef9bf1a0a010::t_297e686f033b6e 723
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7dc62fb9afad1c5973fdbb1dee7497c2fcae79f3",
+  "prompts": {},
+  "sessions": {
+    "s_2cef9bf1a0a010": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011VoyqCCcbqVGZJeT1XMWju",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
