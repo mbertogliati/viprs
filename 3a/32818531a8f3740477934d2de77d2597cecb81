@@ -1,0 +1,19 @@
+src/domain/ops/mosaicing/merge.rs
+  s_705ac197d40174::t_575184b2546252 943-949,1314,1318,1322-1324,1391,1395,1399-1402
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3a32818531a8f3740477934d2de77d2597cecb81",
+  "prompts": {},
+  "sessions": {
+    "s_705ac197d40174": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GTDCptgmEnHLe8haAWLwA7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

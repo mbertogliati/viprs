@@ -1,0 +1,21 @@
+src/domain/ops/structural/premultiply.rs
+  s_705ac197d40174::t_18fdb7a7c70e9b 121-122
+src/domain/ops/structural/unpremultiply.rs
+  s_705ac197d40174::t_d991f676f3ef87 112-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "58ddf65f2551519fcb895a428e343a1b3b695a95",
+  "prompts": {},
+  "sessions": {
+    "s_705ac197d40174": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GTDCptgmEnHLe8haAWLwA7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
