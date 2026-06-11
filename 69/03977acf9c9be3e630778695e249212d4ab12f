@@ -1,0 +1,19 @@
+AGENTS.md
+  s_98b15d1756897d::t_5e696198010f01 12-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6903977acf9c9be3e630778695e249212d4ab12f",
+  "prompts": {},
+  "sessions": {
+    "s_98b15d1756897d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "05dde6f2-02fc-4850-8c3e-ef3edfad1d35",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
