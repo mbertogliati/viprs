@@ -1,0 +1,33 @@
+"backlog/tasks/b-507 - P-NNN-—-ShrinkH-thumbnail-200-factor39-still-slower-than-libvips.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-61
+"backlog/tasks/b-507 - B-507-—-Colour-bridge-conversions-lack-benchmark-baselines.md"
+  s_4f358020840208::t_534fd99e1b8fd7 1-43
+docs/PERFORMANCE.md
+  s_4f358020840208::t_534fd99e1b8fd7 568-638,731,737-739
+src/domain/ops/resample/shrinkh.rs
+  s_cd77338129d715::t_23d8e314c79b8c 21-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a0820287464cce417e688bff4ee1f2c6119c7f02",
+  "prompts": {},
+  "sessions": {
+    "s_4f358020840208": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012Thcnhbi1sAikosRkTBQp4",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
