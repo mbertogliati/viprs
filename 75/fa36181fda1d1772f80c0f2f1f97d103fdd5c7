@@ -1,0 +1,23 @@
+"backlog/tasks/b-497 - FRICTION-docs-PERFORMANCE.md-omits-the-current-three_op_chain-state-after-B-457-B-469-B-491.md"
+  s_60ef05e0afc09a::t_4e63dca5032e04 1-39
+"backlog/tasks/b-495 - P-186-—-three_op_chain-still-loses-2.29x-at-8192-after-B-491-and-has-no-active-owner.md"
+  s_60ef05e0afc09a::t_4e63dca5032e04 1-68
+"backlog/tasks/b-496 - P-187-—-codec-criterion-benches-omit-mandatory-≥8192-scenarios-for-AVIF-HEIF-TIFF-GIF.md"
+  s_60ef05e0afc09a::t_4e63dca5032e04 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "75fa36181fda1d1772f80c0f2f1f97d103fdd5c7",
+  "prompts": {},
+  "sessions": {
+    "s_60ef05e0afc09a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01D3wup8HaSvn63qz818t9sH",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
