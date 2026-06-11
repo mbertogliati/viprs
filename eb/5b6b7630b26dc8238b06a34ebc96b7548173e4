@@ -1,0 +1,19 @@
+Cargo.toml
+  s_559a758606578f::t_8d94033ae56a72 1175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "eb5b6b7630b26dc8238b06a34ebc96b7548173e4",
+  "prompts": {},
+  "sessions": {
+    "s_559a758606578f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014xQgDpdoWCJvZVfTm6uxL5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
