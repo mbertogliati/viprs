@@ -1,0 +1,21 @@
+benches/cache/cache_vs_nocache.rs
+  s_6b47a065cf4a30::t_0b118e5d2f1f5d 1,18,22-27,49,51-52,54-89
+benches/resample/kernels.rs
+  s_6b47a065cf4a30::t_0b118e5d2f1f5d 11,14-16,18-47,49-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "002ad5f5eafac29ae60e27bb52c4da3fcd7e8d7b",
+  "prompts": {},
+  "sessions": {
+    "s_6b47a065cf4a30": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VEG4gkVDumd7ijV2JRWcSU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
