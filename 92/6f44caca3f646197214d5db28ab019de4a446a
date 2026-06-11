@@ -1,0 +1,28 @@
+"backlog/archive/tasks/b-445 - FRICTION-backlog-task-list-fails-on-malformed-archived-task-hydration.md"
+  s_c9e6f273982ec2::t_c86f1290f019fc 1-38
+  s_4e5ae9f7a7e534::t_9574648da50646 39-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "926f44caca3f646197214d5db28ab019de4a446a",
+  "prompts": {},
+  "sessions": {
+    "s_4e5ae9f7a7e534": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QqbuU5iVpo3ZCh6PzaKjBD",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
