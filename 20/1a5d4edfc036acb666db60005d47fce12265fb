@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-428 - P-169-—-Production-workflow-benchmark-matrix-lacks-mandatory-512-8192-scenarios.md"
+  s_c9e6f273982ec2::t_e897c6a0b5b5df 6,9
+"backlog/archive/tasks/b-406 - P-155-—-Adaptive-scheduler-threshold-for-gauss_blur-strip-dispatch.md"
+  s_c9e6f273982ec2::t_1f028084159d50 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "201a5d4edfc036acb666db60005d47fce12265fb",
+  "prompts": {},
+  "sessions": {
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
