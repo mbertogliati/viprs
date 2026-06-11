@@ -1,0 +1,23 @@
+"backlog/tasks/b-549 - FRICTION-openslide-feature-builds-fail-writing-target-deps.md"
+  s_d64d5cfce71f7a::t_cc941a9299713d 1-37
+"backlog/tasks/b-550 - BUG-join-output-dimensions-overflow-on-large-canvases.md"
+  s_d64d5cfce71f7a::t_cc941a9299713d 1-41
+"backlog/tasks/b-551 - BUG-openslide-accepts-invalid-level-downsample-factors.md"
+  s_d64d5cfce71f7a::t_cc941a9299713d 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "75c2faa1f744970dfa44a050b3439a7e881f466c",
+  "prompts": {},
+  "sessions": {
+    "s_d64d5cfce71f7a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01CVDKraFnqNZw9AZmX8L7ip",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
