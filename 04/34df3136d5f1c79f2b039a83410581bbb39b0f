@@ -1,0 +1,42 @@
+src/domain/ops/morphology/erode.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 954-1010
+src/domain/ops/resample/similarity.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 364-368,371-390,392-398
+  s_dbdc0e8dfaf359::t_cd8d5b1dd51de6 369-370
+src/domain/ops/histogram/hist_find_indexed.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 394-426,428-433
+src/domain/ops/morphology/dilate.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 978-1030
+src/adapters/codecs/mat.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 927-937,1122-1166,1171-1172
+  s_dbdc0e8dfaf359::t_5397aa19fbe65d 1167-1170
+src/domain/ops/resample/reduceh.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 264,457-504,675-733
+src/domain/ops/resample/affine.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 2262-2272,2275-2326
+  s_dbdc0e8dfaf359::t_5397aa19fbe65d 2273-2274
+src/adapters/codecs/analyze.rs
+  s_dbdc0e8dfaf359::t_9fb62c1ef24e8b 508-523,704-713
+src/domain/ops/histogram/clahe.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 326-350,353-363
+src/domain/ops/histogram/hist_match.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 174-203
+src/domain/ops/histogram/hist_plot.rs
+  s_dbdc0e8dfaf359::t_2c09de7cbd872b 482-513
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0434df3136d5f1c79f2b039a83410581bbb39b0f",
+  "prompts": {},
+  "sessions": {
+    "s_dbdc0e8dfaf359": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_015btJagsEXyVqnwiBdv9D2i",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
