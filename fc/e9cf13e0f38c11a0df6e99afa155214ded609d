@@ -1,0 +1,47 @@
+"backlog/tasks/b-442 - P-175-—-xtask-compare-harness-omits-entire-implemented-op-families-from-head-to-head-baselines.md"
+  s_cd77338129d715::t_584dd9f6435f6c 6,9
+"backlog/tasks/b-445 - PNG-8k-thumbnail-box-shrink-loop-SIMD-factor16-follow-up.md"
+  s_cd77338129d715::t_584dd9f6435f6c 4,7
+"backlog/tasks/b-447 - FRICTION-unpremultiply-bench-lacks-criterion-harness-for-merge-validation.md"
+  s_4dff66c8eec576::t_699c3d5bfedf4d 1-36
+"backlog/tasks/b-436 - DeepZoom-save-rejects-non-U8-images-instead-of-libvips-style-uchar-export.md"
+  s_cd77338129d715::t_584dd9f6435f6c 4,7
+src/adapters/codecs/png.rs
+  s_cd77338129d715::t_148c655414df17 1019
+  s_a6eb735f2d05c2::t_76fce682fbe332 27,650-791,799,830-883,885,887-913,915-930,934-935,937,939-1018,1020-1045,1047,1049-1061,1063-1069,1071-1091,1326,1729-1738
+  s_cd77338129d715::t_3d321ec24bf260 1062
+"backlog/tasks/b-334 - P-083-—-Reduce-8192-RSS-for-thumbnail-multi-op-chains-after-ThinStrip-retile.md"
+  s_cd77338129d715::t_584dd9f6435f6c 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fce9cf13e0f38c11a0df6e99afa155214ded609d",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_a6eb735f2d05c2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01LqcFWPZVTTa73NKLg4btWW",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
