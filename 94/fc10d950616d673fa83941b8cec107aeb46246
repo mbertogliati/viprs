@@ -1,0 +1,53 @@
+src/domain/ops/colour/uhdr2scrgb.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 402-460
+src/domain/ops/create/mandelbrot.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 173-206
+src/domain/ops/arithmetic/add.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 525-564
+src/domain/ops/arithmetic/complex_conj.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 80-104
+src/domain/ops/freqfilt/freqmult.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 388-418,455-473,475-523
+src/domain/ops/convolution/canny.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 233-278
+src/domain/ops/create/tonelut.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 349-355,358-359,388-400
+src/domain/ops/create/zone.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 156-190
+src/domain/ops/create/xyz.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 113-137
+src/domain/ops/arithmetic/add_images.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 497-500,511,513-515,517-520,531,533-535
+  s_6209ec45cd7514::t_ffad603d4e0a28 536-582
+  s_6209ec45cd7514::t_e89910e178d5ab 496,501-510,512,516,521-530,532
+src/domain/ops/create/eye.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 158-197
+src/domain/ops/create/gaussmat.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 208-250
+src/domain/ops/arithmetic/recomb.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 640-666,731-749
+  s_6209ec45cd7514::t_ffad603d4e0a28 667-694,750-763
+src/domain/ops/conversion/bandjoin.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 258-296
+src/domain/ops/create/identity.rs
+  s_6209ec45cd7514::t_ffad603d4e0a28 176-200
+  s_6209ec45cd7514::t_7a3b6fb84794cc 155-175
+src/domain/ops/arithmetic/clamp.rs
+  s_6209ec45cd7514::t_7a3b6fb84794cc 106-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "94fc10d950616d673fa83941b8cec107aeb46246",
+  "prompts": {},
+  "sessions": {
+    "s_6209ec45cd7514": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GDkvzDajHRta6qmKiiKLJp",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
