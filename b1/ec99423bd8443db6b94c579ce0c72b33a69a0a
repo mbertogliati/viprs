@@ -1,0 +1,32 @@
+src/domain/ops/arithmetic/multiply.rs
+  s_2756a5f1e5231c::t_b6b048e4b65bdf 228-229
+"backlog/archive/tasks/b-433 - ShrinkH-and-JP2K-reintroduced-unsafe-blocks-without-SAFETY-explanations.md"
+  s_2756a5f1e5231c::t_75505aa823b7a0 63-71
+src/domain/ops/resample/shrinkh.rs
+  s_2756a5f1e5231c::t_b6b048e4b65bdf 868-870,880-882,897-899,962-971,1001-1012
+src/adapters/codecs/jp2k.rs
+  s_2756a5f1e5231c::t_b6b048e4b65bdf 586-587,653-654,1936-1937
+  s_2756a5f1e5231c::t_af05162dc3522a 1658-1662,1664,1682-1686
+src/adapters/codecs/webp.rs
+  s_2756a5f1e5231c::t_af05162dc3522a 230-234
+src/domain/ops/morphology/median.rs
+  s_2756a5f1e5231c::t_b6b048e4b65bdf 415-417,435-436
+src/domain/ops/convolution/conv.rs
+  s_2756a5f1e5231c::t_b6b048e4b65bdf 693-694,765-766,851-852,918-919
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b1ec99423bd8443db6b94c579ce0c72b33a69a0a",
+  "prompts": {},
+  "sessions": {
+    "s_2756a5f1e5231c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01X2LYP7ZvaCtjeqoic6pSWm",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
