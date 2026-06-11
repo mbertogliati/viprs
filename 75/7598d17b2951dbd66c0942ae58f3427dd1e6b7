@@ -1,0 +1,34 @@
+src/domain/ops/arithmetic/multiply.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 146-153,157-164
+src/domain/ops/arithmetic/add.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 186-193,197-204
+src/domain/ops/structural/premultiply.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 67,70-84,86-87,115,118-131,133-134
+src/domain/ops/resample/shrinkh.rs
+  s_d1e1bbfbc957b7::t_db5b39d5fe4fbb 216-231,233-234,236,318,320-321,323-336,354-355,357-358,360-371,373
+src/domain/ops/morphology/median.rs
+  s_d1e1bbfbc957b7::t_43a4bef199e7a7 172,180-206,212,407-419
+src/domain/ops/convolution/conv.rs
+  s_d1e1bbfbc957b7::t_d50955d836b0e6 475-477,531-567,595-597,641-650,652-674,1015-1065,1067-1073
+  s_d1e1bbfbc957b7::t_bde1d12c892f03 229,231-242,244-255,258,281,283-294,296-307,310,336,338-348,354-356,358,366-369,371-373,382-386,388-391,394,399-401,403
+src/domain/ops/arithmetic/subtract.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 171-178,182-189
+src/domain/ops/structural/unpremultiply.rs
+  s_d1e1bbfbc957b7::t_baea68057dbd32 63,66-76,78,80-83,86,114,117-127,129-131,134,137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "757598d17b2951dbd66c0942ae58f3427dd1e6b7",
+  "prompts": {},
+  "sessions": {
+    "s_d1e1bbfbc957b7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Y7bNspz5iabDWC4FqTBMVV",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
