@@ -1,0 +1,27 @@
+src/adapters/codecs/deepzoom.rs
+  s_16ceee30ed3e6a::t_20357d6e932d1f 556-569,571-572,574,576,579,582-598,603,607-608,612-613,616-618,620,622-666
+  s_16ceee30ed3e6a::t_1f85e6a3a87b3b 687-707,725-729,740,754-771,790-822,841-889,934-938
+  s_16ceee30ed3e6a::t_8925885849dbe5 108-121,250,258,272
+  s_16ceee30ed3e6a::t_ca2d4a57a6a8f6 779
+  s_16ceee30ed3e6a::t_74b3f14d8fef9c 94-102,158-159,165-184,189,194,222-223,225-232,234-235,237-249,251-257,259-271,275,278,336,357-360,369-382,387-390,397-400,403-420,423-424,430,432-437,445
+  s_16ceee30ed3e6a::t_fc3d46b4efb751 708-724,730-739,741-753,823-840,890-907,933
+  s_16ceee30ed3e6a::t_251b428ae3b607 939,941-963,1014-1048,1065-1067
+  s_16ceee30ed3e6a::t_8d21f8385116c3 1049-1064
+  s_16ceee30ed3e6a::t_dd467f6484f968 772-778,780-789,908-932
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "24375c41a034a4a2308cf7cbad9f298b8e6b0447",
+  "prompts": {},
+  "sessions": {
+    "s_16ceee30ed3e6a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DofZKT9RVMd9rQMpgyMS66",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
