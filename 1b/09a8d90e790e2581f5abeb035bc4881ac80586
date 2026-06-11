@@ -1,0 +1,35 @@
+docker/scripts/dhat_profile.sh
+  s_fb279abd91f29b::t_40612b2e774870 41
+xtask/README.md
+  s_f6f041583e9328::t_ddfc5f91848dfc 19,25,92,94,98
+tools/bench-vs-libvips/README.md
+  s_fb279abd91f29b::t_40612b2e774870 37,39,47-51,53-54,60-65
+xtask/src/bench/args.rs
+  s_f6f041583e9328::t_ddfc5f91848dfc 149,216
+xtask/src/profile/samply.rs
+  s_f6f041583e9328::t_ddfc5f91848dfc 93,168-173,384-400
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1b09a8d90e790e2581f5abeb035bc4881ac80586",
+  "prompts": {},
+  "sessions": {
+    "s_f6f041583e9328": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AMhhhJ3jbBCdYWer7xKStx",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fb279abd91f29b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Pv1yBGVDaZs54vizTMET45",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
