@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-438 - P-171-—-JPEG-load-regressed-to-24.20x-slower-at-8192-after-winning-at-512-640.md"
+  s_eac7e9b2ed49a1::t_e8066a7fc00f4a 83-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "57fcabb47a6ae8b8e6821c9405c6ada0c23244c3",
+  "prompts": {},
+  "sessions": {
+    "s_eac7e9b2ed49a1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UQxVnm2DzESDAL5KZxDC7E",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
