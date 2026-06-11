@@ -1,0 +1,73 @@
+src/domain/ops/arithmetic/math2.rs
+  s_db1f9735892a45::t_b62231c180a30a 223
+  s_db1f9735892a45::t_74325b30eee92b 234
+  s_db1f9735892a45::t_bca45940e5f570 220-222,224-233,235-246
+src/domain/ops/colour/srgb_to_rgb16.rs
+  s_db1f9735892a45::t_f6d8a1fd539db3 48,63-84
+src/domain/ops/arithmetic/linear.rs
+  s_db1f9735892a45::t_9f3b932e61a0bb 704-717,719-727,749-750
+  s_db1f9735892a45::t_2605cffc2fb0a5 718,728-748
+src/domain/ops/colour/radiance_to_float.rs
+  s_db1f9735892a45::t_306b7b68e84ac1 124-138
+src/domain/ops/arithmetic/remainder.rs
+  s_db1f9735892a45::t_513669f9301764 183-202
+src/domain/ops/conversion/byteswap.rs
+  s_db1f9735892a45::t_e522e74d7edb74 178-202
+src/domain/ops/arithmetic/abs.rs
+  s_db1f9735892a45::t_142052b69fc5d3 146,195-218
+src/domain/ops/colour/float_to_radiance.rs
+  s_db1f9735892a45::t_4b82bef47beb5d 146-154
+src/domain/ops/conversion/embed.rs
+  s_db1f9735892a45::t_97d07ec02f65bb 881-972
+src/domain/ops/colour/icc.rs
+  s_db1f9735892a45::t_90302ac0c8133a 100,102-155
+  s_db1f9735892a45::t_e0b2927e1b1ce3 101
+src/domain/ops/conversion/gamma.rs
+  s_db1f9735892a45::t_ba7a1ae0ecd40c 305-329
+src/domain/ops/colour/uhdr2scrgb.rs
+  s_db1f9735892a45::t_6e00e30a25cf2e 404-407,416,418
+  s_db1f9735892a45::t_53829e2fb2263d 280-283,370-403,408-415,417,419-421
+src/domain/ops/colour/bw_to_srgb.rs
+  s_db1f9735892a45::t_6d60ebf88a8e03 44,59-80
+src/domain/ops/conversion/rot45.rs
+  s_db1f9735892a45::t_683d42f21a9e81 404-441
+  s_db1f9735892a45::t_b83d53432ab2f6 364-403
+src/domain/ops/arithmetic/invert.rs
+  s_db1f9735892a45::t_9d92289cad05ae 364-365,367-401
+src/domain/ops/colour/rgb16_to_srgb.rs
+  s_db1f9735892a45::t_c69cd9db48a94c 48,63-84
+src/domain/ops/conversion/addalpha.rs
+  s_db1f9735892a45::t_94bc01c768d78b 276-290,293-294
+  s_db1f9735892a45::t_d2f101e28ff205 291
+  s_db1f9735892a45::t_b6497276aea11f 292
+src/domain/ops/conversion/msb.rs
+  s_db1f9735892a45::t_cc7c26c1b7fb81 176-194
+src/domain/ops/arithmetic/multiply.rs
+  s_db1f9735892a45::t_7a3aa11b851c95 410-451
+src/domain/ops/conversion/wrap.rs
+  s_db1f9735892a45::t_4f07c00bd1635a 153-173
+src/domain/ops/arithmetic/reduce_facades.rs
+  s_db1f9735892a45::t_4d02cdfaf97f6b 594-597,749-757,760,762,764-765,768-770,775,784-795,797-804,806-835,848-857,860-862,864-865,867-877,883,892
+  s_db1f9735892a45::t_b4832b511d643d 796,805
+  s_db1f9735892a45::t_b8a2380d6b9983 866
+  s_db1f9735892a45::t_3b5f69026e1b7b 758-759,763,766-767,771-774,776-783,836-847,858-859,863,878-882,884-891
+src/domain/ops/convolution/conv.rs
+  s_db1f9735892a45::t_197b8621b2de1e 1807-1812,1814-1829,1831-1837,1839,1841-1878
+  s_db1f9735892a45::t_7b31e0da4eaec8 1813,1830,1838,1840
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b2799b2fde7f299c7d502b16a3a892860b8d011f",
+  "prompts": {},
+  "sessions": {
+    "s_db1f9735892a45": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_012UydoZqJiFivfaLYeqsnW5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
