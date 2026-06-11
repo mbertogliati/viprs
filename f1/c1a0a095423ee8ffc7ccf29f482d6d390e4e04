@@ -1,0 +1,30 @@
+docs/PERFORMANCE.md
+  s_4dff66c8eec576::t_a8c47d518e5223 657-674
+src/domain/ops/resample/shrinkh.rs
+  s_cd77338129d715::t_7289fec4aae478 22-26
+  s_cd77338129d715::t_75b554f6d928ee 899-904,907-912
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f1c1a0a095423ee8ffc7ccf29f482d6d390e4e04",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
