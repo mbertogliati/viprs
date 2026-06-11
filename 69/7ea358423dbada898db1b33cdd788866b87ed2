@@ -1,0 +1,29 @@
+"backlog/tasks/b-437 - P-170-—-Benchmark-lie-kernel-only-comparisons-still-warm-libvips-op-cache-across-iterations.md"
+  s_cd77338129d715::t_2e7648b222e45e 1-55
+"backlog/tasks/b-439 - P-172-—-EXR-load-remains-24.55x–150.27x-slower-and-scaling-is-unstable.md"
+  s_cd77338129d715::t_2e7648b222e45e 1-53
+"backlog/tasks/b-438 - P-171-—-JPEG-load-regressed-to-24.20x-slower-at-8192-after-winning-at-512-640.md"
+  s_cd77338129d715::t_2e7648b222e45e 1-53
+"backlog/tasks/b-442 - P-175-—-xtask-compare-harness-omits-entire-implemented-op-families-from-head-to-head-baselines.md"
+  s_cd77338129d715::t_2e7648b222e45e 1-55
+"backlog/tasks/b-440 - P-173-—-Morphology-open-close-3×3-are-still-37x–53x-slower-than-libvips.md"
+  s_cd77338129d715::t_2e7648b222e45e 1-55
+"backlog/tasks/b-441 - P-174-—-gamma-remains-11.92x-slower-at-8192-and-has-no-detectable-SIMD-path.md"
+  s_cd77338129d715::t_2e7648b222e45e 1-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "697ea358423dbada898db1b33cdd788866b87ed2",
+  "prompts": {},
+  "sessions": {
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
