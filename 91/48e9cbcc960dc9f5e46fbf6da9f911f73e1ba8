@@ -1,0 +1,19 @@
+xtask/src/perf/simd.rs
+  s_10c61fb05a4ec1::t_7cc6ca46a38bac 83-87,92-117,119,121-122,127,131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9148e9cbcc960dc9f5e46fbf6da9f911f73e1ba8",
+  "prompts": {},
+  "sessions": {
+    "s_10c61fb05a4ec1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "0fa8a4ef-ad07-48cd-a3c6-23e359098e94",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
