@@ -1,0 +1,23 @@
+"backlog/tasks/b-537 - P-—-perceptual_enhance-p95-spike-2.5x-libvips-on-5K-JPEGs-straggler-tile.md"
+  s_dfb51ad2163dda::t_bd02364bfd873c 4,7
+"backlog/tasks/b-536 - P-—-perceptual_enhance-p95-spike-viprs-2.5×-libvips-on-5K-JPEGs.md"
+  s_dfb51ad2163dda::t_bd02364bfd873c 4,7
+"backlog/tasks/b-538 - P-—-perceptual_enhance-p50-3-9-behind-libvips-on-4K-images-Lab-colourspace-round-trip-cost.md"
+  s_dfb51ad2163dda::t_bd02364bfd873c 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "26fb45fd59cad6e4c0309aeae8f27b7b43d1b8b7",
+  "prompts": {},
+  "sessions": {
+    "s_dfb51ad2163dda": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011LRSK9fVgei7HWQmVu3kGd",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
