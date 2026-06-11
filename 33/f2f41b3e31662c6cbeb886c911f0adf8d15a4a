@@ -1,0 +1,53 @@
+"backlog/tasks/b-460 - FRICTION-default-Rust-toolchain-cannot-run-performance-audit.md"
+  s_4dff66c8eec576::t_a93ce04446e051 4,7
+"backlog/tasks/b-463 - Generator-and-histogram-coverage-remain-below-the-90-gate.md"
+  s_bf9dd433d9c6ea::t_2301abfc63d800 4,7
+"backlog/tasks/b-464 - Morphology-coverage-remains-below-90-for-dilate-erode-and-median.md"
+  s_bf9dd433d9c6ea::t_2301abfc63d800 4,7
+"backlog/tasks/b-458 - Arithmetic-coverage-remains-below-90-for-core-scalar-ops.md"
+  s_a1bac1dbb9e800::t_44e93621733d5c 4,7
+"backlog/tasks/b-461 - Conversion-op-coverage-remains-below-90-for-seven-modules.md"
+  s_a1bac1dbb9e800::t_44e93621733d5c 4,7
+"backlog/tasks/b-462 - ConvOp-line-coverage-remains-far-below-the-90-gate.md"
+  s_bf9dd433d9c6ea::t_2301abfc63d800 4,7
+"backlog/tasks/b-457 - P-181-—-three_op_chain-lost-parity-at-8192-and-the-benchmark-now-panics-with-UnknownColorspace.md"
+  s_4dff66c8eec576::t_a93ce04446e051 6,9
+"backlog/tasks/b-468 - FRICTION-backlog-task-view-fails-on-archived-task-cross-links.md"
+  s_4dff66c8eec576::t_a93ce04446e051 4,7
+"backlog/tasks/b-452 - Point-mode-subsample-still-expands-to-bounding-box-demand-after-non-source-inputs.md"
+  s_bf9dd433d9c6ea::t_2301abfc63d800 6,9
+"backlog/tasks/b-459 - Colour-conversion-coverage-remains-below-90-across-multiple-bridges.md"
+  s_a1bac1dbb9e800::t_44e93621733d5c 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "33f2f41b3e31662c6cbeb886c911f0adf8d15a4a",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_a1bac1dbb9e800": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01SgCxCGwTc4dDiCoZGhRcVv",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_bf9dd433d9c6ea": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011qcqMXsfRJmxKGisAnRsqt",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
