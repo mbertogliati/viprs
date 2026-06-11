@@ -1,0 +1,30 @@
+"backlog/archive/tasks/b-450 - P-176-—-Zoom-head-to-head-baseline-lacks-mandatory-8192-scenario.md"
+  s_4105126d05d54e::t_cd4f3abb6bd06e 83-101
+xtask/src/bench/helpers.rs
+  s_fa264ddc3eda79::t_65c455e8fd5436 112-117
+  s_fa264ddc3eda79::t_9d37c432c58d1e 835-847
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0ca9aeb51b7cd3e37882943f226fb81a44b61a6a",
+  "prompts": {},
+  "sessions": {
+    "s_4105126d05d54e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KVNkjzYyaAZtjqzXx5aP6F",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_fa264ddc3eda79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011iRJkTpPKtBFVHZqRCxAPs",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
