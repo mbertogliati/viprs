@@ -1,0 +1,21 @@
+"backlog/tasks/b-453 - Foreign-registry-coverage-remains-below-the-90-line-gate.md"
+  s_1341ca691c9e4a::t_363124e9e358f2 4,7
+"backlog/tasks/b-456 - P-180-—-docs-PERFORMANCE.md-still-documents-the-old-≥2x-gap-threshold-and-duplicate-SIMD-section.md"
+  s_1341ca691c9e4a::t_363124e9e358f2 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "db0034951eeabc3c596aa287b2baa0e9ddc62024",
+  "prompts": {},
+  "sessions": {
+    "s_1341ca691c9e4a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Db3DQZa8wEJnRVV4FGuEpQ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
