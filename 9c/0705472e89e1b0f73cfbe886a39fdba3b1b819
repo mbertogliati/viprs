@@ -1,0 +1,26 @@
+src/adapters/codecs/png.rs
+  s_a44aa8bc274355::t_fb071755316c5c 1817,1873-1909,2312-2384
+  s_a44aa8bc274355::t_d94ea54c8121bf 705,711
+  s_a44aa8bc274355::t_af2641b2af9ae1 824-825,860,871,912,923
+  s_a44aa8bc274355::t_06131bd7f6e276 826,868,920
+"backlog/archive/tasks/b-444 - BUG-PNG-box-shrink-corrupts-grayscalealpha-images.md"
+  s_a44aa8bc274355::t_464d1774583305 121-122
+"backlog/archive/tasks/b-443 - BUG-PNG-box-shrink-overruns-output-on-partial-tail-blocks.md"
+  s_a44aa8bc274355::t_464d1774583305 119-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9c0705472e89e1b0f73cfbe886a39fdba3b1b819",
+  "prompts": {},
+  "sessions": {
+    "s_a44aa8bc274355": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RbXowDU3guRpCw8hNaWmPC",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
