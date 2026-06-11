@@ -1,0 +1,35 @@
+src/adapters/pipeline.rs
+  s_cd77338129d715::t_f4bc684bfab0e2 1049-1053
+"backlog/tasks/b-536 - P-—-perceptual_enhance-p95-spike-viprs-2.5×-libvips-on-5K-JPEGs.md"
+  s_1d486d74f89010::t_dbbdfb49b2b73a 1-55
+coverage-summary.json
+  s_1d486d74f89010::t_0190fe4aa852da 1
+coverage-full.json
+  s_1d486d74f89010::t_a0cd773a643410 1
+xtask/src/bench/runner.rs
+  s_cd77338129d715::t_8c4041d4e71ac5 1462-1463,1467,1470
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c07ae5b800c1351406dce6d29315c37134d3c550",
+  "prompts": {},
+  "sessions": {
+    "s_1d486d74f89010": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01K9XAYfz4eW2Yqvxz9ScZRZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
