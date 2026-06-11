@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-503 - P-190-—-JPEG-load-still-13.10x-slower-at-8192-with-no-active-owner.md"
+  s_ad1a3b115d0a31::t_f60532ffcf9364 116
+"backlog/tasks/b-505 - P-191-—-JPEG-load-needs-sequential-scanline-source.md"
+  s_ad1a3b115d0a31::t_f60532ffcf9364 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5699a864df35c2d7668108c6808f204d5bed3a6d",
+  "prompts": {},
+  "sessions": {
+    "s_ad1a3b115d0a31": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01JKUSDTCWQMe1zbgEoVxHEs",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
