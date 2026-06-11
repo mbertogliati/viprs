@@ -1,0 +1,23 @@
+benches/histogram/hist_plot.rs
+  s_ec66a22be69c11::t_9cf3ea1b0bbc1e 14-46
+benches/colour/uhdr2scrgb.rs
+  s_ec66a22be69c11::t_93faf951e0962f 48-75
+benches/conversion/subsample.rs
+  s_ec66a22be69c11::t_7cfef75b5e65c6 25-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8d950cc5cde9b5ed49bd5fdaa2161cdbc41903d8",
+  "prompts": {},
+  "sessions": {
+    "s_ec66a22be69c11": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NEqcMTN27ev4epqAgtybbM",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
