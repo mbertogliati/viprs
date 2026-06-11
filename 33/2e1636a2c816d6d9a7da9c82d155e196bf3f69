@@ -1,0 +1,23 @@
+Cargo.toml
+  s_f87dc0164d840d::t_42ffe4aa3b26f5 18-19
+.github/workflows/lint-no-unwrap.yml
+  s_f87dc0164d840d::t_42ffe4aa3b26f5 23
+AGENTS.md
+  s_f87dc0164d840d::t_42ffe4aa3b26f5 81-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "332e1636a2c816d6d9a7da9c82d155e196bf3f69",
+  "prompts": {},
+  "sessions": {
+    "s_f87dc0164d840d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019fK45nzNZaLEUGSDsoCsuC",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
