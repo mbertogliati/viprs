@@ -1,0 +1,46 @@
+benches/histogram.rs
+  s_81bce044f4d076::t_299fdb15083f69 1-106
+src/domain/ops/histogram/hist_plot.rs
+  s_81bce044f4d076::t_ccc12b9238aff3 543
+  s_81bce044f4d076::t_85098212d6d057 533-534,539-542,544-549
+  s_81bce044f4d076::t_71485a65598fec 6,35-56,116,123,312-313,348,369,391,406,429,439,459,479,503,520-521
+  s_81bce044f4d076::t_97f852870d19a2 535-538
+benches/histogram/hist_cum.rs
+  s_81bce044f4d076::t_1d23092d6b5d29 12,58-61,63
+src/domain/ops/colour/scrgb_to_bw.rs
+  s_81bce044f4d076::t_71485a65598fec 4,11-12,64-91
+  s_81bce044f4d076::t_85098212d6d057 237-264
+src/domain/ops/colour/labq_to_lab.rs
+  s_81bce044f4d076::t_71485a65598fec 2,9-10,44-71
+  s_81bce044f4d076::t_85098212d6d057 192-220
+Cargo.toml
+  s_81bce044f4d076::t_299fdb15083f69 105-108
+benches/histogram/hist_plot.rs
+  s_81bce044f4d076::t_1d23092d6b5d29 18-19,49
+benches/histogram/hist_norm.rs
+  s_81bce044f4d076::t_1d23092d6b5d29 10,55-58
+src/domain/reducers/hist_equal.rs
+  s_81bce044f4d076::t_71485a65598fec 1,12,18-34,53-61,97-108,189,196,207,218,231,244,274
+  s_81bce044f4d076::t_85098212d6d057 254-255,260-263,265-270
+  s_81bce044f4d076::t_bdb4f3c995f9b5 264
+  s_81bce044f4d076::t_97f852870d19a2 256-259
+src/domain/ops/colour/bridge.rs
+  s_81bce044f4d076::t_97f852870d19a2 50-55
+  s_81bce044f4d076::t_71485a65598fec 19,56-58,154-181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d1eabbb4c52c2976c7b36ca649871b83af0e1642",
+  "prompts": {},
+  "sessions": {
+    "s_81bce044f4d076": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TL4yUZFeGPrqm3ZoeJUkuX",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
