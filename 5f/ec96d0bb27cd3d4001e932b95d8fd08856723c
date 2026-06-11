@@ -1,0 +1,27 @@
+docs/ai/agents/feature_developer.md
+  s_98b15d1756897d::t_7ad56f94a84c44 328,332-334
+docs/ai/agents/merger.md
+  s_98b15d1756897d::t_7c4e016c4392f6 124-140
+docs/ai/agents/bug_solver.md
+  s_98b15d1756897d::t_87af5c08218c31 281,285-287
+.github/workflows/check-xtask.yml
+  s_98b15d1756897d::t_9dc3491255ec6f 1-59
+docs/ai/agents/performance_developer.md
+  s_98b15d1756897d::t_6a1031896c7c22 350,355-356
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5fec96d0bb27cd3d4001e932b95d8fd08856723c",
+  "prompts": {},
+  "sessions": {
+    "s_98b15d1756897d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "05dde6f2-02fc-4850-8c3e-ef3edfad1d35",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
