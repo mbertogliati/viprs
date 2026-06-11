@@ -1,0 +1,23 @@
+"backlog/tasks/b-528 - BUG-ReduceOp-required_input_region-wraps-max-coordinates.md"
+  s_6ae412a796fc57::t_7ea9b48356cf2a 1-44
+"backlog/tasks/b-527 - BUG-DE00-pipeline-accepts-3-band-input-and-emits-zero-output.md"
+  s_6ae412a796fc57::t_91a97845e19284 1-53
+"backlog/tasks/b-529 - BUG-auto_mosaic-benchmarks-panic-on-1x1-edge-size-inputs.md"
+  s_6ae412a796fc57::t_28701e3c1cf67d 1-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "66939bcc28899c1b213762f54505407a863148c4",
+  "prompts": {},
+  "sessions": {
+    "s_6ae412a796fc57": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_016bNjx1xDxzmSUYYXZE4vwy",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
