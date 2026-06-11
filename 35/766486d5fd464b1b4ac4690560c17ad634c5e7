@@ -1,0 +1,19 @@
+src/adapters/codecs/openslide.rs
+  s_d4bb430f3ad925::t_4eaa0c4fc0c9c3 601
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "35766486d5fd464b1b4ac4690560c17ad634c5e7",
+  "prompts": {},
+  "sessions": {
+    "s_d4bb430f3ad925": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01HqLTcqMMDkwocVtt9do2ix",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
