@@ -1,0 +1,21 @@
+"backlog/tasks/b-531 - BUG-histogram-zero-band-inputs-are-inconsistently-handled.md"
+  s_71ee700657cfb8::t_dce65f4fe77fdb 1-50
+"backlog/tasks/b-530 - BUG-colour-converters-silently-zero-fill-on-underspecified-band-counts.md"
+  s_71ee700657cfb8::t_4c0128bdd451f4 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "31e8b0a182f8d20eb20deb1fa3d336629d379740",
+  "prompts": {},
+  "sessions": {
+    "s_71ee700657cfb8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019WyHi3BsfNPMofxmtsaFKG",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
