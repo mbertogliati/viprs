@@ -1,0 +1,19 @@
+src/adapters/scheduler/rayon_scheduler.rs
+  s_c9e6f273982ec2::t_0e9acddcd92f2e 62-65,343-350,352,357,422-423,432,787,791,803,808,831-882,889,934,2313-2314,2317-2320,2347,2372-2375,2401,2557-2558,2560-2563,2584,2603-2606,2626,3289,3303,3310-3420
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4d8a983fd54e1597fbf91e236a5db6a2211ed03d",
+  "prompts": {},
+  "sessions": {
+    "s_c9e6f273982ec2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e16db203-d541-47e0-beef-e5e8ebbe06d5",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
