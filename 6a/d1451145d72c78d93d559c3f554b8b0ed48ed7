@@ -1,0 +1,73 @@
+"backlog/tasks/b-444 - BUG-PNG-box-shrink-corrupts-grayscalealpha-images.md"
+  s_4dff66c8eec576::t_1cec463c0995e8 4,7
+"backlog/tasks/b-459 - Colour-conversion-coverage-remains-below-90-across-multiple-bridges.md"
+  s_d6cfe7d86e6e06::t_a562efdc51c077 1-33
+"backlog/tasks/b-454 - P-178-—-HEIF-AVIF-decode-family-lacks-canonical-512-2048-8192-head-to-head-matrix.md"
+  s_e323965f802952::t_306df0c03f5872 1-51
+"backlog/tasks/b-457 - P-181-—-three_op_chain-lost-parity-at-8192-and-the-benchmark-now-panics-with-UnknownColorspace.md"
+  s_e323965f802952::t_306df0c03f5872 1-53
+"backlog/tasks/b-467 - Structural-coverage-remains-below-90-for-embed-and-rotate180.md"
+  s_d6cfe7d86e6e06::t_24bef8fc3cd29d 1-33
+"backlog/tasks/b-461 - Conversion-op-coverage-remains-below-90-for-seven-modules.md"
+  s_a44aa8bc274355::t_fc329ed134c9a6 1-33
+"backlog/tasks/b-455 - P-179-—-SVG-PDF-vector-decoders-are-missing-from-the-head-to-head-comparison-matrix.md"
+  s_e323965f802952::t_306df0c03f5872 1-51
+"backlog/tasks/b-453 - Foreign-registry-coverage-remains-below-the-90-line-gate.md"
+  s_d6cfe7d86e6e06::t_a562efdc51c077 1-33
+"backlog/tasks/b-468 - FRICTION-backlog-task-view-fails-on-archived-task-cross-links.md"
+  s_d6cfe7d86e6e06::t_ea745cc597ea4f 1-37
+"backlog/tasks/b-445 - REVIEW-unwrap-guard-misses-example-binaries-and-can-be-lint-suppressed.md"
+  s_cb5174c7eed290::t_8484c5a8f32244 4,7
+"backlog/tasks/b-456 - P-180-—-docs-PERFORMANCE.md-still-documents-the-old-≥2x-gap-threshold-and-duplicate-SIMD-section.md"
+  s_e323965f802952::t_306df0c03f5872 1-48
+"backlog/tasks/b-443 - BUG-PNG-box-shrink-overruns-output-on-partial-tail-blocks.md"
+  s_4dff66c8eec576::t_1cec463c0995e8 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6ad1451145d72c78d93d559c3f554b8b0ed48ed7",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_a44aa8bc274355": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RbXowDU3guRpCw8hNaWmPC",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cb5174c7eed290": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XWsBFc5FBz4bdLQFegTxrZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_d6cfe7d86e6e06": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01AkXYLrwtqxJmmcZAmcuv6X",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_e323965f802952": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_011CJcaAhXv1jjpCpaJq2CFZ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
