@@ -1,0 +1,22 @@
+src/domain/ops/arithmetic/invert.rs
+  s_f06f97d8c79d45::t_3b0291ec581624 24,30,36,42,48,54,60
+  s_f06f97d8c79d45::t_d3d9104b517416 287-289,306,308-309
+  s_f06f97d8c79d45::t_66dbdec796f18b 245-247,263,265-266
+  s_f06f97d8c79d45::t_3c38e147bb4314 328-330,344,346-347
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b57d052c03dee3ccb2cf09ffd36475e158b3ff8b",
+  "prompts": {},
+  "sessions": {
+    "s_f06f97d8c79d45": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "call_sqy1pnMnXgYLo6I1AZFj8iT0",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
