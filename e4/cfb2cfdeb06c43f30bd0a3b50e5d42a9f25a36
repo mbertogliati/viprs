@@ -1,0 +1,27 @@
+AGENTS.md
+  s_2eac3b449b538e::t_8cd053282e7eef 254,262-272
+docs/ai/agents/merger.md
+  s_2eac3b449b538e::t_8cd053282e7eef 74
+docs/ai/agents/orchestrator.md
+  s_2eac3b449b538e::t_8cd053282e7eef 227,250
+docs/ai/agents/bug_solver.md
+  s_2eac3b449b538e::t_8cd053282e7eef 185-186
+docs/ai/agents/performance_developer.md
+  s_2eac3b449b538e::t_8cd053282e7eef 127,130-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e4cfb2cfdeb06c43f30bd0a3b50e5d42a9f25a36",
+  "prompts": {},
+  "sessions": {
+    "s_2eac3b449b538e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KmJ2yTR5fKh2FxeJ2cTUq7",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
