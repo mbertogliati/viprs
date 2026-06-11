@@ -1,0 +1,23 @@
+src/domain/ops/mosaicing/lrmosaic.rs
+  s_cfb93649175a2e::t_2a9acfa8198c57 168-176,191,200,231-260
+src/domain/ops/mosaicing/auto_mosaic.rs
+  s_cfb93649175a2e::t_d71a0375bf7247 115-191
+src/domain/ops/mosaicing/tbmosaic.rs
+  s_cfb93649175a2e::t_1655257dc944b8 168-176,191,200,231-257
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8447a552494b57fcbbeb24a06b982c6033c755e5",
+  "prompts": {},
+  "sessions": {
+    "s_cfb93649175a2e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KDapyYK6w1Y7oxvaSYrrdL",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
