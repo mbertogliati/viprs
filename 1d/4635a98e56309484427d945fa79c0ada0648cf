@@ -1,0 +1,33 @@
+benches/mosaicing/auto_mosaic.rs
+  s_bb478fdc691739::t_262687a7b94343 15-23,45-46,83-84
+src/domain/resample.rs
+  s_bb478fdc691739::t_729118dd179ace 200-212
+  s_bb478fdc691739::t_c56661c750fdef 55-66,110-112,116-117,127-129,133-134
+src/domain/ops/mosaicing/tbmosaic.rs
+  s_bb478fdc691739::t_ddb0782a63496e 259-272
+src/domain/ops/mosaicing/lrmosaic.rs
+  s_bb478fdc691739::t_00d4113b144fbd 262-275
+src/domain/ops/mosaicing/auto_mosaic.rs
+  s_bb478fdc691739::t_447b170e7f7e5b 73-76
+src/domain/ops/colour/de00.rs
+  s_bb478fdc691739::t_ab6b505f1acf3d 171-174,176,263,265,270-301
+  s_bb478fdc691739::t_d605072a51093d 2,122-150,264,266-269
+src/domain/error.rs
+  s_bb478fdc691739::t_017af9471b27d3 378-387
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1d4635a98e56309484427d945fa79c0ada0648cf",
+  "prompts": {},
+  "sessions": {
+    "s_bb478fdc691739": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TFX4wWejcjKVjCMUNbkgoY",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
