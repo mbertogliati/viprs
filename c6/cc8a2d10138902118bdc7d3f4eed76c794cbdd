@@ -1,0 +1,38 @@
+"backlog/tasks/b-539 - BUG-invert-overflows-on-i16-MIN-and-i32-MIN.md"
+  s_4dff66c8eec576::t_2ee6d8771a07c4 1-27,30-32,35-48
+  s_f515d80a9cabd2::t_5ef840d35c52b2 28-29,33-34
+"backlog/tasks/b-540 - BUG-structural-coordinate-ops-wrap-offsets-above-i32-MAX.md"
+  s_cd77338129d715::t_d1a799d368efa0 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c6cc8a2d10138902118bdc7d3f4eed76c794cbdd",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_f515d80a9cabd2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KnfBfzGFGuXJRK8agPi7hp",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
