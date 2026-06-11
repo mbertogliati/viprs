@@ -1,0 +1,53 @@
+"backlog/tasks/b-484 - Histogram-coverage-still-remains-below-90-in-checkpoint-4.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-33
+"backlog/tasks/b-487 - Codec-coverage-still-remains-below-90-for-analyze-and-mat.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-33
+"backlog/tasks/b-480 - Additional-colour-conversion-coverage-still-remains-below-90-after-B-474.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-33
+"backlog/tasks/b-486 - Resample-coverage-regressed-below-90-after-B-466.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-33
+"backlog/tasks/b-482 - Create-op-coverage-still-remains-below-90-in-checkpoint-4.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 2-4,6,8,11,17,19,21,23,25,27,30-32
+"backlog/tasks/b-479 - Remaining-arithmetic-coverage-still-remains-below-90-after-B-473.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-33
+"backlog/tasks/b-485 - Morphology-coverage-regressed-below-90-after-B-464.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-33
+"backlog/tasks/b-490 - P-183-—-three_op_chain-8192-remains-shrinkh-bound-after-SharedMemorySource-clamp-fast-path.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 2
+"backlog/tasks/b-489 - BUG-Subsample-node_spec-underflows-on-zero-sized-outputs.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-49
+"backlog/tasks/b-488 - BUG-SharedMemorySource-clamp-path-panics-on-zero-sized-sources.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-52
+"backlog/tasks/b-481 - Coverage-still-remains-below-90-for-bandjoin-canny-and-freqmult.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 2-4,6,8,11,17,19,21,23,25,27,30-32
+"backlog/tasks/b-491 - perfshrinkh-eliminate-12.6-MB-tile-copy-—-full-row-borrow_region-ShrinkH-optimization.md"
+  s_cd77338129d715::t_3216efbff67f10 1-66
+"backlog/tasks/b-483 - P-185-—-three_op_chain-still-loses-2.42x-at-8192-and-has-no-active-ShrinkH-follow-up.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 1-61
+"backlog/tasks/b-478 - FRICTION-backlog-task-list-omits-active-task-files.md"
+  s_4dff66c8eec576::t_867f51c67b21a9 2-4,6,11,19-21,24,27,30,33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "71ac0d9d7fb88032698cffe7746117f45b1c8655",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd77338129d715": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "4c8f4319-8651-4e6d-b7c7-2affe8bca30b",
+        "model": "claude-sonnet-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
