@@ -1,0 +1,27 @@
+src/adapters/sources/decoder_source.rs
+  s_4d8385f2c05409::t_724a111819f5d2 851
+  s_4d8385f2c05409::t_42afa20d32d545 271-291
+  s_4d8385f2c05409::t_9b70131bab6483 837-840
+  s_4d8385f2c05409::t_7d2e7a55829a25 1600-1625
+  s_4d8385f2c05409::t_49d4537edc6bb8 1069-1070
+xtask/src/bench/pipeline.rs
+  s_4d8385f2c05409::t_0e7c673dec8fa0 1346
+  s_4d8385f2c05409::t_32ee0c121f2649 1417-1421
+  s_4d8385f2c05409::t_2c96318da1b090 1412-1416
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "154d0cfb649664fea2d7e734dd6e8253295a5be3",
+  "prompts": {},
+  "sessions": {
+    "s_4d8385f2c05409": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Tw1ywaSknCuKvfVmkBrevV",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
