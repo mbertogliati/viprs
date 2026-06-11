@@ -1,0 +1,31 @@
+"backlog/tasks/b-446 - HEIF-AVIF-decode-keeps-EXIF-orientation-metadata-instead-of-libvips-style-normalization.md"
+  s_6b73de04635f20::t_e484b1c1bf8bb6 1-35
+"backlog/tasks/b-449 - No-automated-repository-guard-enforces-the-unwrap-expect-ban-outside-tests.md"
+  s_7bf475a87e8e37::t_5548217873ee84 1-33
+"backlog/tasks/b-448 - Vector-decoder-option-tests-only-validate-dimensions-not-rendered-pixels.md"
+  s_7bf475a87e8e37::t_5548217873ee84 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6f78f91aa63ab56f1752ef5e04bd07a0e404c97e",
+  "prompts": {},
+  "sessions": {
+    "s_6b73de04635f20": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TLUcpDXr2RsBhhgVne4omh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_7bf475a87e8e37": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01F8LYoqTVRb6Es3PhNoF5jz",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
