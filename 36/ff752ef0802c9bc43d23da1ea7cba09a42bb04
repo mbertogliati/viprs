@@ -1,0 +1,25 @@
+docs/ai/agents/analyzer.md
+  s_4dff66c8eec576::t_91ddec50e41866 272-286
+"backlog/archive/tasks/b-584 - BUG-Animated-WebP-bounded-region-decode-lacks-shrink1-coverage.md"
+  s_4dff66c8eec576::t_df93846b8d6945 1-36
+"backlog/archive/tasks/b-581 - FRICTION-Audit-helper-commands-return-non-zero-on-success-cases.md"
+  s_4dff66c8eec576::t_edf5226dc600c6 1-45
+"backlog/archive/tasks/b-582 - FRICTION-Cargo-test-filter-syntax-prevents-batched-named-checks.md"
+  s_4dff66c8eec576::t_cb1db5f74b715e 1-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "36ff752ef0802c9bc43d23da1ea7cba09a42bb04",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
