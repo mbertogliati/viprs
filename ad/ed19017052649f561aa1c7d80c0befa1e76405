@@ -1,0 +1,20 @@
+"backlog/tasks/b-616 - B-616-—-LabelRegionsOp-coverage-remains-below-the-90%-gate.md"
+  s_f8112f6aae8f9e::t_4fcdc9afe367bb 9
+  s_f8112f6aae8f9e::t_20dc15164d7d01 4,11-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "aded19017052649f561aa1c7d80c0befa1e76405",
+  "prompts": {},
+  "sessions": {
+    "s_f8112f6aae8f9e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01HxmFbS3p1eG4YCaMZqmLxh",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
