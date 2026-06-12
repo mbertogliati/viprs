@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-601 - srgb_lab_adjust-proptest-finds-1-unit-LAB-rounding-difference-in-worktree-builds.md"
+  s_12b9ad941e6194::t_dbf831586b3938 1-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "213e370f7aba0c8492221ed8ad4285a8d35bfabb",
+  "prompts": {},
+  "sessions": {
+    "s_12b9ad941e6194": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01EHwBtj21oss7AG7HpdsARX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
