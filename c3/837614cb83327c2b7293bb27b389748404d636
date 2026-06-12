@@ -1,0 +1,19 @@
+"backlog/tasks/b-619 - B-619-—-HistPlotOp-still-overflows-width×height-when-scaling-floating-histograms.md"
+  s_759dee1edfa1d9::t_0db7bb71698b16 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c3837614cb83327c2b7293bb27b389748404d636",
+  "prompts": {},
+  "sessions": {
+    "s_759dee1edfa1d9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TxGCknFJWAo3eJg54Rrft9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
