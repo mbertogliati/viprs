@@ -1,0 +1,21 @@
+src/domain/reducers/label_regions.rs
+  s_4dff66c8eec576::t_40d5024360423c 154-156,330-340,439-652
+"backlog/archive/tasks/b-626 - Raise-LabelRegionsOp-coverage-after-B-616.md"
+  s_4dff66c8eec576::t_40d5024360423c 4,30-31,33-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "61f3a9bc4f6619c680bca91e51fceb64898e4b50",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
