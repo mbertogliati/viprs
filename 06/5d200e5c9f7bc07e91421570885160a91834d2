@@ -1,0 +1,29 @@
+"backlog/archive/tasks/b-592 - FRICTION-perceptual_enhance-default-benchmark-diverges-from-explicit-webp.md"
+  s_251f50ddc58f1d::t_c256e57dbac713 1-65
+xtask/src/bench/runner.rs
+  s_4dff66c8eec576::t_7a0c7c66d269ed 1973-1984
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "065d200e5c9f7bc07e91421570885160a91834d2",
+  "prompts": {},
+  "sessions": {
+    "s_251f50ddc58f1d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PDzMNvq9JRwmm7uLtzUtwq",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
