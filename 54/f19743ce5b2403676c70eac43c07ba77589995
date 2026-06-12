@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-624 - Raise-FractSurf-coverage-after-B-618.md"
+  s_197cb87eb2ae01::t_bd611bef6536e5 4,34-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "54f19743ce5b2403676c70eac43c07ba77589995",
+  "prompts": {},
+  "sessions": {
+    "s_197cb87eb2ae01": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01YZrYWfWD2pVyxM6eB6B3xF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
