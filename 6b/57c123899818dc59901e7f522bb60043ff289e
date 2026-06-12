@@ -1,0 +1,19 @@
+"backlog/tasks/b-610 - B-610-—-MemorySource-and-MmapSource-read_region-panic-on-short-output-buffers.md"
+  s_d86aa43ea6ee13::t_6c2a47505cfa55 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6b57c123899818dc59901e7f522bb60043ff289e",
+  "prompts": {},
+  "sessions": {
+    "s_d86aa43ea6ee13": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_013ZqAMCp7TtpC8SrVpQ9V5W",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
