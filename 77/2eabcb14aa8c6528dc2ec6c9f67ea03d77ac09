@@ -1,0 +1,33 @@
+"backlog/tasks/b-600 - B-600-—-Remaining-sink-sizing-paths-still-panic-on-oversized-regions.md"
+  s_cd834532547fee::t_2af7c0b29df54d 2-3,6,8,17,19,21-24,26,28
+"backlog/archive/tasks/b-593 - B-593-—-PNG-TIFF-region-decoders-panic-on-overflowing-Region.md"
+  s_27b82a376cff4d::t_1ce06145ea32bd 4,7,42-92
+"backlog/tasks/b-599 - xtask-bench-runner-still-treats-MemorySink-new-as-infallible.md"
+  s_27b82a376cff4d::t_bd3a83e08142be 4,7
+"backlog/archive/tasks/b-595 - BUG-MemorySink-sizing-overflows-before-scheduler-guards-run.md"
+  s_27b82a376cff4d::t_1ce06145ea32bd 4,7,42-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "772eabcb14aa8c6528dc2ec6c9f67ea03d77ac09",
+  "prompts": {},
+  "sessions": {
+    "s_27b82a376cff4d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BJrsDUAbhj7yW8e5r2FKgY",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cd834532547fee": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01F3YxGYfVUmsz5kzHvJRjEa",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
