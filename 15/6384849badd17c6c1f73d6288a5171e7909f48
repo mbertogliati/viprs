@@ -1,0 +1,19 @@
+"backlog/tasks/b-579 - BUG-animated-WebP-region-decode-violates-TileImageDecoder-no-full-frame-contract-at-shrink1.md"
+  s_be1803c0c54e66::t_00b135599123de 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "156384849badd17c6c1f73d6288a5171e7909f48",
+  "prompts": {},
+  "sessions": {
+    "s_be1803c0c54e66": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01RZVHdXsXtJkwqvrZZwoKfK",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
