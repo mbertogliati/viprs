@@ -1,0 +1,19 @@
+src/domain/ops/create/fractsurf.rs
+  s_3fc942b65091da::t_1a5f9d34b5372b 470-522,540-566,588-592
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5a2205c3679abbb1ea8f1b036e664ba64e1e33fa",
+  "prompts": {},
+  "sessions": {
+    "s_3fc942b65091da": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XcZ9ByGzCHKWnKTcHejbgk",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
