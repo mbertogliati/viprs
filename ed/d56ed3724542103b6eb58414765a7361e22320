@@ -1,0 +1,20 @@
+"backlog/tasks/b-633 - Negative-region-coordinates-panic-in-project-profile-reducers.md"
+  s_53e6257b682a4f::t_271e67bc28a947 76,79,82,85-86,91,97,111-113,124
+  s_53e6257b682a4f::t_d17fb8fb8da5e0 4,50-75,77-78,80-81,83-84,87-90,92-96,98-110,114-123,125-126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "edd56ed3724542103b6eb58414765a7361e22320",
+  "prompts": {},
+  "sessions": {
+    "s_53e6257b682a4f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KzimHE1BFBjnvSrs7uDhZz",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
