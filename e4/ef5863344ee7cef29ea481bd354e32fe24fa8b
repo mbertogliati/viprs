@@ -1,0 +1,19 @@
+"backlog/tasks/b-607 - Coordinate-bounds-checks-still-use-overflowing-i32-addition-in-memory-source-adapters.md"
+  s_4dff66c8eec576::t_2a4818f13b2150 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e4ef5863344ee7cef29ea481bd354e32fe24fa8b",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
