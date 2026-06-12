@@ -1,0 +1,37 @@
+src/domain/ops/freqfilt/spectrum.rs
+  s_b111ca1fc557ed::t_28c4af7e566e69 245-246
+src/domain/ops/freqfilt/invfft.rs
+  s_b111ca1fc557ed::t_44717812a82133 38-40,45-46,51-52,55
+  s_b111ca1fc557ed::t_511ab5f1fe753d 37,50,57,181,193,244,249-251,259,282-284,314-316,321,333
+xtask/src/bench/pipeline.rs
+  s_b111ca1fc557ed::t_28c4af7e566e69 1565-1566,1572-1573
+benches/freqfilt/fwfft.rs
+  s_b111ca1fc557ed::t_28c4af7e566e69 35
+src/domain/ops/freqfilt/phasecor.rs
+  s_b111ca1fc557ed::t_28c4af7e566e69 448-449,462-463
+tests/integration/frequency/freqfilt_fft_roundtrip.rs
+  s_b111ca1fc557ed::t_28c4af7e566e69 18,28
+benches/freqfilt/invfft.rs
+  s_b111ca1fc557ed::t_28c4af7e566e69 32,55
+src/domain/ops/freqfilt/fwfft.rs
+  s_b111ca1fc557ed::t_8af7056d2d79af 414,419-421,423-426
+  s_b111ca1fc557ed::t_38abb5758e3005 23-71,122,135,142,264,330,335-337,348,366-368,396-398,403,422,429
+  s_b111ca1fc557ed::t_d6aa5a47e40251 415-418
+  s_b111ca1fc557ed::t_bc0726c379db19 123-125,130-131,136-137,140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4487ab46a2874542669bae5e799fcd9243895fbc",
+  "prompts": {},
+  "sessions": {
+    "s_b111ca1fc557ed": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018fiPB8aQzArrWfvLm7WzCX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
