@@ -1,0 +1,41 @@
+"backlog/tasks/b-563 - BUG-SRgbLabAdjust-panics-on-tiles-with-fewer-than-3-bands.md"
+  s_98c704852b5c23::t_fb37b97d2371c8 1-33
+"backlog/archive/tasks/b-570 - BUG-SRgbLabAdjust-panics-on-non-RGB-U8-tiles.md"
+  s_4dff66c8eec576::t_038a2cbedbf6e3 1-33
+"backlog/tasks/b-565 - FRICTION-libvips-AI-profiles-lose-symbols-on-macOS-CP17.md"
+  s_cf66e8cef2a047::t_fd4d98e6ff5228 1-41
+docs/PERFORMANCE.md
+  s_4dff66c8eec576::t_a54185f1f2f892 876-914
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "441d40f2f155b8f4bb6c1d90ae78a85c37afbd73",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_98c704852b5c23": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019TA5wS1Rs4ULbCMvjQwZqB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cf66e8cef2a047": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Y6QV1MVQHsodMKhUwhVakm",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
