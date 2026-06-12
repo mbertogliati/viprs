@@ -1,0 +1,30 @@
+src/adapters/sinks/memory.rs
+  s_b111ca1fc557ed::t_48d987d089ca14 205-228,257,282,444-462,472-488
+src/adapters/sources/mmap.rs
+  s_4dff66c8eec576::t_c55100e8470da9 354
+  s_4dff66c8eec576::t_0a64e886cdc1be 305,320
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c86f7bd168f8f4712ff84efb9f5d8c86939db7d1",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b111ca1fc557ed": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018fiPB8aQzArrWfvLm7WzCX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
