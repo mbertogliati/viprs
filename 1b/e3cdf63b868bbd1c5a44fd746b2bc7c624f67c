@@ -1,0 +1,19 @@
+"backlog/tasks/b-611 - B-611-—-Remaining-end-coordinate-helpers-still-overflow-i32-in-production.md"
+  s_3f77bf76c5176c::t_2d7e78e877af7a 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1be3cdf63b868bbd1c5a44fd746b2bc7c624f67c",
+  "prompts": {},
+  "sessions": {
+    "s_3f77bf76c5176c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01LYZJXaMua6yUM782EveeQ6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
