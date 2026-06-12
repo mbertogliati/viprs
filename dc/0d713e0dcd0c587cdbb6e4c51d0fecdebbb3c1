@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-599 - xtask-bench-runner-still-treats-MemorySink-new-as-infallible.md"
+  s_27b82a376cff4d::t_f2e07dae2ec856 4,20-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "dc0d713e0dcd0c587cdbb6e4c51d0fecdebbb3c1",
+  "prompts": {},
+  "sessions": {
+    "s_27b82a376cff4d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BJrsDUAbhj7yW8e5r2FKgY",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
