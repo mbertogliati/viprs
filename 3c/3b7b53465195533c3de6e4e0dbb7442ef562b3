@@ -1,0 +1,22 @@
+src/domain/reducers/label_regions.rs
+  s_28420004a0a281::t_233188ff3f3b95 245-264
+  s_28420004a0a281::t_b7daafa7cc4bd6 659-664,666-671,678
+  s_28420004a0a281::t_54e1a246b99a5a 665
+  s_28420004a0a281::t_5c065fbb86aaab 423,425,672-677,679
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3c3b7b53465195533c3de6e4e0dbb7442ef562b3",
+  "prompts": {},
+  "sessions": {
+    "s_28420004a0a281": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01VxHXXChPstzVVgZq5aDJsA",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
