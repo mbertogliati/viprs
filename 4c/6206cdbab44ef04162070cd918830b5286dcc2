@@ -1,0 +1,19 @@
+"backlog/tasks/b-629 - Raise-HEIF-AVIF-feature-gated-codec-coverage-above-90-after-B-623-B-628.md"
+  s_299719455a3faa::t_4ba7873ba4413c 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4c6206cdbab44ef04162070cd918830b5286dcc2",
+  "prompts": {},
+  "sessions": {
+    "s_299719455a3faa": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01UfJiB1MdRp1x6CwdcuAJXz",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
