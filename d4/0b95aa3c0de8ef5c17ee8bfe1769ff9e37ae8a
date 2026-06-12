@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-609 - B-609-—-Source-constructors-overflow-before-returning-typed-size-errors.md"
+  s_b15ba07a9968e0::t_ebf20e8d975959 1-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d40b95aa3c0de8ef5c17ee8bfe1769ff9e37ae8a",
+  "prompts": {},
+  "sessions": {
+    "s_b15ba07a9968e0": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WDUMnR9goNhM1GrCtpbeN5",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
