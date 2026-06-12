@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-614 - B-614-—-PNM-and-CSV-codecs-still-reserve-buffers-with-unchecked-area-math.md"
+  s_070051ce2d83b9::t_a681df7b2a5be4 4,7,30-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "78550fac19c1efdb36c02929d0192bd50ab794d0",
+  "prompts": {},
+  "sessions": {
+    "s_070051ce2d83b9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01GvFHuxzqAgQAwegERLjQWD",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
