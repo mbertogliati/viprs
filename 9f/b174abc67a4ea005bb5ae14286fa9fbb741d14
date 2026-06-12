@@ -1,0 +1,19 @@
+"backlog/tasks/b-518 - B-602-—-FileSink-and-DoubleBufferSink-panic-on-coordinate-overflow-in-bounds-checks.md"
+  s_4c61e32422a1b1::t_cd0ed08b9ad5c5 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9fb174abc67a4ea005bb5ae14286fa9fbb741d14",
+  "prompts": {},
+  "sessions": {
+    "s_4c61e32422a1b1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01CQETkftZvWAejbTFdhtwDC",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
