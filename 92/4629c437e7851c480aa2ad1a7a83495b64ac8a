@@ -1,0 +1,19 @@
+STATIC_FUSION_DESIGN.md
+  s_0cf83dbe30f561::t_197a8d819b0fce 1-197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "924629c437e7851c480aa2ad1a7a83495b64ac8a",
+  "prompts": {},
+  "sessions": {
+    "s_0cf83dbe30f561": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ca58f5ed-64d0-44e1-8c38-8027f8b72013",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
