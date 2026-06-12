@@ -1,0 +1,39 @@
+"backlog/tasks/b-620 - B-620-—-LabelRegionsReducer-still-uses-unchecked-width×height-sizing-in-finalize.md"
+  s_733c5aca014828::t_d1996ad1e940e6 6,9
+"backlog/tasks/b-619 - B-619-—-HistPlotOp-still-overflows-width×height-when-scaling-floating-histograms.md"
+  s_050bba4a854396::t_cb78831f9d4ba6 6,36-101
+"backlog/tasks/b-621 - B-621-—-AVIF-and-HEIF-decode-paths-still-size-planes-with-unchecked-width×height×bands-arithmetic.md"
+  s_edd4dee5786f05::t_3a8b269c027560 6,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "72ea7eed8f01ad2f67588616aa7055aad4e74b9f",
+  "prompts": {},
+  "sessions": {
+    "s_050bba4a854396": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Pe7hfuWzkVatXFdCLLa34M",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_733c5aca014828": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01YKSEQNbwUkXrRMXqPhcwoD",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_edd4dee5786f05": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_0156MDGwLQd3kdSWcxDGctr6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
