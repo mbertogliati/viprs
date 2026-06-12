@@ -1,0 +1,21 @@
+src/adapters/codecs/webp.rs
+  s_a673608893daed::t_bdf2966d94021b 2202-2203
+src/adapters/codecs/openslide.rs
+  s_a673608893daed::t_14520c4e85fb31 682-684
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1d2bd28e24c0d474d372f9e56164bfd1db25d799",
+  "prompts": {},
+  "sessions": {
+    "s_a673608893daed": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01EjhxgzxiQoszguqvSRQPVv",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
