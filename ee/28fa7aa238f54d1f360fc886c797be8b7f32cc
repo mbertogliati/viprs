@@ -1,0 +1,21 @@
+"backlog/tasks/b-638 - B-638-—-Raise-profile.rs-coverage-to-90-pct.md"
+  s_4dff66c8eec576::t_11ac3944d46b0f 1-14
+"backlog/tasks/b-639 - B-639-—-Raise-project.rs-coverage-to-90-pct.md"
+  s_4dff66c8eec576::t_11ac3944d46b0f 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ee28fa7aa238f54d1f360fc886c797be8b7f32cc",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
