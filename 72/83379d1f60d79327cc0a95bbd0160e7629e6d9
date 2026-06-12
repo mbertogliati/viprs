@@ -1,0 +1,21 @@
+src/domain/ops/histogram/hist_plot.rs
+  s_050bba4a854396::t_5e25f9e7aabfc5 502,507-511
+  s_050bba4a854396::t_eff51ac2302a6b 503-506
+  s_050bba4a854396::t_7499bfec3932d9 48-70,105,171-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7283379d1f60d79327cc0a95bbd0160e7629e6d9",
+  "prompts": {},
+  "sessions": {
+    "s_050bba4a854396": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01Pe7hfuWzkVatXFdCLLa34M",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
