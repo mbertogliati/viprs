@@ -1,0 +1,41 @@
+"backlog/tasks/b-628 - Stabilize-AVIF-page-selection-tests-on-feature-builds.md"
+  s_9cf78834241125::t_f8eabdd115a4f6 1-33
+"backlog/tasks/b-624 - Raise-FractSurf-coverage-after-B-618.md"
+  s_9cf78834241125::t_f8eabdd115a4f6 1-32
+"backlog/tasks/b-626 - Raise-LabelRegionsOp-coverage-after-B-616.md"
+  s_336a17629a8e0d::t_efaf61d2bd17cf 1-32
+"backlog/tasks/b-627 - Raise-LabelRegionsReducer-coverage-after-B-620.md"
+  s_a723cfa9989ee2::t_20619496760be5 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "57adb231f65fa859f3e614a102e6292f0470d3ca",
+  "prompts": {},
+  "sessions": {
+    "s_336a17629a8e0d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XkACzQauv63qCnzeBiBHBo",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_9cf78834241125": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01DttfHT7pirvzChHKQT1s6n",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_a723cfa9989ee2": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KwxEL3TdDkJDyWMsHzwHuU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
