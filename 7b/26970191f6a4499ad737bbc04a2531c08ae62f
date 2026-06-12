@@ -1,0 +1,23 @@
+"backlog/tasks/b-573 - BUG-SRgbLabAdjust-LUT-diverges-from-chained-Lab-roundtrip-for-some-RGB-tiles.md"
+  s_a50dc7d6c5cf49::t_e84bf1c92e27e7 1-30
+"backlog/archive/tasks/b-564 - BUG-WebP-eager-decode-paths-bypass-the-4GiB-allocation-guard.md"
+  s_a50dc7d6c5cf49::t_c08a7c8437b490 4,7,23-25,28,33-77
+"backlog/archive/tasks/b-563 - BUG-SRgbLabAdjust-panics-on-tiles-with-fewer-than-3-bands.md"
+  s_a50dc7d6c5cf49::t_c08a7c8437b490 4,7,22-24,34-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7b26970191f6a4499ad737bbc04a2531c08ae62f",
+  "prompts": {},
+  "sessions": {
+    "s_a50dc7d6c5cf49": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BioKBTYYvMfXbnyKKgzX4D",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
