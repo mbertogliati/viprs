@@ -1,0 +1,19 @@
+"backlog/tasks/b-608 - B-608-—-MemorySink-write-paths-still-panic-on-undersized-tile-buffers.md"
+  s_d86aa43ea6ee13::t_f04aca82674373 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4d259cee93549ace1018a7afb31d7d0fda8c6a2b",
+  "prompts": {},
+  "sessions": {
+    "s_d86aa43ea6ee13": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_013ZqAMCp7TtpC8SrVpQ9V5W",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
