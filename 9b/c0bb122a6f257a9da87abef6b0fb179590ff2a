@@ -1,0 +1,21 @@
+"backlog/tasks/b-558 - BUG-WebP-static-region-decode-scratch-allocation-overflows-on-huge-dimensions.md"
+  s_da19587d2eaa4c::t_338db1c1f5d1f1 1-37
+"backlog/tasks/b-559 - BUG-OpenSlide-full-decode-RGBA-allocation-overflows-for-huge-levels.md"
+  s_da19587d2eaa4c::t_338db1c1f5d1f1 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9bc0bb122a6f257a9da87abef6b0fb179590ff2a",
+  "prompts": {},
+  "sessions": {
+    "s_da19587d2eaa4c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01NdYMdbf1zvmTsUwQLGBncR",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
