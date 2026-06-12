@@ -1,0 +1,28 @@
+STATIC_FUSION_DESIGN.md
+  s_0cf83dbe30f561::t_197a8d819b0fce 2,4,10,14,16,18,26,28-29,42,46,93,95-96,108-109,181,183,186,188,191,193
+  s_1dbcaa9dc185c9::t_a2f34a09b7a3b7 22,24,43,45,85-86,88,111,114-115,117-118,127-128,130,133-134,147-148,150,154,156,162,164,171,173,175,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4a70f0f558c111ee7f2b6ac73e794377ad4b6c4f",
+  "prompts": {},
+  "sessions": {
+    "s_0cf83dbe30f561": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "ca58f5ed-64d0-44e1-8c38-8027f8b72013",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

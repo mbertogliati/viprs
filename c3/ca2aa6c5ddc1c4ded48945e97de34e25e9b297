@@ -1,0 +1,59 @@
+src/domain/ops/arithmetic/invert.rs
+  s_1dbcaa9dc185c9::t_39831c9579a70e 4
+  s_1dbcaa9dc185c9::t_b7bf267f197225 184-194
+src/domain/ops/arithmetic/clamp.rs
+  s_1dbcaa9dc185c9::t_24c837389bf3f1 4
+  s_1dbcaa9dc185c9::t_2396b533727f0e 67-77
+src/lib.rs
+  s_1dbcaa9dc185c9::t_ec20e891240fa0 95
+src/domain/op.rs
+  s_1dbcaa9dc185c9::t_39083fe8a5cfdd 227-255
+src/domain/ops/fused.rs
+  s_1dbcaa9dc185c9::t_07c6995db58f8c 34
+  s_1dbcaa9dc185c9::t_0cbe49583e441b 194-305
+benches/static_fusion.rs
+  s_1dbcaa9dc185c9::t_fc40d8a4ec9f0c 2,4,14-15,17-19,21,28-32,209-231,237-262,268-273,275,277,281-282,284,290-291,293,296,299-327,329-345,368-370,384-392,447-485,37,43,45-46,51-52,56-58,66,70-72,82-84,86,88,92,96-98,102-103,107,113-115,119-120,124,128-130,139,143-144,146,158,162,165,169,180-181,188-191,197-198,206-208,350,354,395,397-401,403-407,409,411-412,414-416,418-422,366-367,424,426-427,434-445
+  s_1dbcaa9dc185c9::t_dbfa6b15ddd3e5 16,20,279-280,288-289,297-298
+  s_1dbcaa9dc185c9::t_bcc15b109885ef 33,34-36,38-42,44,47-50,53-55,59-65,67-69,73-81,85,87,89-91,93-95,99,104-106,108-109,116,121-123,125-126,131-136,140,142
+  s_1dbcaa9dc185c9::t_cce06ea22f3a23 232-236,263-267,274,276,278,283,285-287,292,294-295
+  s_1dbcaa9dc185c9::t_93f1327d2a0358 371,372,375-376,379,359,380-383
+  s_1dbcaa9dc185c9::t_f393978a82edf8 393,423,425,431,433
+  s_1dbcaa9dc185c9::t_8543522021371d 100-101,110-112
+  s_1dbcaa9dc185c9::t_982d02a7aa57dd 117-118,127
+  s_1dbcaa9dc185c9::t_a222ea1e831a17 137-138,141
+  s_1dbcaa9dc185c9::t_c80a9788365c41 145,147-154,157,159-161,163-164,192-196,199-205
+  s_1dbcaa9dc185c9::t_af19acdc595b81 155-156,166-168,170-179,182-187
+  s_1dbcaa9dc185c9::t_740893a2135ee5 328,346,351-353,377-378
+  s_1dbcaa9dc185c9::t_57f1f4307ba1b9 347-349,373-374
+  s_1dbcaa9dc185c9::t_4a4a322bd32d1b 394,396,402,408
+  s_1dbcaa9dc185c9::t_57c26ee618e8ee 410,413,417,446
+  s_1dbcaa9dc185c9::t_7387fc1e4b34af 22-26
+  s_1dbcaa9dc185c9::t_bb481be7e0b43d 27
+  s_1dbcaa9dc185c9::t_d4207fd85ecb24 355-356
+  s_1dbcaa9dc185c9::t_c82368d85af251 357,360-365
+  s_1dbcaa9dc185c9::t_caee95a87535ac 358
+  s_1dbcaa9dc185c9::t_a6979642630fd4 428-430
+  s_1dbcaa9dc185c9::t_996babc17a88d0 432
+src/domain/ops/arithmetic.rs
+  s_1dbcaa9dc185c9::t_f4fa3a43f4f541 56
+src/domain/ops/arithmetic/linear.rs
+  s_1dbcaa9dc185c9::t_29788cb5692de5 5
+  s_1dbcaa9dc185c9::t_0bdb42bb24dbeb 371-381
+  s_1dbcaa9dc185c9::t_2b69a496992490 382-447
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c3ca2aa6c5ddc1c4ded48945e97de34e25e9b297",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
