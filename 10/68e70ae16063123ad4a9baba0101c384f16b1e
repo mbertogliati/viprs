@@ -1,0 +1,19 @@
+"backlog/tasks/b-561 - DX-make-viprs-easy-to-use-—-API-ergonomics-docs-publish-readiness.md"
+  s_8d103176b99a94::t_ace334f0e0eec1 39-41,58-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1068e70ae16063123ad4a9baba0101c384f16b1e",
+  "prompts": {},
+  "sessions": {
+    "s_8d103176b99a94": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01HQCueczQQBCQErwqJnaGaw",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
