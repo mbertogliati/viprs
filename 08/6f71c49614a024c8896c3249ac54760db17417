@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-625 - Raise-HistPlot-coverage-after-B-619.md"
+  s_8d7af11ac19e3a::t_5d06dc323d23b4 4,30-31,33-103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "086f71c49614a024c8896c3249ac54760db17417",
+  "prompts": {},
+  "sessions": {
+    "s_8d7af11ac19e3a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01F3QcjTmycCNvS8hcCXwJqc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
