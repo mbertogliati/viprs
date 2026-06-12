@@ -1,0 +1,21 @@
+"backlog/tasks/b-602 - FileSink-and-DoubleBufferSink-panic-on-coordinate-overflow-in-bounds-checks.md"
+  s_4dff66c8eec576::t_84c38bd37fc307 2,4
+"backlog/tasks/b-603 - MemorySink-write-paths-skip-bounds-validation-and-panic-on-negative-origins.md"
+  s_4dff66c8eec576::t_84c38bd37fc307 2,4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5fe6d59e8593094514dc89279bfc5dfd1db8cfd4",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
