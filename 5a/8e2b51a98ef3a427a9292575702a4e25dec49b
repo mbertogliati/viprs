@@ -1,0 +1,19 @@
+"backlog/tasks/b-615 - PNM-ASCII-decoders-panic-on-oversized-P1-P2-dimensions.md"
+  s_4dff66c8eec576::t_54c71b816dcba4 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5a8e2b51a98ef3a427a9292575702a4e25dec49b",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
