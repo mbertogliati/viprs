@@ -1,0 +1,20 @@
+src/adapters/codecs/avif.rs
+  s_197cb87eb2ae01::t_e03427202870f6 751-761,903-906
+  s_197cb87eb2ae01::t_c53dff84ef96d0 729
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "bcc59009a1018ea1e0b33009bf0ed21fff2731d8",
+  "prompts": {},
+  "sessions": {
+    "s_197cb87eb2ae01": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01YZrYWfWD2pVyxM6eB6B3xF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
