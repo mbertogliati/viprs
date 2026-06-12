@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-605 - B-605-—-Domain-ops-still-use-unchecked-pixel_count-bands-sample-math.md"
+  s_2a2870fb6d2e0e::t_9ab79ccb0b7e56 4,38-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "bf419fb740ccd870ed55072d5da6b8ba45562f8f",
+  "prompts": {},
+  "sessions": {
+    "s_2a2870fb6d2e0e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01WWrxrJKBqwkaSFstkYgkiU",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
