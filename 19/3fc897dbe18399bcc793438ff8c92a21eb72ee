@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-630 - FRICTION-perceptual_enhance-bench-flag-misparse.md"
+  s_73fd290025dd0b::t_b29edb49afb0d0 1-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "193fc897dbe18399bcc793438ff8c92a21eb72ee",
+  "prompts": {},
+  "sessions": {
+    "s_73fd290025dd0b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_014Fi8XzwbEaeFcguME6X9VJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
