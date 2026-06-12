@@ -1,0 +1,20 @@
+src/adapters/sinks/memory.rs
+  s_3f77bf76c5176c::t_74fd1ef8b3e562 205-228,257,282
+  s_3f77bf76c5176c::t_01b498cf43a036 434-451,461-477
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f5564d275c02b3e9580b4a4f4c1814089787e956",
+  "prompts": {},
+  "sessions": {
+    "s_3f77bf76c5176c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01LYZJXaMua6yUM782EveeQ6",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
