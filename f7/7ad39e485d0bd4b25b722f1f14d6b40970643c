@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-610 - B-610-—-MemorySource-and-MmapSource-read_region-panic-on-short-output-buffers.md"
+  s_b2397ca741b99b::t_5fd930f64f38e6 1-82
+"backlog/archive/tasks/b-608 - B-608-—-MemorySink-write-paths-still-panic-on-undersized-tile-buffers.md"
+  s_b2397ca741b99b::t_5fd930f64f38e6 4,7,32-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f77ad39e485d0bd4b25b722f1f14d6b40970643c",
+  "prompts": {},
+  "sessions": {
+    "s_b2397ca741b99b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_019qQ3EDAZu3pPQoqtJui3TH",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
