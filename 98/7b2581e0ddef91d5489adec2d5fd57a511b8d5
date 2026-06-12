@@ -1,0 +1,80 @@
+src/domain.rs
+  s_1dbcaa9dc185c9::t_1bf4ddddefef61 5
+src/adapters/pipeline/builder.rs
+  s_1dbcaa9dc185c9::t_1a8db70ee7c2b3 537-565
+src/adapters.rs
+  s_1dbcaa9dc185c9::t_51c3326796814e 3
+src/domain/ops/point/gamma.rs
+  s_1dbcaa9dc185c9::t_664506e70adadd 1-57
+src/domain/ops/point/trig.rs
+  s_1dbcaa9dc185c9::t_9e0c1553712e56 1-229
+src/domain/ops.rs
+  s_1dbcaa9dc185c9::t_093b040693e0e6 14
+src/domain/ops/point/abs.rs
+  s_1dbcaa9dc185c9::t_914418c8da647d 1-57
+examples/static_fusion_design.rs
+  s_1dbcaa9dc185c9::t_1214625a10d1e8 18-19,21-24,29,31,33-35,43,45,47-49,51,57,59,61-63,65,99,111,120
+  s_1dbcaa9dc185c9::t_f45df19274c2f1 379,383,387,390,396,459-495
+  s_1dbcaa9dc185c9::t_fd5c526fcced20 124-133
+  s_1dbcaa9dc185c9::t_1be1c3c3fad0bb 502
+  s_1dbcaa9dc185c9::t_d4ad947191e40f 215-224
+  s_1dbcaa9dc185c9::t_468c72eb35a005 308,337,339-342,344-347,349,351,363,365,367-368,370,373-374
+  s_1dbcaa9dc185c9::t_c4d00585ab25be 66-67
+  s_1dbcaa9dc185c9::t_c591bcc8b2dcde 2,7,12-17,20,26-28,30,32,36,40-42,44,46,50,54-56,58,60,64,68-98,100-110,112-119,121-123,134-158,163-177,179,204,252-293,299-301,303-306,309-329,348,350,352-354,356-362,364,366,371-372,375-376,496-501,503-514
+  s_1dbcaa9dc185c9::t_9ca637575617ea 25
+  s_1dbcaa9dc185c9::t_112c63226c240a 232-233,235-243,245-251
+  s_1dbcaa9dc185c9::t_adfd60008b01bb 196,213-214,226
+  s_1dbcaa9dc185c9::t_70aba9db7b2f40 294-298,302,307,330-336,338,343,355,369
+  s_1dbcaa9dc185c9::t_21418dcf734d40 52-53
+  s_1dbcaa9dc185c9::t_6e96727aa36df8 212,229-231
+  s_1dbcaa9dc185c9::t_dcbb660eb8b7fc 377-378,380-382,384-386,388-389,391-395,397-412,414-440,442-458
+  s_1dbcaa9dc185c9::t_56fd8227d82d2d 178,180-182
+  s_1dbcaa9dc185c9::t_dae6e731a8a877 37
+  s_1dbcaa9dc185c9::t_a7ab7563c35c46 413,441
+  s_1dbcaa9dc185c9::t_2c376f44979149 1,3-6,8-11
+  s_1dbcaa9dc185c9::t_64ca7435d746fe 159-162
+  s_1dbcaa9dc185c9::t_83b3b67c2e5a88 183-195,197-203,205-211,225,227-228,234,244
+src/domain/format.rs
+  s_1dbcaa9dc185c9::t_554e5a5cbf95ab 1096-1127,1147-1178
+  s_1dbcaa9dc185c9::t_7e5817668d9c61 942-981
+  s_1dbcaa9dc185c9::t_3d8183586afd72 916-941,982-1095,1128-1146,1179-1180
+src/domain/concretize.rs
+  s_1dbcaa9dc185c9::t_a1436bbc40d974 23,42-44
+  s_1dbcaa9dc185c9::t_b363aca2fc506e 108
+  s_1dbcaa9dc185c9::t_973af802d8158f 1-22,24-41,45-50,55-62,67-77,82-94,99-107,110-203
+  s_1dbcaa9dc185c9::t_8271a2bacb024f 51-54,63-66,78-81,95-98
+src/domain/ops/point/linear.rs
+  s_1dbcaa9dc185c9::t_d8647bd4b94770 1-79
+Cargo.toml
+  s_1dbcaa9dc185c9::t_6a89bd01de2f1e 136-139
+src/domain/ops/point/clamp.rs
+  s_1dbcaa9dc185c9::t_5049ee2c6c47d0 1-58
+src/adapters/concretized_bridge.rs
+  s_1dbcaa9dc185c9::t_6981455dd01a37 1-153,155-167,169-183,185-212
+  s_1dbcaa9dc185c9::t_5539f29ebd9d74 154,168,184
+src/adapters/pipeline/tests.rs
+  s_1dbcaa9dc185c9::t_1bfdbc1f1b4f3c 3376-3466
+src/domain/ops/point/invert.rs
+  s_1dbcaa9dc185c9::t_9f36fb37c905e0 1-78
+src/domain/ops/point.rs
+  s_1dbcaa9dc185c9::t_83ed36dd0094f2 10-12,18-20
+  s_1dbcaa9dc185c9::t_e50226984202f9 1-9,13-17
+src/domain/ops/point/boolean.rs
+  s_1dbcaa9dc185c9::t_909afbd4a8af3f 1-161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "987b2581e0ddef91d5489adec2d5fd57a511b8d5",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
