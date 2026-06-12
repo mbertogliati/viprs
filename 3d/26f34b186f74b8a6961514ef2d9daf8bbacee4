@@ -1,0 +1,23 @@
+"backlog/tasks/b-576 - BUG-Image-from_buffer-width-height-bands-unchecked-overflow.md"
+  s_7b1a1e001a4c50::t_d2b5d6d75f8733 1-26
+"backlog/tasks/b-575 - BUG-animated-WebP-4GiB-guard-covers-one-canvas-but-not-N-frame-accumulation.md"
+  s_7b1a1e001a4c50::t_d2b5d6d75f8733 1-27
+"backlog/tasks/b-574 - BUG-SRgbLabAdjust-identity-params-1.0-0.0-drift-by-1-LSB.md"
+  s_7b1a1e001a4c50::t_d2b5d6d75f8733 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3d26f34b186f74b8a6961514ef2d9daf8bbacee4",
+  "prompts": {},
+  "sessions": {
+    "s_7b1a1e001a4c50": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01QiYuCLE16gsKZXo3mtcEzX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
