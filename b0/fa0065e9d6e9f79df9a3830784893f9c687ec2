@@ -1,0 +1,19 @@
+"backlog/tasks/b-604 - B-604-—-MAT-transpose-sizing-still-uses-unchecked-width-height-bands-math.md"
+  s_0936608142e6da::t_45565e8fb3f199 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b0fa0065e9d6e9f79df9a3830784893f9c687ec2",
+  "prompts": {},
+  "sessions": {
+    "s_0936608142e6da": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BwutXMHhhQ7q2pKGiarhoB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
