@@ -1,0 +1,31 @@
+"backlog/tasks/b-624 - Raise-FractSurf-coverage-after-B-618.md"
+  s_3fc942b65091da::t_56403fb6f1c867 4,7
+"backlog/archive/tasks/b-623 - B-623-—-AVIF-HEIF-encoders-still-reserve-expanded-output-buffers-with-unchecked-usize-math.md"
+  s_3fc942b65091da::t_ff11b52f10fe16 6,34-105
+"backlog/tasks/b-628 - Stabilize-AVIF-page-selection-tests-on-feature-builds.md"
+  s_197cb87eb2ae01::t_94296aaf0da7fb 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f1ae537f60054d59c6f0ca33fe9b5a266555e862",
+  "prompts": {},
+  "sessions": {
+    "s_197cb87eb2ae01": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01YZrYWfWD2pVyxM6eB6B3xF",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_3fc942b65091da": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01XcZ9ByGzCHKWnKTcHejbgk",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
