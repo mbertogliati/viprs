@@ -1,0 +1,19 @@
+"backlog/tasks/b-618 - B-618-—-FractSurfOp-still-allocates-width×height-buffers-without-checked-bounds.md"
+  s_759dee1edfa1d9::t_9493925d08c0dc 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7e28ffcf016816b16f51fe6c382075fc47058b6f",
+  "prompts": {},
+  "sessions": {
+    "s_759dee1edfa1d9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01TxGCknFJWAo3eJg54Rrft9",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
