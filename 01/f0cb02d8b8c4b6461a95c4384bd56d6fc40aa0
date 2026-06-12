@@ -1,0 +1,21 @@
+AGENTS.md
+  s_4dff66c8eec576::t_fbf10443852988 49-65
+"backlog/archive/tasks/b-533 - FRICTION-benchmark-commands-still-resolve-the-unsupported-wrapper-toolchain.md"
+  s_4dff66c8eec576::t_8eb8b428045075 4,7,39-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "01f0cb02d8b8c4b6461a95c4384bd56d6fc40aa0",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
