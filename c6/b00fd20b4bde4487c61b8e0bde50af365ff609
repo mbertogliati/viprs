@@ -1,0 +1,25 @@
+src/domain/reducers/project.rs
+  s_53e6257b682a4f::t_469cea05bd3b17 242-243,256-265
+  s_53e6257b682a4f::t_2fc8ed9aa40eb5 64-69,71-74
+  s_53e6257b682a4f::t_db0619f6c4aef6 244-255
+src/domain/reducers/profile.rs
+  s_53e6257b682a4f::t_6f7c459ec88cf8 248-249,262-271
+  s_53e6257b682a4f::t_42e0026bcbeaa7 64-69,71-74
+  s_53e6257b682a4f::t_82a81a18ac9f72 250-261
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c6b00fd20b4bde4487c61b8e0bde50af365ff609",
+  "prompts": {},
+  "sessions": {
+    "s_53e6257b682a4f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01KzimHE1BFBjnvSrs7uDhZz",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
