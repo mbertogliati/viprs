@@ -1,0 +1,21 @@
+"backlog/archive/tasks/b-591 - FRICTION-Backlog-task-B-589-missing-from-repository-backlog.md"
+  s_4dff66c8eec576::t_f8b7144b23e2de 1-47
+"backlog/archive/tasks/b-589 - BUG-reduceh-reducev-tap_count-overflow-on-extreme-downscale-factors.md"
+  s_4dff66c8eec576::t_e30d58d6eadc76 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3d86556cf95357981f96c9fcc435284620f20ba9",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
