@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-612 - B-612-—-LabelRegionsOp-still-wraps-tile-pixel-counts-on-large-full-image-regions.md"
+  s_c6e2453aa31148::t_d442311abb7870 6,9,33-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a30fb6acf52f504a076d5c0c8b8b9af1a0ac7b96",
+  "prompts": {},
+  "sessions": {
+    "s_c6e2453aa31148": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01N9S58bKQWfcDFACwC4BJqp",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
