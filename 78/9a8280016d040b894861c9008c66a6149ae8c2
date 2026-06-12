@@ -1,0 +1,19 @@
+"backlog/tasks/b-606 - B-606-—-FRICTION-backlog-search-plain-stalls-on-simple-keyword-queries.md"
+  s_0936608142e6da::t_bdc191d79a1ce9 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "789a8280016d040b894861c9008c66a6149ae8c2",
+  "prompts": {},
+  "sessions": {
+    "s_0936608142e6da": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01BwutXMHhhQ7q2pKGiarhoB",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
