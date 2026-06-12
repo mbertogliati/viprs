@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-613 - B-613-—-FFT-scratch-allocation-still-uses-unchecked-width-×-height.md"
+  s_b111ca1fc557ed::t_64160db044c7b0 4,7,30-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a885391feb581765259b024c6f999f917e9bbf86",
+  "prompts": {},
+  "sessions": {
+    "s_b111ca1fc557ed": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_018fiPB8aQzArrWfvLm7WzCX",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
