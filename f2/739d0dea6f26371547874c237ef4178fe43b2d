@@ -1,0 +1,33 @@
+"backlog/tasks/b-595 - BUG-MemorySink-sizing-overflows-before-scheduler-guards-run.md"
+  s_4dff66c8eec576::t_c6b83470e4583e 1-40
+"backlog/tasks/b-594 - Match-reduce-tap-limit-to-libvips-MAX_POINT.md"
+  s_251f50ddc58f1d::t_d9e12349828375 1-33
+"backlog/tasks/b-593 - B-593-—-PNG-TIFF-region-decoders-panic-on-overflowing-Region.md"
+  s_251f50ddc58f1d::t_d9e12349828375 1-40
+"backlog/archive/tasks/b-596 - B-595-—-Reduce-tap-guard-still-admits-65535-tap-kernels-just-below-the-cutoff.md"
+  s_4dff66c8eec576::t_34690cae086630 1-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f2739d0dea6f26371547874c237ef4178fe43b2d",
+  "prompts": {},
+  "sessions": {
+    "s_251f50ddc58f1d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PDzMNvq9JRwmm7uLtzUtwq",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
