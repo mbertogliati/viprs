@@ -1,0 +1,19 @@
+"backlog/archive/tasks/b-627 - Raise-LabelRegionsReducer-coverage-after-B-620.md"
+  s_8d7af11ac19e3a::t_f060779824c14b 4,33-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e57be7e00270313e18a71798ea6ee910c8c8eb52",
+  "prompts": {},
+  "sessions": {
+    "s_8d7af11ac19e3a": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01F3QcjTmycCNvS8hcCXwJqc",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
