@@ -1,0 +1,19 @@
+"backlog/tasks/b-597 - PipelineBuilder-build-panics-on-oversized-source-metadata.md"
+  s_336db380a495e7::t_a63c26be91a77b 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "eb03a3053ccfcaecb3816fa4e61c1af57b543ea0",
+  "prompts": {},
+  "sessions": {
+    "s_336db380a495e7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01J1yWJEN4uE88Z7Z4Kumbcj",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
