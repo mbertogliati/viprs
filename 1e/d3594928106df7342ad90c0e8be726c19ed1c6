@@ -1,0 +1,39 @@
+tests/integration/codecs/roundtrip/format_basic.rs
+  s_4dff66c8eec576::t_d5334f214d1510 87,238,253
+tests/integration/codecs/roundtrip/format_advanced.rs
+  s_4dff66c8eec576::t_d5334f214d1510 214,416
+"backlog/archive/tasks/b-585 - FRICTION-feature-gated-integration-tests-fail-under-features-webp.md"
+  s_4dff66c8eec576::t_a33aabbdefb1b1 1-45
+tests/integration/codecs/edges/advanced.rs
+  s_4dff66c8eec576::t_d5334f214d1510 158,330,486
+"backlog/tasks/b-587 - BUG-reduce_v-Lanczos3-factor1.5-diverges-from-libvips-golden-output.md"
+  s_4dff66c8eec576::t_5f282336773697 1-32
+"backlog/tasks/b-586 - WebP-region-decode-panics-on-overflowing-requested-regions.md"
+  s_edb1604ce5b798::t_75efbb0d33c075 1-33
+docs/PERFORMANCE.md
+  s_4dff66c8eec576::t_9ab30899394f42 915-1003
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1ed3594928106df7342ad90c0e8be726c19ed1c6",
+  "prompts": {},
+  "sessions": {
+    "s_4dff66c8eec576": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "aaaa055d-7f90-43b4-b6fb-9d3988c5bef3",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_edb1604ce5b798": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_vrtx_01PT8yeXemitqSbU55ncWrmz",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
