@@ -1,0 +1,21 @@
+Cargo.toml
+  s_1dbcaa9dc185c9::t_de5faf54636178 140-143
+examples/ergonomic_image_api.rs
+  s_1dbcaa9dc185c9::t_47310284b3f48b 1-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1fe30a015e4f95a15d69d6a1daa760eb9f5619a7",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
