@@ -1,0 +1,21 @@
+src/adapters/image_api.rs
+  s_1dbcaa9dc185c9::t_cd46ebfa644d8d 60
+src/adapters/pipeline/builder.rs
+  s_1dbcaa9dc185c9::t_cd46ebfa644d8d 11,21,25,29,31,35,40,44,55,63,72,86-87,89-90,99,105,328,369,388,403,477,479,516-517,531-532,597,605,612,617,631,674,693,717,748,787,824,878,949,958,963,968,973,1039,1067,1126,1141,1163,1217,1226,1284,1292,1355,1406,1415,1478,1508,1516,1568,1589,1671,1700,1738,1760,1802,1827,1884,1933,1997,2047,2115,2196-2197,2238,2242-2243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "dffcb638cbd736fb09dce13a781e8171135b2a98",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
