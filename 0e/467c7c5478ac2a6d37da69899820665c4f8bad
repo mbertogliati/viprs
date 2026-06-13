@@ -1,0 +1,20 @@
+src/domain/coeff.rs
+  s_1dbcaa9dc185c9::t_8fda514bdacce0 190-209
+  s_1dbcaa9dc185c9::t_8a247dbd640f2d 79-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0e467c7c5478ac2a6d37da69899820665c4f8bad",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
