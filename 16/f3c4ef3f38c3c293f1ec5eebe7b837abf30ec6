@@ -1,0 +1,21 @@
+REFACTOR_STATE.md
+  s_1dbcaa9dc185c9::t_4c86e77ccdd413 29-33
+  s_1dbcaa9dc185c9::t_d0441ffb00b293 49-55
+  s_1dbcaa9dc185c9::t_ac6251b3446886 39-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "16f3c4ef3f38c3c293f1ec5eebe7b837abf30ec6",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
