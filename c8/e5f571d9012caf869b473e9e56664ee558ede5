@@ -1,0 +1,35 @@
+REFACTOR_STATE.md
+  s_1dbcaa9dc185c9::t_86d32b39a8f8c7 23,28,30,32-36,38-42,44-47,49-53,55-58,60-63,65-69,71,75,77-81,88-89,91-92
+  s_1dbcaa9dc185c9::t_4505238afc41e0 5-7,18-20,24
+src/domain/ops/arithmetic/linear.rs
+  s_1dbcaa9dc185c9::t_c74b4637fefe25 523-531
+xtask/src/bench/pipeline.rs
+  s_1dbcaa9dc185c9::t_0239d0223c9ec7 1676,1692
+  s_1dbcaa9dc185c9::t_21c568a923c5ee 1285,1426
+src/adapters/pipeline/builder.rs
+  s_1dbcaa9dc185c9::t_772d9b1cd0ca99 477
+benches/fusion.rs
+  s_1dbcaa9dc185c9::t_ea8b49ec7afe9e 887
+  s_1dbcaa9dc185c9::t_7caf7ff86de1a9 877-886,888-938,940-961,1045-1047
+  s_1dbcaa9dc185c9::t_84900a766c9e15 939
+  s_1dbcaa9dc185c9::t_bcd76d61904b5f 962-1044
+  s_1dbcaa9dc185c9::t_a16a36be4b3465 1048-1147
+src/domain/concretize.rs
+  s_1dbcaa9dc185c9::t_8ab14379df31a8 333-341
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c8e5f571d9012caf869b473e9e56664ee558ede5",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
