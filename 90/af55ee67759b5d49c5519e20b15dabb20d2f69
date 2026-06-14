@@ -1,0 +1,35 @@
+src/lib.rs
+  s_999b645f7ea841::t_6cb182d04d1d52 96
+src/domain/ops/arithmetic/clamp.rs
+  s_999b645f7ea841::t_6cb182d04d1d52 4
+src/adapters/pipeline.rs
+  s_1dbcaa9dc185c9::t_c187f902b6d3b8 44,69
+src/domain/ops/arithmetic/invert.rs
+  s_999b645f7ea841::t_6cb182d04d1d52 4
+src/domain/ops/arithmetic/linear.rs
+  s_999b645f7ea841::t_6cb182d04d1d52 5,368
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "90af55ee67759b5d49c5519e20b15dabb20d2f69",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_999b645f7ea841": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_017M3yUv3UNtRmL6dyb4ubC1",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
