@@ -1,0 +1,22 @@
+src/domain/coeff.rs
+  s_1dbcaa9dc185c9::t_abfaaa6a9e2a98 2,78,84,86-87,90-91,94-98,100-102,104,109-110,112-121,130,134-135,138-153,157-161,165-167,171-173,177-179,183-185,189-192,197-200,205-208,212-215,219,221-224
+  s_1dbcaa9dc185c9::t_ce8a9fee52e90f 80
+  s_1dbcaa9dc185c9::t_8a247dbd640f2d 122-124,127-128
+  s_1dbcaa9dc185c9::t_9337802cdffc65 4,7,13,16,18,22,24,33-34,38,40,42-43,45,48-49,53-56,58-59,64-67,70,72,76-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1e275ebab01de0c1063c08424e34c87468ae695d",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

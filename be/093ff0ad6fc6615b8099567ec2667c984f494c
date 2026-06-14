@@ -1,0 +1,29 @@
+src/adapters/concretized_bridge.rs
+  s_1dbcaa9dc185c9::t_6981455dd01a37 1-6,10-100,118-135,137-166,173-185,192-206,213-227,235-245,114-115
+  s_4a5e25294b5697::t_ceee85cccf6be0 136,167-172,186-191,207-212,228-234
+  s_1dbcaa9dc185c9::t_a0958d1f48caa9 101-103,105-113,116-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "be093ff0ad6fc6615b8099567ec2667c984f494c",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4a5e25294b5697": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01XfaMRbMjNsaAFv2F2uAZXa",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

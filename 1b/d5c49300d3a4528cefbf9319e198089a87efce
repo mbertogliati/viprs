@@ -1,0 +1,33 @@
+src/domain/coeff.rs
+  s_1dbcaa9dc185c9::t_abfaaa6a9e2a98 2,27,35,37-38,41-42,44-48,50-52,54,61-70,90,92-93,96-111,120-124,132-134,142-144,150-152,157-159,165-168,172-175,179-182,186-189,192,194-197,29,75,77,80-81,83,86-87
+  s_1dbcaa9dc185c9::t_ce8a9fee52e90f 33,1,3,28,34,36
+  s_1dbcaa9dc185c9::t_8a247dbd640f2d 71-72,82,84
+  s_1dbcaa9dc185c9::t_9337802cdffc65 8-9,19-22,25-26,12
+  s_1dbcaa9dc185c9::t_7c8336fd73605c 10-11,14,17-18,23-24
+  s_4a5e25294b5697::t_ceee85cccf6be0 193
+  s_1dbcaa9dc185c9::t_72e4ba8c81724d 88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1bd5c49300d3a4528cefbf9319e198089a87efce",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4a5e25294b5697": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01XfaMRbMjNsaAFv2F2uAZXa",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

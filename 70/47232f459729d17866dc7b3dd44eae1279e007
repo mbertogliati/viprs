@@ -1,0 +1,30 @@
+Cargo.toml
+  s_1dbcaa9dc185c9::t_a61d8129927bee 286-289,139,143-144
+  s_1dbcaa9dc185c9::t_de5faf54636178 136
+  s_1dbcaa9dc185c9::t_6a89bd01de2f1e 137-138
+  s_1dbcaa9dc185c9::t_f2ba3ff3726bb7 141-142
+benches/fusion.rs
+  s_1dbcaa9dc185c9::t_778dc54560a05a 1-4,6-40,42-46,60-75,77-88,90-93,95-103,112-114,116-123,126,158,217-221
+  s_1dbcaa9dc185c9::t_dbaceec3102871 47-49,51-54,56-59
+  s_1dbcaa9dc185c9::t_4a5525f2a64484 127,129-132,134-137
+  s_1dbcaa9dc185c9::t_d99b8ff7069265 138-142,151-153,155-157,159-166,168-171,173-176,216
+  s_1dbcaa9dc185c9::t_cb276a742c0229 177-181,189-191,193-205,207-210,212-215
+  s_1dbcaa9dc185c9::t_7caf7ff86de1a9 222
+  s_1dbcaa9dc185c9::t_a16a36be4b3465 242,263-268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7047232f459729d17866dc7b3dd44eae1279e007",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+src/adapters/pipeline/builder.rs
+  s_79ae2fe7b27e4c::t_735fadea4c50cc 1,199-200,202-212,215-257,260-269,272-273,276-277,280-281,284-288,291-292,295-296,299-300,303-304,307-308,311-322,324-327,329-340,342,344-353,355-367,370-387,389-390,392-402,405,407-413,438-446,448-458,462-463,465-470,483-488,490-495,497-499,501-502,504-506,508,520,522-527,533-538,540-542,545-546,548-552,563,590,592-593,608,620-630,633-664,667-669,671-673,677-692,694-702,705-716,718-742,745-747,749-781,784,786,788-820,823,825-871,874-877,879-880,883-885,887-945,948,950,953-957,959,962,964,967,969,972,974-978,981-1033,1035,1038,1042-1061,1063,1066,1068-1120,1122,1125,1127-1135,1137,1140,1142-1146,1149-1159,1162,1164-1166,1168-1172,1175-1203,1205,1208-1212,1218,1221-1225,1227-1279,1281,1285,1293,1295-1299,1301-1305,1307-1352,1356-1392,1394,1397-1401,1407,1410-1414,1416-1468,1470,1473-1477,1479-1484,1486-1487,1489-1490,1492-1493,1495-1496,1498-1499,1501-1502,1504-1506,1509-1510,1517-1522,1524-1528,1530-1533,1535-1536,1538-1539,1541-1542,1544-1545,1547-1548,1551,1554-1567,1569-1576,1580-1588,1590-1661,1663,1666-1670,1672-1695,1697,1701,1703-1735,1739,1746-1752,1754,1761-1767,1769-1799,1803-1824,1828-1881,1885-1910,1912-1919,1921-1931,1934,1939,1941-1942,1944-1957,1959-1972,1976-1977,1979,1981,1983-1990,1993-1996,2000-2036,2039-2046,2048-2108,2111-2114,2116-2181,2184-2195,2199-2200,2202,2204,2206,2208-2214,2216-2219,2223-2237,2239,2245-2247,2251,2253,2255-2257,2259,2261,2263-2277,2302,92,97,102-103,106,108,116-117,415,475,18,22,24,67-68,79-80,567,571,574,581-582,588,15,28,32-33,36,39,43,50-52,60-62,65-66,75,114,427-428,480,510,513,519,529,558,584,1214-1216,1289,1403-1405,1513,1757,1980
+  s_b2146a9d6c8789::t_6e77a0828a8aec 85,471-472,94-96,100,109,417,473-474,478,561-562,632,1041,1999
+  s_5f3f3eb3b2ffb1::t_0cedbd8b2fbd1c 414,416,88,93,98,101,104,118,476,19,69,81,589,13,26,34,41,53,73,341,418-426,429,481-482,509,511-512,514-515,518
+  s_b222045d305ff1::t_af2a87d0f1e885 430-432,434-436
+  s_1dbcaa9dc185c9::t_da6490a7137e03 4-10,20,70,78
+  s_1dbcaa9dc185c9::t_9b241ab237d5a2 71
+  s_1dbcaa9dc185c9::t_05fef18b8b6725 566,568-570,572-573,575-580,587
+  s_5f3f3eb3b2ffb1::t_4ce62d702e07bf 2,12,17,23,30,37-38,45,77,91,107,115
+  s_4a5e25294b5697::t_ceee85cccf6be0 14,16,27,42,74,76
+  s_5f3f3eb3b2ffb1::t_cc29e2f707295e 46-49,54,56-59,64
+  s_5f3f3eb3b2ffb1::t_263fc5b799d22f 110-113,528,530,555-557,583,585-586
+  s_5f3f3eb3b2ffb1::t_561cff55bea55e 539,543-544
+  s_5f3f3eb3b2ffb1::t_f15d97fc995f7e 553,1740-1745,1753,1935-1938,1940,1943,1958,1973-1975,1982,2198,2203,2205,2244,2248,2252,2254
+  s_4a5e25294b5697::t_e51f8128d2e134 598-600,613-615
+  s_4a5e25294b5697::t_3be2d3214f5141 601-602
+  s_5f3f3eb3b2ffb1::t_26e5d4a9835e5c 1213,1288,1290-1291,1402,1512,1514-1515
+  s_1dbcaa9dc185c9::t_cd46ebfa644d8d 11,21,25,29,31,35,40,44,55,63,72,86-87,89-90,99,105,328,369,388,403,479,516-517,531-532,631,674,693,717,748,787,824,878,949,958,963,968,1039,1126,1141,1163,1217,1226,1284,1292,1406,1415,1478,1508,1516,1568,1589,1671,1700,1738,1760,1802,1827,1933,1997,2047,2115,2196-2197,2238,2242-2243
+src/adapters/image_api.rs
+  s_7acb6fba1facca::t_4bc35c32511870 1-9,11,15,25-34,41-59,61-66,68-73,75-189,192-257,259-306,311-332
+  s_7acb6fba1facca::t_65e282da938128 10,12-14,20,22,24
+  s_7acb6fba1facca::t_864890dca96214 16,19,21
+  s_7acb6fba1facca::t_554651c4045494 17-18
+  s_7acb6fba1facca::t_4097ba93d3460b 23
+  s_5f3f3eb3b2ffb1::t_84dcbbd3359447 35-40
+  s_5f3f3eb3b2ffb1::t_65c1a6efb4e850 190-191
+  s_7acb6fba1facca::t_a99cf90ebcebbf 258
+  s_4a5e25294b5697::t_5e954959a25906 307-310
+  s_1dbcaa9dc185c9::t_cd46ebfa644d8d 60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8866986dd78ea3d2873926d41fcc83a3a1190487",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_4a5e25294b5697": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01XfaMRbMjNsaAFv2F2uAZXa",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_5f3f3eb3b2ffb1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01BUxfnz8WMU7w2XJnUCjqgi",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_79ae2fe7b27e4c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01EFkpHZPi1EUFg2gX9suaPr",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_7acb6fba1facca": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_012KPfh2KUVJ679YBaVFXFqJ",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b2146a9d6c8789": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_01TZyN78LTSskfB3ckegMZsd",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_b222045d305ff1": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "toolu_bdrk_017jt9PqzMzxMQXnvCjpL8ep",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}

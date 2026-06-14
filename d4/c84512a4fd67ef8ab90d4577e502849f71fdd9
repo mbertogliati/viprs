@@ -1,0 +1,24 @@
+examples/ergonomic_image_api.rs
+  s_1dbcaa9dc185c9::t_47310284b3f48b 1-100,102-104,106-112,114-150,152-160,165-167,169-182,184-187,189-197,200-210,212-230
+Cargo.toml
+  s_1dbcaa9dc185c9::t_a61d8129927bee 290-293,139,147-148,143
+  s_1dbcaa9dc185c9::t_de5faf54636178 136,140-142
+  s_1dbcaa9dc185c9::t_6a89bd01de2f1e 137-138
+  s_1dbcaa9dc185c9::t_f2ba3ff3726bb7 145-146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d4c84512a4fd67ef8ab90d4577e502849f71fdd9",
+  "prompts": {},
+  "sessions": {
+    "s_1dbcaa9dc185c9": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "83bf875a-b106-4acb-ac03-a114ca4c2fa8",
+        "model": "claude-opus-4.6"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
