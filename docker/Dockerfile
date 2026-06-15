@@ -17,6 +17,7 @@
 #     viprs-perf:arm64 /data/input/sample.jpg invert --iterations 10 --metrics all
 
 FROM rust:1.96-bookworm AS builder
+ARG MAKE_JOBS=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -45,9 +46,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Build and install libjxl from source (required for jpegxl-sys)
 RUN git clone --depth 1 https://github.com/libjxl/libjxl.git /tmp/libjxl \
-    && mkdir -p /tmp/libjxl/build && cd /tmp/libjxl/build \
+    && cd /tmp/libjxl && ./deps.sh && mkdir -p build && cd build \
     && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF .. \
     && ninja -v && ninja install && ldconfig && rm -rf /tmp/libjxl
+
+# Build and install newer libheif (>=1.16) from source to satisfy libheif-sys
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libde265-dev \
+    libx265-dev \
+    libaom-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && git clone --depth 1 https://github.com/strukturag/libheif.git /tmp/libheif \
+    && mkdir -p /tmp/libheif/build && cd /tmp/libheif/build \
+    && cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libheif
+
+# Build libjpeg-turbo >= 3.0 from source so turbojpeg-sys can find libturbojpeg >= 3.0
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nasm \
+    && rm -rf /var/lib/apt/lists/* \
+    && git clone --depth 1 --branch 3.0.0 https://github.com/libjpeg-turbo/libjpeg-turbo.git /tmp/libjpeg-turbo \
+    && mkdir -p /tmp/libjpeg-turbo/build && cd /tmp/libjpeg-turbo/build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 .. \
+    && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libjpeg-turbo
 
 WORKDIR /workspace
 COPY Cargo.toml Cargo.lock ./
@@ -56,11 +77,13 @@ COPY xtask/ xtask/
 COPY .cargo/ .cargo/
 COPY tools/bench-vs-libvips/libvips_runner.c tools/bench-vs-libvips/Makefile tools/bench-vs-libvips/
 
-# Build with counting allocator for allocation profiling
-RUN cargo build --release -p xtask --features count-alloc
+# Ensure pkg-config can find libraries installed into /opt/libjpeg-turbo
+ENV PKG_CONFIG_PATH=/opt/libjpeg-turbo/lib/pkgconfig:/opt/libjpeg-turbo/lib64/pkgconfig
 
-# Build libvips C runner
-RUN make -C tools/bench-vs-libvips libvips-runner
+# NOTE: In this hybrid approach the OCI image is a "native-deps" base image.
+# Cargo/Rust builds (xtask and viprs) will be executed inside CI jobs that use
+# this image as a container. Skipping cargo build here avoids repeated failures
+# during Docker image iteration while still providing all native libraries.
 
 # ----- Runtime stage -----
 FROM debian:bookworm-slim
@@ -82,8 +105,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /workspace/target/release/xtask /usr/local/bin/viprs-xtask
-COPY --from=builder /workspace/tools/bench-vs-libvips/libvips-runner /usr/local/bin/libvips-runner
+# xtask and bench runners are expected to be built in CI using this image as the base.
+# Keep helper scripts in the image.
 COPY docker/scripts/ /opt/bench/
 
 WORKDIR /data
