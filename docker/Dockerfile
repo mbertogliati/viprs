@@ -20,7 +20,16 @@ FROM rust:1.96-bookworm AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    cmake \
+    ninja-build \
+    git \
     pkg-config \
+    libbrotli-dev \
+    libpng-dev \
+    libtiff-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    liblzma-dev \
     libvips-dev \
     libturbojpeg-dev \
     libwebp-dev \
@@ -28,12 +37,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopenjp2-7-dev \
     liblcms2-dev \
     libopenslide-dev \
-    libpng-dev \
     linux-perf \
     valgrind \
     binutils \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Build and install libjxl from source (required for jpegxl-sys)
+RUN git clone --depth 1 https://github.com/libjxl/libjxl.git /tmp/libjxl \
+    && mkdir -p /tmp/libjxl/build && cd /tmp/libjxl/build \
+    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF .. \
+    && ninja -v && ninja install && ldconfig && rm -rf /tmp/libjxl
 
 WORKDIR /workspace
 COPY Cargo.toml Cargo.lock ./
@@ -59,6 +73,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopenjp2-7-dev \
     liblcms2-dev \
     libopenslide-dev \
+    libbrotli-dev \
+    libjpeg-dev \
+    libtiff-dev \
     linux-perf \
     valgrind \
     binutils \
