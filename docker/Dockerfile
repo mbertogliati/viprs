@@ -70,6 +70,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 .. \
     && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libjpeg-turbo
 
+# Build libjpeg-turbo >= 3.0 from source so turbojpeg-sys can find libturbojpeg >= 3.0
+RUN apt-get update && apt-get install -y --no-install-recommends \ 
+    nasm \ 
+    && rm -rf /var/lib/apt/lists/* \
+    && git clone --depth 1 --branch 3.0.0 https://github.com/libjpeg-turbo/libjpeg-turbo.git /tmp/libjpeg-turbo \
+    && mkdir -p /tmp/libjpeg-turbo/build && cd /tmp/libjpeg-turbo/build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 .. \
+    && make -j$(nproc) && make install && ldconfig && rm -rf /tmp/libjpeg-turbo
+
 WORKDIR /workspace
 COPY Cargo.toml Cargo.lock ./
 COPY src/ src/
