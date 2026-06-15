@@ -16,14 +16,23 @@
 #   docker run --privileged --rm -v $(pwd)/tests/fixtures/images:/data/input \
 #     viprs-perf:arm64 /data/input/sample.jpg invert --iterations 10 --metrics all
 
-FROM rust:1.87-bookworm AS builder
+FROM rust:1.96-bookworm AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libvips-dev \
+    build-essential \
     pkg-config \
+    libvips-dev \
+    libturbojpeg-dev \
+    libwebp-dev \
+    libheif-dev \
+    libopenjp2-7-dev \
+    liblcms2-dev \
+    libopenslide-dev \
+    libpng-dev \
     linux-perf \
     valgrind \
     binutils \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
@@ -44,9 +53,16 @@ FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips42 \
+    libturbojpeg0-dev \
+    libwebp-dev \
+    libheif-dev \
+    libopenjp2-7-dev \
+    liblcms2-dev \
+    libopenslide-dev \
     linux-perf \
     valgrind \
     binutils \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /workspace/target/release/xtask /usr/local/bin/viprs-xtask
