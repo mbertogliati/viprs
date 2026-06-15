@@ -1,0 +1,13 @@
+tests/fixtures/images/**/*.png filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.webp filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.exr filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.avif filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.heic filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.pdf filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.nef filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.svg filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.tif filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.gif filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.jxl filter=lfs diff=lfs merge=lfs -text
+tests/fixtures/images/**/*.jp2 filter=lfs diff=lfs merge=lfs -text

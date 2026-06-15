@@ -1,0 +1,35 @@
+---
+name: Performance Regression
+description: Report a measurable performance degradation
+labels: [performance]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What operation regressed and by how much?
+    validations:
+      required: true
+  - type: textarea
+    id: benchmark
+    attributes:
+      label: Benchmark Results
+      description: Paste criterion or xtask bench output showing the regression
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: version-before
+    attributes:
+      label: Version before regression
+      placeholder: "0.1.0"
+  - type: input
+    id: version-after
+    attributes:
+      label: Version after regression
+      placeholder: "0.2.0"
+  - type: input
+    id: arch
+    attributes:
+      label: Architecture
+      placeholder: "arm64 / x86_64"

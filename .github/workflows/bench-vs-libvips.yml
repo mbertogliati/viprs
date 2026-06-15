@@ -1,0 +1,161 @@
+name: Benchmarks vs libvips
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: bench-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─── Gate: quick compile check before burning expensive bench minutes ──
+  gate:
+    name: Gate (compile check)
+    if: "!github.event.pull_request.draft"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --lib --all-features
+      - run: cargo check -p xtask
+
+  bench-vs-libvips:
+    name: E2E vs libvips (${{ matrix.arch }})
+    needs: [gate]
+    if: "!github.event.pull_request.draft"
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            runner: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install libvips
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libvips-dev pkg-config
+
+      - name: Build libvips runner
+        run: make -C tools/bench-vs-libvips
+
+      - name: Build xtask
+        run: cargo build --release -p xtask
+
+      - name: Run full E2E benchmark suite
+        run: |
+          set -e
+          mkdir -p /tmp/bench-results
+
+          # All supported operations
+          OPS="load invert bandmean add multiply and equal linear colourspace resize zoom shrink shrinkh shrinkv thumbnail gauss_blur abs sign round floor ceil"
+
+          # Standard sizes (JPEG)
+          for size in 512 2048 8192; do
+            FIXTURE="tests/fixtures/images/bench_${size}x${size}.jpg"
+            [ -f "$FIXTURE" ] || continue
+            for op in $OPS; do
+              echo "=== $op @ ${size}px ==="
+              cargo xtask bench "$FIXTURE" "$op" --iterations 20 --json \
+                > "/tmp/bench-results/${op}_${size}.json" 2>/dev/null || true
+            done
+          done
+
+          # Workflow/perceptual_enhance (composite pipeline)
+          FIXTURE="tests/fixtures/images/bench_2048x2048.jpg"
+          if [ -f "$FIXTURE" ]; then
+            echo "=== perceptual_enhance @ 2048px ==="
+            cargo xtask bench "$FIXTURE" "perceptual_enhance" webp --iterations 20 --json \
+              > "/tmp/bench-results/perceptual_enhance_2048.json" 2>/dev/null || true
+          fi
+
+          # EXR format (float pipeline)
+          FIXTURE="tests/fixtures/images/bench_512x512.exr"
+          if [ -f "$FIXTURE" ]; then
+            for op in invert linear add multiply; do
+              echo "=== $op @ 512px EXR ==="
+              cargo xtask bench "$FIXTURE" "$op" --iterations 20 --json \
+                > "/tmp/bench-results/${op}_512_exr.json" 2>/dev/null || true
+            done
+          fi
+
+      - name: Check ratios (fail on >1.05)
+        run: |
+          set -e
+          FAILED=0
+          for f in /tmp/bench-results/*.json; do
+            [ -f "$f" ] || continue
+            ratio=$(jq -r '.ratio_p50 // .ratio // empty' "$f" 2>/dev/null)
+            [ -z "$ratio" ] && continue
+            name=$(basename "$f" .json)
+            echo "$name: ratio=$ratio"
+            if [ "$(echo "$ratio > 1.05" | bc -l)" = "1" ]; then
+              echo "::warning::$name: viprs/libvips ratio $ratio > 1.05"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::$FAILED operation(s) slower than libvips (ratio > 1.05)"
+            exit 1
+          fi
+          echo "✓ All operations within target ratio (≤ 1.05)"
+
+      - name: Web-service workload simulation
+        run: |
+          set -e
+          FIXTURE="tests/fixtures/images/bench_2048x2048.jpg"
+          [ -f "$FIXTURE" ] || FIXTURE="tests/fixtures/images/sample.jpg"
+
+          echo "=== thumbnail-bytes (decode → thumbnail → encode, bytes-in/bytes-out) ==="
+          cargo xtask web-bench "$FIXTURE" -s thumbnail-bytes -n 20 --json \
+            > /tmp/bench-results/web_thumbnail_bytes.json 2>/dev/null || true
+
+          echo "=== pipeline-bytes (thumbnail + sharpen + linear → JPEG) ==="
+          cargo xtask web-bench "$FIXTURE" -s pipeline-bytes -n 20 --json \
+            > /tmp/bench-results/web_pipeline_bytes.json 2>/dev/null || true
+
+          echo "=== concurrent (parallel requests: 2, 4, 8, 16 threads) ==="
+          cargo xtask web-bench "$FIXTURE" -s concurrent --concurrency 2,4,8,16 -n 20 --json \
+            > /tmp/bench-results/web_concurrent.json 2>/dev/null || true
+
+          echo "=== large-upload (8192px → thumbnail, simulates user upload) ==="
+          LARGE="tests/fixtures/images/bench_8192x8192.jpg"
+          if [ -f "$LARGE" ]; then
+            cargo xtask web-bench "$LARGE" -s large-upload -n 10 --json \
+              > /tmp/bench-results/web_large_upload.json 2>/dev/null || true
+          fi
+
+      - name: Verify concurrent scaling
+        run: |
+          set -e
+          FILE="/tmp/bench-results/web_concurrent.json"
+          [ -f "$FILE" ] || exit 0
+          # Check that throughput scales with concurrency (at least 2× from 2→8 threads)
+          t2=$(jq -r '.results[] | select(.name == "concurrent-2") | .throughput_rps // 0' "$FILE")
+          t8=$(jq -r '.results[] | select(.name == "concurrent-8") | .throughput_rps // 0' "$FILE")
+          if [ "$t2" = "0" ] || [ "$t8" = "0" ]; then
+            echo "::warning::Could not extract concurrent throughput — skipping scaling check"
+            exit 0
+          fi
+          ratio=$(echo "$t8 / $t2" | bc -l)
+          echo "Scaling: 2-thread=${t2} rps, 8-thread=${t8} rps, ratio=${ratio}"
+          if [ "$(echo "$ratio < 1.5" | bc -l)" = "1" ]; then
+            echo "::error::Concurrency scaling regression: 8-thread/2-thread ratio=$ratio (expected ≥ 1.5)"
+            exit 1
+          fi
+          echo "✓ Concurrent scaling healthy (${ratio}×)"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-vs-libvips-${{ matrix.arch }}
+          path: /tmp/bench-results/

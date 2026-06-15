@@ -1,0 +1,46 @@
+use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
+use viprs::{
+    adapters::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
+    },
+    domain::{
+        format::F32,
+        op::OperationBridge,
+        ops::convolution::{CompassOp, PREWITT_COMPASS_MASK},
+    },
+    ports::scheduler::TileScheduler,
+};
+
+fn bench_compass(c: &mut Criterion) {
+    let mut group = c.benchmark_group("compass_f32");
+
+    for &size in &[512u32, 2048, 8192] {
+        let pixels = vec![1.0f32; size as usize * size as usize];
+        group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
+            b.iter(|| {
+                let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
+                let bridge = OperationBridge::new(
+                    CompassOp::<F32>::new(&PREWITT_COMPASS_MASK, 8).unwrap(),
+                    1u32,
+                );
+                let pipeline = PipelineBuilder::from_source(source)
+                    .then(Box::new(bridge))
+                    .unwrap()
+                    .build()
+                    .unwrap();
+                let mut sink = MemorySink::for_pipeline(&pipeline);
+                RayonScheduler::new(RayonScheduler::default_threads())
+                    .unwrap()
+                    .run(&pipeline, &mut sink)
+                    .unwrap();
+                black_box(sink.into_buffer())
+            });
+        });
+    }
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_compass);
+criterion_main!(benches);

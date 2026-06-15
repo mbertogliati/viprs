@@ -1,0 +1,39 @@
+/target
+target-*/
+.idea
+.libvips_repo
+.claude/
+.copilot/
+.worktrees
+
+# Build artifacts
+librust_out.rlib
+rust_out.d
+dhat-heap.json
+*.dSYM/
+tools/bench-vs-libvips/libvips-web-runner
+
+# Test artifacts
+/tmp/
+*.proptest-regressions
+proptest-regressions/
+
+# Coverage and audit reports
+*.coverage_report*
+.all_domain_ops.txt
+coverage-details.json
+coverage_audit_*.txt
+bench_names.txt
+
+# OS
+.DS_Store
+
+# Misc
+bench_*.log
+*.wave*_scan_core.json
+.wave*_scan_core.json
+.artifacts/
+.merge-artifacts/
+.cargo-home*/
+.audit_perf/
+.test-artifacts/

@@ -1,0 +1,6 @@
+# Build artifacts
+libvips-runner
+openexr-runner
+
+# Results
+results/

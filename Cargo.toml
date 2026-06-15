@@ -1,0 +1,1430 @@
+[workspace]
+members = [".", "xtask"]
+resolver = "3"
+
+[workspace.package]
+rust-version = "1.92"
+
+[package]
+name = "viprs"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Native Rust reimplementation of libvips focused on demand-driven, horizontally-threaded image processing."
+license = "MIT"
+repository = "https://github.com/mbertogliati/viprs"
+readme = "README.md"
+keywords = ["image-processing", "vips", "jpeg", "thumbnail", "pipeline"]
+categories = ["multimedia::images", "algorithms"]
+exclude = [
+    "tests/fixtures/**",
+    ".libvips_repo/**",
+    "target/**",
+    ".github/**",
+    "docker/**",
+    "tools/**",
+    "xtask/**",
+]
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[lints.clippy]
+# Safety & correctness
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unreachable = "deny"
+
+# Public API quality
+missing_panics_doc = "deny"
+
+# Performance
+perf = { level = "deny", priority = -1 }
+
+# Pedantic (high bar for public lib) — BLOCKING
+pedantic = { level = "deny", priority = -1 }
+
+# Nursery (experimental but useful) — BLOCKING
+nursery = { level = "deny", priority = -1 }
+
+# Pedantic overrides (too noisy or conflicts with project style)
+module_name_repetitions = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+cast_precision_loss = "allow"
+cast_lossless = "allow"
+cast_possible_wrap = "allow"
+missing_errors_doc = "allow"
+inline_always = "allow"
+too_many_arguments = "allow"
+too_many_lines = "allow"
+float_cmp = "allow"
+many_single_char_names = "allow"
+similar_names = "allow"
+
+[lints.rust]
+missing_docs = "deny"
+
+[dependencies]
+thiserror = "2"
+bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
+ab_glyph = "0.2"
+crossbeam-channel = "0.5"
+rayon = { version = "1", optional = true }
+tracing = { version = "0.1", optional = true }
+memmap2 = { version = "0.9", optional = true }
+rustfft = { version = "6", optional = true }
+jpeg-encoder = { version = "0.6", optional = true }
+turbojpeg = { version = "1", optional = true, default-features = false, features = ["pkg-config", "require-simd"] }
+png = { version = "0.18", optional = true }
+spng = { version = "0.2.0-alpha.3", optional = true }
+flate2 = { version = "1", optional = true }
+crc32fast = { version = "1", optional = true }
+webp = { version = "0.3", optional = true, default-features = false }
+libwebp-sys = { version = "0.9", optional = true }
+tiff = { version = "0.11.3", optional = true }
+weezl = { version = "0.1", optional = true }
+gif = { version = "0.13", optional = true }
+exr = { version = "1.74.0", optional = true }
+ravif = { version = "0.11", optional = true }
+rgb = { version = "0.8", optional = true }
+libheif-rs = { version = "0.20", optional = true }
+libheif-sys = { version = "1.16.2", optional = true }
+pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
+resvg = { version = "0.47.0", optional = true }
+jxl-oxide = { version = "0.12.6", optional = true }
+jpegxl-rs = { version = "0.14.0", optional = true, default-features = false }
+lcms2 = { version = "6.1.1", optional = true }
+fitsio-sys = { version = "0.5.7", optional = true, features = ["fitsio-src"] }
+hdf5-pure-rust = { version = "0.3.6", optional = true }
+jpeg2k = { version = "0.10.1", optional = true }
+openjpeg-sys = { version = "1.0.12", optional = true }
+openslide-rs = { version = "2.4.0", optional = true, default-features = false }
+nifti = { version = "0.17.0", optional = true }
+image = { version = "0.25.10", optional = true, default-features = false, features = ["bmp"] }
+
+[dev-dependencies]
+proptest = "1"
+criterion = { version = "0.5", features = ["html_reports"] }
+iai-callgrind = "0.16"
+dhat = "0.3"
+libc = "0.2"
+
+[features]
+# Default runtime features: rayon scheduler, mmap-backed sources, and SIMD dispatch.
+default = ["rayon", "mmap", "simd-pulp"]
+ffi = []
+lock_instrumentation = []
+rayon = ["dep:rayon"]
+tracing = ["dep:tracing"]
+mmap = ["dep:memmap2"]
+# Optional compute/color features.
+fft = ["dep:rustfft"]
+# Native codec flags intentionally keep the C-backed implementations for throughput.
+# See README.md for per-OS install commands and feature-specific system dependencies.
+jpeg = ["dep:turbojpeg", "dep:jpeg-encoder", "icc"]
+bmp = ["dep:image"]
+png = ["dep:png", "dep:flate2", "dep:crc32fast", "icc"]
+libspng = ["png", "dep:spng"]
+webp = ["dep:webp", "dep:libwebp-sys", "icc"] # C-backed libwebp path used for encode/decode.
+tiff = ["dep:tiff", "dep:jpeg-encoder", "dep:weezl"]
+gif = ["dep:gif"]
+exr = ["dep:exr"]
+radiance = []
+pfm = []
+avif = ["dep:ravif", "dep:rgb", "dep:libheif-rs", "dep:libheif-sys"] # Requires libheif.
+heif = ["dep:libheif-rs", "dep:libheif-sys"] # Requires libheif.
+simd-pulp = ["dep:pulp"]
+svg = ["dep:resvg"]
+jxl = ["dep:jxl-oxide", "dep:jpegxl-rs"]
+icc = ["dep:lcms2"] # Requires lcms2.
+fits = ["dep:fitsio-sys"]
+mat-hdf5 = ["dep:hdf5-pure-rust"]
+magick = []
+pdf-poppler = []
+jp2k = ["dep:jpeg2k", "dep:openjpeg-sys"] # Requires OpenJPEG when using system toolchains.
+openslide = ["dep:openslide-rs"] # Requires OpenSlide.
+uhdr = ["jpeg"]
+deepzoom = []
+dcraw = []
+csv = []
+vips-format = []
+nifti = ["dep:nifti"]
+pnm = []
+
+[[example]]
+name = "thumbnail"
+path = "examples/thumbnail.rs"
+required-features = ["jpeg"]
+
+[[bench]]
+name = "fusion"
+path = "benches/fusion.rs"
+harness = false
+
+[[bench]]
+name = "histogram"
+path = "benches/histogram.rs"
+harness = false
+
+[[bench]]
+name = "add"
+path = "benches/arithmetic/add.rs"
+harness = false
+
+[[bench]]
+name = "subtract"
+path = "benches/arithmetic/subtract.rs"
+harness = false
+
+[[bench]]
+name = "multiply"
+path = "benches/arithmetic/multiply.rs"
+harness = false
+
+[[bench]]
+name = "linear"
+path = "benches/arithmetic/linear.rs"
+harness = false
+
+[[bench]]
+name = "clamp"
+path = "benches/arithmetic/clamp.rs"
+harness = false
+
+[[bench]]
+name = "sum"
+path = "benches/arithmetic/sum.rs"
+harness = false
+
+[[bench]]
+name = "stats"
+path = "benches/arithmetic/stats.rs"
+harness = false
+
+[[bench]]
+name = "maxpair"
+path = "benches/arithmetic/maxpair.rs"
+harness = false
+
+[[bench]]
+name = "minpair"
+path = "benches/arithmetic/minpair.rs"
+harness = false
+
+[[bench]]
+name = "math2"
+path = "benches/arithmetic/math2.rs"
+harness = false
+
+[[bench]]
+name = "profile"
+path = "benches/arithmetic/profile.rs"
+harness = false
+
+[[bench]]
+name = "project"
+path = "benches/arithmetic/project.rs"
+harness = false
+
+[[bench]]
+name = "complex_conj"
+path = "benches/arithmetic/complex_conj.rs"
+harness = false
+
+[[bench]]
+name = "complex_form"
+path = "benches/arithmetic/complex_form.rs"
+harness = false
+
+[[bench]]
+name = "complex_imag"
+path = "benches/arithmetic/complex_imag.rs"
+harness = false
+
+[[bench]]
+name = "complex_real"
+path = "benches/arithmetic/complex_real.rs"
+harness = false
+
+[[bench]]
+name = "hsv"
+path = "benches/colour/hsv.rs"
+harness = false
+
+[[bench]]
+name = "lch"
+path = "benches/colour/lch.rs"
+harness = false
+
+[[bench]]
+name = "lab_xyz"
+path = "benches/colour/lab_xyz.rs"
+harness = false
+
+[[bench]]
+name = "scrgb_xyz"
+path = "benches/colour/scrgb_xyz.rs"
+harness = false
+
+[[bench]]
+name = "labq_to_srgb"
+path = "benches/colour/labq_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "flatten"
+path = "benches/colour/flatten.rs"
+harness = false
+
+[[bench]]
+name = "radiance"
+path = "benches/colour/radiance.rs"
+harness = false
+
+[[bench]]
+name = "colour"
+path = "benches/colour/matrix.rs"
+harness = false
+
+[[bench]]
+name = "find_trim"
+path = "benches/arithmetic/find_trim.rs"
+harness = false
+
+[[bench]]
+name = "measure"
+path = "benches/arithmetic/measure.rs"
+harness = false
+
+[[bench]]
+name = "invert"
+path = "benches/arithmetic/invert.rs"
+harness = false
+
+[[bench]]
+name = "static_fusion"
+path = "benches/static_fusion.rs"
+harness = false
+
+[[bench]]
+name = "pipeline"
+path = "benches/pipeline.rs"
+harness = false
+
+[[bench]]
+name = "multi_op_chains"
+path = "benches/pipeline/multi_op_chains.rs"
+harness = false
+
+[[bench]]
+name = "reorder"
+path = "benches/pipeline/reorder.rs"
+ harness = false
+
+[[bench]]
+name = "quadratic"
+path = "benches/resample/quadratic.rs"
+harness = false
+
+[[bench]]
+name = "draw_line"
+path = "benches/draw/draw_line.rs"
+harness = false
+
+[[bench]]
+name = "draw_rect"
+path = "benches/draw/draw_rect.rs"
+harness = false
+
+[[bench]]
+name = "draw_circle"
+path = "benches/draw/draw_circle.rs"
+harness = false
+
+[[bench]]
+name = "draw_image"
+path = "benches/draw/draw_image.rs"
+harness = false
+
+[[bench]]
+name = "draw_mask"
+path = "benches/draw/draw_mask.rs"
+harness = false
+
+[[bench]]
+name = "draw_smudge"
+path = "benches/draw/draw_smudge.rs"
+harness = false
+
+[[bench]]
+name = "hist_find"
+path = "benches/histogram/hist_find.rs"
+harness = false
+
+[[bench]]
+name = "hist_find_indexed"
+path = "benches/histogram/hist_find_indexed.rs"
+harness = false
+
+[[bench]]
+name = "decoder_source"
+path = "benches/sources/decoder_source.rs"
+harness = false
+
+[[bench]]
+name = "grid"
+path = "benches/conversion/grid.rs"
+harness = false
+
+[[bench]]
+name = "scale"
+path = "benches/conversion/scale.rs"
+harness = false
+
+[[bench]]
+name = "msb"
+path = "benches/conversion/msb.rs"
+harness = false
+
+[[bench]]
+name = "embed"
+path = "benches/conversion/embed.rs"
+harness = false
+
+[[bench]]
+name = "transpose3d"
+path = "benches/conversion/transpose3d.rs"
+harness = false
+
+[[bench]]
+name = "extract_area"
+path = "benches/structural/extract_area.rs"
+harness = false
+
+[[bench]]
+name = "flip_horizontal"
+path = "benches/structural/flip_horizontal.rs"
+harness = false
+
+[[bench]]
+name = "flip_vertical"
+path = "benches/structural/flip_vertical.rs"
+harness = false
+
+[[bench]]
+name = "flip"
+path = "benches/conversion/flip.rs"
+harness = false
+
+[[bench]]
+name = "rotate90"
+path = "benches/structural/rotate90.rs"
+harness = false
+
+[[bench]]
+name = "rotate180"
+path = "benches/structural/rotate180.rs"
+harness = false
+
+[[bench]]
+name = "rotate270"
+path = "benches/structural/rotate270.rs"
+harness = false
+
+[[bench]]
+name = "rot"
+path = "benches/conversion/rot.rs"
+harness = false
+
+[[bench]]
+name = "rot45"
+path = "benches/conversion/rot45.rs"
+harness = false
+
+[[bench]]
+name = "replicate"
+path = "benches/conversion/replicate.rs"
+harness = false
+
+[[bench]]
+name = "subsample"
+path = "benches/structural/subsample.rs"
+harness = false
+
+[[bench]]
+name = "zoom"
+path = "benches/conversion/zoom.rs"
+harness = false
+
+[[bench]]
+name = "wrap"
+path = "benches/conversion/wrap.rs"
+harness = false
+
+[[bench]]
+name = "premultiply"
+path = "benches/structural/premultiply.rs"
+harness = false
+
+[[bench]]
+name = "conv2d_bench"
+path = "benches/convolution/conv2d.rs"
+harness = false
+
+[[bench]]
+name = "conv"
+path = "benches/convolution/conv.rs"
+harness = false
+
+[[bench]]
+name = "gauss_blur"
+path = "benches/convolution/gauss_blur.rs"
+harness = false
+
+[[bench]]
+name = "convsep"
+path = "benches/convolution/convsep.rs"
+harness = false
+
+[[bench]]
+name = "convasep"
+path = "benches/convolution/convasep.rs"
+harness = false
+
+[[bench]]
+name = "conva"
+path = "benches/convolution/conva.rs"
+harness = false
+
+[[bench]]
+name = "sharpen"
+path = "benches/convolution/sharpen.rs"
+harness = false
+
+[[bench]]
+name = "unsharp_mask"
+path = "benches/convolution/unsharp_mask.rs"
+harness = false
+
+[[bench]]
+name = "sobel"
+path = "benches/convolution/sobel.rs"
+harness = false
+
+[[bench]]
+name = "scharr"
+path = "benches/convolution/scharr.rs"
+harness = false
+
+[[bench]]
+name = "prewitt"
+path = "benches/convolution/prewitt.rs"
+harness = false
+
+[[bench]]
+name = "laplacian"
+path = "benches/convolution/laplacian.rs"
+harness = false
+
+[[bench]]
+name = "median_blur"
+path = "benches/convolution/median_blur.rs"
+harness = false
+
+[[bench]]
+name = "canny"
+path = "benches/convolution/canny.rs"
+harness = false
+
+[[bench]]
+name = "edge"
+path = "benches/convolution/edge.rs"
+harness = false
+
+[[bench]]
+name = "fastcor"
+path = "benches/convolution/fastcor.rs"
+harness = false
+
+[[bench]]
+name = "srgb_to_lab"
+path = "benches/colour/srgb_to_lab.rs"
+harness = false
+
+[[bench]]
+name = "lab_to_lch"
+path = "benches/colour/lab_to_lch.rs"
+harness = false
+
+[[bench]]
+name = "lch_to_lab"
+path = "benches/colour/lch_to_lab.rs"
+harness = false
+
+[[bench]]
+name = "srgb_to_scrgb"
+path = "benches/colour/srgb_to_scrgb.rs"
+harness = false
+
+[[bench]]
+name = "cicp2scrgb"
+path = "benches/colour/cicp2scrgb.rs"
+harness = false
+
+[[bench]]
+name = "scrgb_to_srgb"
+path = "benches/colour/scrgb_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "de76"
+path = "benches/colour/de76.rs"
+harness = false
+
+[[bench]]
+name = "de00"
+path = "benches/colour/de00.rs"
+harness = false
+
+[[bench]]
+name = "oklab"
+path = "benches/colour/oklab.rs"
+harness = false
+
+[[bench]]
+name = "cmyk"
+path = "benches/colour/cmyk.rs"
+harness = false
+
+[[bench]]
+name = "reduceh"
+path = "benches/resample/reduceh.rs"
+harness = false
+
+[[bench]]
+name = "reduce_h"
+path = "benches/resample/reduce_h.rs"
+harness = false
+
+[[bench]]
+name = "reducev"
+path = "benches/resample/reducev.rs"
+harness = false
+
+[[bench]]
+name = "nohalo"
+path = "benches/resample/nohalo.rs"
+harness = false
+
+[[bench]]
+name = "shrinkh"
+path = "benches/resample/shrinkh.rs"
+harness = false
+
+[[bench]]
+name = "shrinkv"
+path = "benches/resample/shrinkv.rs"
+harness = false
+
+[[bench]]
+name = "cache_vs_nocache"
+path = "benches/cache/cache_vs_nocache.rs"
+harness = false
+
+[[bench]]
+name = "bandsplit"
+path = "benches/conversion/bandsplit.rs"
+harness = false
+
+[[bench]]
+name = "bandmean"
+path = "benches/conversion/bandmean.rs"
+harness = false
+
+[[bench]]
+name = "bandbool"
+path = "benches/conversion/bandbool.rs"
+harness = false
+
+[[bench]]
+name = "bandfold"
+path = "benches/conversion/bandfold.rs"
+harness = false
+
+[[bench]]
+name = "copy"
+path = "benches/conversion/copy.rs"
+harness = false
+
+[[bench]]
+name = "bandrank"
+path = "benches/conversion/bandrank.rs"
+harness = false
+
+[[bench]]
+name = "bandunfold"
+path = "benches/conversion/bandunfold.rs"
+harness = false
+
+[[bench]]
+name = "composite"
+path = "benches/conversion/composite.rs"
+harness = false
+
+[[bench]]
+name = "addalpha"
+path = "benches/conversion/addalpha.rs"
+harness = false
+
+[[bench]]
+name = "falsecolour"
+path = "benches/conversion/falsecolour.rs"
+harness = false
+
+[[bench]]
+name = "conversion_subsample"
+path = "benches/conversion/subsample.rs"
+harness = false
+
+[[bench]]
+name = "gamma"
+path = "benches/conversion/gamma.rs"
+harness = false
+
+[[bench]]
+name = "byteswap"
+path = "benches/conversion/byteswap.rs"
+harness = false
+
+[[bench]]
+name = "autorot"
+path = "benches/conversion/autorot.rs"
+harness = false
+
+[[bench]]
+name = "smartcrop"
+path = "benches/conversion/smartcrop.rs"
+harness = false
+
+[[bench]]
+name = "arrayjoin"
+path = "benches/conversion/arrayjoin.rs"
+harness = false
+
+[[bench]]
+name = "ifthenelse"
+path = "benches/conversion/ifthenelse.rs"
+harness = false
+
+[[bench]]
+name = "freqmult"
+path = "benches/freqfilt/freqmult.rs"
+harness = false
+
+[[bench]]
+name = "spectrum"
+path = "benches/freqfilt/spectrum.rs"
+harness = false
+
+[[bench]]
+name = "phasecor"
+path = "benches/freqfilt/phasecor.rs"
+harness = false
+
+[[bench]]
+name = "abs"
+path = "benches/arithmetic/abs.rs"
+harness = false
+
+[[bench]]
+name = "exp"
+path = "benches/arithmetic/exp.rs"
+harness = false
+
+[[bench]]
+name = "and"
+path = "benches/boolean/and.rs"
+harness = false
+
+[[bench]]
+name = "srgb_to_hsv"
+path = "benches/colour/srgb_to_hsv.rs"
+harness = false
+
+[[bench]]
+name = "srgb_to_xyz"
+path = "benches/colour/srgb_to_xyz.rs"
+harness = false
+
+[[bench]]
+name = "hsv_to_srgb"
+path = "benches/colour/hsv_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "lab_to_srgb"
+path = "benches/colour/lab_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "xyz_to_srgb"
+path = "benches/colour/xyz_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "divide"
+path = "benches/arithmetic/divide.rs"
+harness = false
+
+[[bench]]
+name = "remainder"
+path = "benches/arithmetic/remainder.rs"
+harness = false
+
+[[bench]]
+name = "log"
+path = "benches/arithmetic/log.rs"
+harness = false
+
+[[bench]]
+name = "power"
+path = "benches/arithmetic/power.rs"
+harness = false
+
+[[bench]]
+name = "round"
+path = "benches/arithmetic/round.rs"
+harness = false
+
+[[bench]]
+name = "sign"
+path = "benches/arithmetic/sign.rs"
+harness = false
+
+[[bench]]
+name = "or"
+path = "benches/boolean/or.rs"
+harness = false
+
+[[bench]]
+name = "xor"
+path = "benches/boolean/xor.rs"
+harness = false
+
+[[bench]]
+name = "lshift"
+path = "benches/boolean/lshift.rs"
+harness = false
+
+[[bench]]
+name = "rshift"
+path = "benches/boolean/rshift.rs"
+harness = false
+
+[[bench]]
+name = "map_lut"
+path = "benches/lut/map_lut.rs"
+harness = false
+
+[[bench]]
+name = "recomb"
+path = "benches/arithmetic/recomb.rs"
+harness = false
+
+[[bench]]
+name = "equal"
+path = "benches/relational/equal.rs"
+harness = false
+
+[[bench]]
+name = "not_equal"
+path = "benches/relational/not_equal.rs"
+harness = false
+
+[[bench]]
+name = "median"
+path = "benches/morphology/median.rs"
+harness = false
+
+[[bench]]
+name = "less"
+path = "benches/relational/less.rs"
+harness = false
+
+[[bench]]
+name = "less_eq"
+path = "benches/relational/less_eq.rs"
+harness = false
+
+[[bench]]
+name = "more"
+path = "benches/relational/more.rs"
+harness = false
+
+[[bench]]
+name = "more_eq"
+path = "benches/relational/more_eq.rs"
+harness = false
+
+[[bench]]
+name = "sin"
+path = "benches/arithmetic/sin.rs"
+harness = false
+
+[[bench]]
+name = "cos"
+path = "benches/arithmetic/cos.rs"
+harness = false
+
+[[bench]]
+name = "tan"
+path = "benches/arithmetic/tan.rs"
+harness = false
+
+[[bench]]
+name = "asin"
+path = "benches/arithmetic/asin.rs"
+harness = false
+
+[[bench]]
+name = "acos"
+path = "benches/arithmetic/acos.rs"
+harness = false
+
+[[bench]]
+name = "atan"
+path = "benches/arithmetic/atan.rs"
+harness = false
+
+[[bench]]
+name = "sqrt"
+path = "benches/arithmetic/sqrt.rs"
+harness = false
+
+[[bench]]
+name = "affine"
+path = "benches/resample/affine.rs"
+harness = false
+
+[[bench]]
+name = "hist_norm"
+path = "benches/histogram/hist_norm.rs"
+harness = false
+
+[[bench]]
+name = "merge"
+path = "benches/mosaicing/merge.rs"
+harness = false
+
+[[bench]]
+name = "merge_family"
+path = "benches/mosaicing/merge_family.rs"
+harness = false
+
+[[bench]]
+name = "match_op"
+path = "benches/mosaicing/match_op.rs"
+harness = false
+
+[[bench]]
+name = "chkpair"
+path = "benches/mosaicing/chkpair.rs"
+harness = false
+
+[[bench]]
+name = "mosaic"
+path = "benches/mosaicing/mosaic.rs"
+harness = false
+
+[[bench]]
+name = "hist_cum"
+path = "benches/histogram/hist_cum.rs"
+harness = false
+
+[[bench]]
+name = "hist_equal"
+path = "benches/histogram/hist_equal.rs"
+harness = false
+
+[[bench]]
+name = "black"
+path = "benches/create/black.rs"
+harness = false
+
+[[bench]]
+name = "buildlut"
+path = "benches/create/buildlut.rs"
+harness = false
+
+[[bench]]
+name = "eye"
+path = "benches/create/eye.rs"
+harness = false
+
+[[bench]]
+name = "fractsurf"
+path = "benches/create/fractsurf.rs"
+harness = false
+
+[[bench]]
+name = "identity"
+path = "benches/create/identity.rs"
+harness = false
+
+[[bench]]
+name = "gaussnoise"
+path = "benches/create/gaussnoise.rs"
+harness = false
+
+[[bench]]
+name = "gaussmat"
+path = "benches/create/gaussmat.rs"
+harness = false
+
+[[bench]]
+name = "grey"
+path = "benches/create/grey.rs"
+harness = false
+
+[[bench]]
+name = "text"
+path = "benches/create/text.rs"
+harness = false
+
+[[bench]]
+name = "mandelbrot"
+path = "benches/create/mandelbrot.rs"
+harness = false
+
+[[bench]]
+name = "perlin"
+path = "benches/create/perlin.rs"
+harness = false
+
+[[bench]]
+name = "point"
+path = "benches/create/point.rs"
+harness = false
+
+[[bench]]
+name = "sdf"
+path = "benches/create/sdf.rs"
+harness = false
+
+[[bench]]
+name = "sines"
+path = "benches/create/sines.rs"
+harness = false
+
+[[bench]]
+name = "worley"
+path = "benches/create/worley.rs"
+harness = false
+
+[[bench]]
+name = "zone"
+path = "benches/create/zone.rs"
+harness = false
+
+[[bench]]
+name = "xyz"
+path = "benches/create/xyz.rs"
+harness = false
+
+[[bench]]
+name = "masks"
+path = "benches/create/masks.rs"
+harness = false
+
+[[bench]]
+name = "frequency_mask"
+path = "benches/create/frequency_mask.rs"
+harness = false
+
+[[bench]]
+name = "logmat"
+path = "benches/create/logmat.rs"
+harness = false
+
+[[bench]]
+name = "invertlut"
+path = "benches/create/invertlut.rs"
+harness = false
+
+[[bench]]
+name = "tonelut"
+path = "benches/create/tonelut.rs"
+harness = false
+
+[[bench]]
+name = "create_ops"
+path = "benches/create_ops.rs"
+harness = false
+
+[[bench]]
+name = "gif_encode"
+path = "benches/codecs/gif_encode.rs"
+harness = false
+
+[[bench]]
+name = "heif"
+path = "benches/codecs/heif.rs"
+harness = false
+required-features = ["heif"]
+
+[[bench]]
+name = "avif"
+path = "benches/codecs/avif.rs"
+harness = false
+
+[[bench]]
+name = "hist_entropy"
+path = "benches/histogram/hist_entropy.rs"
+harness = false
+
+[[bench]]
+name = "stdif"
+path = "benches/histogram/stdif.rs"
+harness = false
+
+[[bench]]
+name = "add_images"
+path = "benches/arithmetic/add_images.rs"
+harness = false
+
+[[bench]]
+name = "bandjoin"
+path = "benches/conversion/bandjoin.rs"
+harness = false
+
+[[bench]]
+name = "extract_bands"
+path = "benches/conversion/extract_bands.rs"
+harness = false
+
+[[bench]]
+name = "cast"
+path = "benches/conversion/cast.rs"
+harness = false
+
+[[bench]]
+name = "decmc"
+path = "benches/colour/decmc.rs"
+harness = false
+
+[[bench]]
+name = "lab_to_labq"
+path = "benches/colour/lab_to_labq.rs"
+harness = false
+
+[[bench]]
+name = "lab_to_labs"
+path = "benches/colour/lab_to_labs.rs"
+harness = false
+
+[[bench]]
+name = "labq_to_lab"
+path = "benches/colour/labq_to_lab.rs"
+harness = false
+
+[[bench]]
+name = "labq_to_labs"
+path = "benches/colour/labq_to_labs.rs"
+harness = false
+
+[[bench]]
+name = "labs_to_lab"
+path = "benches/colour/labs_to_lab.rs"
+harness = false
+
+[[bench]]
+name = "labs_to_labq"
+path = "benches/colour/labs_to_labq.rs"
+harness = false
+
+[[bench]]
+name = "lch_to_ucs"
+path = "benches/colour/lch_to_ucs.rs"
+harness = false
+
+[[bench]]
+name = "oklab_to_oklch"
+path = "benches/colour/oklab_to_oklch.rs"
+harness = false
+
+[[bench]]
+name = "oklab_to_xyz"
+path = "benches/colour/oklab_to_xyz.rs"
+harness = false
+
+[[bench]]
+name = "oklch_to_oklab"
+path = "benches/colour/oklch_to_oklab.rs"
+harness = false
+
+[[bench]]
+name = "scrgb_to_bw"
+path = "benches/colour/scrgb_to_bw.rs"
+harness = false
+
+[[bench]]
+name = "ucs_to_lch"
+path = "benches/colour/ucs_to_lch.rs"
+harness = false
+
+[[bench]]
+name = "xyz_to_yxy"
+path = "benches/colour/xyz_to_yxy.rs"
+harness = false
+
+[[bench]]
+name = "yxy_to_xyz"
+path = "benches/colour/yxy_to_xyz.rs"
+harness = false
+
+[[bench]]
+name = "clahe"
+path = "benches/histogram/clahe.rs"
+harness = false
+
+[[bench]]
+name = "hist_match"
+path = "benches/histogram/hist_match.rs"
+harness = false
+
+[[bench]]
+name = "dilate"
+path = "benches/morphology/dilate.rs"
+harness = false
+
+[[bench]]
+name = "erode"
+path = "benches/morphology/erode.rs"
+harness = false
+
+[[bench]]
+name = "open"
+path = "benches/morphology/open.rs"
+harness = false
+
+[[bench]]
+name = "close"
+path = "benches/morphology/close.rs"
+harness = false
+
+[[bench]]
+name = "resize"
+path = "benches/resample/resize.rs"
+harness = false
+
+[[bench]]
+name = "thumbnail"
+path = "benches/resample/thumbnail.rs"
+harness = false
+
+[[bench]]
+name = "mapim"
+path = "benches/resample/mapim.rs"
+harness = false
+
+[[bench]]
+name = "insert"
+path = "benches/structural/insert.rs"
+harness = false
+
+[[bench]]
+name = "join"
+path = "benches/structural/join.rs"
+harness = false
+
+[[bench]]
+name = "xyz_to_oklab"
+path = "benches/colour/xyz_to_oklab.rs"
+harness = false
+
+[[bench]]
+name = "unpremultiply"
+path = "benches/structural/unpremultiply.rs"
+harness = false
+
+[[bench]]
+name = "similarity"
+path = "benches/resample/similarity.rs"
+harness = false
+
+[[bench]]
+name = "compass"
+path = "benches/convolution/compass.rs"
+harness = false
+
+[[bench]]
+name = "rank"
+path = "benches/morphology/rank.rs"
+harness = false
+
+[[bench]]
+name = "count_lines"
+path = "benches/morphology/count_lines.rs"
+harness = false
+
+[[bench]]
+name = "labelregions"
+path = "benches/morphology/labelregions.rs"
+harness = false
+
+[[bench]]
+name = "nearest"
+path = "benches/morphology/nearest.rs"
+harness = false
+
+[[bench]]
+name = "global_balance"
+path = "benches/mosaicing/global_balance.rs"
+harness = false
+
+[[bench]]
+name = "remosaic"
+path = "benches/mosaicing/remosaic.rs"
+harness = false
+
+[[bench]]
+name = "fwfft"
+path = "benches/freqfilt/fwfft.rs"
+harness = false
+required-features = ["fft"]
+
+[[bench]]
+name = "invfft"
+path = "benches/freqfilt/invfft.rs"
+harness = false
+required-features = ["fft"]
+
+[[bench]]
+name = "polar"
+path = "benches/arithmetic/polar.rs"
+harness = false
+
+[[bench]]
+name = "rect"
+path = "benches/arithmetic/rect.rs"
+harness = false
+
+[[bench]]
+name = "switch"
+path = "benches/conversion/switch.rs"
+harness = false
+
+[[bench]]
+name = "spcor"
+path = "benches/convolution/spcor.rs"
+harness = false
+
+[[bench]]
+name = "hough_line"
+path = "benches/arithmetic/hough_line.rs"
+harness = false
+
+[[bench]]
+name = "draw_flood"
+path = "benches/draw/draw_flood.rs"
+harness = false
+
+[[bench]]
+name = "hist_ismonotonic"
+path = "benches/histogram/hist_ismonotonic.rs"
+harness = false
+
+[[bench]]
+name = "hist_percent"
+path = "benches/histogram/hist_percent.rs"
+harness = false
+
+[[bench]]
+name = "lut_recomb"
+path = "benches/lut/recomb.rs"
+harness = false
+
+[[bench]]
+name = "tie_points"
+path = "benches/mosaicing/tie_points.rs"
+harness = false
+
+[[bench]]
+name = "reduce"
+path = "benches/resample/reduce.rs"
+harness = false
+
+[[bench]]
+name = "kernels"
+path = "benches/resample/kernels.rs"
+harness = false
+
+[[bench]]
+name = "iai_pipeline"
+path = "benches/iai/pipeline.rs"
+harness = false
+
+[[bench]]
+name = "tiff"
+path = "benches/codecs/tiff.rs"
+harness = false
+
+# ---------------------------------------------------------------------------
+# Production-grade compiler profiles
+# All benchmarks run under `cargo bench` (inherits release) or `cargo xtask bench`
+# (also release). Both must match what ships in production: fat LTO, native CPU,
+# single codegen unit so LLVM can cross-crate inline and vectorize everything.
+# ---------------------------------------------------------------------------
+
+[profile.release]
+opt-level = 3           # maximum optimisation
+lto = "fat"             # cross-crate inlining + dead code elimination
+codegen-units = 1       # single CGU: lets LLVM see the whole program at once
+panic = "abort"         # no unwinding machinery in the pixel path
+strip = "none"          # keep symbols for profiling (flamegraph / instruments)
+debug = 1              # line tables for samply/instruments (no full DWARF bloat)
+
+[profile.bench]
+inherits = "release"    # criterion runs under `bench`; must match release flags
+
+[[bench]]
+name = "auto_mosaic"
+path = "benches/mosaicing/auto_mosaic.rs"
+harness = false
+
+[[bench]]
+name = "lrmosaic"
+path = "benches/mosaicing/lrmosaic.rs"
+harness = false
+
+[[bench]]
+name = "tbmosaic"
+path = "benches/mosaicing/tbmosaic.rs"
+harness = false
+
+[[bench]]
+name = "bw_to_srgb"
+path = "benches/colour/bw_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "rgb16_to_srgb"
+path = "benches/colour/rgb16_to_srgb.rs"
+harness = false
+
+[[bench]]
+name = "srgb_to_rgb16"
+path = "benches/colour/srgb_to_rgb16.rs"
+harness = false
+
+[[bench]]
+name = "uhdr2scrgb"
+path = "benches/colour/uhdr2scrgb.rs"
+harness = false
+
+[[bench]]
+name = "hist_plot"
+path = "benches/histogram/hist_plot.rs"
+harness = false

@@ -1,0 +1,49 @@
+/// Benchmark: FlipHorizontal<U8> — mirror the image left-to-right.
+///
+/// Measures the full pipeline path: MemorySource → FlipHorizontal → MemorySink via
+/// RayonScheduler. process_region reverses sample order within each row — O(pixels)
+/// work with no extra allocation.
+///
+/// Note: process_region currently copies reversed pixels into the output buffer
+/// (see B-021). When B-021 (zero-copy structural ops) is resolved, this
+/// benchmark provides the baseline to quantify the improvement.
+use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
+use viprs::{
+    adapters::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
+    },
+    domain::format::U8,
+    ports::scheduler::TileScheduler,
+};
+
+fn bench_flip_horizontal(c: &mut Criterion) {
+    let mut group = c.benchmark_group("flip_horizontal_u8");
+
+    for &size in &[512u32, 2048, 8192] {
+        let pixel_count = (size as usize) * (size as usize);
+        let pixels = vec![128u8; pixel_count];
+
+        group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
+            b.iter(|| {
+                let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
+                let pipeline = PipelineBuilder::from_source(source)
+                    .flip_horizontal()
+                    .unwrap()
+                    .build()
+                    .unwrap();
+                let mut sink = MemorySink::for_pipeline(&pipeline);
+                RayonScheduler::new(RayonScheduler::default_threads())
+                    .unwrap()
+                    .run(&pipeline, &mut sink)
+                    .unwrap();
+                black_box(sink.into_buffer())
+            });
+        });
+    }
+
+    group.finish();
+}
+
+criterion_group!(benches, bench_flip_horizontal);
+criterion_main!(benches);
