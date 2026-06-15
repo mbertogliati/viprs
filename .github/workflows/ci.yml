@@ -13,6 +13,9 @@ env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: -Dwarnings
 
+permissions:
+  packages: read
+
 jobs:
   # ─── Fast checks (always run, even on drafts) ───────────────────────
   fmt:
@@ -42,6 +45,8 @@ jobs:
     needs: [fmt, clippy]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+    steps:
     strategy:
       matrix:
         rust: [stable, "1.92"]
@@ -58,6 +63,7 @@ jobs:
     needs: [fmt, clippy]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -115,6 +121,7 @@ jobs:
     needs: [check, test]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -131,6 +138,7 @@ jobs:
     needs: [check, test]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     strategy:
       matrix:
         include:
