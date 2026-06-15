@@ -156,3 +156,4 @@ jobs:
           cargo bench --bench '*' -- --save-baseline pr
       - name: Compare (fail on >5% regression)
         run: critcmp base pr --threshold 5
+# CI Test
