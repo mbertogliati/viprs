@@ -11,6 +11,10 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  # All features EXCEPT jxl (requires libjxl ≥0.11 not yet in the container image).
+  # Once the OCI image is rebuilt with libjxl, change to --all-features.
+  # Tracked by: PR #12 (ci/libjxl container rebuild)
+  CI_FEATURES: "--features default,jpeg,png,webp,tiff,gif,exr,icc,heif,avif,svg,fft,simd-pulp,jp2k,bmp,radiance,pfm,nifti,pnm,openslide,mat-hdf5,uhdr,deepzoom,dcraw,csv,vips-format,tracing,ffi,lock_instrumentation"
 
 permissions:
   packages: write
@@ -42,7 +46,7 @@ jobs:
           toolchain: "1.96.0"
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: make clippy
+      - run: make clippy FEATURES="${{ env.CI_FEATURES }}"
 
   check:
     name: Compile check
@@ -58,7 +62,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make build
+      - run: make build FEATURES="${{ env.CI_FEATURES }}"
 
   test:
     name: Test
@@ -74,7 +78,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make test
+      - run: make test FEATURES="${{ env.CI_FEATURES }}"
 
   docs:
     name: Documentation
@@ -90,7 +94,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make doc
+      - run: make doc FEATURES="${{ env.CI_FEATURES }}"
 
   # ─── Security & licensing (specialized actions, no Makefile) ───────────
   audit:
@@ -149,7 +153,7 @@ jobs:
           components: llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@cargo-llvm-cov
-      - run: make coverage
+      - run: make coverage FEATURES="${{ env.CI_FEATURES }}"
 
   benchmarks:
     name: Benchmarks (${{ matrix.arch }})
@@ -174,7 +178,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make bench
+      - run: make bench FEATURES="${{ env.CI_FEATURES }}"
 
   repackage-and-publish:
     name: Repackage image with xtask

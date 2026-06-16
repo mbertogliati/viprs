@@ -9,6 +9,10 @@ concurrency:
   group: bench-e2e-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # All features EXCEPT jxl (requires libjxl ≥0.11 not yet in the container image).
+  CI_FEATURES: "--features default,jpeg,png,webp,tiff,gif,exr,icc,heif,avif,svg,fft,simd-pulp,jp2k,bmp,radiance,pfm,nifti,pnm,openslide,mat-hdf5,uhdr,deepzoom,dcraw,csv,vips-format,tracing,ffi,lock_instrumentation"
+
 jobs:
   # ─── Gate: quick compile check before burning expensive bench minutes ──
   gate:
@@ -24,7 +28,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make build
+      - run: make build FEATURES="${{ env.CI_FEATURES }}"
 
   bench-vs-libvips:
     name: E2E vs libvips (${{ matrix.arch }})
