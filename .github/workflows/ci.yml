@@ -112,7 +112,7 @@ jobs:
         env:
           RUSTUP_TOOLCHAIN: stable
 
-  # ─── Xtask build (for benchmark image — requires native libs) ─────────
+  # ─── Xtask build (for benchmark image — requires native libs in container) ──
   build-xtask:
     name: Build xtask
     if: "!github.event.pull_request.draft"
@@ -141,6 +141,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
