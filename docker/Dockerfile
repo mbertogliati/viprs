@@ -89,7 +89,15 @@ ENV PKG_CONFIG_PATH=/opt/libjpeg-turbo/lib/pkgconfig:/opt/libjpeg-turbo/lib64/pk
 # ----- Runtime stage -----
 FROM debian:bookworm-slim
 
+# Copy source-built native libraries from builder (libjxl, libheif, libjpeg-turbo ≥3.0)
+COPY --from=builder /usr/local/lib/ /usr/local/lib/
+COPY --from=builder /usr/local/include/ /usr/local/include/
+COPY --from=builder /usr/local/lib/pkgconfig/ /usr/local/lib/pkgconfig/
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    pkg-config \
+    cmake \
     curl \
     libvips42 \
     libturbojpeg0-dev \
@@ -105,7 +113,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     valgrind \
     binutils \
     ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ldconfig
 
 # xtask and bench runners are expected to be built in CI using this image as the base.
 # Keep helper scripts in the image.

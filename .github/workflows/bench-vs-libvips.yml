@@ -18,7 +18,9 @@ jobs:
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
       - run: cargo check --lib --all-features
       - run: cargo check -p xtask
@@ -38,7 +40,9 @@ jobs:
             runner: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
 
       - name: Install libvips
