@@ -279,13 +279,13 @@ fn shrink_v_u8_factor2_scalar(
 fn shrink_v_u8_generic_scalar(
     factor: usize,
     input: &[u8],
-    _bands: usize,
+    bands: usize,
     out_w: usize,
-    bands_val: usize,
+    _out_h: usize,
     scratch: &mut Vec<u32>,
     output: &mut [u8],
 ) {
-    let row_len = out_w * bands_val;
+    let row_len = out_w * bands;
     if scratch.len() < row_len {
         scratch.resize(row_len, 0);
     }
