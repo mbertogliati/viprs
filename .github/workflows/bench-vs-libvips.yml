@@ -42,17 +42,17 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
 
-      - name: Install libvips
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y libvips-dev pkg-config
+      - name: Verify libvips available
+        run: pkg-config --modversion vips || echo "WARNING: libvips not found in container"
 
       - name: Build libvips runner
         run: make -C tools/bench-vs-libvips
