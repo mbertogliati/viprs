@@ -60,7 +60,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: RUSTFLAGS="-Dwarnings" cargo check --lib ${{ env.RUST_FEATURES }}
+      - run: make build FEATURES="${{ env.RUST_FEATURES }}"
 
   test:
     name: Test
