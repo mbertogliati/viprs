@@ -78,7 +78,7 @@ xtask:
 
 ## Criterion micro-benchmarks (native CPU for fair comparison)
 bench:
-	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES)
+	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*'
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
 ## Runs the representative scenario matrix from PERFORMANCE.md:
