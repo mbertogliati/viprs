@@ -70,15 +70,15 @@ audit:
 coverage:
 	$(CARGO) llvm-cov --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
-## Build xtask release (for benchmark runner)
+## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
-	$(CARGO) build --release -p xtask --features count-alloc
+	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) build --release -p xtask --features count-alloc
 
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 
-## Criterion micro-benchmarks
+## Criterion micro-benchmarks (native CPU for fair comparison)
 bench:
-	$(CARGO) bench --bench '*'
+	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench --bench '*'
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
 ## Runs the representative scenario matrix from PERFORMANCE.md:

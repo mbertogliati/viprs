@@ -4,7 +4,12 @@ cov-lib = "llvm-cov --lib --ignore-filename-regex (benches|tests)"
 cov-lib-fft = "llvm-cov --lib --features fft --ignore-filename-regex (benches|tests)"
 
 [build]
-# Generate code for the exact CPU running the build — enables NEON on Apple Silicon,
-# AVX2/AVX-512 on Intel/AMD. Must match the C runner's -march=native so both sides
-# use the same SIMD instruction set in benchmarks.
-rustflags = ["-C", "target-cpu=native"]
+# NOTE: target-cpu=native was REMOVED from here deliberately.
+# It caused proc-macro SIGILL crashes in CI when rust-cache was shared between
+# runners with different CPU capabilities (proc-macros are compiled .so files
+# that execute inside rustc — caching them across CPUs = illegal instructions).
+#
+# target-cpu=native is passed explicitly only for benchmarks (make bench / bench-vs)
+# where it matters for fair comparison against libvips -march=native.
+# For development, the compiler's default target-cpu is sufficient for correctness
+# testing; SIMD paths are activated via #[target_feature] runtime detection.

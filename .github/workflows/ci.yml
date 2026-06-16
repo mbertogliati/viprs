@@ -75,7 +75,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: RUSTFLAGS="-Ctarget-cpu=x86-64-v3" make test FEATURES="${{ env.RUST_FEATURES }}"
+      - run: make test FEATURES="${{ env.RUST_FEATURES }}"
 
   docs:
     name: Documentation
