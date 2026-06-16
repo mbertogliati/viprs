@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: streaming `DecoderSource<D>` tile reads.
 ///
 /// The fake decoder exposes 512, 2048, and 8192 square images but only decodes
@@ -156,6 +157,7 @@ fn bench_png_eager_vs_streaming_tile_read(c: &mut Criterion) {
             PngEncoder {
                 compression: 0,
                 interlace: false,
+                filter: png::Filter::NoFilter,
             }
             .encode(&image),
             "encode PNG benchmark image",

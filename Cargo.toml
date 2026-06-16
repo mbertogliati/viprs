@@ -14,6 +14,7 @@ description = "Native Rust reimplementation of libvips focused on demand-driven,
 license = "MIT"
 repository = "https://github.com/mbertogliati/viprs"
 readme = "README.md"
+autobenches = false
 keywords = ["image-processing", "vips", "jpeg", "thumbnail", "pipeline"]
 categories = ["multimedia::images", "algorithms"]
 exclude = [
@@ -303,10 +304,11 @@ name = "invert"
 path = "benches/arithmetic/invert.rs"
 harness = false
 
-[[bench]]
-name = "static_fusion"
-path = "benches/static_fusion.rs"
-harness = false
+# Disabled: depends on unimplemented FusedOp (see domain/op/static_op.rs doc comment)
+# [[bench]]
+# name = "static_fusion"
+# path = "benches/static_fusion.rs"
+# harness = false
 
 [[bench]]
 name = "pipeline"
@@ -603,10 +605,7 @@ name = "reduceh"
 path = "benches/resample/reduceh.rs"
 harness = false
 
-[[bench]]
-name = "reduce_h"
-path = "benches/resample/reduce_h.rs"
-harness = false
+# reduce_h is a duplicate of reduceh (uses include! of same file)
 
 [[bench]]
 name = "reducev"
@@ -1224,10 +1223,11 @@ name = "thumbnail"
 path = "benches/resample/thumbnail.rs"
 harness = false
 
-[[bench]]
-name = "mapim"
-path = "benches/resample/mapim.rs"
-harness = false
+# Disabled: uses removed PipelineArena methods (add_root_source, connect_root_to_slot)
+# [[bench]]
+# name = "mapim"
+# path = "benches/resample/mapim.rs"
+# harness = false
 
 [[bench]]
 name = "insert"
@@ -1264,10 +1264,11 @@ name = "rank"
 path = "benches/morphology/rank.rs"
 harness = false
 
-[[bench]]
-name = "count_lines"
-path = "benches/morphology/count_lines.rs"
-harness = false
+# Disabled: CountLinesOp is a TileReducer, not an Op; bench uses wrong API
+# [[bench]]
+# name = "count_lines"
+# path = "benches/morphology/count_lines.rs"
+# harness = false
 
 [[bench]]
 name = "labelregions"

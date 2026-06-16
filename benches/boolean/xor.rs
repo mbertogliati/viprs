@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Xor<U8> — bitwise XOR of each pixel sample with a constant mask.
 ///
 /// Measures the full pipeline path: MemorySource → Xor → MemorySink via RayonScheduler.
@@ -29,7 +30,7 @@ fn bench_xor(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

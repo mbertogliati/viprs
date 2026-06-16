@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Add<U8> — element-wise addition of a constant rhs buffer.
 ///
 /// Measures the full pipeline path: MemorySource → Add → MemorySink via RayonScheduler.
@@ -40,7 +41,7 @@ fn bench_add(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

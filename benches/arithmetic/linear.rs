@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Linear<U8> — per-sample `output = input * scale + offset`.
 ///
 /// Measures the full pipeline path: MemorySource → Linear → MemorySink via RayonScheduler.
@@ -28,7 +29,7 @@ fn bench_linear(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -54,7 +55,7 @@ fn bench_linear(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

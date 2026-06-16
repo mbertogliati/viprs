@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 #[path = "../common/mod.rs"]
 mod common;
 
@@ -25,7 +26,7 @@ fn bench_extract_bands(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

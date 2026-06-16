@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: complete pipeline — MemorySource → Linear → Invert → MemorySink.
 ///
 /// Exercises the full Source → multi-op → Sink path via RayonScheduler.
@@ -32,7 +33,7 @@ fn bench_pipeline(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

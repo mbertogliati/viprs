@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Abs<F32> — element-wise absolute value on float pixels.
 ///
 /// Measures the full pipeline path: MemorySource → Abs → MemorySink via RayonScheduler.
@@ -25,7 +26,7 @@ fn bench_abs(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

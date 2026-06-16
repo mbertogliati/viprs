@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use std::sync::Arc;
 
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
@@ -46,7 +47,7 @@ fn bench_hist_find_indexed(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let sink = MemorySink::for_pipeline(&pipeline);
+                let sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let index =
                     Arc::new(MemorySource::<U8>::new(size, size, 1, index_pixels.clone()).unwrap());
                 let reducer = HistFindIndexedOp::new(size, size, 3, u8::MAX as u32, index).unwrap();

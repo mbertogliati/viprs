@@ -1,5 +1,9 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
-use viprs::{DrawOp, DrawSmudgeOp, Region, TileMut, U8};
+use viprs::domain::draw::DrawOp;
+use viprs::domain::format::U8;
+use viprs::domain::image::{Region, TileMut};
+use viprs::domain::ops::draw::DrawSmudgeOp;
 
 fn bench_draw_smudge(c: &mut Criterion) {
     let mut group = c.benchmark_group("draw_smudge");

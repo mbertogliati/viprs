@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 //! Benchmark: PointFn fusion vs manual kernels vs dyn dispatch.
 //!
 //! This benchmark keeps the manual kernel and dyn-dispatch baselines while the

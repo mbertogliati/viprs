@@ -1,8 +1,11 @@
+#![allow(missing_docs)]
 use std::f32::consts::PI;
 
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    F32, OperationBridge, PipelineBuilder, PolarOp,
+    domain::format::F32,
+    domain::ops::arithmetic::PolarOp,
+    pipeline::{OperationBridge, PipelineBuilder},
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -36,7 +39,7 @@ fn bench_polar(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

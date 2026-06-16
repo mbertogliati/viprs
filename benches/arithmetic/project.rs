@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -32,7 +33,7 @@ fn bench_project(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let sink = MemorySink::for_pipeline(&pipeline);
+                let sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let project = scheduler
                     .run_with_reducer::<U8, ProjectOp>(
                         &pipeline,

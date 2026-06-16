@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -19,13 +20,13 @@ fn bench_sines(c: &mut Criterion) {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let pipeline = PipelineBuilder::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(
-                        SinesOp::<F32>::new(size, size, 0.5, 0.25),
+                        SinesOp::<F32>::with_frequencies(size, size, 0.5, 0.25),
                         1,
                     )))
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();
                 black_box(sink.into_buffer())
             });

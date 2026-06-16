@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: SumOp<U8> — sum 3 bands into one output band.
 ///
 /// Measures the full pipeline path: MemorySource → SumOp → MemorySink via RayonScheduler.
@@ -32,7 +33,7 @@ fn bench_sum(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

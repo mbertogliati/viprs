@@ -407,6 +407,7 @@ impl ImageApi {
         }
     }
 
+    #[allow(clippy::missing_const_for_fn)] // not const when `png` feature is enabled
     pub(in crate::adapters::image_api) fn from_png_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,

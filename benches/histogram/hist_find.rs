@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -38,7 +39,7 @@ fn bench_hist_find(c: &mut Criterion) {
 
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, _| {
             b.iter(|| {
-                let sink = MemorySink::for_pipeline(&pipeline);
+                let sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let hist = scheduler
                     .run_with_reducer::<U8, HistFindOp>(&pipeline, &sink, &reducer)
                     .unwrap();

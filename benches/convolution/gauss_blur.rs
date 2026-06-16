@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: separable GaussBlur (GaussBlurH → GaussBlurV) on F32 images.
 ///
 /// Measures the full pipeline path:
@@ -52,7 +53,7 @@ fn bench_gauss_blur(c: &mut Criterion) {
                     .build()
                     .unwrap();
 
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -78,7 +79,7 @@ fn bench_gauss_blur(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

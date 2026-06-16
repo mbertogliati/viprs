@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: ReduceH<U8/F32> — horizontal downscale via Lanczos3.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
@@ -26,7 +27,7 @@ fn bench_reduceh_u8(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -53,7 +54,7 @@ fn bench_reduceh_f32(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -82,7 +83,7 @@ fn bench_reduceh_thumbnail_residual(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(RayonScheduler::default_threads())
                 .unwrap()
                 .run(&pipeline, &mut sink)

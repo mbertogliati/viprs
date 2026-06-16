@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -30,7 +31,7 @@ fn bench_mask_family<O>(
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             scheduler.run(&pipeline, &mut sink).unwrap();
             criterion::black_box(sink.into_buffer())
         });

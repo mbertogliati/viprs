@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Sign<F32> — element-wise signum (−1, 0, or +1).
 ///
 /// Measures the full pipeline path: MemorySource → Sign → MemorySink via RayonScheduler.
@@ -28,7 +29,7 @@ fn bench_sign(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

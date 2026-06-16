@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Subtract<U8> — element-wise subtraction of a constant rhs buffer.
 ///
 /// Measures the full pipeline path: MemorySource → Subtract → MemorySink via RayonScheduler.
@@ -40,7 +41,7 @@ fn bench_subtract(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

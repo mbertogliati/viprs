@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Grid<U8> — rearrange a vertical strip of four frames into a 2×2 grid.
 ///
 /// Measures the full pipeline path: MemorySource → Grid → MemorySink via RayonScheduler.
@@ -35,7 +36,7 @@ fn bench_grid(c: &mut Criterion) {
                         .unwrap()
                         .build()
                         .unwrap();
-                    let mut sink = MemorySink::for_pipeline(&pipeline);
+                    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
                         .unwrap()
                         .run(&pipeline, &mut sink)

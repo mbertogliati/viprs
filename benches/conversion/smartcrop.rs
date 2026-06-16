@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -30,7 +31,7 @@ fn bench_smartcrop(c: &mut Criterion) {
                 let mut arena = PipelineArena::with_source(Box::new(source));
                 arena.add_view_node(Box::new(op.into_bridge(1)));
                 let pipeline = arena.compile().unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

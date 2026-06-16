@@ -1,5 +1,9 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
-use viprs::{DrawMaskOp, DrawOp, Region, TileMut, U8};
+use viprs::domain::draw::DrawOp;
+use viprs::domain::format::U8;
+use viprs::domain::image::{Region, TileMut};
+use viprs::domain::ops::draw::DrawMaskOp;
 
 fn make_mask(size: u32) -> Vec<u8> {
     vec![128_u8; (size / 2) as usize * (size / 2) as usize]

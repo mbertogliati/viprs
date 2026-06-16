@@ -1,6 +1,8 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    BandFormatId, F32, OperationBridge, PipelineBuilder, U8,
+    domain::format::{BandFormatId, F32, U8},
+    pipeline::{OperationBridge, PipelineBuilder},
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -29,7 +31,7 @@ fn cumulative_bins(size: u32, pixels: &[u8], scheduler: &RayonScheduler) -> Vec<
         .unwrap()
         .build()
         .unwrap();
-    let sink = MemorySink::for_pipeline(&pipeline);
+    let sink = MemorySink::for_pipeline(&pipeline).unwrap();
     let histogram = scheduler
         .run_with_reducer::<U8, HistFindReducer>(
             &pipeline,
@@ -68,7 +70,7 @@ fn bench_hist_percent(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();
                 black_box(sink.into_buffer());
             });

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Remainder<F32> — element-wise floating remainder against a fixed rhs buffer.
 ///
 /// Measures the full pipeline path: MemorySource → Remainder → MemorySink via RayonScheduler.
@@ -30,7 +31,7 @@ fn bench_remainder(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
