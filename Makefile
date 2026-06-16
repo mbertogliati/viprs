@@ -38,11 +38,13 @@ else
 endif
 
 ## Clippy with all project lints (pedantic + nursery + perf + no unwrap/expect).
-## -A dead_code: functions gated behind unselected features appear dead but aren't.
-## The Cargo.toml [lints.clippy] section already denies pedantic/nursery/perf.
+## Allows: dead_code (functions behind unselected features appear dead),
+##         missing_const_for_fn (cross-platform const detection is imperfect),
+##         cast_ptr_alignment (SIMD intrinsics require aligned casts — safe inside target_feature fns).
 clippy:
 	RUSTFLAGS="-A dead_code" $(CARGO) clippy --lib $(FEATURES) -- \
-		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
+		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used \
+		-A clippy::missing_const_for_fn -A clippy::cast_ptr_alignment
 
 ## Compile check (lib + xtask)
 build:
