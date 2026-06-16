@@ -104,7 +104,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     libvips42 \
     libvips-dev \
-    libturbojpeg0-dev \
     libwebp-dev \
     libheif-dev \
     libopenjp2-7-dev \
