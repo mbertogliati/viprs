@@ -32,6 +32,7 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
@@ -105,6 +106,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: EmbarkStudios/cargo-deny-action@v2
+        env:
+          RUSTUP_TOOLCHAIN: stable
 
   build-xtask:
     name: Build xtask (in native-deps image)

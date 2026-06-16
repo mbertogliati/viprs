@@ -14,8 +14,8 @@
 //! );
 //! ```
 
-use std::io::Write;
 use crate::ports::codec::ImageEncoder;
+use std::io::Write;
 
 #[cfg(feature = "avif")]
 use crate::adapters::codecs::AvifCodec;
