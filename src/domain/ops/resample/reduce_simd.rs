@@ -2690,7 +2690,7 @@ unsafe fn reduce_v_u8_avx2(
     let in_h = input_region.height as usize;
     let row_stride = input_region.width as usize * bands as usize;
     let row_len = out_w * bands as usize;
-    let vector_len = row_len / 4 * 4;
+    let vector_len = row_len / 8 * 8;
 
     for y_out in 0..out_h {
         let source_y = filter.source_position(output_region.y as f64 + y_out as f64);
