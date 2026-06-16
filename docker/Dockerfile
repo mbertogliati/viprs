@@ -103,6 +103,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     curl \
     libvips42 \
+    libvips-dev \
     libturbojpeg0-dev \
     libwebp-dev \
     libheif-dev \
