@@ -9,7 +9,6 @@
 /// For integer ops, this produces N× speedup as chain depth grows.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    domain::{format::BandFormatId, image::ImageMetadata},
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
@@ -21,6 +20,7 @@ use viprs::{
         op::{DemandHint, DynOperation, NodeSpec},
         ops::point::{Invert as CInvert, Linear},
     },
+    domain::{format::BandFormatId, image::ImageMetadata},
     ports::scheduler::TileScheduler,
 };
 

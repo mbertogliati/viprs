@@ -6,11 +6,11 @@ use std::{
 
 use libc::{RUSAGE_SELF, getrusage, rusage};
 use viprs::{
-    domain::format::BandFormatId,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
+    domain::format::BandFormatId,
     domain::{
         colorspace::{ColorspaceId, Lab},
         format::U8,

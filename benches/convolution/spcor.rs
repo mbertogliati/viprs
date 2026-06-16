@@ -1,13 +1,13 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    domain::{format::F32, image::Image},
-    pipeline::{OperationBridge, PipelineBuilder},
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
     domain::ops::convolution::SpcorOp,
+    domain::{format::F32, image::Image},
+    pipeline::{OperationBridge, PipelineBuilder},
     ports::scheduler::TileScheduler,
 };
 

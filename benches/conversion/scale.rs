@@ -1,7 +1,6 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    pipeline::PipelineBuilder,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -13,6 +12,7 @@ use viprs::{
         ops::conversion::{ScaleMode, ScaleOp},
         reducers::stats::StatsReducer,
     },
+    pipeline::PipelineBuilder,
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 

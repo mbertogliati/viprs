@@ -3,13 +3,13 @@ use std::f32::consts::PI;
 
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    domain::format::F32,
-    domain::ops::arithmetic::PolarOp,
-    pipeline::{OperationBridge, PipelineBuilder},
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
+    domain::format::F32,
+    domain::ops::arithmetic::PolarOp,
+    pipeline::{OperationBridge, PipelineBuilder},
     ports::scheduler::TileScheduler,
 };
 

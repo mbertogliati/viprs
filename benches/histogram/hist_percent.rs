@@ -1,16 +1,16 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    domain::format::{BandFormatId, F32, U8},
-    pipeline::{OperationBridge, PipelineBuilder},
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
+    domain::format::{BandFormatId, F32, U8},
     domain::{
         ops::{arithmetic::Linear, histogram::HistPercentOp},
         reducers::histogram::HistFindReducer,
     },
+    pipeline::{OperationBridge, PipelineBuilder},
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 
