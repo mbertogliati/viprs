@@ -52,7 +52,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Verify libvips available
-        run: pkg-config --modversion vips || echo "WARNING: libvips not found in container"
+        run: 'pkg-config --modversion vips || echo "libvips not found in container"'
 
       - name: Build libvips runner
         run: make -C tools/bench-vs-libvips
