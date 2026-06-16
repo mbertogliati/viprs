@@ -14,7 +14,7 @@ env:
   RUSTFLAGS: -Dwarnings
 
 permissions:
-  packages: read
+  packages: write
 
 jobs:
   # ─── Fast checks (always run, even on drafts) ───────────────────────
@@ -42,7 +42,7 @@ jobs:
   # ─── Full checks (only on non-draft PRs, gate on fast checks) ────────
   check:
     name: Check (stable + MSRV)
-    needs: [fmt, clippy]
+    needs: [fmt, clippy, build-xtask]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
@@ -60,7 +60,7 @@ jobs:
 
   test:
     name: Test
-    needs: [fmt, clippy]
+    needs: [fmt, clippy, build-xtask]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
@@ -134,6 +134,40 @@ jobs:
       - name: Install cargo-semver-checks
         run: cargo install cargo-semver-checks --locked
       - run: cargo semver-checks check-release
+
+  repackage-and-publish:
+    name: Repackage image with xtask and publish
+    needs: [build-xtask]
+    if: "!github.event.pull_request.draft"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download xtask artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xtask
+          path: ./xtask-artifact
+      - name: Create Dockerfile for repack
+        run: |
+          cat > Dockerfile.repack <<'EOF'
+          FROM ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+          COPY xtask-artifact/xtask /usr/local/bin/xtask
+          RUN chmod +x /usr/local/bin/xtask
+          EOF
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push repackaged image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.repack
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/viprs-perf:built-${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/viprs-perf:latest-built
 
   coverage:
     name: Coverage (≥90%)
