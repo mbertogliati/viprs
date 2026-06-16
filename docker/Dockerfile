@@ -101,6 +101,7 @@ ENV PKG_CONFIG_PATH=/opt/libjpeg-turbo/lib/pkgconfig:/opt/libjpeg-turbo/lib64/pk
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
     libvips42 \
     libturbojpeg0-dev \
     libwebp-dev \
