@@ -67,8 +67,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 --branch 3.0.0 https://github.com/libjpeg-turbo/libjpeg-turbo.git /tmp/libjpeg-turbo \
     && mkdir -p /tmp/libjpeg-turbo/build && cd /tmp/libjpeg-turbo/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 .. \
-    && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libjpeg-turbo
+    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 -DCMAKE_INSTALL_LIBDIR=lib .. \
+    && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libjpeg-turbo \
+    && pkg-config --modversion libturbojpeg
 
 
 WORKDIR /workspace
@@ -118,6 +119,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && ldconfig
+
+# Verify source-built libs are discoverable by pkg-config
+RUN pkg-config --modversion libturbojpeg && \
+    pkg-config --modversion libjxl && \
+    pkg-config --modversion libheif
 
 # xtask and bench runners are expected to be built in CI using this image as the base.
 # Keep helper scripts in the image.
