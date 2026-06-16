@@ -78,8 +78,8 @@ COPY xtask/ xtask/
 COPY .cargo/ .cargo/
 COPY tools/bench-vs-libvips/libvips_runner.c tools/bench-vs-libvips/Makefile tools/bench-vs-libvips/
 
-# Ensure pkg-config can find libraries installed into /opt/libjpeg-turbo
-ENV PKG_CONFIG_PATH=/opt/libjpeg-turbo/lib/pkgconfig:/opt/libjpeg-turbo/lib64/pkgconfig
+# Ensure pkg-config can find source-built libraries
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 # NOTE: In this hybrid approach the OCI image is a "native-deps" base image.
 # Cargo/Rust builds (xtask and viprs) will be executed inside CI jobs that use
@@ -93,6 +93,9 @@ FROM debian:bookworm-slim
 COPY --from=builder /usr/local/lib/ /usr/local/lib/
 COPY --from=builder /usr/local/include/ /usr/local/include/
 COPY --from=builder /usr/local/lib/pkgconfig/ /usr/local/lib/pkgconfig/
+
+# Ensure pkg-config finds source-built libs before apt-installed ones
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \

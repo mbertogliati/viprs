@@ -11,6 +11,8 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  # Source-built libs (libjpeg-turbo ≥3, libheif ≥1.16) are in /usr/local/lib.
+  PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig
   # All features EXCEPT jxl (needs libjxl ≥0.11) and openslide (needs libclang for bindgen).
   # Once the OCI image is rebuilt with libjxl + libclang, change to --all-features.
   # Tracked by: PR #12 (ci/libjxl container rebuild)

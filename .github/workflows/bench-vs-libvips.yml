@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/local/lib/x86_64-linux-gnu/pkgconfig
   # All features EXCEPT jxl (needs libjxl ≥0.11) and openslide (needs libclang for bindgen).
   CI_FEATURES: "--features default,jpeg,png,webp,tiff,gif,exr,icc,heif,avif,svg,fft,simd-pulp,jp2k,bmp,radiance,pfm,nifti,pnm,mat-hdf5,uhdr,deepzoom,dcraw,csv,vips-format,tracing,ffi,lock_instrumentation"
 
