@@ -47,9 +47,9 @@ build:
 	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) check --lib $(FEATURES)
 	$(CARGO) check -p xtask
 
-## Unit tests
+## Unit tests (warnings allowed in test code — dead code is expected with partial features)
 test:
-	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) test --lib $(FEATURES)
+	$(CARGO) test --lib $(FEATURES)
 
 ## Documentation (deny warnings)
 doc:
