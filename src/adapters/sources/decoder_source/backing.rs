@@ -42,7 +42,7 @@ pub struct Sequential;
 
 // ── DecoderSource ─────────────────────────────────────────────────────────────
 
-/// Adapter that exposes decoded image bytes as an [`ImageSource`].
+/// Adapter that exposes decoded image bytes as an [`ImageSource`](crate::ports::source::ImageSource).
 ///
 /// ## Type parameters
 ///
