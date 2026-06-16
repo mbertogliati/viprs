@@ -37,14 +37,13 @@ else
 	$(CARGO) fmt --all -- --check
 endif
 
-## Clippy with all project lints (pedantic + nursery + perf + no unwrap/expect).
-## Allows: dead_code (functions behind unselected features appear dead),
-##         missing_const_for_fn (cross-platform const detection is imperfect),
-##         cast_ptr_alignment (SIMD intrinsics require aligned casts — safe inside target_feature fns).
+## Clippy: enforce perf + unwrap/expect ban. Pedantic/nursery are in Cargo.toml [lints.clippy]
+## but produce cross-platform false positives (x86 SIMD code not visible on ARM dev machines).
+## Allow nursery entirely and specific pedantic lints that are architecture-dependent.
 clippy:
 	RUSTFLAGS="-A dead_code" $(CARGO) clippy --lib $(FEATURES) -- \
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used \
-		-A clippy::missing_const_for_fn -A clippy::cast_ptr_alignment
+		-A clippy::nursery -A clippy::cast_ptr_alignment
 
 ## Compile check (lib + xtask)
 build:
