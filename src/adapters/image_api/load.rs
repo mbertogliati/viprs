@@ -15,15 +15,15 @@ use crate::domain::format::U8;
 #[cfg(feature = "jpeg")]
 use super::JpegCodec;
 #[cfg(feature = "png")]
-use super::PngCodec;
-#[cfg(feature = "png")]
 use super::PNG_IHDR_BIT_DEPTH_OFFSET;
+#[cfg(feature = "png")]
+use super::PngCodec;
+#[cfg(feature = "webp")]
+use super::{WEBP_MAGIC, WEBP_RIFF_HEADER, WebpCodec};
 #[cfg(feature = "png")]
 use crate::domain::format::U16;
 #[cfg(feature = "png")]
 use std::fs;
-#[cfg(feature = "webp")]
-use super::{WEBP_MAGIC, WEBP_RIFF_HEADER, WebpCodec};
 
 /// High-level façade for decode → pipeline → encode workflows.
 ///

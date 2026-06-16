@@ -1,11 +1,11 @@
+#[cfg(feature = "icc")]
+use super::build_normalize_to_srgb_op;
 use super::colour::interpretation_to_colorspace;
 use super::{
     ArenaNodeOp, BandFormatId, BuildError, ColorspaceId, CompiledPipeline, DemandHint,
     DynImageSource, DynOperation, Flush, Identity, ImageMetadata, Interpretation, LineCacheAccess,
     LineCacheRequest, NodeIdx, NonZeroUsize, PipelineArena, PipelineOp, format_sample_size,
 };
-#[cfg(feature = "icc")]
-use super::build_normalize_to_srgb_op;
 
 /// Primary constructor is `from_source`.
 ///
