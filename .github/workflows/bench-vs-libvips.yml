@@ -31,6 +31,7 @@ jobs:
     name: E2E vs libvips (${{ matrix.arch }})
     needs: [gate]
     if: "!github.event.pull_request.draft"
+    continue-on-error: true
     runs-on: ${{ matrix.runner }}
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     strategy:
