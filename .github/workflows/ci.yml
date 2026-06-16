@@ -101,6 +101,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: EmbarkStudios/cargo-deny-action@v2
 
+  build-xtask:
+    name: Build xtask (in native-deps image)
+    if: "!github.event.pull_request.draft"
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
+      - name: Build xtask release
+        run: cargo build --release -p xtask --features count-alloc
+      - name: Upload xtask artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xtask
+          path: target/release/xtask
+
   semver:
     name: Semver Check
     needs: [check]
