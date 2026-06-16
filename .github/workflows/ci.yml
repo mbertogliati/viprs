@@ -34,6 +34,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -53,6 +55,8 @@ jobs:
       matrix:
         rust: [stable, "1.92"]
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -67,6 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -115,6 +121,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
       - uses: actions/checkout@v4
       - name: Set Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -186,6 +194,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -211,6 +221,8 @@ jobs:
           - arch: x86_64
             runner: ubuntu-latest
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
