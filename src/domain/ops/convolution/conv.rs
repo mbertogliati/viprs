@@ -1,5 +1,7 @@
 #![allow(clippy::unused_self)]
 // REASON: compatibility helpers stay as methods alongside the rest of the convolution API.
+#![allow(unused_imports)]
+// REASON: BandFormatId is used only in aarch64-gated NEON dispatch blocks.
 
 use std::marker::PhantomData;
 

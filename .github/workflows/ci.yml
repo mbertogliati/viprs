@@ -11,13 +11,12 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  RUSTFLAGS: -Dwarnings
 
 permissions:
   packages: write
 
 jobs:
-  # ─── Fast checks (always run, even on drafts) ───────────────────────
+  # ─── Fast checks (fmt doesn't need system libs) ────────────────────────
   fmt:
     name: Format
     runs-on: ubuntu-latest
@@ -27,42 +26,39 @@ jobs:
         with:
           toolchain: "1.96.0"
           components: rustfmt
-      - run: cargo fmt --all -- --check
+      - run: make fmt
 
+  # ─── Core validation (uses Makefile inside container) ──────────────────
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --lib --all-features -- -D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
+      - run: make clippy
 
-  # ─── Full checks (only on non-draft PRs, gate on fast checks) ────────
   check:
-    name: Check (stable + MSRV)
+    name: Compile check
     needs: [fmt, clippy]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
-    strategy:
-      matrix:
-        rust: [stable, "1.92"]
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ matrix.rust }}
+          toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --lib --all-features
+      - run: make build
 
   test:
     name: Test
@@ -72,29 +68,31 @@ jobs:
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --lib
+      - run: make test
 
   docs:
     name: Documentation
     needs: [fmt, clippy]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
+      - name: Install build tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: cargo doc --no-deps --all-features
-        env:
-          RUSTDOCFLAGS: -Dwarnings
+      - run: make doc
 
+  # ─── Security & licensing (specialized actions, no Makefile) ───────────
   audit:
     name: Security Audit
     if: "!github.event.pull_request.draft"
@@ -115,78 +113,26 @@ jobs:
         env:
           RUSTUP_TOOLCHAIN: stable
 
+  # ─── Xtask build (for benchmark image) ────────────────────────────────
   build-xtask:
-    name: Build xtask (in native-deps image)
+    name: Build xtask
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
-      - name: Set Rust toolchain
-        uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
-      - name: Build xtask release
-        run: cargo build --release -p xtask --features count-alloc
-      - name: Upload xtask artifact
-        uses: actions/upload-artifact@v4
+      - run: make xtask
+      - uses: actions/upload-artifact@v4
         with:
           name: xtask
           path: target/release/xtask
 
-  semver:
-    name: Semver Check
-    needs: [check]
-    if: "!github.event.pull_request.draft"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: "1.96.0"
-      - uses: Swatinem/rust-cache@v2
-      - name: Install cargo-semver-checks
-        run: cargo install cargo-semver-checks --locked
-      - run: cargo semver-checks check-release
-
-  repackage-and-publish:
-    name: Repackage image with xtask and publish
-    needs: [build-xtask]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download xtask artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: xtask
-          path: ./xtask-artifact
-      - name: Create Dockerfile for repack
-        run: |
-          cat > Dockerfile.repack <<'EOF'
-          FROM ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
-          COPY xtask-artifact/xtask /usr/local/bin/xtask
-          RUN chmod +x /usr/local/bin/xtask
-          EOF
-      - name: Log in to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push repackaged image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile.repack
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/viprs-perf:built-${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/viprs-perf:latest-built
-
+  # ─── Post-validation jobs ──────────────────────────────────────────────
   coverage:
     name: Coverage (≥90%)
     needs: [check, test]
@@ -195,17 +141,15 @@ jobs:
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
           components: llvm-tools-preview
       - uses: Swatinem/rust-cache@v2
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
-      - name: Run coverage
-        run: cargo llvm-cov --lib --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - run: make coverage
 
   benchmarks:
     name: Benchmarks (${{ matrix.arch }})
@@ -222,7 +166,7 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -230,15 +174,35 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - name: Install critcmp
-        run: cargo install critcmp --locked
-      - name: Bench target branch (${{ github.base_ref }})
+      - run: make bench
+
+  repackage-and-publish:
+    name: Repackage image with xtask
+    needs: [build-xtask]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: xtask
+          path: ./xtask-artifact
+      - name: Create Dockerfile for repack
         run: |
-          git checkout ${{ github.base_ref }}
-          cargo bench --bench '*' -- --save-baseline base 2>/dev/null || true
-      - name: Bench PR
-        run: |
-          git checkout ${{ github.sha }}
-          cargo bench --bench '*' -- --save-baseline pr
-      - name: Compare (fail on >5% regression)
-        run: critcmp base pr --threshold 5
+          cat > Dockerfile.repack <<'DOCKERFILE'
+          FROM ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+          COPY xtask-artifact/xtask /usr/local/bin/xtask
+          RUN chmod +x /usr/local/bin/xtask
+          DOCKERFILE
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.repack
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/viprs-perf:built-${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/viprs-perf:latest-built

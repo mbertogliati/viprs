@@ -14,6 +14,18 @@
 //! );
 //! ```
 
+#[cfg(any(
+    feature = "jpeg",
+    feature = "png",
+    feature = "webp",
+    feature = "tiff",
+    feature = "gif",
+    feature = "avif",
+    feature = "heif",
+    feature = "jp2k",
+    feature = "exr",
+    feature = "bmp"
+))]
 use crate::ports::codec::ImageEncoder;
 use std::io::Write;
 

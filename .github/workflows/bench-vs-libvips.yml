@@ -18,14 +18,13 @@ jobs:
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --lib --all-features
-      - run: cargo check -p xtask
+      - run: make build
 
   bench-vs-libvips:
     name: E2E vs libvips (${{ matrix.arch }})
@@ -42,7 +41,7 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:

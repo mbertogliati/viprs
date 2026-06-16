@@ -2,6 +2,8 @@
 
 #![allow(clippy::struct_field_names)]
 // REASON: median window fields deliberately match the neighborhood terminology used throughout the module.
+#![allow(unused_imports)]
+// REASON: SimdLevel is used only in aarch64-gated NEON dispatch blocks.
 
 use std::{cmp::Ordering, marker::PhantomData};
 

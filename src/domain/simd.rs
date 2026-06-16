@@ -44,9 +44,12 @@ impl SimdLevel {
     // On all other targets the code is live. The allow is the standard pattern for
     // multi-target fallback code that uses early-return inside cfg blocks.
     #[allow(unreachable_code)]
+    #[allow(clippy::missing_const_for_fn)]
+    // REASON: On aarch64 this function is trivially const (returns Neon unconditionally),
+    // but on x86 it calls `is_x86_feature_detected!()` which is not const.
     #[inline]
     #[must_use]
-    pub const fn detect() -> Self {
+    pub fn detect() -> Self {
         #[cfg(target_arch = "aarch64")]
         {
             // NEON is mandatory on all aarch64 processors (ARMv8-A baseline).
