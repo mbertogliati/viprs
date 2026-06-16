@@ -7,6 +7,24 @@ use super::{
     Read, ResourceLimits, ViprsError, size_of,
 };
 
+#[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
+use super::{Arc, DecoderSource};
+#[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
+use crate::domain::format::U8;
+
+#[cfg(feature = "jpeg")]
+use super::JpegCodec;
+#[cfg(feature = "png")]
+use super::PngCodec;
+#[cfg(feature = "png")]
+use super::PNG_IHDR_BIT_DEPTH_OFFSET;
+#[cfg(feature = "png")]
+use crate::domain::format::U16;
+#[cfg(feature = "png")]
+use std::fs;
+#[cfg(feature = "webp")]
+use super::{WEBP_MAGIC, WEBP_RIFF_HEADER, WebpCodec};
+
 /// High-level façade for decode → pipeline → encode workflows.
 ///
 /// `ImageApi` is the main user-facing adapter for request/response image
@@ -389,7 +407,7 @@ impl ImageApi {
         }
     }
 
-    pub(in crate::adapters::image_api) const fn from_png_bytes_with_options(
+    pub(in crate::adapters::image_api) fn from_png_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,

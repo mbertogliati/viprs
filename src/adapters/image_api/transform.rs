@@ -5,6 +5,9 @@ use super::{
     ViprsError,
 };
 
+#[cfg(feature = "icc")]
+use super::ImageApiThumbnailOptions;
+
 impl ImageApi {
     /// Apply any pipeline operation.
     ///

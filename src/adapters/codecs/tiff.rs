@@ -96,6 +96,7 @@ impl Default for TiffEncoder {
 }
 
 impl TiffEncoder {
+    /// Creates a new encoder with the given compression algorithm.
     #[must_use]
     pub const fn with_compression(compression: TiffCompression) -> Self {
         Self {
@@ -104,6 +105,7 @@ impl TiffEncoder {
         }
     }
 
+    /// Sets the predictor for the encoder.
     #[must_use]
     pub const fn with_predictor(mut self, predictor: TiffPredictor) -> Self {
         self.predictor = predictor;
@@ -126,6 +128,7 @@ pub struct TiffCodec {
 }
 
 impl TiffCodec {
+    /// Creates a new codec with the given compression algorithm.
     #[must_use]
     pub const fn with_compression(compression: TiffCompression) -> Self {
         Self {
