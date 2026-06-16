@@ -11,9 +11,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # Override .cargo/config.toml target-cpu=native which causes SIGILL on heterogeneous
-  # CI runners. x86-64-v3 = AVX2 baseline, safe for all modern GitHub ubuntu runners.
-  CARGO_ENCODED_RUSTFLAGS: "-Ctarget-cpu=x86-64-v3"
   # Features for containerless CI jobs. Uses only features that compile cleanly
   # without native C libraries. The full feature set (with native codec bindings)
   # will be validated once the OCI container is rebuilt with all deps.
@@ -78,7 +75,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make test FEATURES="${{ env.RUST_FEATURES }}"
+      - run: RUSTFLAGS="-Ctarget-cpu=x86-64-v3" make test FEATURES="${{ env.RUST_FEATURES }}"
 
   docs:
     name: Documentation
