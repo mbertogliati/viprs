@@ -11,10 +11,10 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # All features EXCEPT jxl (requires libjxl ≥0.11 not yet in the container image).
-  # Once the OCI image is rebuilt with libjxl, change to --all-features.
+  # All features EXCEPT jxl (needs libjxl ≥0.11) and openslide (needs libclang for bindgen).
+  # Once the OCI image is rebuilt with libjxl + libclang, change to --all-features.
   # Tracked by: PR #12 (ci/libjxl container rebuild)
-  CI_FEATURES: "--features default,jpeg,png,webp,tiff,gif,exr,icc,heif,avif,svg,fft,simd-pulp,jp2k,bmp,radiance,pfm,nifti,pnm,openslide,mat-hdf5,uhdr,deepzoom,dcraw,csv,vips-format,tracing,ffi,lock_instrumentation"
+  CI_FEATURES: "--features default,jpeg,png,webp,tiff,gif,exr,icc,heif,avif,svg,fft,simd-pulp,jp2k,bmp,radiance,pfm,nifti,pnm,mat-hdf5,uhdr,deepzoom,dcraw,csv,vips-format,tracing,ffi,lock_instrumentation"
 
 permissions:
   packages: write
