@@ -1,8 +1,12 @@
 use std::io::Cursor;
 use std::num::NonZeroU8;
 use std::path::PathBuf;
-use std::sync::{Arc, Barrier};
+use std::sync::{Arc, Barrier, Mutex};
 use std::time::Duration;
+
+/// Tests that mutate the global `PNG_ROW_DECODE_PROBE` must hold this lock to
+/// avoid racing with each other when `cargo test` runs threads in parallel.
+static PROBE_MUTEX: Mutex<()> = Mutex::new(());
 
 use png::{ColorType as RawColorType, Decoder as RawDecoder, Filter, Unit as RawUnit};
 
@@ -686,6 +690,7 @@ fn decode_region_from_path_streams_sequential_full_width_strips() {
 
 #[test]
 fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
+    let _guard = PROBE_MUTEX.lock().unwrap();
     let codec = Arc::new(PngCodec::default());
     let pixels: Vec<u8> = (0u8..=255).cycle().take(64 * 64 * 3).collect();
     let image = Image::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
@@ -840,6 +845,7 @@ fn decode_region_into_interlaced_png_matches_eager_decode() {
 
 #[test]
 fn decode_region_from_path_interlaced_png_reuses_eager_backing() {
+    let _guard = PROBE_MUTEX.lock().unwrap();
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..=255).cycle().take(256 * 256 * 3).collect();
     let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
@@ -893,6 +899,7 @@ fn decode_region_from_path_interlaced_png_reuses_eager_backing() {
 
 #[test]
 fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
+    let _guard = PROBE_MUTEX.lock().unwrap();
     let codec = Arc::new(PngCodec::default());
     let pixels: Vec<u8> = (0u8..=255).cycle().take(64 * 64 * 3).collect();
     let image = Image::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
