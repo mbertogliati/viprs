@@ -20,6 +20,7 @@ use crate::{
     ports::codec::ImageCodec,
 };
 
+/// File extensions decoded via ImageMagick fallback when no native codec is available.
 pub const MAGICK_FALLBACK_DECODE_EXTENSIONS: &[&str] = &[
     "bmp", "dib", "ico", "icns", "psd", "pcx", "tga", "eps", "ps", "xcf", "dcm",
 ];
@@ -53,6 +54,7 @@ impl MagickFallbackSaver {
     }
 }
 
+/// Registry of ImageMagick-based format savers for encoding to non-native formats.
 pub const MAGICK_FALLBACK_SAVERS: &[MagickFallbackSaver] = &[
     MagickFallbackSaver::new("magick-bmp", "bmp:-", &["bmp", "dib"]),
     MagickFallbackSaver::new("magick-ico", "ico:-", &["ico"]),

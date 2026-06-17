@@ -467,6 +467,7 @@ pub struct PnmCodec {
 }
 
 impl PnmCodec {
+    /// Creates a PBM (Portable Bitmap) codec instance.
     #[must_use]
     pub const fn pbm() -> Self {
         Self {
@@ -474,6 +475,7 @@ impl PnmCodec {
         }
     }
 
+    /// Creates a PGM (Portable Graymap) codec instance.
     #[must_use]
     pub const fn pgm() -> Self {
         Self {
@@ -481,6 +483,7 @@ impl PnmCodec {
         }
     }
 
+    /// Creates a PPM (Portable Pixmap) codec instance.
     #[must_use]
     pub const fn ppm() -> Self {
         Self {
@@ -488,6 +491,7 @@ impl PnmCodec {
         }
     }
 
+    /// Creates a generic PNM codec instance (auto-detects subformat).
     #[must_use]
     pub const fn pnm() -> Self {
         Self {
