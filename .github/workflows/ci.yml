@@ -121,7 +121,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:

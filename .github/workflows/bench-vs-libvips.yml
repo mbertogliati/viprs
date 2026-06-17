@@ -43,7 +43,7 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev nasm
       - uses: actions/checkout@v4
         with:
           lfs: true
