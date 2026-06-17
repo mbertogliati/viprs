@@ -375,7 +375,8 @@ impl ImageApi {
         Self::from_image_with_limits(image, opts.limits.as_ref(), resource_limits.cloned())
     }
 
-    pub(in crate::adapters::image_api) const fn from_jpeg_bytes_with_options(
+    #[allow(clippy::missing_const_for_fn)] // not const when `jpeg` feature is enabled
+    pub(in crate::adapters::image_api) fn from_jpeg_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,

@@ -1194,6 +1194,7 @@ static int run_sobel(const struct input_blob *input_blob) {
 }
 
 static int run_prewitt(const struct input_blob *input_blob) {
+#if VIPS_MAJOR_VERSION > 8 || (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION >= 16)
     VipsImage *in = new_input_image(input_blob);
     if (!in) return -1;
 
@@ -1206,6 +1207,11 @@ static int run_prewitt(const struct input_blob *input_blob) {
     g_object_unref(out);
     g_free(buf);
     return buf ? 0 : -1;
+#else
+    (void)input_blob;
+    fprintf(stderr, "vips_prewitt requires libvips >= 8.16\n");
+    return -1;
+#endif
 }
 
 static int run_median_blur(const struct input_blob *input_blob, int size) {
@@ -2527,6 +2533,7 @@ static int run_sobel_e2e(const char *input) {
 }
 
 static int run_prewitt_e2e(const char *input) {
+#if VIPS_MAJOR_VERSION > 8 || (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION >= 16)
     VipsImage *in = vips_image_new_from_file(input, NULL);
     if (!in) return -1;
 
@@ -2539,6 +2546,11 @@ static int run_prewitt_e2e(const char *input) {
     g_object_unref(out);
     g_free(buf);
     return buf ? 0 : -1;
+#else
+    (void)input;
+    fprintf(stderr, "vips_prewitt requires libvips >= 8.16\n");
+    return -1;
+#endif
 }
 
 static int run_median_blur_e2e(const char *input, int size) {
