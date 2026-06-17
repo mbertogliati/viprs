@@ -62,9 +62,9 @@ mod chaos_monkey_6 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F>(
+    fn execute_same_format<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
@@ -95,9 +95,9 @@ mod chaos_monkey_6 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F>(
+    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
@@ -247,9 +247,9 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -282,9 +282,9 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F>(
+    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
@@ -327,7 +327,7 @@ mod chaos_monkey_8 {
     #[test]
     fn rgba_thumbnail_preserves_band_count() {
         let image = patterned_u8(19, 11, 4);
-        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder.thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(7),
                 InterpolationKernel::Lanczos3,

@@ -66,9 +66,9 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -133,7 +133,7 @@ mod chaos_monkey_15 {
     fn extract_area_last_pixel_reads_exact_boundary_value() {
         let image = make_u8_image(3, 2, 1, vec![1, 2, 3, 4, 5, 6]);
         let (pipeline, output) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.extract_area(2, 1, 1, 1))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.extract_area(2, 1, 1, 1))
                 .expect("extract_area on last pixel should succeed");
 
         assert_eq!((pipeline.width, pipeline.height, output.bands()), (1, 1, 1));

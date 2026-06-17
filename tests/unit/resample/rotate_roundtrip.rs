@@ -60,9 +60,9 @@ mod chaos_monkey_14 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -86,7 +86,7 @@ mod chaos_monkey_14 {
     fn rotate270_then_rotate90_is_pixel_identity() {
         let image = patterned_u8(9, 7, 4);
         let (_pipeline, output) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.rotate270()?.rotate90())
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.rotate270()?.rotate90())
                 .expect("rotate270 then rotate90 should succeed");
 
         assert_eq!((output.width(), output.height(), output.bands()), (9, 7, 4));

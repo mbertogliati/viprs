@@ -134,9 +134,9 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -212,7 +212,7 @@ mod chaos_monkey_18 {
     #[test]
     fn embed_background_fill_applies_requested_colour() {
         let image = rgb_pattern(2, 2);
-        let (_pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.embed(
                 4,
                 4,

@@ -67,9 +67,9 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -178,7 +178,7 @@ mod chaos_monkey_16 {
     #[test]
     fn embed_repeat_tiles_non_power_of_two_input_exactly() {
         let image = make_u8_image(3, 5, 1, (0u8..15).collect());
-        let (pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.embed(
                 8,
                 9,

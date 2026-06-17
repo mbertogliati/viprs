@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[path = "unit/arithmetic.rs"]
 mod arithmetic;
 #[path = "unit/colour.rs"]

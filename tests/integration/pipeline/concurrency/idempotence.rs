@@ -51,10 +51,10 @@ mod robustez_idempotencia {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline(
+    fn execute_pipeline<S: viprs::pipeline::Flush>(
         image: &Image<U8>,
         threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, viprs::BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, viprs::BuildError>,
     ) -> Image<U8> {
         let pipeline = configure(PipelineBuilder::from_source(source_from_image(image)))
             .unwrap()

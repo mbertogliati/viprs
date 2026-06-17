@@ -47,9 +47,9 @@ mod chaos_monkey_19 {
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -99,7 +99,7 @@ mod chaos_monkey_19 {
     #[test]
     fn embed_entirely_outside_canvas_returns_typed_error() {
         let image = make_u8_image(2, 2, 1, vec![1, 2, 3, 4]);
-        let result = execute_to_image::<U8, U8>(&image, |builder| {
+        let result = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.embed(4, 4, 4, 0, image.width(), image.height(), ExtendMode::Black)
         });
 

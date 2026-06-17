@@ -136,9 +136,9 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -317,9 +317,9 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -352,9 +352,9 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F>(
+    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
@@ -398,7 +398,7 @@ mod chaos_monkey_8 {
     fn png_rotate_roundtrip_rgb_preserves_pixels() {
         let image = patterned_u8(7, 5, 3);
         let (_pipeline, rotated) =
-            execute_pipeline_to_image::<U8, U8>(&image, |builder| builder.rotate90())
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.rotate90())
                 .expect("rotate90 should succeed");
 
         let codec = PngCodec::default();
@@ -418,7 +418,7 @@ mod chaos_monkey_8 {
     fn png_rotate_roundtrip_rgba_preserves_pixels() {
         let image = patterned_u8(5, 7, 4);
         let (_pipeline, rotated) =
-            execute_pipeline_to_image::<U8, U8>(&image, |builder| builder.rotate90())
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.rotate90())
                 .expect("rotate90 should succeed");
 
         let codec = PngCodec::default();

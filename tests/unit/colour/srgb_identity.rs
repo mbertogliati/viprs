@@ -47,9 +47,9 @@ mod chaos_monkey_19 {
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -100,7 +100,7 @@ mod chaos_monkey_19 {
     #[ignore = "B-308"]
     fn colourspace_srgb_to_srgb_is_identity() {
         let image = patterned_rgb(7, 5);
-        let (_pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
                 .colourspace::<SRgb>()

@@ -65,10 +65,10 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 #[cfg(feature = "jpeg")]
-fn execute_to_image(
+fn execute_to_image<S: viprs::pipeline::Flush>(
     image: &Image<U8>,
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Image<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
         let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(

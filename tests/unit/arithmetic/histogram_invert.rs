@@ -134,9 +134,9 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -214,7 +214,7 @@ mod chaos_monkey_18 {
         let image = grayscale_pattern(32, 16);
         let equalized = apply_hist_equal(&image);
         let (_pipeline, inverted) =
-            execute_to_image::<U8, U8>(&equalized, |builder| builder.invert())
+            execute_to_image::<U8, U8, _>(&equalized, |builder| builder.invert())
                 .expect("histequal then invert should succeed");
 
         assert_eq!(
@@ -229,7 +229,7 @@ mod chaos_monkey_18 {
     fn zero_band_recomb_returns_typed_error() {
         let image = rgb_pattern(4, 3);
         let matrix = Matrix::new(0, 3, vec![]);
-        let result = execute_to_image::<U8, U8>(&image, |builder| {
+        let result = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                 RecombOp::<U8>::new(matrix.clone()),
                 3,

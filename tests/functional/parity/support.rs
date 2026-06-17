@@ -37,12 +37,12 @@ pub(crate) fn ensure_vips() {
     golden::require_vips();
 }
 
-pub(crate) fn run_pipeline_u8(
+pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let source =
         MemorySource::<U8>::new(width, height, bands, source_pixels).expect("MemorySource");
@@ -62,12 +62,12 @@ pub(crate) fn run_pipeline_u8(
     (output_width, output_height, sink.into_buffer())
 }
 
-pub(crate) fn run_pipeline_f32(
+pub(crate) fn run_pipeline_f32<S: viprs::pipeline::Flush>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let source =
         MemorySource::<F32>::new(width, height, bands, source_pixels).expect("MemorySource");

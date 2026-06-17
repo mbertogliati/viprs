@@ -67,9 +67,9 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -179,13 +179,13 @@ mod chaos_monkey_16 {
     fn shrink_then_lab_matches_sequential_execution() {
         let image = patterned_rgb(14, 10);
         let (_first_pipeline, shrunk) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.shrink(2, 2))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.shrink(2, 2))
                 .expect("shrink should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image::<U8, F32>(&shrunk, |builder| builder.colourspace::<Lab>())
+            execute_to_image::<U8, F32, _>(&shrunk, |builder| builder.colourspace::<Lab>())
                 .expect("colourspace should succeed");
 
-        let (pipeline, chained) = execute_to_image::<U8, F32>(&image, |builder| {
+        let (pipeline, chained) = execute_to_image::<U8, F32, _>(&image, |builder| {
             builder.shrink(2, 2)?.colourspace::<Lab>()
         })
         .expect("chained shrink -> Lab should succeed");
@@ -200,8 +200,9 @@ mod chaos_monkey_16 {
     #[test]
     fn shrink_one_is_pixel_exact_identity() {
         let image = patterned_rgba(9, 7);
-        let (pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| builder.shrink(1, 1))
-            .expect("shrink(1,1) should succeed");
+        let (pipeline, output) =
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.shrink(1, 1))
+                .expect("shrink(1,1) should succeed");
 
         assert_eq!(
             (pipeline.width, pipeline.height, output.bands()),
@@ -214,7 +215,7 @@ mod chaos_monkey_16 {
     fn rotate180_twice_is_pixel_exact_identity() {
         let image = patterned_rgba(11, 7);
         let (pipeline, output) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.rotate180()?.rotate180())
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.rotate180()?.rotate180())
                 .expect("rotate180 twice should succeed");
 
         assert_eq!(

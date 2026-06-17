@@ -63,6 +63,7 @@ pub mod prelude {
 
 /// Explicit advanced pipeline surface for manual graph construction and execution.
 pub mod pipeline {
+    pub use crate::adapters::pipeline::Flush;
     pub use crate::adapters::pipeline::{
         CompiledNode, CompiledOp, CompiledPipeline, InputSlicePtr, LineCacheConfig, PipelineArena,
         PipelineBuilder, PipelineOp, ThreadBufferPool,
@@ -108,6 +109,7 @@ pub use domain::image::{DemandHint, Image, ImageMetadata, Interpretation, Region
 pub use domain::op::{DynOperation, Op, OperationBridge};
 #[cfg(feature = "fft")]
 pub use domain::ops::freqfilt::{FwFftOp, InvFftOp};
+pub use domain::ops::point::Linear;
 pub use domain::ops::{
     arithmetic::{Add, AvgOp, DeviateOp, Multiply, RecombOp, Subtract},
     create::{EyeOp, GaussmatOp, GaussmatPrecision, SinesOp, TonelutOp},

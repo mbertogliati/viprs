@@ -68,10 +68,10 @@ mod robustness_determinism {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_buffer(
+    fn execute_to_buffer<S: viprs::pipeline::Flush>(
         image: &Image<U8>,
         threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> (CompiledPipeline, Vec<u8>) {
         let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
             image,

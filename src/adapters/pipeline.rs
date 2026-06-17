@@ -139,7 +139,7 @@ pub use arena::PipelineArena;
 use arena::{ArenaNodeOp, format_sample_size};
 
 mod builder;
-pub use builder::{PipelineBuilder, PipelineOp};
+pub use builder::{Flush, PipelineBuilder, PipelineOp};
 
 #[cfg(test)]
 mod tests;

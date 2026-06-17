@@ -134,9 +134,9 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -219,7 +219,7 @@ mod chaos_monkey_18 {
             lab_metadata(),
         );
         let (_pipeline, output) =
-            execute_to_image::<F32, F32>(&image, |builder| builder.linear(2.0, 0.0))
+            execute_to_image::<F32, F32, _>(&image, |builder| builder.linear(2.0, 0.0))
                 .expect("linear on Lab image should succeed");
 
         assert!(matches!(

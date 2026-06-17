@@ -66,9 +66,9 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -132,7 +132,7 @@ mod chaos_monkey_15 {
     #[test]
     fn srgb_lab_srgb_roundtrip_stays_within_tolerance_on_pattern() {
         let image = patterned_rgb(17, 11);
-        let (_pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.colourspace::<Lab>()?.colourspace::<SRgb>()
         })
         .expect("sRGB -> Lab -> sRGB should succeed");

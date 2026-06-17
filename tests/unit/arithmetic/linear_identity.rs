@@ -69,9 +69,9 @@ mod chaos_monkey_3 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F>(
+    fn execute_to_image<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
@@ -102,9 +102,9 @@ mod chaos_monkey_3 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F>(
+    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
@@ -126,9 +126,9 @@ mod chaos_monkey_3 {
         Ok((pipeline, sink.into_buffer()))
     }
 
-    fn build_pipeline_only<F>(
+    fn build_pipeline_only<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<CompiledPipeline, ViprsError>
     where
         F: viprs::BandFormat,
@@ -185,8 +185,8 @@ mod chaos_monkey_3 {
         flipped
     }
 
-    fn assert_identity_sizes(
-        configure: impl Copy + Fn(PipelineBuilder, u32, u32) -> Result<PipelineBuilder, BuildError>,
+    fn assert_identity_sizes<S: viprs::pipeline::Flush>(
+        configure: impl Copy + Fn(PipelineBuilder, u32, u32) -> Result<PipelineBuilder<S>, BuildError>,
         tolerance: u8,
     ) {
         for image in [

@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use bytemuck::Pod;

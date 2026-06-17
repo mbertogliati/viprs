@@ -46,9 +46,9 @@ mod robustness_dims {
         .map(|source| source.with_metadata(image.metadata().clone()))
     }
 
-    fn execute_to_image(
+    fn execute_to_image<S: viprs::pipeline::Flush>(
         image: &Image<U8>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
         let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
             image,
@@ -65,10 +65,10 @@ mod robustness_dims {
         Ok((pipeline, output))
     }
 
-    fn execute_without_panicking(
+    fn execute_without_panicking<S: viprs::pipeline::Flush>(
         image: &Image<U8>,
         op_name: &str,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| execute_to_image(image, configure)));
         assert!(

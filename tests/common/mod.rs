@@ -56,9 +56,9 @@ where
     .with_metadata(image.metadata().clone())
 }
 
-pub fn execute_to_image<F>(
+pub fn execute_to_image<F, S: viprs::pipeline::Flush>(
     image: &Image<F>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> Result<(CompiledPipeline, Image<F>), String>
 where
     F: BandFormat,
@@ -89,9 +89,9 @@ where
     Ok((pipeline, output))
 }
 
-pub fn execute_to_buffer<F>(
+pub fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
     image: &Image<F>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> Result<(CompiledPipeline, Vec<u8>), String>
 where
     F: BandFormat,

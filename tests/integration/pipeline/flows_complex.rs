@@ -646,11 +646,13 @@ fn flow7_frequency_chain_roundtrips_and_low_pass_reduces_high_frequency_energy()
         "fft roundtrip must stay within floating-point tolerance"
     );
 
-    let low_pass_mask: Vec<f64> = (0..image.height())
+    let image_width = image.width();
+    let image_height = image.height();
+    let low_pass_mask: Vec<f64> = (0..image_height)
         .flat_map(|y| {
-            (0..image.width()).flat_map(move |x| {
-                let dx = x as f64 - (image.width() as f64 / 2.0);
-                let dy = y as f64 - (image.height() as f64 / 2.0);
+            (0..image_width).flat_map(move |x| {
+                let dx = x as f64 - (image_width as f64 / 2.0);
+                let dy = y as f64 - (image_height as f64 / 2.0);
                 let weight = (-((dx * dx + dy * dy) / 32.0)).exp();
                 [weight, 0.0]
             })

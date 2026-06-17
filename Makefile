@@ -61,6 +61,7 @@ CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif
 
 test-all:
 	$(CARGO) test --lib $(CONTAINER_FEATURES)
+	$(CARGO) test --tests $(CONTAINER_FEATURES)
 	$(CARGO) test --doc $(CONTAINER_FEATURES)
 
 ## Documentation (deny warnings)
@@ -77,7 +78,7 @@ audit:
 
 ## Coverage over full test suite (≥90% on ops/ and codecs/) — requires system libs
 coverage:
-	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:

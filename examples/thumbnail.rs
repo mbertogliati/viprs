@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 use viprs::prelude::*;
 
 fn usage(program: &str) -> ! {
