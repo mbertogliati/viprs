@@ -60,7 +60,8 @@ test:
 CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
 test-all:
-	$(CARGO) test --lib --doc $(CONTAINER_FEATURES)
+	$(CARGO) test --lib $(CONTAINER_FEATURES)
+	$(CARGO) test --doc $(CONTAINER_FEATURES)
 
 ## Documentation (deny warnings)
 doc:
