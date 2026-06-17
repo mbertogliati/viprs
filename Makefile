@@ -76,9 +76,16 @@ xtask:
 
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 
-## Criterion micro-benchmarks (native CPU for fair comparison)
+## Criterion micro-benchmarks — full suite (native CPU for fair comparison)
 bench:
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*'
+
+## Fast CI benchmark gate (target ≤10 min: compile all, run only 512px with minimal stats)
+## Verifies all 246 bench targets compile AND execute without panics.
+## Full statistical runs (all sizes, 100 samples) are for local dev or scheduled jobs.
+bench-ci:
+	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
+		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
 ## Runs the representative scenario matrix from PERFORMANCE.md:

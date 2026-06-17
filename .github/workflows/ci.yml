@@ -180,7 +180,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make bench FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+      - run: make bench-ci FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
 
   repackage-and-publish:
     name: Repackage image with xtask
