@@ -83,19 +83,27 @@ bench:
 ## Fast CI benchmark gate (target ≤10 min: compile all, run only 512px with minimal stats)
 ## Verifies all 246 bench targets compile AND execute without panics.
 ## Full statistical runs (all sizes, 100 samples) are for local dev or scheduled jobs.
+##
+## CI overrides: disable fat LTO + use 16 codegen-units + no debuginfo → ~5x faster compile.
+## Benchmark results are still valid (same opt-level 3, same target-cpu=native).
+BENCH_CI_ENV := RUSTFLAGS="-Ctarget-cpu=native" \
+	CARGO_PROFILE_BENCH_LTO=off \
+	CARGO_PROFILE_BENCH_CODEGEN_UNITS=16 \
+	CARGO_PROFILE_BENCH_DEBUG=0
+
 bench-ci:
-	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
+	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
 		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'
 
 ## Save baseline on main (CI calls this after merge to main)
 bench-baseline:
-	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
+	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
 		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
 		--save-baseline main '/512'
 
 ## Compare PR against main baseline — fails if any benchmark regresses >5%
 bench-compare:
-	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
+	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
 		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
 		--baseline main '/512'
 
