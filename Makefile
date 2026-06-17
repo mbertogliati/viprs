@@ -77,7 +77,7 @@ audit:
 
 ## Coverage over full test suite (≥90% on ops/ and codecs/) — requires system libs
 coverage:
-	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
