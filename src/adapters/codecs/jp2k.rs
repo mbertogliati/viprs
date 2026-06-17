@@ -1776,7 +1776,7 @@ fn encode_to_jp2_bytes<F: BandFormat>(
     encoder_params.tile_size_on = 1;
     encoder_params.cp_tdx = tile_width;
     encoder_params.cp_tdy = tile_height;
-    encoder_params.tcp_mct = i8::from(bands >= 3);
+    encoder_params.tcp_mct = if bands >= 3 { 1 } else { 0 };
     encoder_params.numresolution = libvips_num_resolutions(width, height);
 
     // SAFETY: component_params points to initialized component descriptors for this call.
