@@ -22,6 +22,8 @@ a demand-driven, horizontally-threaded image processing library.
 10. [Module structure (libvips parity)](#10-module-structure-libvips-parity)
 11. [Dependency policy](#11-dependency-policy)
 
+**Related:** [CI_GUIDELINES.md](CI_GUIDELINES.md) — GitHub Actions workflow structure for PRs.
+
 ---
 
 ## 1. Architecture boundaries

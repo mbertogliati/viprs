@@ -33,6 +33,15 @@ cat docs/ai/agents/protocol.md                # inter-agent signal formats (AGEN
 | `agents/performance_engineer.md` | Audits benchmark honesty and gaps vs libvips. Produces the task tasks. Does NOT fix anything. Works in main repo. | Orchestrator (every 10 completions) |
 | `agents/protocol.md` | Signal format reference. Not an agent — read by all agents. | — |
 
+## Reference documents
+
+| File | Purpose |
+|------|---------|
+| `GUIDELINES.md` | Engineering guidelines: architecture, TDD, type design, performance model |
+| `PERFORMANCE.md` | Performance investigation methodology and case studies |
+| `CI_GUIDELINES.md` | GitHub Actions CI structure, caching, visibility, and security baseline for PRs |
+| `protocol.md` | Signal format reference for inter-agent communication |
+
 ## Adding a new agent
 
 1. Create `docs/ai/agents/<name>.md`.
