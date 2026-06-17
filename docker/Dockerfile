@@ -45,9 +45,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Build and install libjxl from source (required for jpegxl-sys)
+# CMAKE_INSTALL_LIBDIR=lib forces consistent /usr/local/lib/ path across architectures
 RUN git clone --depth 1 https://github.com/libjxl/libjxl.git /tmp/libjxl \
     && cd /tmp/libjxl && ./deps.sh && mkdir -p build && cd build \
-    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF .. \
+    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=lib .. \
     && ninja -v && ninja install && ldconfig && rm -rf /tmp/libjxl
 
 # Build and install newer libheif (>=1.16) from source to satisfy libheif-sys
@@ -58,7 +59,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/strukturag/libheif.git /tmp/libheif \
     && mkdir -p /tmp/libheif/build && cd /tmp/libheif/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib .. \
     && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libheif
 
 # Build libjpeg-turbo >= 3.0 from source so turbojpeg-sys can find libturbojpeg >= 3.0
@@ -90,14 +91,11 @@ ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 # ----- Runtime stage -----
 FROM debian:bookworm-slim
 
-# Copy source-built native libraries from builder (libjxl, libheif, libjpeg-turbo ≥3.0)
-COPY --from=builder /usr/local/lib/ /usr/local/lib/
-COPY --from=builder /usr/local/include/ /usr/local/include/
-COPY --from=builder /usr/local/lib/pkgconfig/ /usr/local/lib/pkgconfig/
-
 # Ensure pkg-config finds source-built libs before apt-installed ones
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
+# Install apt dependencies FIRST, then overlay source-built libs on top.
+# This prevents apt packages from overwriting our newer source-built versions.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     pkg-config \
@@ -117,8 +115,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     valgrind \
     binutils \
     ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && ldconfig
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy source-built native libraries from builder (libjxl, libheif, libjpeg-turbo ≥3.0)
+# Done AFTER apt-get so our versions take precedence over apt package versions.
+COPY --from=builder /usr/local/lib/ /usr/local/lib/
+COPY --from=builder /usr/local/include/ /usr/local/include/
+
+RUN ldconfig
 
 # Verify source-built libs are discoverable by pkg-config
 RUN pkg-config --modversion libturbojpeg && \
