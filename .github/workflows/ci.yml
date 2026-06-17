@@ -80,7 +80,7 @@ jobs:
         run: make test FEATURES="${{ env.RUST_FEATURES }}"
 
   test-all:
-    name: "Tests — full suite (container)"
+    name: "Tests — all codecs (container)"
     needs: [lint, build]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest

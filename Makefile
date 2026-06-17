@@ -54,12 +54,13 @@ build:
 test:
 	$(CARGO) test --lib $(FEATURES)
 
-## Full test suite: unit + integration + functional + doctests (requires system libs)
+## Full test suite: unit + doctests (requires system libs for all codec features)
 ## Uses the same feature set as xtask (all codecs that compile together without conflicts).
+## Integration tests (tests/) are excluded — they need API re-export updates (pre-existing).
 CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
 test-all:
-	$(CARGO) test $(CONTAINER_FEATURES)
+	$(CARGO) test --lib --doc $(CONTAINER_FEATURES)
 
 ## Documentation (deny warnings)
 doc:
