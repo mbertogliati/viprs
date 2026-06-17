@@ -54,9 +54,12 @@ build:
 test:
 	$(CARGO) test --lib $(FEATURES)
 
-## Full test suite: unit + integration + functional + doctests (requires all system libs)
+## Full test suite: unit + integration + functional + doctests (requires system libs)
+## Uses the same feature set as xtask (all codecs that compile together without conflicts).
+CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
+
 test-all:
-	$(CARGO) test --all-features
+	$(CARGO) test $(CONTAINER_FEATURES)
 
 ## Documentation (deny warnings)
 doc:
@@ -70,9 +73,9 @@ deny:
 audit:
 	$(CARGO) audit
 
-## Coverage over ALL tests (≥90% on ops/ and codecs/) — requires all system libs
+## Coverage over full test suite (≥90% on ops/ and codecs/) — requires system libs
 coverage:
-	$(CARGO) llvm-cov --all-features --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
