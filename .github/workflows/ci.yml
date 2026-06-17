@@ -87,7 +87,7 @@ jobs:
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs libclang-dev
       - uses: actions/checkout@v4
         with:
           lfs: true
@@ -120,7 +120,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs libclang-dev
       - uses: actions/checkout@v4
         with:
           lfs: true
