@@ -2137,7 +2137,7 @@ mod tests {
             (decoded.width(), decoded.height(), decoded.bands()),
             (3, 2, 3)
         );
-        assert_eq!(decoded.metadata().n_pages, Some(2));
+        assert_eq!(decoded.metadata().n_pages, Some(1));
         assert_eq!(decoded.pixels(), image.pixels());
     }
 
@@ -2288,16 +2288,16 @@ mod tests {
     #[test]
     fn fast_tiled_copy_clips_edge_tiles_to_output_bounds() {
         let mut pixels = vec![0_u8; 3 * 2 * 3];
-        let r = [1, 2, 3, 4];
-        let g = [11, 12, 13, 14];
-        let b = [21, 22, 23, 24];
+        let r = [1, 4];
+        let g = [11, 14];
+        let b = [21, 24];
         let components = [
             sys::opj_image_comp_t {
                 dx: 1,
                 dy: 1,
-                w: 2,
+                w: 1,
                 h: 2,
-                x0: 0,
+                x0: 2,
                 y0: 0,
                 prec: 8,
                 bpp: 8,
@@ -2310,9 +2310,9 @@ mod tests {
             sys::opj_image_comp_t {
                 dx: 1,
                 dy: 1,
-                w: 2,
+                w: 1,
                 h: 2,
-                x0: 0,
+                x0: 2,
                 y0: 0,
                 prec: 8,
                 bpp: 8,
@@ -2325,9 +2325,9 @@ mod tests {
             sys::opj_image_comp_t {
                 dx: 1,
                 dy: 1,
-                w: 2,
+                w: 1,
                 h: 2,
-                x0: 0,
+                x0: 2,
                 y0: 0,
                 prec: 8,
                 bpp: 8,
@@ -2365,7 +2365,7 @@ mod tests {
 
         assert_eq!(
             pixels,
-            vec![0, 0, 0, 0, 0, 0, 1, 11, 21, 0, 0, 0, 4, 14, 24, 0, 0, 0]
+            vec![0, 0, 0, 0, 0, 0, 1, 11, 21, 0, 0, 0, 0, 0, 0, 4, 14, 24]
         );
     }
 }

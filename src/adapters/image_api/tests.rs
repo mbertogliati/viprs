@@ -273,11 +273,11 @@ fn image_api_with_limits_rejects_decode_pixels() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_with_limits_rejects_output_bytes() {
-    // Create a 2x2 image directly (ZoomBridge doesn't implement Concretize/PipelineOp)
     let input = Image::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
-    // Limits: max 3 bytes output → 2×2×1=4 bytes exceeds
-    let limits = ResourceLimits::new(16, 3, 1);
+    // Keep decode permissive enough for the 2×2 source so the failure is reported by
+    // output validation instead of the loader.
+    let limits = ResourceLimits::new(16, 3, 1).with_max_decode_bytes(4);
 
     let err = ImageApi::with_limits(limits)
         .from_bytes(&encoded)
@@ -801,12 +801,13 @@ fn image_api_chaos_streaming_webp_writer_failures_surface_as_io_errors() {
 
 #[cfg(feature = "png")]
 #[test]
-fn image_api_chaos_streaming_png_encode_bypasses_output_resource_limits() {
-    // Create 2x2 directly (ZoomBridge doesn't implement Concretize/PipelineOp)
+fn image_api_chaos_streaming_png_encode_bypasses_decode_rejection_and_preserves_output_resource_limits()
+ {
     let input = Image::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
-    // Limits: max 3 bytes → 2×2×1=4 exceeds
-    let limits = ResourceLimits::new(16, 3, 1);
+    // Keep decode permissive enough for the 2×2 source so both buffered and
+    // streaming encoders report the output limit instead of failing during decode.
+    let limits = ResourceLimits::new(16, 3, 1).with_max_decode_bytes(4);
 
     let api = ImageApi::with_limits(limits.clone())
         .from_bytes(&encoded)
@@ -829,8 +830,17 @@ fn image_api_chaos_streaming_png_encode_bypasses_output_resource_limits() {
     ));
 
     let mut streamed = Vec::new();
-    api.encode_png_to(&mut streamed).unwrap();
-    assert!(!streamed.is_empty());
+    let stream_err = api.encode_png_to(&mut streamed).unwrap_err();
+    assert!(matches!(
+        stream_err,
+        ViprsError::ImageTooLarge {
+            width: 2,
+            height: 2,
+            bands: 1,
+            details: "output byte size exceeds resource limits",
+            ..
+        }
+    ));
 }
 
 #[cfg(feature = "png")]

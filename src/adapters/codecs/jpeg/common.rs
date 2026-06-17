@@ -240,6 +240,43 @@ pub(super) struct JpegPreflight {
     pub(super) orientation: Option<u8>,
 }
 
+pub(super) fn probe_jpeg_header(src: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
+    validate_jpeg_structure(src)?;
+    if let Some(exif_payload) = extract_exif(src).as_deref() {
+        validate_exif_payload(exif_payload)?;
+    }
+    extract_icc_profile(src)?;
+
+    let mut frame = None;
+    visit_jpeg_segments(src, |marker, payload| {
+        if is_sof_marker(marker) {
+            frame = Some(payload.to_vec());
+            return false;
+        }
+        true
+    });
+
+    let payload = frame.ok_or_else(|| ViprsError::Codec("jpeg: missing SOF marker".into()))?;
+    let Some(height_bytes) = payload.get(1..3) else {
+        return Err(ViprsError::Codec("jpeg: truncated SOF segment".into()));
+    };
+    let Some(width_bytes) = payload.get(3..5) else {
+        return Err(ViprsError::Codec("jpeg: truncated SOF segment".into()));
+    };
+    let bands = payload
+        .get(5)
+        .copied()
+        .map(u32::from)
+        .ok_or_else(|| ViprsError::Codec("jpeg: truncated SOF segment".into()))?;
+    let width = u32::from(u16::from_be_bytes([width_bytes[0], width_bytes[1]]));
+    let height = u32::from(u16::from_be_bytes([height_bytes[0], height_bytes[1]]));
+    if width == 0 || height == 0 {
+        return Err(ViprsError::Codec("jpeg: zero-sized image".into()));
+    }
+
+    Ok((width, height, bands))
+}
+
 pub(super) fn preflight_jpeg(src: &[u8]) -> Result<JpegPreflight, ViprsError> {
     validate_jpeg_structure(src)?;
     let exif = extract_exif(src);

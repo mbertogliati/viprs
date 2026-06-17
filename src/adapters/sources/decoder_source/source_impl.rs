@@ -303,6 +303,9 @@ where
             return Ok(true);
         }
         if matches!(self.backing, DecoderBacking::Deferred { .. }) {
+            if !self.materialize_deferred_thumbnail_hints {
+                return Ok(false);
+            }
             let effective_factor = normalize_shrink_factor(factor.get());
             if self.shrink_factor == effective_factor {
                 return Ok(true);
