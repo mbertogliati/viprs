@@ -692,25 +692,29 @@ fn decode_region_from_path_streams_sequential_full_width_strips() {
 fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let _guard = PROBE_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
     let codec = Arc::new(PngCodec::default());
-    let pixels: Vec<u8> = (0u8..=255).cycle().take(64 * 64 * 3).collect();
-    let image = Image::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
+    // Use a larger image (256×256) so row decode takes long enough for two threads
+    // to overlap, even on slow CI runners with limited parallelism.
+    let pixels: Vec<u8> = (0u8..=255).cycle().take(256 * 256 * 3).collect();
+    let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let eager = codec.decode::<U8>(&encoded).unwrap();
     let path = png_test_output_path("decode-region-path-concurrent-session");
     std::fs::write(&path, &encoded).unwrap();
 
-    let top = Region::new(0, 0, 64, 16);
+    let top = Region::new(0, 0, 256, 64);
     let mut top_output = vec![0u8; top.pixel_count() * 3];
     codec
         .decode_region_from_path::<U8>(&path, &LoadOptions::default(), top, &mut top_output)
         .unwrap();
     assert_eq!(top_output, clamped_region_pixels_u8(&eager, top));
 
-    let sequential = Region::new(0, 16, 64, 16);
-    let partial = Region::new(8, 8, 32, 24);
+    let sequential = Region::new(0, 64, 256, 64);
+    let partial = Region::new(32, 32, 128, 96);
     let expected_sequential = clamped_region_pixels_u8(&eager, sequential);
     let expected_partial = clamped_region_pixels_u8(&eager, partial);
-    let _probe = PngRowDecodeProbeReset::enable(Duration::from_millis(1));
+    // 10ms per-row delay ensures each decode takes ~640ms (64 rows × 10ms),
+    // giving ample time for both threads to be active simultaneously.
+    let _probe = PngRowDecodeProbeReset::enable(Duration::from_millis(10));
     let start = Arc::new(Barrier::new(3));
 
     let sequential_thread = {
