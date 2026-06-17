@@ -80,10 +80,17 @@ struct GeneratedGolden {
     format: VipsBandFormat,
 }
 
+/// Returns `true` when the libvips CLI tools are available on this machine.
+///
+/// Tests that compare output against the reference libvips should call this
+/// and return early when it is `false` rather than panicking.
 pub fn vips_available() -> bool {
     Path::new(VIPS_BIN).exists() && Path::new(VIPSHEADER_BIN).exists()
 }
 
+/// Panics when libvips CLI tools are not installed.
+///
+/// Prefer checking [`vips_available`] and returning early from the test instead.
 #[track_caller]
 pub fn require_vips() {
     if !vips_available() {

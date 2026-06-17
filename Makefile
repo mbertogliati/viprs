@@ -56,12 +56,13 @@ test:
 
 ## Full test suite: unit + doctests (requires system libs for all codec features)
 ## Uses the same feature set as xtask (all codecs that compile together without conflicts).
-## Integration tests (tests/) are excluded — they need API re-export updates (pre-existing).
+## Full test suite with all codec features (container).
+## Functional tests (golden/parity) are excluded — they require a local libvips CLI.
 CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
 test-all:
 	$(CARGO) test --lib $(CONTAINER_FEATURES)
-	$(CARGO) test --tests $(CONTAINER_FEATURES)
+	$(CARGO) test --test unit --test integration --test chaos_monkey --test process_api $(CONTAINER_FEATURES)
 	$(CARGO) test --doc $(CONTAINER_FEATURES)
 
 ## Documentation (deny warnings)
@@ -78,7 +79,7 @@ audit:
 
 ## Coverage over full test suite (≥90% on ops/ and codecs/) — requires system libs
 coverage:
-	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov --lib --test unit --test integration --test chaos_monkey --test process_api $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
