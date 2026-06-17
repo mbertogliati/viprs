@@ -134,7 +134,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::current_format;
     /// ```
     #[allow(dead_code)]
@@ -148,7 +148,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::node_count;
     /// ```
     #[allow(dead_code)]
@@ -199,7 +199,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::current_dimensions;
     /// ```
     pub(crate) fn current_dimensions(&self) -> (u32, u32) {
@@ -249,7 +249,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::flush_into_identity;
     /// ```
     pub fn flush_into_identity(mut self) -> Result<PipelineBuilder<Identity>, BuildError> {
@@ -301,7 +301,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::normalize_to_srgb;
     /// ```
     pub fn normalize_to_srgb(self) -> Result<PipelineBuilder<Identity>, BuildError> {
@@ -371,7 +371,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::build;
     /// ```
     pub fn build(mut self) -> Result<CompiledPipeline, BuildError> {

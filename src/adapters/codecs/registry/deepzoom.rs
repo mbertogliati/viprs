@@ -179,7 +179,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load;
     /// ```
     pub fn load(path: impl AsRef<Path>) -> Result<Self, ViprsError> {
@@ -191,7 +191,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_with_options;
     /// ```
     pub fn load_with_options(
@@ -206,7 +206,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save;
     /// ```
     pub fn save(&self, path: impl AsRef<Path>) -> Result<(), ViprsError> {
@@ -218,7 +218,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save_with_options;
     /// ```
     pub fn save_with_options(

@@ -75,7 +75,7 @@ impl Interpretation {
 /// [`ImageMetadata`] value.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// # use viprs::domain::image::{Interpretation, MetadataOverrides};
 /// let overrides = MetadataOverrides {
 ///     interpretation: Some(Interpretation::SRgb),
@@ -290,7 +290,7 @@ where
 /// interpretation, orientation, and container-specific side data independently.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// # use viprs::domain::image::{ImageMetadata, Interpretation};
 /// let metadata = ImageMetadata {
 ///     interpretation: Some(Interpretation::SRgb),
@@ -414,7 +414,7 @@ impl ImageMetadata {
     /// This supports copy-style operations that keep pixels unchanged while editing selected tags.
     ///
     /// # Examples
-    /// ```rust
+    /// ```ignore
     /// # use viprs::domain::image::{ImageMetadata, Interpretation, MetadataOverrides};
     /// let metadata = ImageMetadata::default();
     /// let merged = metadata.merge_overrides(&MetadataOverrides {

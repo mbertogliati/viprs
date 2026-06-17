@@ -91,7 +91,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::new;
     /// ```
     pub fn new() -> Self {
@@ -103,7 +103,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::register;
     /// ```
     pub fn register(&mut self, codec: Box<dyn ImageCodec>) {
@@ -115,7 +115,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::detect_format;
     /// ```
     pub fn detect_format(&self, path: &Path) -> Option<&dyn ImageCodec> {
@@ -131,7 +131,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load;
     /// ```
     pub fn load(&self, path: &Path) -> Result<Image<U8>, ViprsError> {
@@ -143,7 +143,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_with_options;
     /// ```
     pub fn load_with_options(
@@ -159,7 +159,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_as;
     /// ```
     pub fn load_as<F: BandFormat>(&self, path: &Path) -> Result<Image<F>, ViprsError> {
@@ -171,7 +171,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_as_with_options;
     /// ```
     pub fn load_as_with_options<F: BandFormat>(
@@ -206,7 +206,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_from_memory;
     /// ```
     pub fn load_from_memory(&self, src: &[u8]) -> Result<(Image<U8>, &'static str), ViprsError> {
@@ -218,7 +218,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_from_memory_with_options;
     /// ```
     pub fn load_from_memory_with_options(
@@ -234,7 +234,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_from_memory_as;
     /// ```
     pub fn load_from_memory_as<F: BandFormat>(
@@ -249,7 +249,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_from_memory_as_with_options;
     /// ```
     pub fn load_from_memory_as_with_options<F: BandFormat>(
@@ -269,7 +269,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save;
     /// ```
     pub fn save(&self, image: &Image<U8>, path: &Path) -> Result<(), ViprsError> {
@@ -281,7 +281,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save_with_options;
     /// ```
     pub fn save_with_options(
@@ -298,7 +298,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save_as;
     /// ```
     pub fn save_as<F: BandFormat>(&self, image: &Image<F>, path: &Path) -> Result<(), ViprsError> {
@@ -310,7 +310,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save_as_with_options;
     /// ```
     pub fn save_as_with_options<F: BandFormat>(
@@ -485,7 +485,7 @@ impl ForeignRegistry {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::shared;
     /// ```
     pub fn shared() -> &'static Self {

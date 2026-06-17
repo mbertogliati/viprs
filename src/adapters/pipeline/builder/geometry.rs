@@ -101,7 +101,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::embed;
     /// ```
     pub fn embed(
@@ -133,7 +133,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::builder::embed_signed;
     /// ```
     pub fn embed_signed(

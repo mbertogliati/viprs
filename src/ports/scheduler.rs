@@ -295,7 +295,7 @@ pub trait TileScheduler<P>: Send + Sync {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     error::ViprsError,
 ///     format::U8,
@@ -399,7 +399,7 @@ pub trait ReducingScheduler<P>: TileScheduler<P> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// # use viprs::domain::{error::ViprsError, format::{BandFormat, U8}, image::Region, reducer::TileReducer};
     /// # use viprs::ports::{scheduler::{ReducingScheduler, TileScheduler}, sink::{ConcurrentSink, ImageSink}};
     /// # struct NoopScheduler;

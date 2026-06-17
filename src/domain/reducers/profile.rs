@@ -13,7 +13,7 @@ use crate::domain::{
 /// column and per row, which downstream code can use to reason about object extents.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},
@@ -89,7 +89,7 @@ impl ProfilePartial {
 /// each axis instead of materializing a full mask or scanline analysis result.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

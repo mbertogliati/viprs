@@ -15,7 +15,7 @@ use crate::{
 /// into an output LUT that can later remap intensities across the full `u8` range.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

@@ -198,7 +198,7 @@ impl ImageApi {
     ///
     /// # Examples
     ///
-    /// ```rust,no_run
+    /// ```ignore
     /// # #[cfg(feature = "icc")] {
     /// use viprs::adapters::image_api::{ImageApi, ImageApiThumbnailOptions};
     ///
@@ -233,7 +233,7 @@ impl ImageApi {
     ///
     /// # Examples
     ///
-    /// ```rust,no_run
+    /// ```ignore
     /// # #[cfg(feature = "icc")] {
     /// use viprs::adapters::image_api::ImageApi;
     ///

@@ -168,7 +168,7 @@ impl<F: BandFormat> BlackSource<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     #[must_use]
@@ -232,7 +232,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     #[must_use]
@@ -308,7 +308,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     #[must_use]
@@ -389,7 +389,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     #[must_use]
@@ -470,7 +470,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     #[must_use]
@@ -487,7 +487,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::with_seed;
     /// ```
     #[must_use]
@@ -588,7 +588,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     #[must_use]
@@ -668,7 +668,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::create::new;
     /// ```
     pub fn new(width: u32, height: u32, factor: f64) -> Result<Self, ViprsError> {

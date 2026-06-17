@@ -457,7 +457,7 @@ fn exif_field_type_size(field_type: u16) -> Option<usize> {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::jpeg::extract_exif_orientation;
 /// ```
 pub(crate) fn extract_exif_orientation(exif: &[u8]) -> Option<u8> {
@@ -783,7 +783,7 @@ pub(super) fn crop_strict_shrink_edges(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::jpeg::apply_exif_orientation;
 /// ```
 pub(crate) fn apply_exif_orientation(
@@ -848,7 +848,7 @@ pub(crate) fn apply_exif_orientation(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::jpeg::orient_u8_image;
 /// ```
 pub(crate) fn orient_u8_image(

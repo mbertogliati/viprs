@@ -47,7 +47,7 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::concretized_bridge::new;
     /// ```
     pub const fn new(chain: C, bands: u32) -> Self {

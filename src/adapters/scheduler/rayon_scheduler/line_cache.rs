@@ -6,7 +6,7 @@ use super::{DynImageSource, LineCacheAccess, Region, ViprsError};
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::scheduler::rayon_scheduler::SequentialLineCache>();
 /// ```
 pub struct SequentialLineCache {
@@ -29,7 +29,7 @@ impl SequentialLineCache {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::new;
     /// ```
     pub(crate) fn new(

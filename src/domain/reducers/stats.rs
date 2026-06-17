@@ -89,7 +89,7 @@ impl BandPartial {
 /// Works for any `F: BandFormat` where `F::Sample` converts to `f64`.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

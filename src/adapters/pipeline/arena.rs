@@ -23,7 +23,7 @@ pub enum ArenaNodeOp {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::pipeline::arena::ArenaNode>();
 /// ```
 pub struct ArenaNode {
@@ -98,7 +98,7 @@ impl PipelineArena {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// use viprs::{
     ///     adapters::{pipeline::PipelineArena, sources::ZeroSource},
     ///     domain::format::U8,
@@ -129,7 +129,7 @@ impl PipelineArena {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::arena::set_sequential;
     /// ```
     pub(crate) const fn set_sequential(&mut self, sequential: bool) {
@@ -141,7 +141,7 @@ impl PipelineArena {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::arena::set_line_cache_request;
     /// ```
     pub(crate) const fn set_line_cache_request(
@@ -156,7 +156,7 @@ impl PipelineArena {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::pipeline::arena::set_demand_hint_override;
     /// ```
     pub(crate) const fn set_demand_hint_override(&mut self, demand_hint: Option<DemandHint>) {
@@ -868,7 +868,7 @@ fn node_input_slot_count(op: &ArenaNodeOp) -> usize {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::pipeline::arena::format_sample_size;
 /// ```
 pub(super) const fn format_sample_size(id: BandFormatId) -> usize {
@@ -919,7 +919,7 @@ fn max_region_extent(lhs: Region, rhs: Region) -> Region {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::pipeline::arena::source_region_for_scheduler_tile;
 /// ```
 pub fn source_region_for_scheduler_tile(

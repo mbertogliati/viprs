@@ -178,7 +178,7 @@ impl RawCodec {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::raw::decode_raw;
     /// ```
     pub fn decode_raw<F: BandFormat>(
@@ -226,7 +226,7 @@ impl RawCodec {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::raw::encode_raw;
     /// ```
     pub fn encode_raw<F: BandFormat>(

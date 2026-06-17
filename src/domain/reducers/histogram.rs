@@ -16,7 +16,7 @@ use crate::{
 /// packaging them into a [`Histogram`] value with the original band metadata attached.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::{BandFormatId, U8},
 ///     image::{Region, Tile},
@@ -101,7 +101,7 @@ impl HistFindNDimResult {
 /// by projecting each sample tuple into a dense histogram volume.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

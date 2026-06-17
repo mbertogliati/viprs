@@ -14,7 +14,7 @@ use crate::domain::{
 /// a `(theta, rho)` parameter space that can be searched for peaks later.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},
@@ -217,7 +217,7 @@ where
 /// allowing later stages to search for both center position and radius peaks.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

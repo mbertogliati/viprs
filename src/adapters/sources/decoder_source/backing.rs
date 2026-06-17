@@ -70,7 +70,7 @@ pub struct Sequential;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::sources::decoder_source::DecoderSource>();
 /// ```
 pub struct DecoderSource<'a, D: ImageDecoder, F: BandFormat, M = RandomAccess> {

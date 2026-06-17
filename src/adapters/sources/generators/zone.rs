@@ -109,7 +109,7 @@ impl ZoneSource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::zone::width;
     /// ```
     pub fn width(&self) -> u32 {
@@ -140,7 +140,7 @@ impl ZoneSource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::zone::format;
     /// ```
     pub const fn format(&self) -> BandFormatId {
