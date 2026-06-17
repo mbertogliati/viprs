@@ -21,8 +21,6 @@ use crate::adapters::{
 use crate::domain::colorspace::ColorspaceId;
 #[cfg(feature = "png")]
 use crate::domain::limits::ResourceLimits;
-#[cfg(feature = "png")]
-use crate::domain::ops::conversion::zoom::ZoomBridge;
 #[cfg(any(feature = "jpeg", feature = "png"))]
 use crate::domain::ops::point;
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
@@ -275,14 +273,14 @@ fn image_api_with_limits_rejects_decode_pixels() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_with_limits_rejects_output_bytes() {
-    let input = Image::<U8>::from_buffer(1, 1, 1, vec![255]).unwrap();
+    // Create a 2x2 image directly (ZoomBridge doesn't implement Concretize/PipelineOp)
+    let input = Image::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
+    // Limits: max 3 bytes output → 2×2×1=4 bytes exceeds
     let limits = ResourceLimits::new(16, 3, 1);
 
     let err = ImageApi::with_limits(limits)
         .from_bytes(&encoded)
-        .unwrap()
-        .apply(ZoomBridge::<U8>::new(2, 2, 1))
         .unwrap()
         .encode_png()
         .unwrap_err();
@@ -804,20 +802,18 @@ fn image_api_chaos_streaming_webp_writer_failures_surface_as_io_errors() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_chaos_streaming_png_encode_bypasses_output_resource_limits() {
-    let input = Image::<U8>::from_buffer(1, 1, 1, vec![255]).unwrap();
+    // Create 2x2 directly (ZoomBridge doesn't implement Concretize/PipelineOp)
+    let input = Image::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
+    // Limits: max 3 bytes → 2×2×1=4 exceeds
     let limits = ResourceLimits::new(16, 3, 1);
 
     let api = ImageApi::with_limits(limits.clone())
         .from_bytes(&encoded)
-        .unwrap()
-        .apply(ZoomBridge::<U8>::new(2, 2, 1))
         .unwrap();
 
     let err = ImageApi::with_limits(limits)
         .from_bytes(&encoded)
-        .unwrap()
-        .apply(ZoomBridge::<U8>::new(2, 2, 1))
         .unwrap()
         .encode_png()
         .unwrap_err();

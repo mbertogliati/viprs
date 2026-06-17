@@ -106,7 +106,7 @@ pub(crate) fn prepare_run() -> RunGuard {
 }
 
 #[cfg(not(all(test, feature = "lock_instrumentation")))]
-pub const fn prepare_run() -> RunGuard {
+pub fn prepare_run() -> RunGuard {
     reset();
     RunGuard
 }
@@ -158,7 +158,7 @@ pub struct TileLockScope;
 
 impl TileLockScope {
     #[must_use]
-    pub(crate) const fn new() -> Self {
+    pub(crate) fn new() -> Self {
         #[cfg(feature = "lock_instrumentation")]
         {
             TILE_SCOPE_DEPTH.with(|depth| depth.set(depth.get() + 1));
