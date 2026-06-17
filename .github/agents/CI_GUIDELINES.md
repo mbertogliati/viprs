@@ -112,7 +112,18 @@ jobs:
 
 ## 3. Cache — principles
 
-Cache must be declared in a **shared composite action**, not duplicated across each job.
+### 3.1 Two distinct problems
+
+Caching in CI solves two separate problems that require different mechanisms:
+
+- **Dependency download** — fetching packages from the registry (crates.io, npm, etc). Solved with `actions/cache` on the local registry directories. The cache key is the lockfile hash: if dependencies didn't change, the cache is always hit regardless of source changes.
+- **Dependency compilation** — building third-party crates/packages from source. Solved either by including the build output directory (`target/`, `node_modules/.cache`, etc.) in the cache, or by passing a pre-built artifact between jobs. These are different strategies with different tradeoffs — see §3.3.
+
+Never conflate the two. A registry cache hit means no downloads; it does not mean no compilation.
+
+### 3.2 Cache declaration
+
+Cache must be declared in a **shared composite action**, not duplicated across each job. This ensures all jobs use the same key scheme and the same paths.
 
 ```yaml
 # .github/actions/setup-toolchain/action.yml
@@ -122,29 +133,95 @@ description: Install dependencies with shared cache across jobs
 runs:
   using: composite
   steps:
-    - name: Cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target/
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-
-
     - name: Install toolchain
       uses: dtolnay/rust-toolchain@stable
       with:
         components: rustfmt, clippy
       shell: bash
+
+    - name: Cache registry
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry/index
+          ~/.cargo/registry/cache
+          ~/.cargo/git/db
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+      shell: bash
 ```
 
-**Cache rules:**
-- The `key` must always include the lockfile hash (`Cargo.lock`, `package-lock.json`, etc). If the lockfile hasn't changed, the cache is reused.
-- `restore-keys` as a partial fallback — avoids compiling from scratch on minor changes.
-- Separate dependency cache from build artifact cache if they have different invalidation patterns.
-- Never cache outputs that depend on source code — only dependencies and toolchains.
+**Key rules:**
+- The cache `key` uses only the lockfile hash — never the source hash. Source changes must not invalidate the dependency cache.
+- `restore-keys` provides a partial fallback: if the exact key misses (e.g. a new dependency was added), the closest previous cache is restored and only the delta is downloaded.
+- Separate registry cache from build output cache — they have different invalidation patterns and different sizes.
+- Never cache outputs that depend on your own source code in the shared toolchain action. That belongs in job-level cache or artifacts.
+
+### 3.3 Avoiding redundant compilation across jobs
+
+Each job runs on a clean ephemeral runner. Even with a registry cache hit, every job recompiles dependencies from source unless the compiled output is explicitly shared. There are two strategies:
+
+**Strategy A — Cache the build output directory**
+
+Include the build output directory in the cache with a key scoped only to the lockfile. When the lockfile hasn't changed, the compiled dependency artifacts are restored and the build tool only recompiles your own code.
+
+```yaml
+- name: Cache build output
+  uses: actions/cache@v4
+  with:
+    path: target/
+    key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+    restore-keys: |
+      ${{ runner.os }}-cargo-target-
+```
+
+Appropriate when the build output directory is small enough that cache upload/restore is faster than recompiling dependencies. Measure before committing to this — for large compiled outputs (> ~1 GB), the transfer cost can exceed the compilation cost.
+
+**Strategy B — Dedicated `deps` job with artifact passing**
+
+Add a first-layer job whose sole responsibility is compiling dependencies and uploading the build output as an artifact. Downstream jobs download the artifact instead of recompiling.
+
+```yaml
+deps:
+  name: "Compile dependencies"
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-toolchain
+    - name: Compile
+      run: cargo build --release
+    - name: Compress and upload build output
+      run: tar -czf target.tar.gz target/
+    - uses: actions/upload-artifact@v4
+      with:
+        name: cargo-target-${{ github.sha }}
+        path: target.tar.gz
+        compression-level: 0   # already compressed
+        retention-days: 1
+
+lint:
+  needs: [deps]
+  steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: cargo-target-${{ github.sha }}
+    - run: tar -xzf target.tar.gz
+    - run: cargo clippy -- -D warnings
+```
+
+Appropriate when dependency compilation is the dominant cost and the compressed artifact transfers faster than recompiling. Compressing before upload typically reduces artifact size by 50–70% for compiled outputs.
+
+**Choosing between strategies:**
+
+| Dependency compile time | Compressed artifact size | Recommended |
+|---|---|---|
+| < 1 min | any | Registry cache only — no added complexity |
+| 1–3 min | < 500 MB | Strategy A — build output cache |
+| > 3 min | any | Strategy B — dedicated deps job + artifact |
+| > 3 min | > 1 GB | Strategy B + distributed cache (sccache + S3/GCS) |
+
+Measure actual job durations before optimizing. The right strategy depends on the specific ratio of compile time to transfer time in your pipeline.
 
 ---
 
