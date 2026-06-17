@@ -1391,9 +1391,7 @@ mod tests {
             prop_assert_eq!(decoded.bands(), 3);
             for (&orig, &decoded_sample) in original.pixels().iter().zip(decoded.pixels().iter()) {
                 let diff = (i32::from(orig) - i32::from(decoded_sample)).abs();
-                // ravif 0.11 "lossless" (quality 100 + RGB color model) may
-                // introduce ±2 rounding through the AV1 encode pipeline.
-                prop_assert!(diff <= 2, "pixel diff {} exceeds near-exact threshold", diff);
+                prop_assert!(diff <= 1);
             }
         }
     }

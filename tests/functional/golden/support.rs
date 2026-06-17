@@ -3,10 +3,25 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::Command,
+    sync::LazyLock,
 };
 
-const VIPS_BIN: &str = "/opt/homebrew/bin/vips";
-const VIPSHEADER_BIN: &str = "/opt/homebrew/bin/vipsheader";
+/// Resolves the absolute path of a CLI binary via `which`, falling back to the
+/// well-known Homebrew location on macOS.
+fn resolve_bin(name: &str, homebrew_fallback: &str) -> String {
+    let output = Command::new("which")
+        .arg(name)
+        .output()
+        .ok()
+        .filter(|o| o.status.success())
+        .and_then(|o| String::from_utf8(o.stdout).ok())
+        .map(|s| s.trim().to_owned());
+    output.unwrap_or_else(|| homebrew_fallback.to_owned())
+}
+
+static VIPS_BIN: LazyLock<String> = LazyLock::new(|| resolve_bin("vips", "/opt/homebrew/bin/vips"));
+static VIPSHEADER_BIN: LazyLock<String> =
+    LazyLock::new(|| resolve_bin("vipsheader", "/opt/homebrew/bin/vipsheader"));
 const OUTPUT_PLACEHOLDER: &str = "{output}";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -85,7 +100,7 @@ struct GeneratedGolden {
 /// Tests that compare output against the reference libvips should call this
 /// and return early when it is `false` rather than panicking.
 pub fn vips_available() -> bool {
-    Path::new(VIPS_BIN).exists() && Path::new(VIPSHEADER_BIN).exists()
+    Path::new(VIPS_BIN.as_str()).exists() && Path::new(VIPSHEADER_BIN.as_str()).exists()
 }
 
 /// Panics when libvips CLI tools are not installed.
@@ -95,7 +110,8 @@ pub fn vips_available() -> bool {
 pub fn require_vips() {
     if !vips_available() {
         panic!(
-            "libvips parity test requires the `vips` and `vipsheader` CLIs at {VIPS_BIN} and {VIPSHEADER_BIN}; install libvips or mark the test #[ignore]"
+            "libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}; install libvips or mark the test #[ignore]",
+            &*VIPS_BIN, &*VIPSHEADER_BIN
         );
     }
 }
@@ -155,7 +171,7 @@ where
         .into_iter()
         .map(|arg| arg.as_ref().to_os_string())
         .collect::<Vec<_>>();
-    run_command(VIPS_BIN, &args);
+    run_command(&VIPS_BIN, &args);
 }
 
 fn run_vipsheader<I, S>(args: I) -> String
@@ -167,16 +183,17 @@ where
         .into_iter()
         .map(|arg| arg.as_ref().to_os_string())
         .collect::<Vec<_>>();
-    let output = Command::new(VIPSHEADER_BIN)
+    let output = Command::new(VIPSHEADER_BIN.as_str())
         .args(&args)
         .output()
-        .unwrap_or_else(|e| panic!("failed to run {VIPSHEADER_BIN}: {e}"));
+        .unwrap_or_else(|e| panic!("failed to run {}: {e}", &*VIPSHEADER_BIN));
 
     if !output.status.success() {
         let stdout = String::from_utf8_lossy(&output.stdout);
         let stderr = String::from_utf8_lossy(&output.stderr);
         panic!(
-            "{VIPSHEADER_BIN} failed with status {:?}\nstdout:\n{stdout}\nstderr:\n{stderr}",
+            "{} failed with status {:?}\nstdout:\n{stdout}\nstderr:\n{stderr}",
+            &*VIPSHEADER_BIN,
             output.status.code()
         );
     }
@@ -271,7 +288,7 @@ fn generate_vips_golden_internal(op: &str, case: &str, vips_cmd: &[&str]) -> Gen
             }
         })
         .collect::<Vec<_>>();
-    run_command(VIPS_BIN, &args);
+    run_command(&VIPS_BIN, &args);
 
     let format = format_of(&output_image);
     run_vips([

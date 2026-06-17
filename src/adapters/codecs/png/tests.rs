@@ -750,15 +750,11 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
 
     assert_eq!(sequential_output, expected_sequential);
     assert_eq!(partial_output, expected_partial);
-    // Concurrency check: on single-core or heavily loaded machines the two threads
-    // may not overlap, so we only warn rather than hard-fail.
-    let observed = PNG_ROW_DECODE_PROBE.max_active();
-    if observed < 2 {
-        eprintln!(
-            "WARNING: expected concurrent decode rows (max_active >= 2), saw {observed}. \
-             This may be a scheduling artefact on a loaded machine."
-        );
-    }
+    assert!(
+        PNG_ROW_DECODE_PROBE.max_active() >= 2,
+        "expected concurrent path decode rows without session-mutex serialization, saw max concurrency {}",
+        PNG_ROW_DECODE_PROBE.max_active()
+    );
 }
 
 #[test]
