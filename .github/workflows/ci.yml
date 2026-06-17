@@ -139,7 +139,7 @@ jobs:
 
   benchmarks:
     name: "Benchmarks (${{ matrix.arch }})"
-    needs: [test]
+    needs: [test-all]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
     continue-on-error: true
