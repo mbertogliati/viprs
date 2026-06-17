@@ -45,10 +45,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Build and install libjxl from source (required for jpegxl-sys)
-# CMAKE_INSTALL_LIBDIR=lib forces consistent /usr/local/lib/ path across architectures
+# CMAKE_INSTALL_LIBDIR=/usr/local/lib forces consistent path across architectures
+# (relative paths like "lib" resolve to build dir in some cmake projects)
 RUN git clone --depth 1 https://github.com/libjxl/libjxl.git /tmp/libjxl \
     && cd /tmp/libjxl && ./deps.sh && mkdir -p build && cd build \
-    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=lib .. \
+    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=/usr/local/lib .. \
     && ninja -v && ninja install && ldconfig && rm -rf /tmp/libjxl
 
 # Build and install newer libheif (>=1.16) from source to satisfy libheif-sys
@@ -59,7 +60,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/strukturag/libheif.git /tmp/libheif \
     && mkdir -p /tmp/libheif/build && cd /tmp/libheif/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=/usr/local/lib .. \
     && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libheif
 
 # Build libjpeg-turbo >= 3.0 from source so turbojpeg-sys can find libturbojpeg >= 3.0
@@ -68,7 +69,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 --branch 3.0.0 https://github.com/libjpeg-turbo/libjpeg-turbo.git /tmp/libjpeg-turbo \
     && mkdir -p /tmp/libjpeg-turbo/build && cd /tmp/libjpeg-turbo/build \
-    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=lib .. \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=/usr/local/lib .. \
     && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libjpeg-turbo \
     && pkg-config --modversion libturbojpeg
 
