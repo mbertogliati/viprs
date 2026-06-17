@@ -180,7 +180,30 @@ jobs:
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
-      - run: make bench-ci FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+      - name: Restore benchmark baseline from main
+        uses: actions/cache/restore@v4
+        with:
+          path: target/criterion
+          key: criterion-baseline-${{ matrix.arch }}-main
+      - name: Run benchmarks (compare against main baseline if available)
+        run: |
+          FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+          if [ -d "target/criterion" ]; then
+            echo "Baseline found — comparing against main"
+            make bench-compare FEATURES="$FEATURES"
+          else
+            echo "No baseline — running without comparison (first run)"
+            make bench-ci FEATURES="$FEATURES"
+          fi
+      - name: Save baseline (main only)
+        if: github.ref == 'refs/heads/main'
+        run: make bench-baseline FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+      - name: Cache baseline (main only)
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v4
+        with:
+          path: target/criterion
+          key: criterion-baseline-${{ matrix.arch }}-main
 
   repackage-and-publish:
     name: Repackage image with xtask

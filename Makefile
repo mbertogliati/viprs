@@ -87,6 +87,18 @@ bench-ci:
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
 		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'
 
+## Save baseline on main (CI calls this after merge to main)
+bench-baseline:
+	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
+		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
+		--save-baseline main '/512'
+
+## Compare PR against main baseline — fails if any benchmark regresses >5%
+bench-compare:
+	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*' \
+		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
+		--baseline main '/512'
+
 ## E2E comparison vs libvips (requires xtask + libvips installed).
 ## Runs the representative scenario matrix from PERFORMANCE.md:
 ##   - 3 standard sizes (512, 2048, 8192)
