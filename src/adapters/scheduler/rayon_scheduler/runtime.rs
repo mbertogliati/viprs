@@ -19,7 +19,6 @@ use super::{
         run_tiles_sequential_source_only, run_tiles_sequential_source_only_cancellable,
     },
     lock_instrumentation,
-    lock_instrumentation::LockInstrumentationSnapshot,
     planning::{
         can_direct_write_all_regions, checked_region_byte_size, direct_source_region_for_output,
         pipeline_output_bytes, pipeline_output_slice, pipeline_output_target,
@@ -28,6 +27,9 @@ use super::{
     },
     scheduler_panic_to_error, viprs_span,
 };
+
+#[cfg(feature = "lock_instrumentation")]
+use super::lock_instrumentation::LockInstrumentationSnapshot;
 
 impl TileRunProfile {
     fn new(node_count: usize) -> Self {
