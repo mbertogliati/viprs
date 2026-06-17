@@ -22,7 +22,7 @@ use crate::domain::ops::colour::{
 ///
 /// # Examples
 ///
-    /// ```ignore
+/// ```ignore
 /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
 /// ```
 pub(crate) fn normalize_web_output_u8<'a>(
@@ -44,7 +44,7 @@ pub(crate) fn normalize_web_output_u8<'a>(
 ///
 /// # Examples
 ///
-    /// ```ignore
+/// ```ignore
 /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
 /// ```
 pub(crate) fn normalize_web_output_u16<'a>(
@@ -190,7 +190,7 @@ mod enabled {
     ///
     /// # Examples
     ///
-/// ```ignore
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
     /// ```
     pub(super) fn normalize_web_output_u8<'a>(
@@ -226,7 +226,7 @@ mod enabled {
     ///
     /// # Examples
     ///
-/// ```ignore
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
     /// ```
     pub(super) fn normalize_web_output_u16<'a>(
