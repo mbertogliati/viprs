@@ -17,7 +17,7 @@ RUSTFLAGS_CI := -Dwarnings -Adead_code
 # Override: make check FEATURES="--features jpeg,png,webp"
 FEATURES ?= --all-features
 
-.PHONY: all check ci fmt clippy build test doc deny audit bench bench-vs coverage xtask
+.PHONY: all check ci fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -50,9 +50,13 @@ build:
 	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) check --lib $(FEATURES)
 	$(CARGO) check -p xtask || echo "xtask check skipped (missing system libs)"
 
-## Unit tests (warnings allowed in test code — dead code is expected with partial features)
+## Unit tests only (containerless CI — no system libs)
 test:
 	$(CARGO) test --lib $(FEATURES)
+
+## Full test suite: unit + integration + functional + doctests (requires all system libs)
+test-all:
+	$(CARGO) test --all-features
 
 ## Documentation (deny warnings)
 doc:
@@ -66,9 +70,9 @@ deny:
 audit:
 	$(CARGO) audit
 
-## Coverage (≥90% on ops/ and codecs/)
+## Coverage over ALL tests (≥90% on ops/ and codecs/) — requires all system libs
 coverage:
-	$(CARGO) llvm-cov --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov --all-features --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
