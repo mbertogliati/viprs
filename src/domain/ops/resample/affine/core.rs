@@ -412,9 +412,16 @@ impl<F: BandFormat> Affine<F> {
         let Some((resolved_x, resolved_y)) = self.resolve_sample_coords(input, ix, iy) else {
             return self.extend_fill_value(input.bands as usize, band);
         };
-        let tile_x = (resolved_x - i64::from(input.region.x)) as usize;
-        let tile_y = (resolved_y - i64::from(input.region.y)) as usize;
-        let idx = (tile_y * input.region.width as usize + tile_x) * input.bands as usize + band;
+        let tile_x = resolved_x - i64::from(input.region.x);
+        let tile_y = resolved_y - i64::from(input.region.y);
+        if (tile_x as u64) >= u64::from(input.region.width)
+            || (tile_y as u64) >= u64::from(input.region.height)
+        {
+            return self.extend_fill_value(input.bands as usize, band);
+        }
+        let idx = (tile_y as usize * input.region.width as usize + tile_x as usize)
+            * input.bands as usize
+            + band;
         input.data[idx].to_f64()
     }
 
