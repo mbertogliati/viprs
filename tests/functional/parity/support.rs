@@ -37,6 +37,10 @@ pub(crate) fn ensure_vips() {
     golden::require_vips();
 }
 
+fn fixture_metadata(upstream: &str, op: &str, case: &str) -> String {
+    format!("upstream: {upstream}\nop: {op}\ncase: {case}")
+}
+
 pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     source_pixels: Vec<u8>,
     width: u32,
@@ -217,6 +221,9 @@ pub(crate) fn render_command(args: &[String]) -> String {
 }
 
 pub(crate) fn write_expected_raw(output_image: &Path, output_raw: &Path) {
+    if !golden::fixtures_regeneration_requested() {
+        return;
+    }
     let output = Command::new("vips")
         .args([
             "rawsave",
@@ -239,6 +246,7 @@ pub(crate) fn generate_vips_expected(
     case: &str,
     command: &[String],
 ) -> (Vec<u8>, String, PathBuf) {
+    golden::require_vips();
     let output_image = golden::case_dir(op, case).join("expected.v");
     let output_raw = golden::case_dir(op, case).join("expected.raw");
     let resolved = command
@@ -311,8 +319,35 @@ pub(crate) fn assert_u8_parity(
     command: &[String],
     max_diff: u8,
 ) {
-    let (expected, rendered, output_image) = generate_vips_expected(op, case, command);
-    let metadata = parity_metadata(upstream, op, case, &rendered, &output_image);
+    if golden::fixtures_regeneration_requested() {
+        let (expected, rendered, output_image) = generate_vips_expected(op, case, command);
+        golden::write_fixture(op, case, &expected);
+        let metadata = parity_metadata(upstream, op, case, &rendered, &output_image);
+
+        assert_eq!(
+            actual_dims, expected_dims,
+            "dimension mismatch\n{metadata}\nactual_dims={actual_dims:?}\nexpected_dims={expected_dims:?}"
+        );
+        assert_eq!(
+            actual.len(),
+            expected.len(),
+            "byte length mismatch\n{metadata}\nactual_len={}\nexpected_len={}",
+            actual.len(),
+            expected.len()
+        );
+
+        for (idx, (&got, &want)) in actual.iter().zip(expected.iter()).enumerate() {
+            let diff = (i16::from(got) - i16::from(want)).unsigned_abs() as u8;
+            assert!(
+                diff <= max_diff,
+                "byte mismatch at index {idx}\n{metadata}\nviprs={got}\nlibvips={want}\ndiff={diff}\nallowed_diff={max_diff}"
+            );
+        }
+        return;
+    }
+
+    let expected = golden::read_fixture(op, case);
+    let metadata = fixture_metadata(upstream, op, case);
 
     assert_eq!(
         actual_dims, expected_dims,
@@ -330,7 +365,7 @@ pub(crate) fn assert_u8_parity(
         let diff = (i16::from(got) - i16::from(want)).unsigned_abs() as u8;
         assert!(
             diff <= max_diff,
-            "byte mismatch at index {idx}\n{metadata}\nviprs={got}\nlibvips={want}\ndiff={diff}\nallowed_diff={max_diff}"
+            "byte mismatch at index {idx}\n{metadata}\nviprs={got}\nfixture={want}\ndiff={diff}\nallowed_diff={max_diff}"
         );
     }
 }
@@ -345,10 +380,38 @@ pub(crate) fn assert_f32_parity(
     command: &[String],
     epsilon: f32,
 ) {
-    let (expected, rendered, output_image) = generate_vips_expected(op, case, command);
-    let metadata = parity_metadata(upstream, op, case, &rendered, &output_image);
+    if golden::fixtures_regeneration_requested() {
+        let (expected, rendered, output_image) = generate_vips_expected(op, case, command);
+        golden::write_fixture(op, case, &expected);
+        let metadata = parity_metadata(upstream, op, case, &rendered, &output_image);
+        let actual = decode_f32(actual);
+        let expected = decode_f32(&expected);
+
+        assert_eq!(
+            actual_dims, expected_dims,
+            "dimension mismatch\n{metadata}\nactual_dims={actual_dims:?}\nexpected_dims={expected_dims:?}"
+        );
+        assert_eq!(
+            actual.len(),
+            expected.len(),
+            "sample length mismatch\n{metadata}\nactual_len={}\nexpected_len={}",
+            actual.len(),
+            expected.len()
+        );
+
+        for (idx, (&got, &want)) in actual.iter().zip(expected.iter()).enumerate() {
+            let diff = (got - want).abs();
+            assert!(
+                diff <= epsilon,
+                "sample mismatch at index {idx}\n{metadata}\nviprs={got}\nlibvips={want}\ndiff={diff}\nallowed_diff={epsilon}"
+            );
+        }
+        return;
+    }
+
+    let metadata = fixture_metadata(upstream, op, case);
     let actual = decode_f32(actual);
-    let expected = decode_f32(&expected);
+    let expected = decode_f32(&golden::read_fixture(op, case));
 
     assert_eq!(
         actual_dims, expected_dims,
@@ -366,7 +429,7 @@ pub(crate) fn assert_f32_parity(
         let diff = (got - want).abs();
         assert!(
             diff <= epsilon,
-            "sample mismatch at index {idx}\n{metadata}\nviprs={got}\nlibvips={want}\ndiff={diff}\nallowed_diff={epsilon}"
+            "sample mismatch at index {idx}\n{metadata}\nviprs={got}\nfixture={want}\ndiff={diff}\nallowed_diff={epsilon}"
         );
     }
 }

@@ -244,8 +244,11 @@ pub(crate) fn write_i32_input_spec(
 }
 
 pub(crate) fn set_vips_interpretation(image_path: &str, interpretation: &str) {
+    if !golden::fixtures_regeneration_requested() {
+        return;
+    }
     let rewritten = format!("{image_path}.{interpretation}.rewrite.v");
-    let output = Command::new("/opt/homebrew/bin/vips")
+    let output = Command::new("vips")
         .args([
             "copy",
             image_path,
@@ -388,6 +391,9 @@ pub(crate) fn assert_hsv_golden_from_vips_u8(
 }
 
 pub(crate) fn patch_vips_orientation_6(image_path: &str) {
+    if !golden::fixtures_regeneration_requested() {
+        return;
+    }
     let bytes =
         fs::read(image_path).unwrap_or_else(|err| panic!("failed to read {image_path}: {err}"));
     let xml_start = bytes
@@ -439,7 +445,10 @@ where
 }
 
 pub(crate) fn run_vips_scalar(command: &str, input: &str) -> f64 {
-    let output = Command::new("/opt/homebrew/bin/vips")
+    if !golden::fixtures_regeneration_requested() {
+        panic!("run_vips_scalar requires fixture regeneration mode");
+    }
+    let output = Command::new("vips")
         .args([command, input])
         .output()
         .unwrap_or_else(|err| panic!("failed to run vips {command}: {err}"));
@@ -453,6 +462,19 @@ pub(crate) fn run_vips_scalar(command: &str, input: &str) -> f64 {
         .trim()
         .parse::<f64>()
         .expect("vips scalar output parses as f64")
+}
+
+pub(crate) fn read_f64_fixture(op: &str, case: &str) -> f64 {
+    let bytes = golden::read_fixture(op, case);
+    let raw: [u8; 8] = bytes
+        .as_slice()
+        .try_into()
+        .unwrap_or_else(|_| panic!("f64 fixture for op={op} case={case} must be exactly 8 bytes"));
+    f64::from_le_bytes(raw)
+}
+
+pub(crate) fn write_f64_fixture(op: &str, case: &str, value: f64) {
+    golden::write_fixture(op, case, &value.to_le_bytes());
 }
 
 pub(crate) fn u64_bins_to_u32_bytes(bins: &[u64]) -> Vec<u8> {
