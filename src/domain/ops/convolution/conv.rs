@@ -595,6 +595,7 @@ fn process_cross_3x3<F>(
     }
 }
 
+#[cfg(target_arch = "aarch64")]
 #[inline]
 fn f32_to_i16_exact(value: f32) -> Option<i16> {
     if value.fract() != 0.0 {
@@ -1629,8 +1630,11 @@ mod tests {
         assert_eq!(rounded.coefficients(), &[vec![2.0, -2.0, 0.0]]);
         assert_eq!(rounded.scale(), 3.0);
         assert_eq!(rounded.offset(), 2.0);
-        assert_eq!(f32_to_i16_exact(12.0), Some(12));
-        assert_eq!(f32_to_i16_exact(12.25), None);
+        #[cfg(target_arch = "aarch64")]
+        {
+            assert_eq!(f32_to_i16_exact(12.0), Some(12));
+            assert_eq!(f32_to_i16_exact(12.25), None);
+        }
     }
 
     #[test]
