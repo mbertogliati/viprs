@@ -491,7 +491,9 @@ pub(crate) fn encode_interleaved(
                         "422" => b"422\0",
                         "444" => b"444\0",
                         _ => {
-                            return Err(ViprsError::Codec(format!("{context}: unsupported chroma")));
+                            return Err(ViprsError::Codec(format!(
+                                "{context}: unsupported chroma"
+                            )));
                         }
                     },
                 )?;
