@@ -141,6 +141,11 @@ impl<F: BandFormat> Affine<F> {
         let (resolved_x, resolved_y) = self.resolve_sample_coords(input, ix, iy)?;
         let tile_x = resolved_x - i64::from(input.region.x);
         let tile_y = resolved_y - i64::from(input.region.y);
+        if (tile_x as u64) >= u64::from(input.region.width)
+            || (tile_y as u64) >= u64::from(input.region.height)
+        {
+            return None;
+        }
         let width = input.region.width as usize;
         let bands = input.bands as usize;
         Some((tile_y as usize * width + tile_x as usize) * bands)

@@ -965,6 +965,24 @@ fn affine_helper_functions_cover_axis_alignment_bilinear_paths_and_background_ch
 }
 
 #[test]
+fn resolved_pixel_base_rejects_source_coords_outside_current_tile_region() {
+    let op = Affine::<U8>::new(
+        [1.0, 0.0, 0.0, 1.0],
+        0.0,
+        0.0,
+        InterpolationKernel::Nearest,
+        4,
+        4,
+    )
+    .with_extend(ExtendMode::Edge)
+    .with_source_bounds(Region::new(0, 0, 4, 4));
+    let input = Tile::<U8>::new(Region::new(1, 1, 2, 2), 1, &[5u8, 6, 7, 8]);
+
+    assert_eq!(op.resolve_sample_coords(&input, 0, 0), Some((0, 0)));
+    assert_eq!(op.resolved_pixel_base(&input, 0, 0), None);
+}
+
+#[test]
 fn affine_bicubic_fast_path_falls_back_to_sample_pixel_at_at_edges() {
     let op = Affine::<F64>::new(
         [1.0, 0.0, 0.0, 1.0],
