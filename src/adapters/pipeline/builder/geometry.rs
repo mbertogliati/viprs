@@ -510,9 +510,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
     }
 
     /// Extract the most-significant byte from each integer band.
-    pub fn msb(mut self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn msb(self) -> Result<PipelineBuilder<Identity>, BuildError> {
         // TODO(fusion): integrate msb into Concretize chain.
-        self.flush_pending()?;
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => {

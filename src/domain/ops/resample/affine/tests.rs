@@ -908,6 +908,24 @@ fn required_input_region_handles_empty_output_and_background_only_detection() {
 }
 
 #[test]
+fn required_input_region_clamps_to_declared_source_bounds() {
+    let op = Affine::<U8>::new(
+        [1.0, 0.0, 0.0, 1.0],
+        50.0,
+        50.0,
+        InterpolationKernel::Nearest,
+        8,
+        8,
+    )
+    .with_source_bounds(Region::new(0, 0, 4, 4));
+
+    assert_eq!(
+        op.required_input_region(&Region::new(0, 0, 2, 2)),
+        Region::new(4, 4, 0, 0)
+    );
+}
+
+#[test]
 fn process_region_fast_path_rejects_tiles_outside_declared_output_bounds() {
     let op = Affine::<U8>::new(
         [1.0, 0.0, 0.0, 1.0],

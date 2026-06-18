@@ -6,7 +6,7 @@ use std::marker::PhantomData;
 use crate::domain::ops::resample::sample_conv::{FromF64, ToF64};
 use crate::domain::{
     format::{BandFormat, BandFormatId},
-    image::{DemandHint, Region, Tile, TileMut},
+    image::{DemandHint, Region, Tile, TileMut, clamp_i64_to_i32},
     kernel::InterpolationKernel,
     op::{NodeSpec, Op},
 };
@@ -367,6 +367,40 @@ impl<F: BandFormat> Affine<F> {
     #[inline]
     fn logical_source_bounds(&self, input: &Tile<F>) -> Region {
         self.source_bounds.unwrap_or(input.region)
+    }
+
+    #[inline]
+    fn required_input_axis_bounds(start: i64, end: i64, bounds: Option<(i64, u32)>) -> (i32, u32) {
+        let Some((bounds_start, bounds_len)) = bounds else {
+            let clamped_start = clamp_i64_to_i32(start);
+            let clamped_end = clamp_i64_to_i32(end);
+            if i64::from(clamped_end) < i64::from(clamped_start) {
+                return (clamped_start, 0);
+            }
+
+            let width = i64::from(clamped_end) - i64::from(clamped_start) + 1;
+            return (clamped_start, width as u32);
+        };
+        if bounds_len == 0 {
+            return (clamp_i64_to_i32(bounds_start), 0);
+        }
+
+        let bounds_end = bounds_start + i64::from(bounds_len) - 1;
+        let clamped_start = start.max(bounds_start);
+        let clamped_end = end.min(bounds_end);
+        if clamped_end < clamped_start {
+            let empty_origin = if end < bounds_start {
+                bounds_start
+            } else {
+                bounds_end.saturating_add(1)
+            };
+            return (clamp_i64_to_i32(empty_origin), 0);
+        }
+
+        let region_start = clamp_i64_to_i32(clamped_start);
+        let region_end = clamp_i64_to_i32(clamped_end);
+        let width = i64::from(region_end) - i64::from(region_start) + 1;
+        (region_start, width as u32)
     }
 
     #[inline]
@@ -1501,13 +1535,28 @@ where
         // cubic/lanczos demand to the taps this implementation actually reads.
         let ((min_x, max_x), (min_y, max_y)) = self.mapped_input_bounds(output);
         let (left_pad, right_pad) = self.kernel_padding();
+        let source_bounds = self.source_bounds;
+        if let Some(bounds) = source_bounds.filter(|bounds| bounds.is_empty()) {
+            return Region::new(bounds.x, bounds.y, 0, 0);
+        }
 
-        let x0 = min_x.floor() as i32 - left_pad;
-        let x1 = max_x.floor() as i32 + right_pad;
-        let y0 = min_y.floor() as i32 - left_pad;
-        let y1 = max_y.floor() as i32 + right_pad;
+        let x0 = min_x.floor() as i64 - i64::from(left_pad);
+        let x1 = max_x.floor() as i64 + i64::from(right_pad);
+        let y0 = min_y.floor() as i64 - i64::from(left_pad);
+        let y1 = max_y.floor() as i64 + i64::from(right_pad);
 
-        Region::new(x0, y0, (x1 - x0 + 1) as u32, (y1 - y0 + 1) as u32)
+        let (x, width) = Self::required_input_axis_bounds(
+            x0,
+            x1,
+            source_bounds.map(|bounds| (i64::from(bounds.x), bounds.width)),
+        );
+        let (y, height) = Self::required_input_axis_bounds(
+            y0,
+            y1,
+            source_bounds.map(|bounds| (i64::from(bounds.y), bounds.height)),
+        );
+
+        Region::new(x, y, width, height)
     }
 
     fn node_spec(&self, tile_w: u32, tile_h: u32) -> NodeSpec {
