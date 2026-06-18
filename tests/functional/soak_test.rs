@@ -25,6 +25,11 @@ const FIXTURE_BANDS: u32 = 1;
 const THUMBNAIL_WIDTH: u32 = 400;
 const MAX_RSS_GROWTH_PERCENT: usize = 10;
 const RSS_SLACK_KB: usize = 8 * 1_024;
+const RSS_CHILD_ENV: &str = "VIPRS_THUMBNAIL_SOAK_RSS_CHILD";
+const QUICK_RSS_CHILD_TEST: &str =
+    "soak_test::quick_thumbnail_soak_stays_deterministic_for_100_iterations_child";
+const FULL_RSS_CHILD_TEST: &str =
+    "soak_test::thumbnail_soak_stays_deterministic_for_5000_iterations_child";
 
 fn soak_lock() -> &'static Mutex<()> {
     static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
@@ -147,6 +152,26 @@ fn assert_rss_stable(
     );
 }
 
+fn run_soak_in_child(child_test: &str) {
+    let output = Command::new(std::env::current_exe().unwrap_or_else(|error| {
+        panic!("failed to resolve current test binary for soak child run: {error}")
+    }))
+    .env(RSS_CHILD_ENV, "1")
+    .arg("--exact")
+    .arg(child_test)
+    .arg("--nocapture")
+    .arg("--test-threads=1")
+    .output()
+    .unwrap_or_else(|error| panic!("failed to spawn soak child run: {error}"));
+
+    assert!(
+        output.status.success(),
+        "thumbnail soak child run failed: stdout=\n{}\nstderr=\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
 fn run_soak(iterations: usize, rss_sample_interval: usize) {
     let _guard = soak_lock()
         .lock()
@@ -195,11 +220,32 @@ fn run_soak(iterations: usize, rss_sample_interval: usize) {
 
 #[test]
 fn quick_thumbnail_soak_stays_deterministic_for_100_iterations() {
+    // Run RSS-sensitive soak assertions in a dedicated child process so unrelated
+    // functional tests in the main harness cannot inflate the resident-set samples.
+    run_soak_in_child(QUICK_RSS_CHILD_TEST);
+}
+
+#[test]
+fn quick_thumbnail_soak_stays_deterministic_for_100_iterations_child() {
+    if std::env::var_os(RSS_CHILD_ENV).is_none() {
+        return;
+    }
+
     run_soak(100, 10);
 }
 
 #[test]
 #[ignore = "slow soak test for sustained thumbnail stability"]
 fn thumbnail_soak_stays_deterministic_for_5000_iterations() {
+    run_soak_in_child(FULL_RSS_CHILD_TEST);
+}
+
+#[test]
+#[ignore = "slow soak test for sustained thumbnail stability"]
+fn thumbnail_soak_stays_deterministic_for_5000_iterations_child() {
+    if std::env::var_os(RSS_CHILD_ENV).is_none() {
+        return;
+    }
+
     run_soak(5_000, 100);
 }
