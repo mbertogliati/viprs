@@ -12,6 +12,8 @@ use crate::domain::{
 use rustfft::{FftPlanner, num_complex::Complex};
 
 /// Frequency-domain images are stored as `Image<F64>` with bands `[real, imag]`.
+/// The zero-frequency bin is centered with an `fftshift`-style layout so
+/// frequency masks can be built around `(width / 2, height / 2)`.
 ///
 /// This constant documents the storage layout used by [`fwfft`] and [`invfft`]
 /// so callers can validate intermediate buffers or construct compatible test
@@ -29,8 +31,9 @@ pub const FFT_COMPLEX_BANDS: u32 = 2;
 /// Transform a single-band real image to Fourier space.
 ///
 /// The output layout matches libvips' normalization contract: each complex sample
-/// is divided by `width * height`, so `invfft(fwfft(image))` round-trips to the
-/// original real image within floating-point error.
+/// is divided by `width * height`, and the zero-frequency bin is shifted to the
+/// image centre, so `invfft(fwfft(image))` round-trips to the original real image
+/// within floating-point error.
 ///
 /// # Examples
 ///
@@ -74,6 +77,7 @@ where
         .collect();
 
     fft_2d_in_place(&mut spectrum, width, height, FftDirection::Forward);
+    fftshift_2d(&mut spectrum, width, height);
 
     let scale = pixel_count as f64;
     let mut data = Vec::with_capacity(spectrum.len() * FFT_COMPLEX_BANDS as usize);
@@ -123,6 +127,7 @@ pub fn invfft(input: &Image<F64>) -> Result<Image<F64>, ViprsError> {
         .map(|chunk| Complex::new(chunk[0], chunk[1]))
         .collect();
 
+    ifftshift_2d(&mut spatial, width, height);
     fft_2d_in_place(&mut spatial, width, height, FftDirection::Inverse);
 
     let data = spatial.into_iter().map(|value| value.re).collect();
@@ -178,6 +183,32 @@ fn fft_2d_in_place(
     }
 }
 
+fn fftshift_2d(buffer: &mut [Complex<f64>], width: usize, height: usize) {
+    shift_2d(buffer, width, height, width / 2, height / 2);
+}
+
+fn ifftshift_2d(buffer: &mut [Complex<f64>], width: usize, height: usize) {
+    shift_2d(buffer, width, height, width.div_ceil(2), height.div_ceil(2));
+}
+
+fn shift_2d(
+    buffer: &mut [Complex<f64>],
+    width: usize,
+    height: usize,
+    x_shift: usize,
+    y_shift: usize,
+) {
+    let mut shifted = vec![Complex::default(); buffer.len()];
+    for y in 0..height {
+        for x in 0..width {
+            let src_x = (x + x_shift) % width;
+            let src_y = (y + y_shift) % height;
+            shifted[y * width + x] = buffer[src_y * width + src_x];
+        }
+    }
+    buffer.copy_from_slice(&shifted);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -221,6 +252,30 @@ mod tests {
 
         assert_eq!(spectrum.pixels(), &[7.0, 0.0]);
         assert_eq!(reconstructed.pixels(), &[7.0]);
+    }
+
+    #[test]
+    fn constant_signal_places_dc_at_image_center() {
+        let image = Image::<F32>::from_buffer(4, 4, 1, vec![2.0; 16]).unwrap();
+
+        let spectrum = fwfft(&image).unwrap();
+
+        let dc_index = ((image.height() as usize / 2) * image.width() as usize
+            + image.width() as usize / 2)
+            * FFT_COMPLEX_BANDS as usize;
+        for (index, pair) in spectrum
+            .pixels()
+            .chunks_exact(FFT_COMPLEX_BANDS as usize)
+            .enumerate()
+        {
+            if index == dc_index / FFT_COMPLEX_BANDS as usize {
+                assert!((pair[0] - 2.0).abs() <= 1e-6);
+                assert!(pair[1].abs() <= 1e-6);
+            } else {
+                assert!(pair[0].abs() <= 1e-6);
+                assert!(pair[1].abs() <= 1e-6);
+            }
+        }
     }
 
     #[test]

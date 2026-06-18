@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, sync::Arc};
 
-use rustfft::{Fft, FftPlanner, num_complex::Complex32};
+use rustfft::{FftPlanner, num_complex::Complex32};
 
 use crate::domain::{
     error::{FreqfiltError, ViprsError},
