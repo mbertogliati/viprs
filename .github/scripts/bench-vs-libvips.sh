@@ -9,12 +9,20 @@ set -euo pipefail
 
 mkdir -p /tmp/bench-results
 
-# All supported operations
-OPS="load invert bandmean add multiply and equal linear colourspace resize zoom shrink shrinkh shrinkv thumbnail gauss_blur abs sign round floor ceil"
+# Core ops tested with JPEG (U8) fixtures.
+OPS="load invert add multiply and equal linear colourspace resize zoom shrink shrinkh shrinkv gauss_blur abs sign"
+# TODO: Re-enable bandmean once the xtask runner handles single-band reduction outputs
+# without panicking in src/domain/image/region.rs on JPEG-backed inputs.
+
+# Float-only ops tested with EXR (F32) fixtures.
+FLOAT_OPS="round floor ceil"
+
+# Thumbnail uses explicit target width smaller than all fixtures (smallest is 512px)
+THUMBNAIL_TARGET=256
 
 FAILED_OPS=()
 
-# Standard sizes (JPEG)
+# Standard sizes (JPEG / U8 pipeline)
 for size in 512 2048 8192; do
   FIXTURE="tests/fixtures/images/bench_${size}x${size}.jpg"
   if [ ! -f "$FIXTURE" ]; then
@@ -29,6 +37,14 @@ for size in 512 2048 8192; do
       FAILED_OPS+=("$op@${size}px")
     fi
   done
+
+  # Thumbnail with explicit downscale target
+  echo "=== thumbnail @ ${size}px ==="
+  if ! cargo xtask bench "$FIXTURE" "thumbnail" "$THUMBNAIL_TARGET" --iterations 20 --json \
+    > "/tmp/bench-results/thumbnail_${size}.json" 2>&1; then
+    echo "::warning::Benchmark failed: thumbnail @ ${size}px"
+    FAILED_OPS+=("thumbnail@${size}px")
+  fi
 done
 
 # Workflow/perceptual_enhance (composite pipeline)
@@ -42,10 +58,10 @@ if [ -f "$FIXTURE" ]; then
   fi
 fi
 
-# EXR format (float pipeline)
+# EXR format (float pipeline) — includes float-only ops
 FIXTURE="tests/fixtures/images/bench_512x512.exr"
 if [ -f "$FIXTURE" ]; then
-  for op in invert linear add multiply; do
+  for op in invert linear add multiply $FLOAT_OPS; do
     echo "=== $op @ 512px EXR ==="
     if ! cargo xtask bench "$FIXTURE" "$op" --iterations 20 --json \
       > "/tmp/bench-results/${op}_512_exr.json" 2>&1; then

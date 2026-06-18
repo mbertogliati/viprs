@@ -199,6 +199,13 @@ fn find_measurement(results: &[ScalingMeasurement], threads: usize) -> &ScalingM
 
 #[test]
 fn thumbnail_scaling_sanity_four_threads_beats_one_thread() {
+    // Coverage instrumentation (llvm-cov) adds enough per-instruction overhead
+    // to eliminate any parallelism benefit. Skip under coverage — this test
+    // validates scheduling performance, not correctness.
+    if std::env::var("CARGO_LLVM_COV").is_ok() || std::env::var("LLVM_PROFILE_FILE").is_ok() {
+        eprintln!("skipping SMP scaling sanity under coverage instrumentation");
+        return;
+    }
     // Thumbnailing should scale close to thread count until shared-state contention,
     // cache pressure, or memory bandwidth become the bottleneck. This sanity check keeps
     // a large regression from silently serializing the pipeline under Rayon. When the
