@@ -77,11 +77,10 @@ audit:
 	$(CARGO) audit
 
 ## Full test suite with coverage instrumentation (≥90% on ops/ and codecs/).
-## Runs lib unit tests with coverage instrumentation.
-## Uses --lib to avoid integration/golden tests that depend on fixture regeneration.
+## Runs all tests (unit + integration + functional) with coverage instrumentation.
 ## Requires system libs for all codec features.
 coverage:
-	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 85
+	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
