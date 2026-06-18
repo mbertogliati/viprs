@@ -206,6 +206,10 @@ pub(super) struct PngRowDecodeProbe {
     max_active: AtomicUsize,
     full_raster_decodes: AtomicUsize,
     total_rows: AtomicUsize,
+    active_by_codec: Mutex<HashMap<usize, usize>>,
+    max_active_by_codec: Mutex<HashMap<usize, usize>>,
+    full_raster_decodes_by_codec: Mutex<HashMap<usize, usize>>,
+    total_rows_by_codec: Mutex<HashMap<usize, usize>>,
     sequential_session_mutex_holds: Mutex<HashMap<usize, usize>>,
     rows_while_sequential_session_mutex_held: Mutex<HashMap<usize, usize>>,
     row_delay_ms: AtomicU64,
@@ -222,6 +226,22 @@ impl PngRowDecodeProbe {
         self.max_active.store(0, Ordering::SeqCst);
         self.full_raster_decodes.store(0, Ordering::SeqCst);
         self.total_rows.store(0, Ordering::SeqCst);
+        self.active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+        self.max_active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+        self.full_raster_decodes_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+        self.total_rows_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
         self.sequential_session_mutex_holds
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
@@ -242,6 +262,22 @@ impl PngRowDecodeProbe {
         self.max_active.store(0, Ordering::SeqCst);
         self.full_raster_decodes.store(0, Ordering::SeqCst);
         self.total_rows.store(0, Ordering::SeqCst);
+        self.active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+        self.max_active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+        self.full_raster_decodes_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
+        self.total_rows_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
         self.sequential_session_mutex_holds
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
@@ -258,20 +294,51 @@ impl PngRowDecodeProbe {
         self.max_active.load(Ordering::SeqCst)
     }
 
+    pub(super) fn max_active_for(&self, codec_id: usize) -> usize {
+        self.max_active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .get(&codec_id)
+            .copied()
+            .unwrap_or(0)
+    }
+
     pub(super) fn total_rows(&self) -> usize {
         self.total_rows.load(Ordering::SeqCst)
+    }
+
+    pub(super) fn total_rows_for(&self, codec_id: usize) -> usize {
+        self.total_rows_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .get(&codec_id)
+            .copied()
+            .unwrap_or(0)
     }
 
     pub(super) fn full_raster_decodes(&self) -> usize {
         self.full_raster_decodes.load(Ordering::SeqCst)
     }
 
+    pub(super) fn full_raster_decodes_for(&self, codec_id: usize) -> usize {
+        self.full_raster_decodes_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .get(&codec_id)
+            .copied()
+            .unwrap_or(0)
+    }
+
     pub(super) fn rows_while_sequential_session_mutex_held(&self) -> usize {
         let target_codec = self.target_codec.load(Ordering::SeqCst);
+        self.rows_while_sequential_session_mutex_held_for(target_codec)
+    }
+
+    pub(super) fn rows_while_sequential_session_mutex_held_for(&self, codec_id: usize) -> usize {
         self.rows_while_sequential_session_mutex_held
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .get(&target_codec)
+            .get(&codec_id)
             .copied()
             .unwrap_or(0)
     }
@@ -283,6 +350,12 @@ impl PngRowDecodeProbe {
     pub(super) fn record_full_raster_decode_for(&self, codec_id: usize) {
         if self.matches_target(codec_id) {
             self.full_raster_decodes.fetch_add(1, Ordering::SeqCst);
+            self.full_raster_decodes_by_codec
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                .entry(codec_id)
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
         }
     }
 
@@ -308,6 +381,27 @@ impl PngRowDecodeProbe {
         }
         let active = self.active.fetch_add(1, Ordering::SeqCst) + 1;
         self.total_rows.fetch_add(1, Ordering::SeqCst);
+        self.total_rows_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .entry(codec_id)
+            .and_modify(|count| *count += 1)
+            .or_insert(1);
+        let codec_active = {
+            let mut active_by_codec = self
+                .active_by_codec
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+            let codec_active = active_by_codec.entry(codec_id).or_insert(0);
+            *codec_active += 1;
+            *codec_active
+        };
+        self.max_active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .entry(codec_id)
+            .and_modify(|observed| *observed = (*observed).max(codec_active))
+            .or_insert(codec_active);
         let mut observed = self.max_active.load(Ordering::SeqCst);
         while active > observed {
             match self.max_active.compare_exchange(
@@ -324,7 +418,10 @@ impl PngRowDecodeProbe {
         if row_delay_ms > 0 {
             std::thread::sleep(Duration::from_millis(row_delay_ms));
         }
-        Some(PngRowDecodeProbeGuard { probe: self })
+        Some(PngRowDecodeProbeGuard {
+            probe: self,
+            codec_id,
+        })
     }
 
     pub(super) fn hold_sequential_session_mutex(
@@ -350,12 +447,21 @@ impl PngRowDecodeProbe {
 #[cfg(test)]
 pub(super) struct PngRowDecodeProbeGuard<'a> {
     probe: &'a PngRowDecodeProbe,
+    codec_id: usize,
 }
 
 #[cfg(test)]
 impl Drop for PngRowDecodeProbeGuard<'_> {
     fn drop(&mut self) {
         self.probe.active.fetch_sub(1, Ordering::SeqCst);
+        let mut active_by_codec = self
+            .probe
+            .active_by_codec
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        if let Some(active) = active_by_codec.get_mut(&self.codec_id) {
+            *active = active.saturating_sub(1);
+        }
     }
 }
 

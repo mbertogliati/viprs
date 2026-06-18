@@ -6,9 +6,14 @@ set -euo pipefail
 FAILED=0
 for f in /tmp/bench-results/*.json; do
   [ -f "$f" ] || continue
-  ratio=$(jq -r '.ratio_p50 // .ratio // empty' "$f" 2>/dev/null)
+  ratio=$(jq -r '.ratio_p50 // .ratio // empty' "$f" 2>/dev/null || true)
   [ -z "$ratio" ] && continue
   name=$(basename "$f" .json)
+  # Skip non-numeric ratios (corrupt JSON or null values)
+  if ! echo "$ratio" | grep -qE '^[0-9]+\.?[0-9]*$'; then
+    echo "::warning::$name: skipped — non-numeric ratio '$ratio'"
+    continue
+  fi
   echo "$name: ratio=$ratio"
   if [ "$(echo "$ratio > 1.05" | bc -l)" = "1" ]; then
     echo "::warning::$name: viprs/libvips ratio $ratio > 1.05"

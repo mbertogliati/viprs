@@ -791,11 +791,11 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     assert_eq!(sequential_output, expected_sequential);
     assert_eq!(partial_output, expected_partial);
     assert!(
-        PNG_ROW_DECODE_PROBE.total_rows() > 0,
+        PNG_ROW_DECODE_PROBE.total_rows_for(codec.probe_id()) > 0,
         "expected the probe to observe row decodes during path-region reads"
     );
     assert_eq!(
-        PNG_ROW_DECODE_PROBE.rows_while_sequential_session_mutex_held(),
+        PNG_ROW_DECODE_PROBE.rows_while_sequential_session_mutex_held_for(codec.probe_id()),
         0,
         "row decode started while the sequential path session mutex was still held"
     );
@@ -912,14 +912,14 @@ fn decode_region_from_path_interlaced_png_reuses_eager_backing() {
     codec
         .decode_region_from_path::<U8>(&path, &LoadOptions::default(), top, &mut top_output)
         .unwrap();
-    let full_decodes_after_first = PNG_ROW_DECODE_PROBE.full_raster_decodes();
-    let rows_after_first = PNG_ROW_DECODE_PROBE.total_rows();
+    let full_decodes_after_first = PNG_ROW_DECODE_PROBE.full_raster_decodes_for(codec.probe_id());
+    let rows_after_first = PNG_ROW_DECODE_PROBE.total_rows_for(codec.probe_id());
 
     codec
         .decode_region_from_path::<U8>(&path, &LoadOptions::default(), bottom, &mut bottom_output)
         .unwrap();
-    let full_decodes_after_second = PNG_ROW_DECODE_PROBE.full_raster_decodes();
-    let rows_after_second = PNG_ROW_DECODE_PROBE.total_rows();
+    let full_decodes_after_second = PNG_ROW_DECODE_PROBE.full_raster_decodes_for(codec.probe_id());
+    let rows_after_second = PNG_ROW_DECODE_PROBE.total_rows_for(codec.probe_id());
 
     assert_eq!(top_output, clamped_region_pixels_u8(&eager, top));
     assert_eq!(bottom_output, clamped_region_pixels_u8(&eager, bottom));
@@ -988,9 +988,9 @@ fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
     assert_eq!(left_output, expected_left);
     assert_eq!(right_output, expected_right);
     assert!(
-        PNG_ROW_DECODE_PROBE.max_active() >= 2,
+        PNG_ROW_DECODE_PROBE.max_active_for(codec.probe_id()) >= 2,
         "expected parallel row decode loops, saw max concurrency {}",
-        PNG_ROW_DECODE_PROBE.max_active()
+        PNG_ROW_DECODE_PROBE.max_active_for(codec.probe_id())
     );
 }
 
