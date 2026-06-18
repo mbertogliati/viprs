@@ -19,6 +19,13 @@ struct HeifFixture {
 }
 
 #[cfg(feature = "heif")]
+fn heif_encoder_available() -> bool {
+    let lib_heif = LibHeif::new();
+    lib_heif.encoder_for_format(CompressionFormat::Hevc).is_ok()
+        || lib_heif.encoder_for_format(CompressionFormat::Av1).is_ok()
+}
+
+#[cfg(feature = "heif")]
 fn raw_rgb_bytes(dimension: u32) -> u64 {
     u64::from(dimension) * u64::from(dimension) * 3
 }
@@ -98,6 +105,11 @@ fn build_fixtures() -> Vec<HeifFixture> {
 
 #[cfg(feature = "heif")]
 fn bench_heif_decode(c: &mut Criterion) {
+    if !heif_encoder_available() {
+        eprintln!("Skipping HEIF benchmark: no HEVC or AV1 encoder available in libheif");
+        return;
+    }
+
     let codec = HeifCodec;
     let fixtures = build_fixtures();
     let mut group = c.benchmark_group("codec_heif_decode_u8");
