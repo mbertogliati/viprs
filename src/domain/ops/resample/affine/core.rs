@@ -1570,10 +1570,17 @@ where
         );
         let (left_pad, right_pad) = self.kernel_padding();
         let halo = (left_pad + right_pad) as u32;
+        let mut input_tile_w = out_span_x.ceil() as u32 + 1 + halo;
+        let mut input_tile_h = out_span_y.ceil() as u32 + 1 + halo;
+
+        if let Some(bounds) = self.source_bounds {
+            input_tile_w = input_tile_w.min(bounds.width.saturating_add(halo));
+            input_tile_h = input_tile_h.min(bounds.height.saturating_add(halo));
+        }
 
         NodeSpec {
-            input_tile_w: out_span_x.ceil() as u32 + 1 + halo,
-            input_tile_h: out_span_y.ceil() as u32 + 1 + halo,
+            input_tile_w,
+            input_tile_h,
             output_tile_w: tile_w,
             output_tile_h: tile_h,
             coordinate_driven_source: None,

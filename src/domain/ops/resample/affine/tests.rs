@@ -671,6 +671,30 @@ fn node_spec_identity_nohalo_allocates_six_tap_halo() {
 }
 
 #[test]
+fn node_spec_caps_input_tile_to_source_bounds() {
+    let op = Affine::<U8>::new(
+        [1000.0, 0.0, 0.0, 1000.0],
+        0.0,
+        0.0,
+        InterpolationKernel::Nearest,
+        16,
+        16,
+    )
+    .with_source_bounds(Region::new(0, 0, 17, 13));
+
+    assert_eq!(
+        op.node_spec(128, 128),
+        NodeSpec {
+            input_tile_w: 17,
+            input_tile_h: 13,
+            output_tile_w: 128,
+            output_tile_h: 128,
+            coordinate_driven_source: None,
+        }
+    );
+}
+
+#[test]
 fn vsqbs_affine_matches_reference_copy_extend_2x2_to_4x4_upscale() {
     let in_region = Region::new(-1, -1, 5, 5);
     let out_region = Region::new(0, 0, 4, 4);
