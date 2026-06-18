@@ -119,7 +119,7 @@ pub struct ThumbnailPipelineNodes {
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ThumbnailTarget {
-    /// Fit within `width × height` while preserving aspect ratio.
+    /// Fit within `width × height` while preserving aspect ratio without upscaling.
     FitBox {
         /// Bounding-box width to fit inside.
         width: u32,
@@ -133,9 +133,9 @@ pub enum ThumbnailTarget {
         /// Exact output height to produce.
         height: u32,
     },
-    /// Constrain only width; height is derived from aspect ratio.
+    /// Constrain only width without upscaling; height is derived from aspect ratio.
     Width(u32),
-    /// Constrain only height; width is derived from aspect ratio.
+    /// Constrain only height without upscaling; width is derived from aspect ratio.
     Height(u32),
 }
 
@@ -242,6 +242,8 @@ impl Thumbnail {
             };
         }
 
+        let allow_upscale = matches!(self.target, ThumbnailTarget::ForceExact { .. });
+        let single_pixel_input = input_width == 1 && input_height == 1;
         let (mut target_width, mut target_height) = if self.crop {
             match self.target {
                 ThumbnailTarget::FitBox { width, height }
@@ -251,8 +253,13 @@ impl Thumbnail {
         } else {
             self.target_dimensions(input_width, input_height)
         };
-        target_width = target_width.max(1);
-        target_height = target_height.max(1);
+        if allow_upscale && !single_pixel_input {
+            target_width = target_width.max(1);
+            target_height = target_height.max(1);
+        } else {
+            target_width = target_width.min(input_width).max(1);
+            target_height = target_height.min(input_height).max(1);
+        }
         let has_alpha = matches!(bands, 2 | 4);
         let (mut geometry_width, mut geometry_height) = if self.crop {
             let hscale = f64::from(target_width.max(1)) / f64::from(input_width);
@@ -269,12 +276,19 @@ impl Thumbnail {
         } else {
             (target_width, target_height)
         };
-        geometry_width = geometry_width.max(1);
-        geometry_height = geometry_height.max(1);
+        if allow_upscale && !single_pixel_input {
+            geometry_width = geometry_width.max(1);
+            geometry_height = geometry_height.max(1);
+        } else {
+            geometry_width = geometry_width.min(input_width).max(1);
+            geometry_height = geometry_height.min(input_height).max(1);
+        }
 
         if input_width == 1 || input_height == 1 {
-            target_width = target_width.min(input_width);
-            target_height = target_height.min(input_height);
+            if single_pixel_input {
+                target_width = 1;
+                target_height = 1;
+            }
             let mut geometry_nodes = Vec::new();
             if target_width != input_width || target_height != input_height {
                 let inv_scale_x = f64::from(input_width) / f64::from(target_width);
@@ -446,7 +460,7 @@ impl Thumbnail {
             ThumbnailTarget::FitBox { width, height } => {
                 let hscale = f64::from(width.max(1)) / f64::from(input_width);
                 let vscale = f64::from(height.max(1)) / f64::from(input_height);
-                let scale = hscale.min(vscale);
+                let scale = hscale.min(vscale).min(1.0);
                 (
                     (f64::from(input_width) * scale).round().max(1.0) as u32,
                     (f64::from(input_height) * scale).round().max(1.0) as u32,
@@ -454,14 +468,14 @@ impl Thumbnail {
             }
             ThumbnailTarget::ForceExact { width, height } => (width.max(1), height.max(1)),
             ThumbnailTarget::Width(width) => {
-                let width = width.max(1);
+                let width = width.max(1).min(input_width);
                 let height = ((f64::from(input_height) * f64::from(width)) / f64::from(input_width))
                     .round()
                     .max(1.0) as u32;
                 (width, height)
             }
             ThumbnailTarget::Height(height) => {
-                let height = height.max(1);
+                let height = height.max(1).min(input_height);
                 let width = ((f64::from(input_width) * f64::from(height)) / f64::from(input_height))
                     .round()
                     .max(1.0) as u32;
@@ -740,7 +754,7 @@ mod tests {
     }
 
     #[test]
-    fn thumbnail_upscales_non_single_pixel_inputs() {
+    fn thumbnail_does_not_upscale_non_single_pixel_inputs() {
         let (width, height, pixels) = run_thumbnail_pipeline_with_pixels(
             32,
             32,
@@ -751,8 +765,56 @@ mod tests {
             InterpolationKernel::Lanczos3,
         );
 
-        assert_eq!((width, height), (64, 64));
-        assert_eq!(pixels.len(), 64 * 64 * 3);
+        assert_eq!((width, height), (32, 32));
+        assert_eq!(pixels.len(), 32 * 32 * 3);
+    }
+
+    #[test]
+    fn force_exact_upscales_non_single_pixel_inputs() {
+        let source = MemorySource::<U8>::new(32, 32, 3, vec![10; 32 * 32 * 3]).unwrap();
+        let pipeline = PipelineBuilder::from_source(source)
+            .thumbnail(Thumbnail::new(
+                ThumbnailTarget::ForceExact {
+                    width: 64,
+                    height: 64,
+                },
+                InterpolationKernel::Lanczos3,
+            ))
+            .unwrap()
+            .build()
+            .unwrap();
+        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
+        RayonScheduler::new(RayonScheduler::default_threads())
+            .unwrap()
+            .run(&pipeline, &mut sink)
+            .unwrap();
+
+        assert_eq!((pipeline.width, pipeline.height), (64, 64));
+        assert_eq!(sink.into_buffer().len(), 64 * 64 * 3);
+    }
+
+    #[test]
+    fn force_exact_does_not_upscale_single_pixel_input() {
+        let source = MemorySource::<U8>::new(1, 1, 3, vec![10, 20, 30]).unwrap();
+        let pipeline = PipelineBuilder::from_source(source)
+            .thumbnail(Thumbnail::new(
+                ThumbnailTarget::ForceExact {
+                    width: 64,
+                    height: 64,
+                },
+                InterpolationKernel::Lanczos3,
+            ))
+            .unwrap()
+            .build()
+            .unwrap();
+        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
+        RayonScheduler::new(RayonScheduler::default_threads())
+            .unwrap()
+            .run(&pipeline, &mut sink)
+            .unwrap();
+
+        assert_eq!((pipeline.width, pipeline.height), (1, 1));
+        assert_eq!(sink.into_buffer(), vec![10, 20, 30]);
     }
 
     #[test]

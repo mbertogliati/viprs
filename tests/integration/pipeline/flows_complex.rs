@@ -417,10 +417,10 @@ fn flow1_full_thumbnail_pipeline_preserves_geometry_alpha_and_hashes() {
     );
     assert!(alpha_is_preserved(&rgba_output));
     assert_eq!(
-        upscale_pipeline.width, 1600,
-        "upscale path should honour requested width"
+        upscale_pipeline.width, 512,
+        "Width thumbnails must not upscale beyond the source width"
     );
-    assert_eq!(upscale_output.height(), 1600);
+    assert_eq!(upscale_output.height(), 512);
     assert!(
         thumb_output
             .pixels()
