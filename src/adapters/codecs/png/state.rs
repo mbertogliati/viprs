@@ -1,3 +1,5 @@
+#[cfg(test)]
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, Cursor};
 use std::path::{Path, PathBuf};
@@ -204,8 +206,8 @@ pub(super) struct PngRowDecodeProbe {
     max_active: AtomicUsize,
     full_raster_decodes: AtomicUsize,
     total_rows: AtomicUsize,
-    sequential_session_mutex_holds: AtomicUsize,
-    rows_while_sequential_session_mutex_held: AtomicUsize,
+    sequential_session_mutex_holds: Mutex<HashMap<usize, usize>>,
+    rows_while_sequential_session_mutex_held: Mutex<HashMap<usize, usize>>,
     row_delay_ms: AtomicU64,
 }
 
@@ -221,9 +223,13 @@ impl PngRowDecodeProbe {
         self.full_raster_decodes.store(0, Ordering::SeqCst);
         self.total_rows.store(0, Ordering::SeqCst);
         self.sequential_session_mutex_holds
-            .store(0, Ordering::SeqCst);
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
         self.rows_while_sequential_session_mutex_held
-            .store(0, Ordering::SeqCst);
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
         self.target_codec.store(target_codec, Ordering::SeqCst);
         self.row_delay_ms
             .store(row_delay.as_millis() as u64, Ordering::SeqCst);
@@ -237,9 +243,13 @@ impl PngRowDecodeProbe {
         self.full_raster_decodes.store(0, Ordering::SeqCst);
         self.total_rows.store(0, Ordering::SeqCst);
         self.sequential_session_mutex_holds
-            .store(0, Ordering::SeqCst);
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
         self.rows_while_sequential_session_mutex_held
-            .store(0, Ordering::SeqCst);
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clear();
         self.target_codec.store(0, Ordering::SeqCst);
         self.row_delay_ms.store(0, Ordering::SeqCst);
     }
@@ -257,8 +267,13 @@ impl PngRowDecodeProbe {
     }
 
     pub(super) fn rows_while_sequential_session_mutex_held(&self) -> usize {
+        let target_codec = self.target_codec.load(Ordering::SeqCst);
         self.rows_while_sequential_session_mutex_held
-            .load(Ordering::SeqCst)
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .get(&target_codec)
+            .copied()
+            .unwrap_or(0)
     }
 
     fn matches_target(&self, codec_id: usize) -> bool {
@@ -275,9 +290,21 @@ impl PngRowDecodeProbe {
         if !self.matches_target(codec_id) {
             return None;
         }
-        if self.sequential_session_mutex_holds.load(Ordering::SeqCst) > 0 {
+        let session_mutex_held = self
+            .sequential_session_mutex_holds
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .get(&codec_id)
+            .copied()
+            .unwrap_or(0)
+            > 0;
+        if session_mutex_held {
             self.rows_while_sequential_session_mutex_held
-                .fetch_add(1, Ordering::SeqCst);
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                .entry(codec_id)
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
         }
         let active = self.active.fetch_add(1, Ordering::SeqCst) + 1;
         self.total_rows.fetch_add(1, Ordering::SeqCst);
@@ -308,8 +335,15 @@ impl PngRowDecodeProbe {
             return None;
         }
         self.sequential_session_mutex_holds
-            .fetch_add(1, Ordering::SeqCst);
-        Some(PngSequentialSessionMutexProbeGuard { probe: self })
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .entry(codec_id)
+            .and_modify(|count| *count += 1)
+            .or_insert(1);
+        Some(PngSequentialSessionMutexProbeGuard {
+            probe: self,
+            codec_id,
+        })
     }
 }
 
@@ -328,14 +362,23 @@ impl Drop for PngRowDecodeProbeGuard<'_> {
 #[cfg(test)]
 pub(super) struct PngSequentialSessionMutexProbeGuard<'a> {
     probe: &'a PngRowDecodeProbe,
+    codec_id: usize,
 }
 
 #[cfg(test)]
 impl Drop for PngSequentialSessionMutexProbeGuard<'_> {
     fn drop(&mut self) {
-        self.probe
+        let mut holds = self
+            .probe
             .sequential_session_mutex_holds
-            .fetch_sub(1, Ordering::SeqCst);
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        if let Some(count) = holds.get_mut(&self.codec_id) {
+            *count -= 1;
+            if *count == 0 {
+                holds.remove(&self.codec_id);
+            }
+        }
     }
 }
 
