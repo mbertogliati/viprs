@@ -72,7 +72,10 @@ impl ImageDecoder for JpegCodec {
             orientation,
         } = preflight_jpeg(src)?;
         let mut dec = TurboJpegHandle::new(raw::TJINIT_TJINIT_DECOMPRESS)?;
-        dec.set(raw::TJPARAM_TJPARAM_FASTUPSAMPLE, 1)?;
+        // Keep libjpeg-turbo's accurate chroma upsampling path enabled.
+        // The fast upsampler is measurably less faithful on 4:2:0 fixtures and
+        // drifted from libvips by up to 16 samples in the JPEG invert E2E test.
+        dec.set(raw::TJPARAM_TJPARAM_FASTUPSAMPLE, 0)?;
         let src_len = src
             .len()
             .try_into()
