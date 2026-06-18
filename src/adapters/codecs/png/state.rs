@@ -159,6 +159,8 @@ impl PngCodec {
             .sequential_path_session
             .lock()
             .map_err(|_| ViprsError::Codec("png: sequential path session mutex poisoned".into()))?;
+        #[cfg(test)]
+        let _session_mutex_probe = PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex();
         Ok(std::mem::take(&mut *shared))
     }
 
@@ -170,6 +172,8 @@ impl PngCodec {
             .sequential_path_session
             .lock()
             .map_err(|_| ViprsError::Codec("png: sequential path session mutex poisoned".into()))?;
+        #[cfg(test)]
+        let _session_mutex_probe = PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex();
         *shared = session;
         Ok(())
     }
@@ -183,6 +187,8 @@ pub(super) struct PngRowDecodeProbe {
     max_active: AtomicUsize,
     full_raster_decodes: AtomicUsize,
     total_rows: AtomicUsize,
+    sequential_session_mutex_holds: AtomicUsize,
+    rows_while_sequential_session_mutex_held: AtomicUsize,
     row_delay_ms: AtomicU64,
 }
 
@@ -197,6 +203,10 @@ impl PngRowDecodeProbe {
         self.max_active.store(0, Ordering::SeqCst);
         self.full_raster_decodes.store(0, Ordering::SeqCst);
         self.total_rows.store(0, Ordering::SeqCst);
+        self.sequential_session_mutex_holds
+            .store(0, Ordering::SeqCst);
+        self.rows_while_sequential_session_mutex_held
+            .store(0, Ordering::SeqCst);
         self.row_delay_ms
             .store(row_delay.as_millis() as u64, Ordering::SeqCst);
         self.enabled.store(true, Ordering::SeqCst);
@@ -208,6 +218,10 @@ impl PngRowDecodeProbe {
         self.max_active.store(0, Ordering::SeqCst);
         self.full_raster_decodes.store(0, Ordering::SeqCst);
         self.total_rows.store(0, Ordering::SeqCst);
+        self.sequential_session_mutex_holds
+            .store(0, Ordering::SeqCst);
+        self.rows_while_sequential_session_mutex_held
+            .store(0, Ordering::SeqCst);
         self.row_delay_ms.store(0, Ordering::SeqCst);
     }
 
@@ -223,6 +237,11 @@ impl PngRowDecodeProbe {
         self.full_raster_decodes.load(Ordering::SeqCst)
     }
 
+    pub(super) fn rows_while_sequential_session_mutex_held(&self) -> usize {
+        self.rows_while_sequential_session_mutex_held
+            .load(Ordering::SeqCst)
+    }
+
     pub(super) fn record_full_raster_decode(&self) {
         if self.enabled.load(Ordering::SeqCst) {
             self.full_raster_decodes.fetch_add(1, Ordering::SeqCst);
@@ -232,6 +251,10 @@ impl PngRowDecodeProbe {
     pub(super) fn enter(&self) -> Option<PngRowDecodeProbeGuard<'_>> {
         if !self.enabled.load(Ordering::SeqCst) {
             return None;
+        }
+        if self.sequential_session_mutex_holds.load(Ordering::SeqCst) > 0 {
+            self.rows_while_sequential_session_mutex_held
+                .fetch_add(1, Ordering::SeqCst);
         }
         let active = self.active.fetch_add(1, Ordering::SeqCst) + 1;
         self.total_rows.fetch_add(1, Ordering::SeqCst);
@@ -253,6 +276,17 @@ impl PngRowDecodeProbe {
         }
         Some(PngRowDecodeProbeGuard { probe: self })
     }
+
+    pub(super) fn hold_sequential_session_mutex(
+        &self,
+    ) -> Option<PngSequentialSessionMutexProbeGuard<'_>> {
+        if !self.enabled.load(Ordering::SeqCst) {
+            return None;
+        }
+        self.sequential_session_mutex_holds
+            .fetch_add(1, Ordering::SeqCst);
+        Some(PngSequentialSessionMutexProbeGuard { probe: self })
+    }
 }
 
 #[cfg(test)]
@@ -264,6 +298,20 @@ pub(super) struct PngRowDecodeProbeGuard<'a> {
 impl Drop for PngRowDecodeProbeGuard<'_> {
     fn drop(&mut self) {
         self.probe.active.fetch_sub(1, Ordering::SeqCst);
+    }
+}
+
+#[cfg(test)]
+pub(super) struct PngSequentialSessionMutexProbeGuard<'a> {
+    probe: &'a PngRowDecodeProbe,
+}
+
+#[cfg(test)]
+impl Drop for PngSequentialSessionMutexProbeGuard<'_> {
+    fn drop(&mut self) {
+        self.probe
+            .sequential_session_mutex_holds
+            .fetch_sub(1, Ordering::SeqCst);
     }
 }
 

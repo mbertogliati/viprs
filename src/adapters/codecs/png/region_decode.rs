@@ -210,6 +210,8 @@ fn decode_png_sequential_session_into<F: BandFormat>(
     let bands = session.bands as usize;
 
     for out_y in 0..rows_to_decode {
+        #[cfg(test)]
+        let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter();
         session
             .reader
             .read_row(&mut session.row_scratch)
@@ -744,6 +746,7 @@ impl TileImageDecoder for PngCodec {
                     (Ok(()), Err(err)) => Err(err),
                 };
             }
+            session = Some(existing);
         }
 
         if region.x == 0
@@ -758,6 +761,10 @@ impl TileImageDecoder for PngCodec {
                 (Err(err), _) => Err(err),
                 (Ok(()), Err(err)) => Err(err),
             };
+        }
+
+        if session.is_some() {
+            self.store_sequential_path_session(session)?;
         }
 
         let mut reader = png_reader(BufReader::new(File::open(path)?))?;

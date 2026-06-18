@@ -692,8 +692,9 @@ fn decode_region_from_path_streams_sequential_full_width_strips() {
 fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let _guard = PROBE_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
     let codec = Arc::new(PngCodec::default());
-    // Use a larger image (256×256) so row decode takes long enough for two threads
-    // to overlap, even on slow CI runners with limited parallelism.
+    // Prime a reusable sequential session, then race a matching strip decode against
+    // an unrelated region read while the probe verifies row decode starts only after
+    // the session mutex has been released.
     let pixels: Vec<u8> = (0u8..=255).cycle().take(256 * 256 * 3).collect();
     let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
@@ -712,9 +713,7 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let partial = Region::new(32, 32, 128, 96);
     let expected_sequential = clamped_region_pixels_u8(&eager, sequential);
     let expected_partial = clamped_region_pixels_u8(&eager, partial);
-    // 10ms per-row delay ensures each decode takes ~640ms (64 rows × 10ms),
-    // giving ample time for both threads to be active simultaneously.
-    let _probe = PngRowDecodeProbeReset::enable(Duration::from_millis(10));
+    let _probe = PngRowDecodeProbeReset::enable(Duration::ZERO);
     let start = Arc::new(Barrier::new(3));
 
     let sequential_thread = {
@@ -755,9 +754,13 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     assert_eq!(sequential_output, expected_sequential);
     assert_eq!(partial_output, expected_partial);
     assert!(
-        PNG_ROW_DECODE_PROBE.max_active() >= 2,
-        "expected concurrent path decode rows without session-mutex serialization, saw max concurrency {}",
-        PNG_ROW_DECODE_PROBE.max_active()
+        PNG_ROW_DECODE_PROBE.total_rows() > 0,
+        "expected the probe to observe row decodes during path-region reads"
+    );
+    assert_eq!(
+        PNG_ROW_DECODE_PROBE.rows_while_sequential_session_mutex_held(),
+        0,
+        "row decode started while the sequential path session mutex was still held"
     );
 }
 
