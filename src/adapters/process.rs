@@ -159,8 +159,7 @@ where
     check_cancelled(process_opts.cancel_token.as_ref())?;
 
     let load_options = LoadOptions::default();
-    let (decoded, input_format) =
-        ForeignRegistry::shared().load_from_memory_with_options(input, &load_options)?;
+    let (decoded, input_format) = decode_as_u8(input, &load_options)?;
     process_opts
         .limits
         .validate_u8_image(decoded.width(), decoded.height(), decoded.bands())?;
@@ -231,8 +230,7 @@ where
 
     // Decode input via the format registry.
     let load_options = LoadOptions::default();
-    let (decoded, input_format) =
-        ForeignRegistry::shared().load_from_memory_with_options(input, &load_options)?;
+    let (decoded, input_format) = decode_as_u8(input, &load_options)?;
     process_opts
         .limits
         .validate_u8_image(decoded.width(), decoded.height(), decoded.bands())?;
@@ -383,6 +381,44 @@ impl EncodeOptions {
             Self::Bmp => "bmp",
         }
     }
+}
+
+/// Decode input bytes to `Image<U8>`, handling formats that only support higher
+/// bit-depth (e.g. EXR → F32 → U8 cast).
+fn decode_as_u8(input: &[u8], opts: &LoadOptions) -> Result<(Image<U8>, &'static str), ViprsError> {
+    let registry = ForeignRegistry::shared();
+
+    // Try U8 decode first (most formats support it).
+    match registry.load_from_memory_as_with_options::<U8>(input, opts) {
+        Ok(result) => return Ok(result),
+        Err(ViprsError::Exr(_)) => {}
+        Err(other) => return Err(other),
+    }
+
+    // EXR only supports F32 decode — decode as F32 then cast to U8.
+    #[cfg(feature = "exr")]
+    {
+        let (f32_image, format_name) =
+            registry.load_from_memory_as_with_options::<F32>(input, opts)?;
+        let u8_pixels: Vec<u8> = f32_image
+            .pixels()
+            .iter()
+            .map(|sample| (sample.clamp(0.0, 1.0) * 255.0).round() as u8)
+            .collect();
+        let image = Image::<U8>::from_buffer(
+            f32_image.width(),
+            f32_image.height(),
+            f32_image.bands(),
+            u8_pixels,
+        )?
+        .with_metadata(f32_image.metadata().clone());
+        return Ok((image, format_name));
+    }
+
+    #[cfg(not(feature = "exr"))]
+    Err(ViprsError::Codec(
+        "foreign: no decoder matched in-memory input".into(),
+    ))
 }
 
 #[cfg(feature = "jpeg")]
