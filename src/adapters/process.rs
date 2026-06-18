@@ -564,18 +564,14 @@ mod tests {
     #[cfg(feature = "exr")]
     use crate::{
         adapters::codecs::ExrCodec,
-        domain::{
-            codec_options::SaveOptions,
-            format::{F32, U8},
-            image::Image,
-        },
-        ports::codec::ImageDecoder,
+        domain::{codec_options::SaveOptions, format::F32},
     };
     #[cfg(feature = "png")]
+    use crate::{adapters::codecs::PngCodec, ports::codec::ImageEncoder};
+    #[cfg(any(feature = "exr", feature = "png"))]
     use crate::{
-        adapters::codecs::PngCodec,
         domain::{format::U8, image::Image},
-        ports::codec::{ImageDecoder, ImageEncoder},
+        ports::codec::ImageDecoder,
     };
 
     #[cfg(feature = "png")]
