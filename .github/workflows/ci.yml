@@ -84,7 +84,7 @@ jobs:
 
   test-and-coverage:
     name: "Tests + Coverage (all codecs, ≥90%)"
-    needs: [lint]
+    needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
