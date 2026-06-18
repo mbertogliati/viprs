@@ -14,21 +14,21 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # Features for containerless CI jobs. Uses only features that compile cleanly
-  # without native C libraries. The full feature set (with native codec bindings)
-  # is validated in container-based jobs (build-xtask).
+  # Features for containerless CI jobs (no native C libraries needed).
   RUST_FEATURES: "--features default,simd-pulp"
   # Source-built libs live in /usr/local/lib (container jobs only)
   PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+  # Common container build tools — avoids duplicating the apt-get list in every job.
+  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev"
 
 permissions:
   contents: read
 
 jobs:
-  # ═══ Layer 1: independent checks — run in parallel ═══════════════════════════
+  # ═══ Layer 1: fast checks — all run in parallel, no deps ═════════════════════
 
   lint:
-    name: "Lint — fmt + clippy"
+    name: "Lint (fmt + clippy)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +42,7 @@ jobs:
         run: make clippy FEATURES="${{ env.RUST_FEATURES }}"
 
   build:
-    name: "Build — compile check"
+    name: "Build (compile check)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     steps:
@@ -52,7 +52,7 @@ jobs:
         run: make build FEATURES="${{ env.RUST_FEATURES }}"
 
   security:
-    name: "Security — audit + deny"
+    name: "Security (audit + deny)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     steps:
@@ -64,11 +64,14 @@ jobs:
         env:
           RUSTUP_TOOLCHAIN: stable
 
-  # ═══ Layer 2: depend on lint + build ═════════════════════════════════════════
+  # ═══ Layer 2: tests + coverage in a single instrumented pass ═════════════════
+  # Replaces the old test-all → coverage chain (two full compilations from zero).
+  # cargo llvm-cov with --doctests runs lib + integration + doc tests in one go
+  # and produces coverage data. One compilation, one execution, two results.
 
-  test:
-    name: "Tests — unit (containerless)"
-    needs: [lint, build]
+  test-unit:
+    name: "Unit tests (no codecs)"
+    needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     steps:
@@ -79,27 +82,35 @@ jobs:
       - name: Run unit tests
         run: make test FEATURES="${{ env.RUST_FEATURES }}"
 
-  test-all:
-    name: "Tests — all codecs (container)"
-    needs: [lint, build]
+  test-and-coverage:
+    name: "Tests + Coverage (all codecs, ≥90%)"
+    needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs libclang-dev
+        run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4
         with:
           lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
-      - name: Run ALL tests (unit + integration + functional + doctests)
-        run: make test-all
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Run all tests with coverage instrumentation
+        run: make coverage
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## Tests + Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "Ran: unit + integration + doc tests (all codecs)" >> $GITHUB_STEP_SUMMARY
+          echo "Target: ≥90% line coverage on \`ops/\` and \`codecs/\`" >> $GITHUB_STEP_SUMMARY
 
   docs:
     name: "Documentation"
-    needs: [lint, build]
+    needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -109,37 +120,11 @@ jobs:
       - name: Build docs (deny warnings)
         run: make doc FEATURES="${{ env.RUST_FEATURES }}"
 
-  # ═══ Layer 3: post-validation (informational) ════════════════════════════════
-
-  coverage:
-    name: "Coverage (≥90%)"
-    needs: [test-all]
-    if: "!github.event.pull_request.draft"
-    runs-on: ubuntu-latest
-    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
-    continue-on-error: true
-    steps:
-      - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs libclang-dev
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: "1.96.0"
-          components: llvm-tools-preview
-      - uses: taiki-e/install-action@cargo-llvm-cov
-      - name: Run coverage (all tests, all features)
-        run: make coverage
-      - name: Generate summary
-        if: always()
-        run: |
-          echo "## Coverage" >> $GITHUB_STEP_SUMMARY
-          echo "Target: ≥90% line coverage on \`ops/\` and \`codecs/\`" >> $GITHUB_STEP_SUMMARY
+  # ═══ Layer 3: benchmarks — run in parallel with Layer 2 ══════════════════════
 
   benchmarks:
     name: "Benchmarks (${{ matrix.arch }})"
-    needs: [test-all]
+    needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
     continue-on-error: true
@@ -178,8 +163,8 @@ jobs:
           key: criterion-baseline-${{ matrix.arch }}-main
 
   build-xtask:
-    name: "Build xtask (container)"
-    needs: [lint, build]
+    name: "Build benchmark tooling"
+    needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
@@ -199,8 +184,8 @@ jobs:
           path: target/release/xtask
 
   bench-vs-libvips:
-    name: "E2E vs libvips (${{ matrix.arch }})"
-    needs: [test-all, build-xtask]
+    name: "Performance: viprs vs libvips (${{ matrix.arch }})"
+    needs: [build-xtask]
     if: "!github.event.pull_request.draft"
     continue-on-error: true
     runs-on: ${{ matrix.runner }}
@@ -240,11 +225,11 @@ jobs:
           name: bench-vs-libvips-${{ matrix.arch }}
           path: /tmp/bench-results/
 
-  # ═══ Layer 4: gate — the ONLY required check in Branch Rules ═════════════════
+  # ═══ Status gate — the ONLY required check in Branch Rules ═══════════════════
 
   status-gate:
     name: "CI passed"
-    needs: [lint, build, security, test, test-all, docs]
+    needs: [lint, build, security, test-unit, test-and-coverage, docs]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -252,6 +237,8 @@ jobs:
         run: |
           results='${{ toJSON(needs.*.result) }}'
           echo "Job results: $results"
+          # docs has continue-on-error so its result is always "success".
+          # Filter out "skipped" (draft PRs) — only fail on failure/cancelled.
           if echo "$results" | grep -qE '"failure"|"cancelled"'; then
             echo "❌ One or more required checks failed." >> $GITHUB_STEP_SUMMARY
             echo "Results: $results" >> $GITHUB_STEP_SUMMARY
