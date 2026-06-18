@@ -161,7 +161,11 @@ impl PngCodec {
             .map_err(|_| ViprsError::Codec("png: sequential path session mutex poisoned".into()))?;
         #[cfg(test)]
         let _session_mutex_probe = PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex();
-        Ok(std::mem::take(&mut *shared))
+        let session = std::mem::take(&mut *shared);
+        #[cfg(test)]
+        drop(_session_mutex_probe);
+        drop(shared);
+        Ok(session)
     }
 
     pub(super) fn store_sequential_path_session(
@@ -175,6 +179,9 @@ impl PngCodec {
         #[cfg(test)]
         let _session_mutex_probe = PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex();
         *shared = session;
+        #[cfg(test)]
+        drop(_session_mutex_probe);
+        drop(shared);
         Ok(())
     }
 }
