@@ -378,16 +378,18 @@ impl PipelineArena {
             in_edges[v].push((u, slot));
         }
 
-        // Cache only helps when the node sits on a DAG boundary where a tile may be reused
-        // within one pipeline execution. Linear chains pay the lock/Arc cost without any
-        // intra-run reuse, so requested cache on nodes with exactly one input and one output
-        // is ignored here.
+        // Cache helps in two cases:
+        // - DAG boundaries, where tiles can be reused within one pipeline execution.
+        // - Output sinks, where repeated full-frame runs can reuse the final tile set.
+        //
+        // Interior linear nodes still pay the lock/Arc cost without gaining reuse, so a
+        // requested cache on a node with exactly one input and one output remains disabled.
         let node_cache_enabled: Vec<bool> = self
             .nodes
             .iter()
             .enumerate()
             .map(|(idx, node)| {
-                node.cache_enabled && (out_degree[idx] > 1 || in_edges[idx].len() > 1)
+                node.cache_enabled && (out_degree[idx] != 1 || in_edges[idx].len() > 1)
             })
             .collect();
 
