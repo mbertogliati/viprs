@@ -40,6 +40,8 @@ jobs:
         run: make fmt
       - name: Clippy
         run: make clippy FEATURES="${{ env.RUST_FEATURES }}"
+      - name: Build docs (deny warnings)
+        run: make doc FEATURES="${{ env.RUST_FEATURES }}"
 
   security:
     name: "Security (audit + deny)"
@@ -98,18 +100,6 @@ jobs:
           echo "Ran: unit + integration + doc tests (all codecs)" >> $GITHUB_STEP_SUMMARY
           echo "Target: ≥90% line coverage on \`ops/\` and \`codecs/\`" >> $GITHUB_STEP_SUMMARY
 
-  docs:
-    name: "Documentation"
-    needs: [lint]
-    if: "!github.event.pull_request.draft"
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-toolchain
-      - name: Build docs (deny warnings)
-        run: make doc FEATURES="${{ env.RUST_FEATURES }}"
-
   # ═══ Layer 3: benchmarks — run in parallel with Layer 2 ══════════════════════
 
   benchmarks:
@@ -153,12 +143,19 @@ jobs:
           key: criterion-baseline-${{ matrix.arch }}-main
 
   build-xtask:
-    name: "Build benchmark tooling"
+    name: "Build benchmark tooling (${{ matrix.arch }})"
     needs: [lint]
     if: "!github.event.pull_request.draft"
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     continue-on-error: true
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            runner: ubuntu-latest
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm
@@ -170,7 +167,7 @@ jobs:
         run: make xtask
       - uses: actions/upload-artifact@v4
         with:
-          name: xtask
+          name: xtask-${{ matrix.arch }}
           path: target/release/xtask
 
   bench-vs-libvips:
@@ -196,17 +193,26 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
+      - name: Download pre-built xtask
+        uses: actions/download-artifact@v4
+        with:
+          name: xtask-${{ matrix.arch }}
+          path: target/release
+      - name: Make xtask executable
+        run: chmod +x target/release/xtask
       - name: Verify libvips available
         run: pkg-config --modversion vips || echo "libvips not found in container"
       - name: Build libvips runner
         run: make -C tools/bench-vs-libvips
-      - name: Build xtask
-        run: cargo build --release -p xtask
       - name: Run E2E benchmark suite
+        env:
+          XTASK_BIN: ./target/release/xtask
         run: ./.github/scripts/bench-vs-libvips.sh
       - name: Check ratios (fail on >1.05)
         run: ./.github/scripts/check-ratios.sh
       - name: Web-service workload simulation
+        env:
+          XTASK_BIN: ./target/release/xtask
         run: ./.github/scripts/web-bench.sh
       - name: Upload results
         if: always()
@@ -219,7 +225,7 @@ jobs:
 
   status-gate:
     name: "CI passed"
-    needs: [lint, security, test-unit, test-and-coverage, docs]
+    needs: [lint, security, test-unit, test-and-coverage]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -248,7 +254,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: xtask
+          name: xtask-x86_64
           path: ./xtask-artifact
       - name: Create Dockerfile for repack
         run: |
