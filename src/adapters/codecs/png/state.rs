@@ -68,6 +68,11 @@ impl Default for PngCodec {
 }
 
 impl PngCodec {
+    #[cfg(test)]
+    pub(super) fn probe_id(&self) -> usize {
+        self as *const Self as usize
+    }
+
     pub(super) fn take_row_scratch(&self, row_len: usize) -> Result<Vec<u8>, ViprsError> {
         let mut shared = self
             .row_scratch
@@ -123,6 +128,8 @@ impl PngCodec {
             return Ok(raster);
         }
 
+        #[cfg(test)]
+        PNG_ROW_DECODE_PROBE.record_full_raster_decode_for(self.probe_id());
         let raster = Arc::new(decode()?);
         let mut cache = self
             .interlaced_region_cache
@@ -160,7 +167,8 @@ impl PngCodec {
             .lock()
             .map_err(|_| ViprsError::Codec("png: sequential path session mutex poisoned".into()))?;
         #[cfg(test)]
-        let _session_mutex_probe = PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex();
+        let _session_mutex_probe =
+            PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex(self.probe_id());
         let session = std::mem::take(&mut *shared);
         #[cfg(test)]
         drop(_session_mutex_probe);
@@ -177,7 +185,8 @@ impl PngCodec {
             .lock()
             .map_err(|_| ViprsError::Codec("png: sequential path session mutex poisoned".into()))?;
         #[cfg(test)]
-        let _session_mutex_probe = PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex();
+        let _session_mutex_probe =
+            PNG_ROW_DECODE_PROBE.hold_sequential_session_mutex(self.probe_id());
         *shared = session;
         #[cfg(test)]
         drop(_session_mutex_probe);
@@ -190,6 +199,7 @@ impl PngCodec {
 #[derive(Default)]
 pub(super) struct PngRowDecodeProbe {
     enabled: AtomicBool,
+    target_codec: AtomicUsize,
     active: AtomicUsize,
     max_active: AtomicUsize,
     full_raster_decodes: AtomicUsize,
@@ -205,7 +215,7 @@ pub(super) static PNG_ROW_DECODE_PROBE: LazyLock<PngRowDecodeProbe> =
 
 #[cfg(test)]
 impl PngRowDecodeProbe {
-    pub(super) fn enable(&self, row_delay: Duration) {
+    pub(super) fn enable(&self, target_codec: usize, row_delay: Duration) {
         self.active.store(0, Ordering::SeqCst);
         self.max_active.store(0, Ordering::SeqCst);
         self.full_raster_decodes.store(0, Ordering::SeqCst);
@@ -214,6 +224,7 @@ impl PngRowDecodeProbe {
             .store(0, Ordering::SeqCst);
         self.rows_while_sequential_session_mutex_held
             .store(0, Ordering::SeqCst);
+        self.target_codec.store(target_codec, Ordering::SeqCst);
         self.row_delay_ms
             .store(row_delay.as_millis() as u64, Ordering::SeqCst);
         self.enabled.store(true, Ordering::SeqCst);
@@ -229,6 +240,7 @@ impl PngRowDecodeProbe {
             .store(0, Ordering::SeqCst);
         self.rows_while_sequential_session_mutex_held
             .store(0, Ordering::SeqCst);
+        self.target_codec.store(0, Ordering::SeqCst);
         self.row_delay_ms.store(0, Ordering::SeqCst);
     }
 
@@ -249,14 +261,18 @@ impl PngRowDecodeProbe {
             .load(Ordering::SeqCst)
     }
 
-    pub(super) fn record_full_raster_decode(&self) {
-        if self.enabled.load(Ordering::SeqCst) {
+    fn matches_target(&self, codec_id: usize) -> bool {
+        self.enabled.load(Ordering::SeqCst) && self.target_codec.load(Ordering::SeqCst) == codec_id
+    }
+
+    pub(super) fn record_full_raster_decode_for(&self, codec_id: usize) {
+        if self.matches_target(codec_id) {
             self.full_raster_decodes.fetch_add(1, Ordering::SeqCst);
         }
     }
 
-    pub(super) fn enter(&self) -> Option<PngRowDecodeProbeGuard<'_>> {
-        if !self.enabled.load(Ordering::SeqCst) {
+    pub(super) fn enter_for(&self, codec_id: usize) -> Option<PngRowDecodeProbeGuard<'_>> {
+        if !self.matches_target(codec_id) {
             return None;
         }
         if self.sequential_session_mutex_holds.load(Ordering::SeqCst) > 0 {
@@ -286,8 +302,9 @@ impl PngRowDecodeProbe {
 
     pub(super) fn hold_sequential_session_mutex(
         &self,
+        codec_id: usize,
     ) -> Option<PngSequentialSessionMutexProbeGuard<'_>> {
-        if !self.enabled.load(Ordering::SeqCst) {
+        if !self.matches_target(codec_id) {
             return None;
         }
         self.sequential_session_mutex_holds

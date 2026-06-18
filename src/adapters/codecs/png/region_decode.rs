@@ -106,6 +106,7 @@ fn decode_png_region_rows<F: BandFormat, R>(
     row: &mut [u8],
     bit_depth: BitDepth,
     bands: u32,
+    #[cfg(test)] probe_codec_id: usize,
     region: Region,
     output: &mut [u8],
 ) -> Result<(), ViprsError>
@@ -126,7 +127,7 @@ where
 
     for source_y in 0..=max_source_y {
         #[cfg(test)]
-        let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter();
+        let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter_for(probe_codec_id);
         reader
             .read_row(row)
             .map_err(|e| ViprsError::Codec(e.to_string()))?
@@ -182,6 +183,7 @@ fn copy_png_full_width_row_u16(
 }
 
 fn decode_png_sequential_session_into<F: BandFormat>(
+    #[cfg(test)] probe_codec_id: usize,
     session: &mut PngSequentialPathSession,
     region: Region,
     output: &mut [u8],
@@ -211,7 +213,7 @@ fn decode_png_sequential_session_into<F: BandFormat>(
 
     for out_y in 0..rows_to_decode {
         #[cfg(test)]
-        let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter();
+        let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter_for(probe_codec_id);
         session
             .reader
             .read_row(&mut session.row_scratch)
@@ -287,8 +289,6 @@ pub(super) fn decode_png_full_raster_with_png_crate<R>(
 where
     R: BufRead + Seek,
 {
-    #[cfg(test)]
-    PNG_ROW_DECODE_PROBE.record_full_raster_decode();
     let mut reader = png_decoder(src)
         .read_info()
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
@@ -363,6 +363,7 @@ fn decode_png_region_interlaced_rows<F: BandFormat, R>(
     reader: &mut png::Reader<R>,
     bit_depth: BitDepth,
     bands: u32,
+    #[cfg(test)] probe_codec_id: usize,
     region: Region,
     output: &mut [u8],
 ) -> Result<(), ViprsError>
@@ -392,7 +393,7 @@ where
                 for pass_row in 0..pass_height {
                     let y = y_start + pass_row * y_step;
                     #[cfg(test)]
-                    let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter();
+                    let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter_for(probe_codec_id);
                     let row = reader
                         .next_interlaced_row()
                         .map_err(|e| ViprsError::Codec(e.to_string()))?
@@ -454,7 +455,7 @@ where
                 for pass_row in 0..pass_height {
                     let y = y_start + pass_row * y_step;
                     #[cfg(test)]
-                    let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter();
+                    let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter_for(probe_codec_id);
                     let row = reader
                         .next_interlaced_row()
                         .map_err(|e| ViprsError::Codec(e.to_string()))?
@@ -699,6 +700,8 @@ impl TileImageDecoder for PngCodec {
                 &mut row_scratch[..],
                 bit_depth,
                 bands,
+                #[cfg(test)]
+                self.probe_id(),
                 region,
                 output,
             );
@@ -741,7 +744,13 @@ impl TileImageDecoder for PngCodec {
                 && region.y >= 0
                 && region.y as u32 == existing.next_source_y
             {
-                let result = decode_png_sequential_session_into::<F>(&mut existing, region, output);
+                let result = decode_png_sequential_session_into::<F>(
+                    #[cfg(test)]
+                    self.probe_id(),
+                    &mut existing,
+                    region,
+                    output,
+                );
                 let store_result = self.store_sequential_path_session(Some(existing));
                 return match (result, store_result) {
                     (Ok(()), Ok(())) => Ok(()),
@@ -757,7 +766,13 @@ impl TileImageDecoder for PngCodec {
             && let Some(mut session) = open_png_sequential_path_session(path)?
             && region.width == session.width
         {
-            let result = decode_png_sequential_session_into::<F>(&mut session, region, output);
+            let result = decode_png_sequential_session_into::<F>(
+                #[cfg(test)]
+                self.probe_id(),
+                &mut session,
+                region,
+                output,
+            );
             let store_result = self.store_sequential_path_session(Some(session));
             return match (result, store_result) {
                 (Ok(()), Ok(())) => Ok(()),
@@ -791,6 +806,8 @@ impl TileImageDecoder for PngCodec {
                 &mut row_scratch[..],
                 bit_depth,
                 bands,
+                #[cfg(test)]
+                self.probe_id(),
                 region,
                 output,
             );

@@ -95,8 +95,8 @@ fn indexed_png_bytes() -> Vec<u8> {
 struct PngRowDecodeProbeReset;
 
 impl PngRowDecodeProbeReset {
-    fn enable(row_delay: Duration) -> Self {
-        PNG_ROW_DECODE_PROBE.enable(row_delay);
+    fn enable(codec: &PngCodec, row_delay: Duration) -> Self {
+        PNG_ROW_DECODE_PROBE.enable(codec.probe_id(), row_delay);
         Self
     }
 }
@@ -750,7 +750,7 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let partial = Region::new(32, 32, 128, 96);
     let expected_sequential = clamped_region_pixels_u8(&eager, sequential);
     let expected_partial = clamped_region_pixels_u8(&eager, partial);
-    let _probe = PngRowDecodeProbeReset::enable(Duration::ZERO);
+    let _probe = PngRowDecodeProbeReset::enable(&codec, Duration::ZERO);
     let start = Arc::new(Barrier::new(3));
 
     let sequential_thread = {
@@ -907,7 +907,7 @@ fn decode_region_from_path_interlaced_png_reuses_eager_backing() {
     let bottom = Region::new(200, 210, 7, 8);
     let mut top_output = vec![0u8; top.pixel_count() * 3];
     let mut bottom_output = vec![0u8; bottom.pixel_count() * 3];
-    let _probe = PngRowDecodeProbeReset::enable(Duration::ZERO);
+    let _probe = PngRowDecodeProbeReset::enable(&codec, Duration::ZERO);
 
     codec
         .decode_region_from_path::<U8>(&path, &LoadOptions::default(), top, &mut top_output)
@@ -952,7 +952,7 @@ fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
     let right = Region::new(32, 0, 32, 64);
     let expected_left = clamped_region_pixels_u8(&image, left);
     let expected_right = clamped_region_pixels_u8(&image, right);
-    let _probe = PngRowDecodeProbeReset::enable(Duration::from_millis(1));
+    let _probe = PngRowDecodeProbeReset::enable(&codec, Duration::from_millis(1));
     let start = Arc::new(Barrier::new(3));
 
     let left_thread = {
