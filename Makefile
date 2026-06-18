@@ -77,11 +77,11 @@ audit:
 	$(CARGO) audit
 
 ## Full test suite with coverage instrumentation (≥90% on ops/ and codecs/).
-## Replaces the separate test-all target: runs --lib, --tests, and --doctests
-## in a single instrumented pass, so we compile once instead of twice.
+## Runs lib tests with coverage instrumentation.
+## --lib only (--doctests is incompatible with --lib in cargo-llvm-cov).
 ## Requires system libs for all codec features.
 coverage:
-	$(CARGO) llvm-cov --lib --doctests $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
