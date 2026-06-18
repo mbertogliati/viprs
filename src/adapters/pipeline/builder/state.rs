@@ -253,34 +253,6 @@ where
         + crate::domain::ops::resample::sample_conv::ToF64
         + crate::domain::ops::resample::sample_conv::FromF64,
 {
-    /// Creates an affine bridge that reports caller-supplied output dimensions.
-    pub fn new(
-        matrix: [f64; 4],
-        tx: f64,
-        ty: f64,
-        kernel: InterpolationKernel,
-        input_w: u32,
-        input_h: u32,
-        output_w: u32,
-        output_h: u32,
-        bands: u32,
-        demand_hint: DemandHint,
-    ) -> Result<Self, crate::domain::error::BuildError> {
-        Self::new_with_extend(
-            matrix,
-            tx,
-            ty,
-            kernel,
-            input_w,
-            input_h,
-            output_w,
-            output_h,
-            bands,
-            demand_hint,
-            crate::domain::ops::resample::affine::ExtendMode::Background(vec![0.0]),
-        )
-    }
-
     /// Creates an affine bridge that reports caller-supplied output dimensions and extend mode.
     pub fn new_with_extend(
         matrix: [f64; 4],

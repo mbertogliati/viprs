@@ -475,28 +475,6 @@ impl<Op: Flush> PipelineBuilder<Op> {
         )
     }
 
-    fn affine_backward_with_hint(
-        self,
-        matrix: [f64; 4],
-        tx: f64,
-        ty: f64,
-        output_w: u32,
-        output_h: u32,
-        kernel: InterpolationKernel,
-        demand_hint: DemandHint,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.affine_backward_with_extend_and_hint(
-            matrix,
-            tx,
-            ty,
-            output_w,
-            output_h,
-            kernel,
-            demand_hint,
-            crate::domain::ops::resample::affine::ExtendMode::Background(vec![0.0]),
-        )
-    }
-
     fn affine_backward_with_extend_and_hint(
         self,
         matrix: [f64; 4],
