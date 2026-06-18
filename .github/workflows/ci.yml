@@ -41,16 +41,6 @@ jobs:
       - name: Clippy
         run: make clippy FEATURES="${{ env.RUST_FEATURES }}"
 
-  build:
-    name: "Build (compile check)"
-    if: "!github.event.pull_request.draft"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-toolchain
-      - name: Compile library
-        run: make build FEATURES="${{ env.RUST_FEATURES }}"
-
   security:
     name: "Security (audit + deny)"
     if: "!github.event.pull_request.draft"
@@ -229,7 +219,7 @@ jobs:
 
   status-gate:
     name: "CI passed"
-    needs: [lint, build, security, test-unit, test-and-coverage, docs]
+    needs: [lint, security, test-unit, test-and-coverage, docs]
     if: always()
     runs-on: ubuntu-latest
     steps:
