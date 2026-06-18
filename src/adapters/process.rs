@@ -49,6 +49,8 @@ use crate::adapters::codecs::PngCodec;
 use crate::adapters::codecs::TiffCodec;
 #[cfg(feature = "webp")]
 use crate::adapters::codecs::WebpCodec;
+#[cfg(feature = "exr")]
+use crate::domain::{format::F32, image::AnimationFrame, ops::conversion::cast::CastSample};
 use crate::{
     adapters::codecs::registry::ForeignRegistry,
     domain::{
@@ -489,7 +491,7 @@ const fn encode_jp2k(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 
 #[cfg(feature = "exr")]
 fn encode_exr(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
-    ExrCodec.encode_with_options(image, options)
+    ExrCodec.encode_with_options(&convert_u8_image_to_f32(image)?, options)
 }
 
 #[cfg(not(feature = "exr"))]
@@ -498,6 +500,47 @@ const fn encode_exr(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8
         feature: "process encode: exr",
         details: "enable Cargo feature `exr` to use EncodeOptions::Exr",
     })
+}
+
+#[cfg(feature = "exr")]
+fn convert_u8_image_to_f32(image: &Image<U8>) -> Result<Image<F32>, ViprsError> {
+    let pixels = image
+        .pixels()
+        .iter()
+        .copied()
+        .map(|sample| sample.cast_to())
+        .collect();
+
+    let mut converted =
+        Image::<F32>::from_buffer(image.width(), image.height(), image.bands(), pixels)?
+            .with_metadata(image.metadata().clone());
+
+    if let Some(animation_frames) = image.animation_frames() {
+        let converted_frames = animation_frames
+            .iter()
+            .map(convert_u8_animation_frame_to_f32)
+            .collect::<Result<Vec<_>, _>>()?;
+        converted = converted.with_animation_frames(converted_frames);
+    } else if let Some(frames) = image.frames() {
+        let converted_frames = frames
+            .iter()
+            .map(convert_u8_image_to_f32)
+            .collect::<Result<Vec<_>, _>>()?;
+        converted = converted.with_frames(converted_frames);
+    }
+
+    Ok(converted)
+}
+
+#[cfg(feature = "exr")]
+fn convert_u8_animation_frame_to_f32(
+    frame: &AnimationFrame<U8>,
+) -> Result<AnimationFrame<F32>, ViprsError> {
+    Ok(AnimationFrame::new(
+        convert_u8_image_to_f32(frame.image())?,
+        frame.delay_ms(),
+        frame.disposal(),
+    ))
 }
 
 #[cfg(feature = "bmp")]
@@ -518,6 +561,16 @@ mod tests {
     use super::{EncodeOptions, ProcessOptions, process};
     use crate::domain::{cancel::CancellationToken, error::ViprsError};
 
+    #[cfg(feature = "exr")]
+    use crate::{
+        adapters::codecs::ExrCodec,
+        domain::{
+            codec_options::SaveOptions,
+            format::{F32, U8},
+            image::Image,
+        },
+        ports::codec::ImageDecoder,
+    };
     #[cfg(feature = "png")]
     use crate::{
         adapters::codecs::PngCodec,
@@ -567,5 +620,16 @@ mod tests {
         .unwrap_err();
 
         assert!(matches!(err, ViprsError::Cancelled));
+    }
+
+    #[cfg(feature = "exr")]
+    #[test]
+    fn exr_encode_auto_casts_u8_input_to_f32() {
+        let image = Image::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
+
+        let encoded = super::encode_exr(&image, &SaveOptions::default()).unwrap();
+        let decoded = ExrCodec.decode::<F32>(&encoded).unwrap();
+
+        assert_eq!(decoded.pixels(), &[0.0, 1.0]);
     }
 }
