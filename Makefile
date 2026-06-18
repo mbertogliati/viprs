@@ -10,7 +10,7 @@
 #   make bench-vs BENCH_ITER=10  — quick smoke test
 
 CARGO := cargo
-RUSTFLAGS_CI := -Dwarnings -Adead_code
+RUSTFLAGS_CI := -Dwarnings
 
 # Features that require system libraries (libjxl, libheif, libjpeg-turbo, etc.)
 # CI runs inside a container with all deps; local devs enable what they have installed.
@@ -41,14 +41,18 @@ endif
 ## but produce cross-platform false positives (x86 SIMD code not visible on ARM dev machines).
 ## Allow nursery entirely and specific pedantic lints that are architecture-dependent.
 clippy:
-	RUSTFLAGS="-A dead_code" $(CARGO) clippy --lib $(FEATURES) -- \
+	$(CARGO) clippy --lib $(FEATURES) -- \
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used \
 		-A clippy::nursery -A clippy::cast_ptr_alignment
 
-## Compile check (lib mandatory; xtask best-effort — requires system codec libs)
+## Compile check (lib mandatory; xtask mandatory in container, best-effort locally)
 build:
 	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) check --lib $(FEATURES)
-	$(CARGO) check -p xtask || echo "xtask check skipped (missing system libs)"
+ifdef CI
+	$(CARGO) check -p xtask
+else
+	$(CARGO) check -p xtask || echo "⚠ xtask check skipped locally (missing system libs — CI will catch this)"
+endif
 
 ## Unit tests only (containerless CI — no system libs)
 test:

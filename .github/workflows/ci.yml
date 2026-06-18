@@ -102,14 +102,13 @@ jobs:
     needs: [lint, build]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-toolchain
       - name: Build docs (deny warnings)
         run: make doc FEATURES="${{ env.RUST_FEATURES }}"
 
-  # ═══ Layer 3: post-validation (informational) ════════════════════════════════
+  # ═══ Layer 3: quality enforcement ═════════════════════════════════════════════
 
   coverage:
     name: "Coverage (≥90%)"
@@ -117,7 +116,6 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
-    continue-on-error: true
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm git git-lfs libclang-dev
@@ -142,7 +140,6 @@ jobs:
     needs: [test-all]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
-    continue-on-error: true
     strategy:
       matrix:
         include:
@@ -183,7 +180,6 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
-    continue-on-error: true
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm
@@ -202,7 +198,6 @@ jobs:
     name: "E2E vs libvips (${{ matrix.arch }})"
     needs: [test-all, build-xtask]
     if: "!github.event.pull_request.draft"
-    continue-on-error: true
     runs-on: ${{ matrix.runner }}
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     strategy:
@@ -222,7 +217,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - name: Verify libvips available
-        run: pkg-config --modversion vips || echo "libvips not found in container"
+        run: pkg-config --modversion vips
       - name: Build libvips runner
         run: make -C tools/bench-vs-libvips
       - name: Build xtask
@@ -244,7 +239,7 @@ jobs:
 
   status-gate:
     name: "CI passed"
-    needs: [lint, build, security, test, test-all, docs]
+    needs: [lint, build, security, test, test-all, docs, coverage, benchmarks, build-xtask, bench-vs-libvips]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -252,6 +247,7 @@ jobs:
         run: |
           results='${{ toJSON(needs.*.result) }}'
           echo "Job results: $results"
+          # 'skipped' is acceptable (draft PRs skip all jobs); 'success' is required otherwise
           if echo "$results" | grep -qE '"failure"|"cancelled"'; then
             echo "❌ One or more required checks failed." >> $GITHUB_STEP_SUMMARY
             echo "Results: $results" >> $GITHUB_STEP_SUMMARY

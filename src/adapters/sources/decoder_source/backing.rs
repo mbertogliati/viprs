@@ -308,6 +308,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
 }
 
 impl<'a, D: ImageDecoder, F: BandFormat> DecoderSource<'a, D, F, RandomAccess> {
+    #[cfg(feature = "jpeg")]
     pub(in crate::adapters) fn without_deferred_thumbnail_materialization(mut self) -> Self {
         self.materialize_deferred_thumbnail_hints = false;
         self
