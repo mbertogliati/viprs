@@ -109,7 +109,9 @@ fn resize_channel_4x_manual_lanczos3(input: Vec<u8>, width: u32, height: u32) ->
 
 #[test]
 fn resize_nearest_small_image_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     assert_resize_matches_libvips(
         "smooth_gradient_nearest_2x",
@@ -120,7 +122,9 @@ fn resize_nearest_small_image_libvips() {
 
 #[test]
 fn resize_bilinear_small_image_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     assert_resize_matches_libvips(
         "smooth_gradient_linear_0_75x",
@@ -131,7 +135,9 @@ fn resize_bilinear_small_image_libvips() {
 
 #[test]
 fn resize_bilinear_small_image_libvips_with_cache() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 4;
     let height = 4;
@@ -168,7 +174,9 @@ fn resize_bilinear_small_image_libvips_with_cache() {
 
 #[test]
 fn resize_bicubic_small_image_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     assert_resize_matches_libvips(
         "smooth_gradient_cubic_0_75x",
@@ -179,7 +187,9 @@ fn resize_bicubic_small_image_libvips() {
 
 #[test]
 fn resize_rgb_4x_downscale_psnr_against_libvips_default_gap() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 8;
@@ -222,7 +232,9 @@ fn resize_rgb_4x_downscale_psnr_against_libvips_default_gap() {
 
 #[test]
 fn reduce_factor2_lanczos3_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 8;
@@ -290,21 +302,27 @@ fn assert_axis_reduce_matches_libvips(
 
 #[test]
 fn reduceh_factor1_5_bicubic_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     assert_axis_reduce_matches_libvips("reduceh_libvips", "grayscale_factor1_5_cubic", 8, 6, true);
 }
 
 #[test]
 fn reducev_factor1_5_bicubic_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     assert_axis_reduce_matches_libvips("reducev_libvips", "grayscale_factor1_5_cubic", 6, 8, false);
 }
 
 #[test]
 fn subsample_non_point_3x2_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 9;
     let height = 8;

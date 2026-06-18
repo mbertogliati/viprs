@@ -17,9 +17,9 @@
 // which matches our pipeline's MemorySink output. Both U8 and U16 comparisons
 // are therefore byte-for-byte exact for PNG (lossless).
 //
-// JPEG comparisons use per-channel tolerance (±1) because both pipelines go through
-// libjpeg-turbo, but libvips and viprs still differ slightly in wrapper choices
-// around metadata/orientation handling.
+// JPEG comparisons use per-channel tolerance (±1) because the golden comes from a
+// live libvips decode and JPEG chroma reconstruction can still differ by a final
+// rounding step across libjpeg-turbo wrappers and builds.
 //
 // NOTE: DecoderSource::read_region is not used here because it is currently a
 // todo!() placeholder (see B-001). Tests decode with the codec directly and wrap
@@ -215,9 +215,9 @@ fn png_rotate90_matches_vips() {
 ///
 /// vips command: vips invert sample.jpg tools/.fixture-work/jinv.v && vips rawsave tools/.fixture-work/jinv.v jpeg_invert.bin
 ///
-/// Tolerance ±1 per channel: both pipelines use libjpeg-turbo, but the wrappers are independent.
-/// This fixture should stay within a single quantized sample so larger deltas
-/// surface meaningful regressions instead of being masked.
+/// Tolerance ±1 per channel: this is a live libvips golden, not a handcrafted
+/// fixture, and the remaining variance should be limited to last-step JPEG
+/// rounding. Larger deltas indicate a real decoder/parity regression.
 #[test]
 #[cfg(feature = "jpeg")]
 fn jpeg_invert_matches_vips() {

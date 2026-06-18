@@ -23,8 +23,8 @@ pub(crate) use std::num::NonZeroUsize;
 pub(crate) use viprs::domain::ops::resample::thumbnail::ThumbnailTarget;
 pub(crate) use viprs::ports::source::ImageSource;
 
-pub(crate) fn ensure_vips() {
-    golden::require_vips();
+pub(crate) fn skip_without_vips() -> bool {
+    golden::skip_without_vips()
 }
 
 pub(crate) fn rgb_source(width: u32, height: u32) -> Vec<u8> {

@@ -4,7 +4,9 @@ use super::support_inputs::*;
 
 #[test]
 fn avg_reducer_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "rgb_gradient";
     let source = rgb_source(WIDTH, HEIGHT);
@@ -23,7 +25,9 @@ fn avg_reducer_libvips() {
 
 #[test]
 fn deviate_reducer_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "rgb_gradient";
     let source = rgb_source(WIDTH, HEIGHT);
@@ -42,7 +46,9 @@ fn deviate_reducer_libvips() {
 
 #[test]
 fn hist_find_reducer_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "rgb_gradient";
     let source = rgb_source(WIDTH, HEIGHT);
@@ -68,7 +74,9 @@ fn hist_find_reducer_libvips() {
 
 #[test]
 fn colourspace_srgb_to_lab_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "srgb_to_lab_rgb_gradient";
     let source = rgb_source(WIDTH, HEIGHT);
@@ -98,7 +106,9 @@ fn colourspace_srgb_to_lab_libvips() {
 
 #[test]
 fn colourspace_lab_to_srgb_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "lab_to_srgb_known_colours";
     let source = colour_lab_source();
@@ -128,7 +138,9 @@ fn colourspace_lab_to_srgb_libvips() {
 
 #[test]
 fn colourspace_srgb_to_xyz_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "srgb_to_xyz_rgb_gradient";
     let source = rgb_source(WIDTH, HEIGHT);
@@ -158,7 +170,9 @@ fn colourspace_srgb_to_xyz_libvips() {
 
 #[test]
 fn colourspace_xyz_to_srgb_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "xyz_to_srgb_known_colours";
     let source = colour_xyz_source();
@@ -189,7 +203,9 @@ fn colourspace_xyz_to_srgb_libvips() {
 
 #[test]
 fn colourspace_srgb_to_hsv_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "srgb_to_hsv_reference_palette";
     let source = colour_srgb_hsv_source();
@@ -219,7 +235,9 @@ fn colourspace_srgb_to_hsv_libvips() {
 
 #[test]
 fn colourspace_hsv_to_srgb_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "hsv_to_srgb_known_colours";
     let source = colour_hsv_source();
@@ -244,7 +262,9 @@ fn colourspace_hsv_to_srgb_libvips() {
 
 #[test]
 fn colourspace_lab_to_xyz_d65_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "lab_to_xyz_d65_reference_pixels";
     let source = colour_lab_source();
@@ -274,7 +294,9 @@ fn colourspace_lab_to_xyz_d65_libvips() {
 
 #[test]
 fn colourspace_xyz_to_lab_d65_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "xyz_to_lab_d65_reference_pixels";
     let source = colour_xyz_source();
@@ -305,7 +327,9 @@ fn colourspace_xyz_to_lab_d65_libvips() {
 
 #[test]
 fn de00_known_pairs_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "sharma_reference_pairs";
     let (left, right, combined) = delta_e_known_pairs();
@@ -340,7 +364,9 @@ fn de00_known_pairs_libvips() {
 
 #[test]
 fn de76_known_pairs_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "sharma_reference_pairs";
     let (left, right, combined) = delta_e_known_pairs();

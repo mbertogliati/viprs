@@ -3,7 +3,9 @@ use super::support::*;
 // Upstream: test/test-suite/test_colour.py::TestColour::test_colourspace
 #[test]
 fn libvips_parity_upstream_colour_xyz_to_lab() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_colour.py::TestColour::test_colourspace";
     let op = "libvips_parity_colour";
@@ -46,7 +48,9 @@ fn libvips_parity_upstream_colour_xyz_to_lab() {
 // Upstream: test/test-suite/test_convolution.py::TestConvolution::test_gaussblur
 #[test]
 fn libvips_parity_upstream_convolution_gaussblur_uniform_field() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_convolution.py::TestConvolution::test_gaussblur";
     let op = "libvips_parity_convolution";
@@ -87,7 +91,9 @@ fn libvips_parity_upstream_convolution_gaussblur_uniform_field() {
 // Upstream: test/test-suite/test_convolution.py::TestConvolution::test_gaussblur
 #[test]
 fn libvips_parity_upstream_convolution_gaussblur_u8_nonuniform_field() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_convolution.py::TestConvolution::test_gaussblur";
     let op = "libvips_parity_convolution";
@@ -136,7 +142,9 @@ fn libvips_parity_upstream_convolution_gaussblur_u8_nonuniform_field() {
 // Upstream: test/test-suite/test_convolution.py::TestConvolution::test_gaussblur
 #[test]
 fn libvips_parity_upstream_convolution_gaussblur_u8_rgb_field() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_convolution.py::TestConvolution::test_gaussblur";
     let op = "libvips_parity_convolution";
@@ -182,7 +190,9 @@ fn libvips_parity_upstream_convolution_gaussblur_u8_rgb_field() {
 // Upstream: test/test-suite/test_convolution.py::TestConvolution::test_gaussblur
 #[test]
 fn libvips_parity_upstream_convolution_gaussblur_nonuniform_field() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_convolution.py::TestConvolution::test_gaussblur";
     let op = "libvips_parity_convolution";

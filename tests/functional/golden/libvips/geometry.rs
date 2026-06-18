@@ -4,7 +4,9 @@ use super::support_inputs::*;
 
 #[test]
 fn flip_horizontal_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
@@ -19,7 +21,9 @@ fn flip_horizontal_libvips() {
 
 #[test]
 fn flip_vertical_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
@@ -34,7 +38,9 @@ fn flip_vertical_libvips() {
 
 #[test]
 fn rotate90_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
@@ -49,7 +55,9 @@ fn rotate90_libvips() {
 
 #[test]
 fn rotate180_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
@@ -64,7 +72,9 @@ fn rotate180_libvips() {
 
 #[test]
 fn rotate270_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
@@ -79,7 +89,9 @@ fn rotate270_libvips() {
 
 #[test]
 fn autorot_orientation_6_rgb_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 5;
     let height = 3;
@@ -106,7 +118,9 @@ fn autorot_orientation_6_rgb_libvips() {
 
 #[test]
 fn replicate_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_2x3";
     let source = grayscale_source();
@@ -121,7 +135,9 @@ fn replicate_libvips() {
 
 #[test]
 fn subsample_non_point_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_2x3_non_point";
     let source = grayscale_source();
@@ -136,7 +152,9 @@ fn subsample_non_point_libvips() {
 
 #[test]
 fn gamma_default_2_4_boundary_pixels_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 4;
     let height = 2;
@@ -168,7 +186,9 @@ fn gamma_default_2_4_boundary_pixels_libvips() {
 
 #[test]
 fn gamma_default_2_4_midtones_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 4;
     let height = 2;
@@ -200,7 +220,9 @@ fn gamma_default_2_4_midtones_libvips() {
 
 #[test]
 fn zoom_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_2x3";
     let source = grayscale_source();
@@ -215,7 +237,9 @@ fn zoom_libvips() {
 
 #[test]
 fn embed_black_extend_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "offset_black";
     let source = grayscale_source();
@@ -240,7 +264,9 @@ fn embed_black_extend_libvips() {
 
 #[test]
 fn embed_copy_extend_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "offset_copy";
     let source = grayscale_source();
@@ -265,7 +291,9 @@ fn embed_copy_extend_libvips() {
 
 #[test]
 fn embed_mirror_extend_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "offset_mirror";
     let source = grayscale_source();
@@ -290,7 +318,9 @@ fn embed_mirror_extend_libvips() {
 
 #[test]
 fn extract_area_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "center_crop";
     let source = grayscale_source();

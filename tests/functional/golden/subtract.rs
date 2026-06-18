@@ -68,7 +68,9 @@ fn assert_subtract_case(case: &str, source: Vec<f32>, rhs: Vec<f32>) {
     let output = run_subtract(source.clone(), rhs.clone());
     golden::assert_golden("subtract", case, &output);
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let input = write_f32_input(case, "input", &source);
     let rhs_path = write_f32_input(case, "rhs", &rhs);

@@ -103,17 +103,32 @@ pub fn vips_available() -> bool {
     Path::new(VIPS_BIN.as_str()).exists() && Path::new(VIPSHEADER_BIN.as_str()).exists()
 }
 
+/// Returns `true` when the current test should return early because the
+/// libvips CLI tools are unavailable in this environment.
+#[must_use]
+pub fn skip_without_vips() -> bool {
+    if vips_available() {
+        return false;
+    }
+
+    eprintln!(
+        "skipping: libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}",
+        &*VIPS_BIN, &*VIPSHEADER_BIN
+    );
+    true
+}
+
 /// Panics when libvips CLI tools are not installed.
 ///
-/// Prefer checking [`vips_available`] and returning early from the test instead.
+/// Prefer checking [`skip_without_vips`] and returning early from the test instead.
 #[track_caller]
 pub fn require_vips() {
-    if !vips_available() {
-        panic!(
-            "libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}; install libvips or mark the test #[ignore]",
-            &*VIPS_BIN, &*VIPSHEADER_BIN
-        );
-    }
+    assert!(
+        !skip_without_vips(),
+        "libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}; install libvips or mark the test #[ignore]",
+        &*VIPS_BIN,
+        &*VIPSHEADER_BIN
+    );
 }
 
 fn manifest_dir() -> PathBuf {
