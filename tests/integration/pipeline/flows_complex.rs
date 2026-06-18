@@ -284,6 +284,28 @@ fn checkerboard_f32(width: u32, height: u32) -> Image<F32> {
 }
 
 #[cfg(feature = "fft")]
+fn registration_fixture_f32(width: u32, height: u32) -> Image<F32> {
+    let pixels = (0..height)
+        .flat_map(|y| {
+            (0..width).map(move |x| {
+                let x = x as f32;
+                let y = y as f32;
+                let ramp = x * 0.11 + y * 0.07;
+                let wave = (x * 0.37).sin() + (y * 0.23).cos();
+                let interaction = ((x + 1.0) * (y + 2.0) * 0.013).sin();
+                let marker = match (x as u32, y as u32) {
+                    (mx, my) if mx == width / 3 && my == height / 4 => 2.5,
+                    (mx, my) if mx == width * 2 / 3 && my == height * 3 / 5 => -1.75,
+                    _ => 0.0,
+                };
+                ramp + wave + interaction + marker
+            })
+        })
+        .collect();
+    Image::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build registration image")
+}
+
+#[cfg(feature = "fft")]
 fn circular_shift(image: &Image<F32>, dx: usize, dy: usize) -> Image<F32> {
     let width = image.width() as usize;
     let height = image.height() as usize;
@@ -496,8 +518,13 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
 #[test]
 #[cfg(feature = "fft")]
 fn flow3_phase_correlation_registration_detects_known_offsets_and_non_power_of_two_inputs() {
-    let reference = checkerboard_f32(32, 24);
+    let reference = registration_fixture_f32(31, 29);
     let shifted = circular_shift(&reference, 5, 7);
+    assert_ne!(
+        shifted.pixels(),
+        reference.pixels(),
+        "registration fixture must change under the tested shift"
+    );
     let ref_fft = fwfft(&reference).expect("fwfft reference");
     let shifted_fft = fwfft(&shifted).expect("fwfft shifted");
     let cross_power = run_phasecor(
@@ -543,7 +570,7 @@ fn flow3_phase_correlation_registration_detects_known_offsets_and_non_power_of_t
         0
     );
     assert!(
-        checkerboard_f32(31, 29)
+        registration_fixture_f32(31, 29)
             .pixels()
             .iter()
             .all(|value| value.is_finite())
