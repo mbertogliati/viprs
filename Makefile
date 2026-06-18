@@ -102,21 +102,42 @@ BENCH_CI_ENV := RUSTFLAGS="-Ctarget-cpu=native" \
 	CARGO_PROFILE_BENCH_CODEGEN_UNITS=16 \
 	CARGO_PROFILE_BENCH_DEBUG=0
 
+CRITERION_BENCHES := $(shell awk 'BEGIN { in_bench = 0; name = ""; path = "" } \
+	/^\[\[bench\]\]/ { \
+		if (in_bench && path !~ /^benches\/iai\// && name != "") print name; \
+		in_bench = 1; name = ""; path = ""; next \
+	} \
+	in_bench && /^name = "/ { name = $$3; gsub(/"/, "", name); next } \
+	in_bench && /^path = "/ { path = $$3; gsub(/"/, "", path); next } \
+	END { if (in_bench && path !~ /^benches\/iai\// && name != "") print name }' Cargo.toml)
+
 bench-ci:
-	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
-		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'
+	@set -e; \
+	for bench in $(CRITERION_BENCHES); do \
+		echo "▶ Running $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'; \
+	done
 
 ## Save baseline on main (CI calls this after merge to main)
 bench-baseline:
-	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
-		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-		--save-baseline main '/512'
+	@set -e; \
+	for bench in $(CRITERION_BENCHES); do \
+		echo "▶ Saving baseline for $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
+			--save-baseline main '/512'; \
+	done
 
 ## Compare PR against main baseline — fails if any benchmark regresses >5%
 bench-compare:
-	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
-		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-		--baseline main '/512'
+	@set -e; \
+	for bench in $(CRITERION_BENCHES); do \
+		echo "▶ Comparing $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
+			--baseline main '/512'; \
+	done
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
 ## Runs the representative scenario matrix from PERFORMANCE.md:
