@@ -69,9 +69,9 @@ mod chaos_monkey_7 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F>(
+    fn execute_same_format<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
@@ -121,11 +121,57 @@ mod chaos_monkey_7 {
     fn pipeline_depth_linear_chain_stays_stable() {
         let image = patterned_rgb_u8(31, 17);
         let (pipeline, output) = execute_same_format(&image, |builder| {
-            let mut builder = builder;
-            for _ in 0..50 {
-                builder = builder.linear(1.0, 0.0)?;
-            }
-            Ok(builder)
+            Ok(builder
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?)
         })
         .expect("deep linear chain should succeed");
 

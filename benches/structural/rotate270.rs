@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Rotate270<U8> — rotate image 270° clockwise.
 ///
 /// Measures the full pipeline path: MemorySource → Rotate270 → MemorySink via
@@ -28,7 +29,7 @@ fn bench_rotate270(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

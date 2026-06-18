@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: `Affine<U8>` across the standard resample sizes.
 ///
 /// Exercises the full pipeline path: `MemorySource → Affine → MemorySink` via
@@ -42,7 +43,7 @@ fn run_affine_pipeline(
         .unwrap()
         .build()
         .unwrap();
-    let mut sink = MemorySink::for_pipeline(&pipeline);
+    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
         .unwrap()
         .run(&pipeline, &mut sink)

@@ -1,11 +1,12 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    OperationBridge,
+    pipeline::OperationBridge,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-    domain::{format::U8, ops::morphology::CountLinesOp},
+    domain::{format::U8, ops::morphology::count_lines::{CountLinesOp, CountLinesDirection}},
     ports::scheduler::TileScheduler,
 };
 
@@ -22,13 +23,13 @@ fn bench_count_lines(c: &mut Criterion) {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
                 let pipeline = PipelineBuilder::from_source(source)
                     .then(Box::new(OperationBridge::new(
-                        CountLinesOp::new(size, size),
+                        CountLinesOp::new(size, size, CountLinesDirection::Horizontal),
                         1,
                     )))
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

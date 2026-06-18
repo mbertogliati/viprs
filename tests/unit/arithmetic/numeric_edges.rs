@@ -67,9 +67,9 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -185,7 +185,7 @@ mod chaos_monkey_16 {
             ImageMetadata::default(),
         );
         let (_pipeline, output) =
-            execute_to_image::<F32, U8>(&image, |builder| builder.cast(BandFormatId::U8))
+            execute_to_image::<F32, U8, _>(&image, |builder| builder.cast(BandFormatId::U8))
                 .expect("cast F32 -> U8 should succeed for NaN");
 
         assert_eq!(output.pixels(), &[0, 0, 128, 255]);
@@ -195,7 +195,7 @@ mod chaos_monkey_16 {
     fn linear_on_u16_applies_scale_and_offset_across_full_range() {
         let image = make_u16_image(4, 1, 1, vec![0, 1000, 32768, 65535]);
         let (_pipeline, output) =
-            execute_to_image::<U16, U16>(&image, |builder| builder.linear(1.5, 100.0))
+            execute_to_image::<U16, U16, _>(&image, |builder| builder.linear(1.5, 100.0))
                 .expect("linear on U16 should succeed");
 
         assert_eq!(output.pixels(), &[100, 1600, 49252, 65535]);
@@ -210,8 +210,9 @@ mod chaos_monkey_16 {
             vec![0.0, 0.25, 1.0, -0.5, f32::NAN],
             ImageMetadata::default(),
         );
-        let (_pipeline, output) = execute_to_image::<F32, F32>(&image, |builder| builder.invert())
-            .expect("invert on F32 should succeed");
+        let (_pipeline, output) =
+            execute_to_image::<F32, F32, _>(&image, |builder| builder.invert())
+                .expect("invert on F32 should succeed");
 
         assert_eq!(&output.pixels()[0..4], &[1.0, 0.75, 0.0, 1.5]);
         assert!(output.pixels()[4].is_nan());

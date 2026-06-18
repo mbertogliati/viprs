@@ -67,9 +67,9 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -178,7 +178,7 @@ mod chaos_monkey_16 {
     #[test]
     fn cached_pipeline_matches_uncached_pipeline() {
         let image = patterned_rgb(41, 29);
-        let (_uncached_pipeline, uncached) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_uncached_pipeline, uncached) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .thumbnail(thumbnail(21))?
                 .colourspace::<Lab>()?
@@ -186,7 +186,7 @@ mod chaos_monkey_16 {
         })
         .expect("uncached pipeline should succeed");
 
-        let (_cached_pipeline, cached) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_cached_pipeline, cached) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .thumbnail(thumbnail(21))?
                 .cache_last_op(NonZeroUsize::new(1 << 20).unwrap())?

@@ -88,9 +88,9 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -123,9 +123,9 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F>(
+    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
@@ -170,7 +170,7 @@ mod chaos_monkey_8 {
         let image = Image::from_buffer(1, 1, 3, vec![17, 89, 203])
             .expect("1x1 image must build")
             .with_metadata(srgb_metadata());
-        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder.resize(Resize::new(100.0, 100.0, InterpolationKernel::Nearest))
         })
         .expect("1x1 upscale should succeed");
@@ -185,7 +185,7 @@ mod chaos_monkey_8 {
     fn resize_2x2_by_100_keeps_expected_corners() {
         let image =
             Image::from_buffer(2, 2, 1, vec![11, 22, 33, 44]).expect("2x2 image must build");
-        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder.resize(Resize::new(100.0, 100.0, InterpolationKernel::Nearest))
         })
         .expect("2x2 upscale should succeed");

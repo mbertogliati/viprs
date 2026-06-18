@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Or<U8> — bitwise OR of each pixel sample with a constant mask.
 ///
 /// Measures the full pipeline path: MemorySource → Or → MemorySink via RayonScheduler.
@@ -29,7 +30,7 @@ fn bench_or(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

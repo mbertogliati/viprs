@@ -8,7 +8,7 @@ use turbojpeg::raw;
 
 use super::common::{
     JpegPreflight, MAX_JPEG_DECODED_IMAGE_BYTES, TurboJpegHandle, checked_decoded_image_len,
-    crop_strict_shrink_edges, jpeg_shrink_on_load_plan, preflight_jpeg,
+    crop_strict_shrink_edges, jpeg_shrink_on_load_plan, preflight_jpeg, probe_jpeg_header,
     raw_scaling_factor_for_shrink, shrink_dimension_for_factor, shrink_factor_for_max_dimension,
     turbojpeg_error,
 };
@@ -202,8 +202,7 @@ impl ImageDecoder for JpegCodec {
     where
         Self: Sized,
     {
-        let header = preflight_jpeg(src)?;
-        Ok((header.width, header.height, header.bands))
+        probe_jpeg_header(src)
     }
 
     fn decode_path_with_options<F: BandFormat>(

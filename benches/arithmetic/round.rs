@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Round<F32>, Floor<F32>, Ceil<F32> — element-wise rounding operations.
 ///
 /// Measures the full pipeline path: MemorySource → Op → MemorySink via RayonScheduler.
@@ -28,7 +29,7 @@ fn bench_round(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -55,7 +56,7 @@ fn bench_floor(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -82,7 +83,7 @@ fn bench_ceil(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

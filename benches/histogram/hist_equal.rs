@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -37,7 +38,7 @@ fn bench_hist_equal(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let sink = MemorySink::for_pipeline(&pipeline);
+                let sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let lut = scheduler
                     .run_with_reducer::<U8, HistEqualReducer>(
                         &pipeline,
@@ -53,7 +54,7 @@ fn bench_hist_equal(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();
                 black_box(sink.into_buffer());
             });

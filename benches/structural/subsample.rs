@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Subsample<U8> — decimate by 2×2 point sampling.
 ///
 /// Uses the standard source sizes [512, 2048, 8192]. Output dimensions are halved
@@ -27,7 +28,7 @@ fn bench_subsample(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

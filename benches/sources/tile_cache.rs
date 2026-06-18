@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: TileCache<MemorySource<U8>> — LRU tile cache latency and throughput.
 ///
 /// Two scenarios are measured:

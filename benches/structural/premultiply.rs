@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Premultiply<U8> and Unpremultiply<U8> — alpha premultiplication.
 ///
 /// Measures `process_region` directly (not via the full pipeline), because

@@ -85,9 +85,9 @@ mod chaos_monkey_5 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F>(
+    fn execute_to_image<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
@@ -137,11 +137,27 @@ mod chaos_monkey_5 {
     fn twenty_linear_identity_ops_do_not_change_pixels() {
         let image = patterned_rgb_u8(7, 5);
         let (_pipeline, output) = execute_to_image(&image, |builder| {
-            let mut builder = builder;
-            for _ in 0..20 {
-                builder = builder.linear(1.0, 0.0)?;
-            }
-            Ok(builder)
+            Ok(builder
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?
+                .linear(1.0, 0.0)?)
         })
         .expect("linear chain should succeed");
 

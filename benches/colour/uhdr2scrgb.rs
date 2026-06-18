@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use bytemuck::{cast_slice, cast_slice_mut};
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::domain::{

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 #[cfg(feature = "gif")]
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
 #[cfg(feature = "gif")]

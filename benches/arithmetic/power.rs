@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Power<F32> — element-wise exponentiation (x^n).
 ///
 /// Measures the full pipeline path: MemorySource → Power → MemorySink via RayonScheduler.
@@ -28,7 +29,7 @@ fn bench_power(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

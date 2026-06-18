@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use std::num::NonZeroUsize;
 use viprs::{
@@ -40,7 +41,7 @@ fn thumbnail_pipeline(
 }
 
 fn run_thumbnail(pipeline: &CompiledPipeline, scheduler: &RayonScheduler) -> Vec<u8> {
-    let mut sink = MemorySink::for_pipeline(pipeline);
+    let mut sink = MemorySink::for_pipeline(pipeline).unwrap();
     scheduler.run(pipeline, &mut sink).unwrap();
     sink.into_buffer()
 }

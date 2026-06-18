@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[path = "integration/codecs.rs"]
 mod codecs;
 #[path = "integration/dimensions.rs"]

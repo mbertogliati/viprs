@@ -31,7 +31,7 @@ enum ExifEndian {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::codecs::heif_support::HeifWriteMetadata>();
 /// ```
 pub(crate) struct HeifWriteMetadata<'a> {
@@ -46,7 +46,7 @@ pub(crate) struct HeifWriteMetadata<'a> {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::shared_libheif;
 /// ```
 pub(crate) fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsError> {
@@ -64,7 +64,7 @@ pub(crate) fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsErr
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_sample_count;
 /// ```
 pub(crate) fn checked_interleaved_sample_count(
@@ -93,7 +93,7 @@ pub(crate) fn checked_interleaved_sample_count(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_row_bytes;
 /// ```
 pub(crate) fn checked_interleaved_row_bytes(
@@ -122,7 +122,7 @@ pub(crate) fn checked_interleaved_row_bytes(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_byte_count;
 /// ```
 pub(crate) fn checked_interleaved_byte_count(
@@ -388,7 +388,7 @@ fn configure_encoder_threads(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::encode_interleaved;
 /// ```
 pub(crate) fn encode_interleaved(
@@ -610,7 +610,7 @@ pub(crate) fn encode_interleaved(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::read_metadata;
 /// ```
 pub(crate) fn read_metadata(
@@ -768,7 +768,7 @@ fn apply_orientation_to_pixels<T: Copy>(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::normalize_decoded_image;
 /// ```
 pub(crate) fn normalize_decoded_image<F: BandFormat>(

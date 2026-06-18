@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 #[path = "functional/e2e_images.rs"]
 mod e2e_images;
 #[path = "functional/golden.rs"]

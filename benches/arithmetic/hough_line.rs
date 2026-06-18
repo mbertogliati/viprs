@@ -1,10 +1,11 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    HoughLineReducer,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
+    domain::reducers::HoughLineReducer,
     domain::{format::U8, op::OperationBridge, ops::arithmetic::Linear},
     ports::scheduler::ReducingScheduler,
 };
@@ -41,7 +42,7 @@ fn bench_hough_line(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let sink = MemorySink::for_pipeline(&pipeline);
+                let sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let reducer = HoughLineReducer::new(180, 256, size, size, 0.0);
 
                 let hough = scheduler

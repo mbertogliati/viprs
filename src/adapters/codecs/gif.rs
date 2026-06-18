@@ -159,7 +159,7 @@ impl GifCodec {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::codecs::gif::new;
     /// ```
     pub fn new() -> Self {

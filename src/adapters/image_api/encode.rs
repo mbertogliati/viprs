@@ -1,7 +1,15 @@
+#[cfg(feature = "jpeg")]
+use super::JpegCodec;
+#[cfg(feature = "png")]
+use super::PngCodec;
+#[cfg(feature = "webp")]
+use super::WebpCodec;
 use super::{
     BandFormatId, F32, F64, ForeignRegistry, I16, I32, ImageApi, Path, U8, U16, U32, ViprsError,
     Write,
 };
+#[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
+use super::{ImageEncoder, SaveOptions};
 
 impl ImageApi {
     /// Build, run, and encode the output as JPEG.

@@ -132,7 +132,8 @@ mod tests {
     proptest! {
         #[test]
         fn power_exponent_zero_is_one(
-            pixels in proptest::collection::vec(0.01f32..=100.0f32, 1..=32)
+            pixels in proptest::collection::vec(1u32..=10000u32, 1..=32)
+                .prop_map(|v| v.into_iter().map(|x| x as f32 / 100.0).collect::<Vec<_>>())
         ) {
             let len = pixels.len();
             let op = Power::<F32>::new(0.0);

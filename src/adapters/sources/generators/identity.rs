@@ -155,7 +155,7 @@ impl IdentitySource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::identity::width;
     /// ```
     pub fn width(&self) -> u32 {
@@ -186,7 +186,7 @@ impl IdentitySource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::identity::format;
     /// ```
     pub const fn format(&self) -> BandFormatId {

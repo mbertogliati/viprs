@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Conv2d<F32> with a 3×3 box filter.
 ///
 /// Measures the full pipeline path: MemorySource<F32> → Conv2d (3×3 box) → MemorySink
@@ -32,7 +33,7 @@ fn bench_conv2d(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

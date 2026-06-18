@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 #[path = "create/frequency_mask.rs"]
 mod frequency_mask;
 #[path = "create/invertlut.rs"]

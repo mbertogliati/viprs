@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 #![cfg(feature = "fft")]
 
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
@@ -35,7 +36,7 @@ fn make_frequency_pixels(size: u32, scheduler: &RayonScheduler) -> Vec<f32> {
         .unwrap()
         .build()
         .unwrap();
-    let mut sink = MemorySink::for_pipeline(&pipeline);
+    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     scheduler.run(&pipeline, &mut sink).unwrap();
     bytemuck::cast_slice::<u8, f32>(&sink.into_buffer()).to_vec()
 }
@@ -58,7 +59,7 @@ fn bench_invfft(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();
                 black_box(sink.into_buffer());
             });

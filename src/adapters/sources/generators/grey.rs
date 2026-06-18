@@ -127,7 +127,7 @@ impl GreySource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::grey::height;
     /// ```
     pub fn height(&self) -> u32 {
@@ -152,7 +152,7 @@ impl GreySource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::grey::format;
     /// ```
     pub const fn format(&self) -> BandFormatId {

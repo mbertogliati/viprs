@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: ShrinkV<U8> — vertical integer shrink by factor 2.
 ///
 /// Measures the full pipeline path: MemorySource → ShrinkV → MemorySink via
@@ -30,7 +31,7 @@ fn bench_shrinkv(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -56,7 +57,7 @@ fn bench_shrinkv(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

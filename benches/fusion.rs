@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Concretize fusion vs legacy pipeline for multi-op chains.
 ///
 /// Compares:
@@ -8,7 +9,6 @@
 /// For integer ops, this produces N× speedup as chain depth grows.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    BandFormatId, ImageMetadata,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
@@ -20,6 +20,7 @@ use viprs::{
         op::{DemandHint, DynOperation, NodeSpec},
         ops::point::{Invert as CInvert, Linear},
     },
+    domain::{format::BandFormatId, image::ImageMetadata},
     ports::scheduler::TileScheduler,
 };
 
@@ -41,7 +42,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -58,7 +59,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -77,7 +78,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -97,7 +98,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -121,7 +122,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -142,7 +143,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -174,7 +175,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -201,7 +202,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -228,7 +229,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -260,7 +261,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -281,7 +282,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -311,7 +312,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -333,7 +334,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -363,7 +364,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -384,7 +385,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -424,7 +425,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -451,7 +452,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -482,7 +483,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -517,7 +518,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -552,7 +553,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)
@@ -599,7 +600,7 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .unwrap()
                 .build()
                 .unwrap();
-            let mut sink = MemorySink::for_pipeline(&pipeline);
+            let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
                 .unwrap()
                 .run(&pipeline, &mut sink)

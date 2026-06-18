@@ -1,11 +1,13 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    F32, Image, OperationBridge, PipelineBuilder,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
     domain::ops::convolution::SpcorOp,
+    domain::{format::F32, image::Image},
+    pipeline::{OperationBridge, PipelineBuilder},
     ports::scheduler::TileScheduler,
 };
 
@@ -45,7 +47,7 @@ fn bench_spcor(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

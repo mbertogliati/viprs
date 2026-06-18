@@ -185,6 +185,7 @@ pub struct FwFftOp<F: BandFormat> {
 }
 
 impl<F: BandFormat> FwFftOp<F> {
+    /// Creates a forward FFT operation for the given dimensions.
     pub fn new(width: u32, height: u32) -> Result<Self, ViprsError> {
         let width_usize = width as usize;
         let height_usize = height as usize;

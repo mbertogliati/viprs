@@ -36,6 +36,7 @@ const OPENSLIDE_RUNTIME_DIR: &str = "target/openslide-runtime";
 const OPENSLIDE_BANDS: u32 = 4;
 const OPENSLIDE_MAX_RGBA_ALLOCATION_BYTES: u64 = 4 * 1024 * 1024 * 1024;
 
+/// File extensions recognized as whole-slide images (decoded via OpenSlide).
 pub const OPENSLIDE_EXTENSIONS: &[&str] =
     &["svs", "vms", "vmu", "ndpi", "scn", "mrxs", "svslide", "bif"];
 

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 // Benchmarks standalone Cmyk↔Xyz parity ops.
 // see B-175
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
@@ -54,7 +55,7 @@ fn bench_cmyk_xyz(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -72,7 +73,7 @@ fn bench_cmyk_xyz(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

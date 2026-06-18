@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -32,7 +33,7 @@ fn bench_rot(c: &mut Criterion) {
                     "add rot d90 operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),
                     "create rayon scheduler",
@@ -53,7 +54,7 @@ fn bench_rot(c: &mut Criterion) {
                     "add rot d180 operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),
                     "create rayon scheduler",

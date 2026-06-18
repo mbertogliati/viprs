@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -42,7 +43,7 @@ fn bench_rot45(c: &mut Criterion) {
                         "add rot45 operation",
                     );
                     let pipeline = must(builder.build(), "build pipeline");
-                    let mut sink = MemorySink::for_pipeline(&pipeline);
+                    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     must(scheduler.run(&pipeline, &mut sink), "run pipeline");
                     black_box(sink.into_buffer())
                 });

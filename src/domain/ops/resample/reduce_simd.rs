@@ -2396,7 +2396,7 @@ unsafe fn reduce_v_f32_neon(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide row-major `input`/`output` buffers plus `starts`/`phases` entries for every output column.
 unsafe fn reduce_h_u8_avx2(
     filter: &ReduceKernel,
@@ -2476,7 +2476,7 @@ fn reduce_h_u8_scalar_planned(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available; the helper gathers every sample through clamped indices within `row` before vectorizing the multiply-add.
 unsafe fn reduce_h_u8_avx2_pixel(
     row: &[u8],
@@ -2519,7 +2519,7 @@ unsafe fn reduce_h_u8_avx2_pixel(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide row-major `input`/`output` buffers that cover the requested regions.
 unsafe fn reduce_h_u16_avx2(
     filter: &ReduceKernel,
@@ -2553,7 +2553,7 @@ unsafe fn reduce_h_u16_avx2(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available; the helper gathers every sample through clamped indices within `row` before vectorizing the multiply-add.
 unsafe fn reduce_h_u16_avx2_pixel(
     row: &[u16],
@@ -2596,7 +2596,7 @@ unsafe fn reduce_h_u16_avx2_pixel(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide row-major `input`/`output` buffers that cover the requested regions.
 unsafe fn reduce_h_f32_avx2(
     filter: &ReduceKernel,
@@ -2630,7 +2630,7 @@ unsafe fn reduce_h_f32_avx2(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available; the helper gathers every sample through clamped indices within `row` before vectorizing the multiply-add.
 unsafe fn reduce_h_f32_avx2_pixel(
     row: &[f32],
@@ -2675,7 +2675,7 @@ unsafe fn reduce_h_f32_avx2_pixel(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide buffers that cover the full input and output regions so each row-offset vector load stays valid.
 unsafe fn reduce_v_u8_avx2(
     filter: &ReduceKernel,
@@ -2690,7 +2690,7 @@ unsafe fn reduce_v_u8_avx2(
     let in_h = input_region.height as usize;
     let row_stride = input_region.width as usize * bands as usize;
     let row_len = out_w * bands as usize;
-    let vector_len = row_len / 4 * 4;
+    let vector_len = row_len / 8 * 8;
 
     for y_out in 0..out_h {
         let source_y = filter.source_position(output_region.y as f64 + y_out as f64);
@@ -2740,7 +2740,7 @@ unsafe fn reduce_v_u8_avx2(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide buffers that cover the full input and output regions so each row-offset vector load stays valid.
 unsafe fn reduce_v_u16_avx2(
     filter: &ReduceKernel,
@@ -2805,7 +2805,7 @@ unsafe fn reduce_v_u16_avx2(
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 #[target_feature(enable = "avx2")]
-#[inline(always)]
+#[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide buffers that cover the full input and output regions so each row-offset vector load stays valid.
 unsafe fn reduce_v_f32_avx2(
     filter: &ReduceKernel,

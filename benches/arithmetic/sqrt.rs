@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Sqrt<F32> — element-wise square root.
 ///
 /// Measures the full pipeline path: MemorySource → Sqrt → MemorySink via RayonScheduler.
@@ -26,7 +27,7 @@ fn bench_sqrt(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

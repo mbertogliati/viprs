@@ -66,9 +66,9 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -133,7 +133,7 @@ mod chaos_monkey_15 {
     fn recomb_identity_matrix_is_pixel_exact() {
         let image = patterned_rgb(7, 5);
         let identity = Matrix::identity(3);
-        let (pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.then(Box::new(
                 viprs::domain::op::OperationBridge::with_dynamic_bands_pixel_local(
                     RecombOp::<U8>::new(identity),
@@ -152,7 +152,7 @@ mod chaos_monkey_15 {
     fn linear_scale_zero_produces_black_output() {
         let image = make_u8_image(3, 1, 1, vec![0, 127, 255]);
         let (_pipeline, output) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.linear(0.0, 0.0))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.linear(0.0, 0.0))
                 .expect("linear(scale=0) should be valid");
 
         assert_eq!(output.pixels(), &[0, 0, 0]);
@@ -161,7 +161,7 @@ mod chaos_monkey_15 {
     #[test]
     fn cast_rgba_u8_f32_u8_preserves_zero_and_255() {
         let image = make_u8_image(2, 1, 4, vec![0, 255, 0, 255, 255, 0, 255, 0]);
-        let (_pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .cast(viprs::BandFormatId::F32)?
                 .cast(viprs::BandFormatId::U8)

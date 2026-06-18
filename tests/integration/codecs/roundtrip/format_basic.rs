@@ -62,9 +62,9 @@ mod chaos_monkey_14 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -172,9 +172,9 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,

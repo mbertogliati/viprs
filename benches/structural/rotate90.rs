@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Rotate90<U8> — rotate image 90° clockwise.
 ///
 /// Measures the full pipeline path: MemorySource → Rotate90 → MemorySink via
@@ -32,7 +33,7 @@ fn bench_rotate90(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

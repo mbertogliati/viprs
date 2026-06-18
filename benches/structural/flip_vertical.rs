@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: FlipVertical<U8> — mirror the image top-to-bottom.
 ///
 /// Measures the full pipeline path: MemorySource → FlipVertical → MemorySink via
@@ -32,7 +33,7 @@ fn bench_flip_vertical(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

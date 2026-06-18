@@ -1,21 +1,30 @@
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
-yanked = "warn"
+ignore = [
+    # Transitive deps flagged as unmaintained — tracked for replacement.
+    { id = "RUSTSEC-2024-0436", reason = "paste: transitive dep, no alternative yet" },
+    { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2: transitive dep, no alternative yet" },
+    { id = "RUSTSEC-2025-0141", reason = "bincode 1.3.3: stable, considered complete by authors" },
+]
 
 [licenses]
-unlicensed = "deny"
 allow = [
     "MIT",
     "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
+    "IJG",
+    "NCSA",
     "Unicode-3.0",
     "Zlib",
     "BSL-1.0",
 ]
-copyleft = "deny"
+exceptions = [
+    # JPEG XL crates are GPL-3.0 but gated behind the optional `jxl` feature.
+    { allow = ["GPL-3.0-or-later"], crate = "jpegxl-rs" },
+    { allow = ["GPL-3.0-or-later"], crate = "jpegxl-sys" },
+]
 
 [bans]
 multiple-versions = "warn"

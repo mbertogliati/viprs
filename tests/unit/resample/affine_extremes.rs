@@ -66,9 +66,9 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -139,7 +139,7 @@ mod chaos_monkey_15 {
             vec![0.0, 0.5, 1.0, 0.25, 0.75, 0.1, 1.0, 0.0, 0.2, 0.4, 0.6, 0.8],
             srgb_metadata(),
         );
-        let (_pipeline, output) = execute_to_image::<F32, F32>(&image, |builder| {
+        let (_pipeline, output) = execute_to_image::<F32, F32, _>(&image, |builder| {
             builder.affine(
                 [1.0e10, 0.0, 0.0, 1.0e10],
                 0.0,
@@ -157,8 +157,9 @@ mod chaos_monkey_15 {
     #[test]
     fn shrink_one_is_exact_identity() {
         let image = patterned_rgba(9, 7);
-        let (pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| builder.shrink(1, 1))
-            .expect("shrink(1,1) should succeed");
+        let (pipeline, output) =
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.shrink(1, 1))
+                .expect("shrink(1,1) should succeed");
 
         assert_eq!(
             (pipeline.width, pipeline.height),
@@ -171,7 +172,7 @@ mod chaos_monkey_15 {
     fn thumbnail_of_1x1_image_does_not_upscale() {
         let image = make_u8_image(1, 1, 3, vec![10, 20, 30]);
         let (pipeline, output) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.thumbnail(thumbnail(100)))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.thumbnail(thumbnail(100)))
                 .expect("thumbnail should succeed");
 
         assert_eq!((pipeline.width, pipeline.height), (1, 1));

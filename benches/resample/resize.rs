@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -27,7 +28,7 @@ fn bench_resize(c: &mut Criterion) {
                         .unwrap()
                         .build()
                         .unwrap();
-                    let mut sink = MemorySink::for_pipeline(&pipeline);
+                    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
                         .unwrap()
                         .run(&pipeline, &mut sink)
@@ -55,7 +56,7 @@ fn bench_resize(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

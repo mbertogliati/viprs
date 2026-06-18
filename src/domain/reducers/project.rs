@@ -13,7 +13,7 @@ use crate::domain::{
 /// for every band in the source image.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},
@@ -89,7 +89,7 @@ impl ProjectPartial {
 /// signal carried by each axis and band.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

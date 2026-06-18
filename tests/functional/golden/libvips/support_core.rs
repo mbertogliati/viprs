@@ -114,12 +114,12 @@ pub(crate) fn gauss_source() -> Vec<f32> {
     vec![37.5; (WIDTH * HEIGHT) as usize]
 }
 
-pub(crate) fn run_pipeline_u8(
+pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(PipelineBuilder::from_source(source))
@@ -135,12 +135,12 @@ pub(crate) fn run_pipeline_u8(
     sink.into_buffer()
 }
 
-pub(crate) fn run_pipeline_f32(
+pub(crate) fn run_pipeline_f32<S: viprs::pipeline::Flush>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(PipelineBuilder::from_source(source))
@@ -156,12 +156,12 @@ pub(crate) fn run_pipeline_f32(
     sink.into_buffer()
 }
 
-pub(crate) fn run_pipeline_i32(
+pub(crate) fn run_pipeline_i32<S: viprs::pipeline::Flush>(
     source_pixels: Vec<i32>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<I32>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(PipelineBuilder::from_source(source))
@@ -426,10 +426,7 @@ where
 {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new_pixel_local(
-            viprs::Linear::<U8>::new(1, 0).unwrap(),
-            bands,
-        )))
+        .apply(viprs::Linear::new(1.0, 0.0))
         .unwrap()
         .build()
         .unwrap();

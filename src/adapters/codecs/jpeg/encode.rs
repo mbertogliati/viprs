@@ -21,6 +21,13 @@ use crate::domain::format::{BandFormat, BandFormatId, U8};
 use crate::domain::image::{Image, ImageMetadata, Interpretation};
 use crate::ports::codec::ImageEncoder;
 
+fn map_jpeg_encoding_error(error: jpeg_encoder::EncodingError) -> ViprsError {
+    match error {
+        jpeg_encoder::EncodingError::IoError(io_error) => ViprsError::Io(io_error),
+        other => ViprsError::Codec(format!("jpeg: {other}")),
+    }
+}
+
 struct EncodeInput<'a> {
     pixels: Cow<'a, [u8]>,
     pixel_format: PixelFormat,
@@ -94,17 +101,17 @@ fn add_streaming_metadata_segments<W: JfifWrite>(
     if let Some(xmp) = image.xmp.as_deref() {
         encoder
             .add_app_segment(1, &normalize_xmp_app1_payload(xmp))
-            .map_err(|err| ViprsError::Codec(format!("jpeg: {err}")))?;
+            .map_err(map_jpeg_encoding_error)?;
     }
     if let Some(exif) = image.exif.as_deref() {
         encoder
             .add_app_segment(1, &normalize_exif_app1_payload(exif))
-            .map_err(|err| ViprsError::Codec(format!("jpeg: {err}")))?;
+            .map_err(map_jpeg_encoding_error)?;
     }
     if let Some(icc_profile) = image.icc_profile.as_deref() {
         encoder
             .add_icc_profile(icc_profile)
-            .map_err(|err| ViprsError::Codec(format!("jpeg: {err}")))?;
+            .map_err(map_jpeg_encoding_error)?;
     }
     Ok(())
 }
@@ -302,7 +309,7 @@ impl ImageEncoder for JpegCodec {
                     .map_err(|_| ViprsError::Codec("jpeg: height overflow".into()))?,
                 color_type,
             )
-            .map_err(|err| ViprsError::Codec(format!("jpeg: {err}")))?;
+            .map_err(map_jpeg_encoding_error)?;
         writer.flush()?;
         Ok(())
     }

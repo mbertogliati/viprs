@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Flatten<U8> — alpha-composite RGBA onto a solid background.
 ///
 /// Measures `process_region` directly to isolate the RGBA -> RGB hot loop.

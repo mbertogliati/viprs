@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Replicate<U8> — tile the source image 2×2.
 ///
 /// Source sizes [256, 1024, 4096] produce output sizes [512, 2048, 8192], keeping
@@ -32,7 +33,7 @@ fn bench_replicate(c: &mut Criterion) {
                         .unwrap()
                         .build()
                         .unwrap();
-                    let mut sink = MemorySink::for_pipeline(&pipeline);
+                    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
                         .unwrap()
                         .run(&pipeline, &mut sink)

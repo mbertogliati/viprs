@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut>(
-        builder: PipelineBuilder,
+    fn run_builder_to_image<FOut, S: viprs::pipeline::Flush>(
+        builder: PipelineBuilder<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -108,9 +108,9 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -143,7 +143,7 @@ mod chaos_monkey_13 {
     #[test]
     fn colourspace_lab_then_cast_u8_stays_in_bounds() {
         let image = patterned_u8(11, 7, 3);
-        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8>(&image, |builder| {
+        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
                 .colourspace::<Lab>()?

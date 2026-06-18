@@ -16,11 +16,13 @@ use super::animated::{
     WebpDemux, decode_animated_webp, decode_animated_webp_region_into,
     webp_animation_shrink_factor, webp_scaled_animation_dimension,
 };
+#[cfg(test)]
+use super::common::WEBP_STATIC_REGION_FRAME_DECODES;
 use super::common::{
     CachedStaticWebpFrame, WEBP_ICC_CHUNK_FOURCC, WEBP_INCREMENTAL_CHUNK_SIZE, WEBP_MODE_LAST,
-    WEBP_STATIC_REGION_CACHE_CAPACITY, WEBP_STATIC_REGION_FRAME_DECODES, WEBP_XMP_CHUNK_FOURCC,
-    WebpWindowDecodePlan, checked_webp_scratch_allocation_len, copy_clamped_region_from_u8_window,
-    image_from_u8_pixels, require_u8, validate_webp_riff_size, webp_anim_shrink_on_load_plan,
+    WEBP_STATIC_REGION_CACHE_CAPACITY, WEBP_XMP_CHUNK_FOURCC, WebpWindowDecodePlan,
+    checked_webp_scratch_allocation_len, copy_clamped_region_from_u8_window, image_from_u8_pixels,
+    require_u8, validate_webp_riff_size, webp_anim_shrink_on_load_plan,
     webp_clamped_coverage_region, webp_decode_window_into_buffer, webp_interpretation,
     webp_scaled_dimension, webp_shrink_on_load_plan, webp_static_region_cache,
     webp_static_region_cache_key, webp_window_decode_plan,

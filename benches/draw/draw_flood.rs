@@ -1,5 +1,9 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
-use viprs::{DrawFloodOp, DrawOp, Region, TileMut, U8};
+use viprs::domain::draw::DrawOp;
+use viprs::domain::format::U8;
+use viprs::domain::image::{Region, TileMut};
+use viprs::domain::ops::draw::DrawFloodOp;
 
 fn make_pixels(size: u32) -> Vec<u8> {
     let mut pixels = vec![0u8; size as usize * size as usize];

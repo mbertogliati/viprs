@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Zoom<U8> — nearest-neighbour upscale by 2×2.
 ///
 /// Destination sizes [512, 2048, 8192] exercise the standard output scenarios while
@@ -40,7 +41,7 @@ fn bench_zoom(c: &mut Criterion) {
                         "add zoom operation",
                     );
                     let pipeline = must(builder.build(), "build pipeline");
-                    let mut sink = MemorySink::for_pipeline(&pipeline);
+                    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     let scheduler = must(
                         RayonScheduler::new(RayonScheduler::default_threads()),
                         "create rayon scheduler",

@@ -17,6 +17,13 @@ use crate::domain::image::{Image, ImageMetadata, Interpretation};
 use super::metadata::{bands_to_color_type, png_pixel_dims};
 use super::state::{PNG_XMP_KEYWORD, PngEncoder};
 
+fn map_png_encoding_error(error: png::EncodingError) -> ViprsError {
+    match error {
+        png::EncodingError::IoError(io_error) => ViprsError::Io(io_error),
+        other => ViprsError::Codec(other.to_string()),
+    }
+}
+
 fn encode_pixels<F: BandFormat>(image: &Image<F>) -> Result<(BitDepth, Cow<'_, [u8]>), ViprsError> {
     match F::ID {
         BandFormatId::U8 => {
@@ -151,8 +158,7 @@ fn encode_png_to_writer<F: BandFormat, W: Write>(
         info.srgb = Some(SrgbRenderingIntent::Perceptual);
     }
 
-    let mut raw_encoder =
-        RawPngEncoder::with_info(output, info).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut raw_encoder = RawPngEncoder::with_info(output, info).map_err(map_png_encoding_error)?;
     match encoder.compression.min(9) {
         0 => {
             raw_encoder.set_deflate_compression(DeflateCompression::NoCompression);
@@ -164,12 +170,10 @@ fn encode_png_to_writer<F: BandFormat, W: Write>(
         }
     }
 
-    let mut writer = raw_encoder
-        .write_header()
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut writer = raw_encoder.write_header().map_err(map_png_encoding_error)?;
     writer
         .write_image_data(pixel_bytes.as_ref())
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
+        .map_err(map_png_encoding_error)?;
     drop(writer);
 
     Ok(())

@@ -1,11 +1,12 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    PipelineBuilder,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
     domain::format::U32,
+    pipeline::PipelineBuilder,
     ports::scheduler::TileScheduler,
 };
 
@@ -36,7 +37,7 @@ fn bench_msb(c: &mut Criterion) {
                 )
                 .build()
                 .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),
                     "create rayon scheduler",

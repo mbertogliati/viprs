@@ -452,6 +452,7 @@ fn transform_f32_pcs(
     }
 }
 
+/// Imports an image into PCS (Lab) colour space using its embedded ICC profile.
 pub fn icc_import<F: BandFormat>(image: &Image<F>, profile: &[u8]) -> Result<IccImage, ViprsError> {
     let pcs_profile = lab_profile_bytes()?;
     let imported = icc_transform(
@@ -469,6 +470,7 @@ pub fn icc_import<F: BandFormat>(image: &Image<F>, profile: &[u8]) -> Result<Icc
     ))
 }
 
+/// Exports an image from PCS back to an output ICC colour space.
 pub fn icc_export<F: BandFormat>(
     image: &Image<F>,
     profile: Option<&[u8]>,
@@ -487,6 +489,7 @@ pub fn icc_export<F: BandFormat>(
     )
 }
 
+/// Applies a full ICC colour transform between input and output profiles.
 pub fn icc_transform<F: BandFormat>(
     image: &Image<F>,
     output_profile_bytes: &[u8],

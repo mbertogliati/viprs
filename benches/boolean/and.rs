@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: And<U8> — bitwise AND of each pixel sample with a constant mask.
 ///
 /// Measures the full pipeline path: MemorySource → And → MemorySink via RayonScheduler.
@@ -29,7 +30,7 @@ fn bench_and(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use std::time::Duration;
 
 use criterion::{BenchmarkId, Criterion, SamplingMode, black_box, criterion_group, criterion_main};
@@ -86,7 +87,7 @@ fn run_u8_pipeline<To: Colorspace>(
         .unwrap()
         .build()
         .unwrap();
-    let mut sink = MemorySink::for_pipeline(&pipeline);
+    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
         .unwrap()
         .run(&pipeline, &mut sink)
@@ -107,7 +108,7 @@ fn run_f32_pipeline<To: Colorspace>(
         .unwrap()
         .build()
         .unwrap();
-    let mut sink = MemorySink::for_pipeline(&pipeline);
+    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
         .unwrap()
         .run(&pipeline, &mut sink)

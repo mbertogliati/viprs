@@ -17,6 +17,7 @@
 #     viprs-perf:arm64 /data/input/sample.jpg invert --iterations 10 --metrics all
 
 FROM rust:1.96-bookworm AS builder
+ARG MAKE_JOBS=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -44,10 +45,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Build and install libjxl from source (required for jpegxl-sys)
+# CMAKE_INSTALL_LIBDIR=/usr/local/lib forces consistent path across architectures
+# (relative paths like "lib" resolve to build dir in some cmake projects)
 RUN git clone --depth 1 https://github.com/libjxl/libjxl.git /tmp/libjxl \
-    && mkdir -p /tmp/libjxl/build && cd /tmp/libjxl/build \
-    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF .. \
+    && cd /tmp/libjxl && ./deps.sh && mkdir -p build && cd build \
+    && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=/usr/local/lib .. \
     && ninja -v && ninja install && ldconfig && rm -rf /tmp/libjxl
+
+# Build and install newer libheif (>=1.16) from source to satisfy libheif-sys
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libde265-dev \
+    libx265-dev \
+    libaom-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && git clone --depth 1 https://github.com/strukturag/libheif.git /tmp/libheif \
+    && mkdir -p /tmp/libheif/build && cd /tmp/libheif/build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=/usr/local/lib .. \
+    && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libheif
+
+# Build libjpeg-turbo >= 3.0 from source so turbojpeg-sys can find libturbojpeg >= 3.0
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nasm \
+    && rm -rf /var/lib/apt/lists/* \
+    && git clone --depth 1 --branch 3.0.0 https://github.com/libjpeg-turbo/libjpeg-turbo.git /tmp/libjpeg-turbo \
+    && mkdir -p /tmp/libjpeg-turbo/build && cd /tmp/libjpeg-turbo/build \
+    && cmake -DCMAKE_BUILD_TYPE=Release -DWITH_JPEG8=1 -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=/usr/local/lib .. \
+    && make -j${MAKE_JOBS} && make install && ldconfig && rm -rf /tmp/libjpeg-turbo \
+    && pkg-config --modversion libturbojpeg
+
 
 WORKDIR /workspace
 COPY Cargo.toml Cargo.lock ./
@@ -56,18 +81,29 @@ COPY xtask/ xtask/
 COPY .cargo/ .cargo/
 COPY tools/bench-vs-libvips/libvips_runner.c tools/bench-vs-libvips/Makefile tools/bench-vs-libvips/
 
-# Build with counting allocator for allocation profiling
-RUN cargo build --release -p xtask --features count-alloc
+# Ensure pkg-config can find source-built libraries
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
-# Build libvips C runner
-RUN make -C tools/bench-vs-libvips libvips-runner
+# NOTE: In this hybrid approach the OCI image is a "native-deps" base image.
+# Cargo/Rust builds (xtask and viprs) will be executed inside CI jobs that use
+# this image as a container. Skipping cargo build here avoids repeated failures
+# during Docker image iteration while still providing all native libraries.
 
 # ----- Runtime stage -----
 FROM debian:bookworm-slim
 
+# Ensure pkg-config finds source-built libs before apt-installed ones
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
+# Install apt dependencies FIRST, then overlay source-built libs on top.
+# This prevents apt packages from overwriting our newer source-built versions.
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    pkg-config \
+    cmake \
+    curl \
     libvips42 \
-    libturbojpeg0-dev \
+    libvips-dev \
     libwebp-dev \
     libheif-dev \
     libopenjp2-7-dev \
@@ -82,8 +118,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /workspace/target/release/xtask /usr/local/bin/viprs-xtask
-COPY --from=builder /workspace/tools/bench-vs-libvips/libvips-runner /usr/local/bin/libvips-runner
+# Copy source-built native libraries from builder (libjxl, libheif, libjpeg-turbo ≥3.0)
+# Done AFTER apt-get so our versions take precedence over apt package versions.
+COPY --from=builder /usr/local/lib/ /usr/local/lib/
+COPY --from=builder /usr/local/include/ /usr/local/include/
+
+RUN ldconfig
+
+# Verify source-built libs are discoverable by pkg-config
+RUN pkg-config --modversion libturbojpeg && \
+    pkg-config --modversion libjxl && \
+    pkg-config --modversion libheif
+
+# xtask and bench runners are expected to be built in CI using this image as the base.
+# Keep helper scripts in the image.
 COPY docker/scripts/ /opt/bench/
 
 WORKDIR /data

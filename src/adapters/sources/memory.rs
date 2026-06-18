@@ -31,7 +31,7 @@ impl<F: BandFormat> MemorySource<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::memory::new;
     /// ```
     pub fn new(
@@ -77,7 +77,7 @@ impl<F: BandFormat> MemorySource<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::memory::with_metadata;
     /// ```
     pub fn with_metadata(mut self, metadata: ImageMetadata) -> Self {

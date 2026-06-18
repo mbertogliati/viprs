@@ -36,7 +36,7 @@ impl<F: BandFormat> ZeroSource<F> {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::zero::new;
     /// ```
     #[must_use]

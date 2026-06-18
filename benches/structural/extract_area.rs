@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: ExtractArea<U8> — crop a half-size region from the image center.
 ///
 /// Measures the full pipeline path: MemorySource → ExtractArea → MemorySink via
@@ -37,7 +38,7 @@ fn bench_extract_area(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

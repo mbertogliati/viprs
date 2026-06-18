@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Seek};
 use std::path::Path;
 
+use super::state::PNG_XMP_KEYWORD;
 #[cfg(feature = "libspng")]
 use png::ColorType;
 use png::{BitDepth, Decoder as PngReader};

@@ -1,5 +1,8 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
-use viprs::{Region, TiePointSearchOp, Tile, U8};
+use viprs::domain::format::U8;
+use viprs::domain::image::{Region, Tile};
+use viprs::domain::ops::mosaicing::TiePointSearchOp;
 
 fn make_pixels(size: u32) -> Vec<u8> {
     let pixel_count = size as usize * size as usize;

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Exp<F32> — element-wise natural exponential (e^x).
 ///
 /// Measures the full pipeline path: MemorySource → Exp → MemorySink via RayonScheduler.
@@ -25,7 +26,7 @@ fn bench_exp(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

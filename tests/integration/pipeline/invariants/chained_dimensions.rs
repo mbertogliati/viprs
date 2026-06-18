@@ -67,9 +67,9 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -179,15 +179,15 @@ mod chaos_monkey_16 {
     fn thumbnail_recomb_thumbnail_matches_sequential_dimensions() {
         let image = patterned_rgb(37, 23);
         let (_first_pipeline, first) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.thumbnail(thumbnail(19)))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.thumbnail(thumbnail(19)))
                 .expect("first thumbnail should succeed");
         let (_second_pipeline, recombined) =
-            execute_to_image::<U8, U8>(&first, append_recomb).expect("recomb should succeed");
+            execute_to_image::<U8, U8, _>(&first, append_recomb).expect("recomb should succeed");
         let (_third_pipeline, sequential) =
-            execute_to_image::<U8, U8>(&recombined, |builder| builder.thumbnail(thumbnail(9)))
+            execute_to_image::<U8, U8, _>(&recombined, |builder| builder.thumbnail(thumbnail(9)))
                 .expect("second thumbnail should succeed");
 
-        let (pipeline, chained) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (pipeline, chained) = execute_to_image::<U8, U8, _>(&image, |builder| {
             let builder = builder.thumbnail(thumbnail(19))?;
             let builder = append_recomb(builder)?;
             builder.thumbnail(thumbnail(9))

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: ASin<F32> — element-wise arc sine.
 ///
 /// Measures the full pipeline path: MemorySource → ASin → MemorySink via RayonScheduler.
@@ -26,7 +27,7 @@ fn bench_asin(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
                     .unwrap()
                     .run(&pipeline, &mut sink)

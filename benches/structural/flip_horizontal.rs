@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: FlipHorizontal<U8> — mirror the image left-to-right.
 ///
 /// Measures the full pipeline path: MemorySource → FlipHorizontal → MemorySink via
@@ -32,7 +33,7 @@ fn bench_flip_horizontal(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

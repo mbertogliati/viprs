@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: Invert<U8> — element-wise inversion (`255 - x` for U8).
 ///
 /// Measures the full pipeline path: MemorySource → Invert → MemorySink via RayonScheduler.
@@ -27,7 +28,7 @@ fn bench_invert(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -53,7 +54,7 @@ fn bench_invert(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

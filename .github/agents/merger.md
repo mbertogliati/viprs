@@ -218,6 +218,7 @@ or files outside `src/`.
 ### 6. CI passes (if configured)
 
 If a CI check is defined, it must be green before merging.
+See [CI_GUIDELINES.md](CI_GUIDELINES.md) for the expected workflow structure and status-gate pattern.
 
 ---
 

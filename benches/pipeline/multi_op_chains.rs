@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use std::{
     process::Command,
     time::{Duration, Instant},
@@ -5,11 +6,11 @@ use std::{
 
 use libc::{RUSAGE_SELF, getrusage, rusage};
 use viprs::{
-    BandFormatId,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
+    domain::format::BandFormatId,
     domain::{
         colorspace::{ColorspaceId, Lab},
         format::U8,
@@ -104,14 +105,14 @@ fn measure_summary(name: &str, size: u32, build: PipelineFactory) {
 
     for _ in 0..WARMUP_SAMPLES {
         let pipeline = build(size);
-        let mut sink = MemorySink::for_pipeline(&pipeline);
+        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         scheduler.run(&pipeline, &mut sink).unwrap();
         let _ = sink.into_buffer();
     }
 
     for _ in 0..SUMMARY_SAMPLES {
         let pipeline = build(size);
-        let mut sink = MemorySink::for_pipeline(&pipeline);
+        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         let started = Instant::now();
         scheduler.run(&pipeline, &mut sink).unwrap();
         let buffer = sink.into_buffer();

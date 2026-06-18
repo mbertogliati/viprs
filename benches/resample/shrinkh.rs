@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: ShrinkH<U8> — horizontal integer shrink by factor 2.
 ///
 /// Measures the full pipeline path: MemorySource → ShrinkH → MemorySink via
@@ -35,7 +36,7 @@ fn bench_shrinkh(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -61,7 +62,7 @@ fn bench_shrinkh(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
@@ -116,7 +117,7 @@ fn bench_shrinkh_factor_sweep(c: &mut Criterion) {
                         .unwrap()
                         .build()
                         .unwrap();
-                    let mut sink = MemorySink::for_pipeline(&pipeline);
+                    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
                         .unwrap()
                         .run(&pipeline, &mut sink)

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// iai-callgrind benchmark: deterministic instruction-counted pipeline benchmarks.
 ///
 /// Unlike criterion (wall-clock, noisy), iai-callgrind measures instruction count,
@@ -45,7 +46,7 @@ fn run_invert(size: u32) {
         .unwrap()
         .build()
         .unwrap();
-    let mut sink = MemorySink::for_pipeline(&pipeline);
+    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
         .unwrap()
         .run(&pipeline, &mut sink)
@@ -65,7 +66,7 @@ fn run_add(size: u32) {
         .unwrap()
         .build()
         .unwrap();
-    let mut sink = MemorySink::for_pipeline(&pipeline);
+    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
         .unwrap()
         .run(&pipeline, &mut sink)

@@ -135,6 +135,7 @@ impl Default for DecodeLimits {
 pub struct ResourceLimits {
     max_pixels: u64,
     max_memory_bytes: u64,
+    max_decode_bytes: u64,
     max_concurrent: usize,
     execution_limiter: Arc<ExecutionSemaphore>,
 }
@@ -143,6 +144,7 @@ impl PartialEq for ResourceLimits {
     fn eq(&self, other: &Self) -> bool {
         self.max_pixels == other.max_pixels
             && self.max_memory_bytes == other.max_memory_bytes
+            && self.max_decode_bytes == other.max_decode_bytes
             && self.max_concurrent == other.max_concurrent
     }
 }
@@ -159,6 +161,7 @@ impl ResourceLimits {
         Self {
             max_pixels,
             max_memory_bytes,
+            max_decode_bytes: max_memory_bytes,
             max_concurrent,
             execution_limiter: Arc::new(ExecutionSemaphore::new(max_concurrent)),
         }
@@ -186,16 +189,33 @@ impl ResourceLimits {
         self.max_pixels
     }
 
-    /// Maximum decoded or output bytes per request.
+    /// Maximum encoded output buffer budget in bytes per request.
     #[must_use]
     pub const fn max_memory_bytes(&self) -> u64 {
         self.max_memory_bytes
+    }
+
+    /// Maximum decoded buffer budget in bytes per request.
+    #[must_use]
+    pub const fn max_decode_bytes(&self) -> u64 {
+        self.max_decode_bytes
     }
 
     /// Maximum in-flight pipeline executions that may run at once.
     #[must_use]
     pub const fn max_concurrent(&self) -> usize {
         self.max_concurrent
+    }
+
+    /// Override the decode-byte budget while keeping output validation unchanged.
+    ///
+    /// This is useful when a request must permit a larger source image to decode
+    /// before a later pipeline stage or encoded output is validated against a
+    /// tighter output memory budget.
+    #[must_use]
+    pub fn with_max_decode_bytes(mut self, max_decode_bytes: u64) -> Self {
+        self.max_decode_bytes = max_decode_bytes.max(1);
+        self
     }
 
     /// Convert to decode-time header checks.
@@ -205,7 +225,7 @@ impl ResourceLimits {
             max_width: u32::MAX,
             max_height: u32::MAX,
             max_pixels: self.max_pixels,
-            max_decode_bytes: self.max_memory_bytes,
+            max_decode_bytes: self.max_decode_bytes,
         }
     }
 
@@ -450,7 +470,42 @@ mod tests {
             limits.max_memory_bytes(),
             DecodeLimits::default_safe().max_decode_bytes
         );
+        assert_eq!(
+            limits.max_decode_bytes(),
+            DecodeLimits::default_safe().max_decode_bytes
+        );
         assert!(limits.max_concurrent() >= 1);
+    }
+
+    #[test]
+    fn resource_limits_decode_limits_default_to_output_budget() {
+        let limits = ResourceLimits::new(16, 32, 1);
+
+        assert_eq!(
+            limits.decode_limits(),
+            DecodeLimits {
+                max_width: u32::MAX,
+                max_height: u32::MAX,
+                max_pixels: 16,
+                max_decode_bytes: 32,
+            }
+        );
+    }
+
+    #[test]
+    fn resource_limits_decode_limits_can_override_decode_budget() {
+        let limits = ResourceLimits::new(16, 3, 1).with_max_decode_bytes(4);
+
+        assert_eq!(
+            limits.decode_limits(),
+            DecodeLimits {
+                max_width: u32::MAX,
+                max_height: u32::MAX,
+                max_pixels: 16,
+                max_decode_bytes: 4,
+            }
+        );
+        assert_eq!(limits.max_memory_bytes(), 3);
     }
 
     #[test]

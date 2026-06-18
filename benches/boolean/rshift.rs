@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: RShift<U8> — right-shift each pixel sample by a constant number of bits.
 ///
 /// Measures the full pipeline path: MemorySource → RShift → MemorySink via RayonScheduler.
@@ -29,7 +30,7 @@ fn bench_rshift(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

@@ -1,6 +1,6 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    PipelineBuilder,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -12,6 +12,7 @@ use viprs::{
         ops::conversion::{ScaleMode, ScaleOp},
         reducers::stats::StatsReducer,
     },
+    pipeline::PipelineBuilder,
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 
@@ -74,7 +75,7 @@ fn bench_scale(c: &mut Criterion) {
                 )
                 .build()
                 .unwrap();
-                let stats_sink = MemorySink::for_pipeline(&input_pipeline);
+                let stats_sink = MemorySink::for_pipeline(&input_pipeline).unwrap();
                 let stats = must(
                     scheduler.run_with_reducer::<U16, StatsReducer>(
                         &input_pipeline,
@@ -99,7 +100,7 @@ fn bench_scale(c: &mut Criterion) {
                 )
                 .build()
                 .unwrap();
-                let mut sink = MemorySink::for_pipeline(&scale_pipeline);
+                let mut sink = MemorySink::for_pipeline(&scale_pipeline).unwrap();
                 must(
                     scheduler.run(&scale_pipeline, &mut sink),
                     "run scale pipeline",

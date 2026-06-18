@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: LabToSRgb — convert a F32 CIE L*a*b* image to sRGB (U8 output).
 ///
 /// Measures the full pipeline path: MemorySource<F32> → LabToSRgb → MemorySink<U8>
@@ -31,7 +32,7 @@ fn bench_lab_to_srgb(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

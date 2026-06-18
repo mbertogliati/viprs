@@ -134,6 +134,7 @@ fn load_and_validate_path(path: &Path, label: &str) -> Result<Vec<u8>, ViprsErro
     Ok(bytes)
 }
 
+/// Loads a named ICC profile.
 pub fn profile_load(name: &str) -> Result<Vec<u8>, ViprsError> {
     let normalized = normalize_profile_name(name);
     match normalized.as_ref() {

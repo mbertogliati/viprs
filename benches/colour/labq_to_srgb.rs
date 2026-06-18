@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 // Benchmarks the standalone LabQ→SRgb parity op.
 // see B-258
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
@@ -38,7 +39,7 @@ fn bench_labq_to_srgb(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

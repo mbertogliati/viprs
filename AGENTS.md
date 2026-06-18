@@ -18,6 +18,30 @@ cargo check -p xtask
 
 ---
 
+## Validation: use the Makefile
+
+**All routine validation commands (linting, compilation, warnings, tests, benchmarks,
+comparison with libvips) MUST go through the Makefile.** The Makefile is the single source
+of truth shared by CI and local development — if it passes locally, it passes in CI.
+
+```bash
+make check          # Fast local validation: fmt + clippy + build + test
+make ci             # Full CI pipeline (everything GitHub Actions runs)
+make bench          # Criterion micro-benchmarks
+make bench-vs       # E2E comparison vs libvips
+make fmt FIX=1      # Auto-fix formatting
+```
+
+**Do NOT use raw `cargo` commands for routine validation.** Raw `cargo clippy`, `cargo test`,
+etc. are only acceptable for microscopic troubleshooting of a specific issue (e.g., running
+a single test with `--nocapture`, or checking a specific feature combination). Once the issue
+is identified, the fix must pass `make check`.
+
+If you need a new validation step, add it to the Makefile — never leave it as a one-off
+`cargo` invocation that CI runs but developers don't.
+
+---
+
 ## Reference implementation
 
 The libvips source is available locally in `.libvips_repo/`.

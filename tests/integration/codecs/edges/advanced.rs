@@ -82,9 +82,9 @@ mod chaos_monkey_12 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F>(
+    fn execute_to_image<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
@@ -104,9 +104,9 @@ mod chaos_monkey_12 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_image_with_output<InputF, OutputF>(
+    fn execute_to_image_with_output<InputF, OutputF, S: viprs::pipeline::Flush>(
         image: &Image<InputF>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<OutputF>), String>
     where
         InputF: viprs::BandFormat,
@@ -127,9 +127,9 @@ mod chaos_monkey_12 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F>(
+    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
@@ -265,8 +265,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut>(
-        builder: PipelineBuilder,
+    fn run_builder_to_image<FOut, S: viprs::pipeline::Flush>(
+        builder: PipelineBuilder<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -295,9 +295,9 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -337,7 +337,7 @@ mod chaos_monkey_13 {
 
         let png_thread = thread::spawn(move || PngCodec::default().encode(&png_image));
         let jpeg_thread = thread::spawn(move || JpegCodec.encode(&jpeg_image));
-        let webp_thread = thread::spawn(move || WebpCodec::default().encode(&webp_image));
+        let webp_thread = thread::spawn(move || WebpCodec.encode(&webp_image));
 
         let png = png_thread.join().unwrap().unwrap();
         let jpeg = jpeg_thread.join().unwrap().unwrap();
@@ -426,9 +426,9 @@ mod chaos_monkey_9 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_pipeline<F>(
+    fn run_pipeline<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,

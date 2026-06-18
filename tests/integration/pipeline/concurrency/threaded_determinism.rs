@@ -88,9 +88,9 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -123,9 +123,9 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F>(
+    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
@@ -173,7 +173,7 @@ mod chaos_monkey_8 {
         for _ in 0..4 {
             let image = Arc::clone(&image);
             handles.push(thread::spawn(move || {
-                execute_pipeline_to_image::<U8, U8>(&image, |builder| {
+                execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
                     builder.rotate90()?.flip_horizontal()?.resize(Resize::new(
                         1.5,
                         1.5,
@@ -212,7 +212,7 @@ mod chaos_monkey_8 {
         );
 
         let (_pipeline, output) =
-            execute_pipeline_to_image::<U8, U8>(&image, |builder| builder.invert())
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.invert())
                 .expect("source image must remain usable after histogram computation");
         assert_eq!(output.width(), image.width());
         assert_eq!(output.height(), image.height());

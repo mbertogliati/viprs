@@ -5,6 +5,9 @@ use super::{
     ViprsError,
 };
 
+#[cfg(feature = "icc")]
+use super::ImageApiThumbnailOptions;
+
 impl ImageApi {
     /// Apply any pipeline operation.
     ///
@@ -195,7 +198,7 @@ impl ImageApi {
     ///
     /// # Examples
     ///
-    /// ```rust,no_run
+    /// ```ignore
     /// # #[cfg(feature = "icc")] {
     /// use viprs::adapters::image_api::{ImageApi, ImageApiThumbnailOptions};
     ///
@@ -230,7 +233,7 @@ impl ImageApi {
     ///
     /// # Examples
     ///
-    /// ```rust,no_run
+    /// ```ignore
     /// # #[cfg(feature = "icc")] {
     /// use viprs::adapters::image_api::ImageApi;
     ///

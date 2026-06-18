@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut>(
-        builder: PipelineBuilder,
+    fn run_builder_to_image<FOut, S: viprs::pipeline::Flush>(
+        builder: PipelineBuilder<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -108,9 +108,9 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -143,7 +143,7 @@ mod chaos_monkey_13 {
     #[test]
     fn cast_u8_f32_u8_roundtrip_is_lossless() {
         let image = patterned_u8(17, 9, 3);
-        let (pipeline, output) = execute_pipeline_to_image::<U8, U8>(&image, |builder| {
+        let (pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder.cast(BandFormatId::F32)?.cast(BandFormatId::U8)
         })
         .expect("U8 -> F32 -> U8 roundtrip should succeed");
@@ -163,7 +163,7 @@ mod chaos_monkey_13 {
             Err(_) => {}
             Ok(builder) => {
                 let (pipeline, output) =
-                    run_builder_to_image::<U8>(builder, image.metadata().clone())
+                    run_builder_to_image::<U8, _>(builder, image.metadata().clone())
                         .expect("flatten on RGB should not panic if it succeeds");
                 assert_eq!(
                     pipeline.output_bands, 3,
@@ -218,7 +218,7 @@ mod chaos_monkey_13 {
         let image =
             Image::from_buffer(3, 1, 1, vec![0u8, 10, 255]).expect("input image must build");
         let (_pipeline, output) =
-            execute_pipeline_to_image::<U8, U8>(&image, |builder| builder.linear(1.0, 1000.0))
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.linear(1.0, 1000.0))
                 .expect("linear with large positive offset should not panic");
 
         assert_eq!(output.pixels(), &[255, 255, 255]);

@@ -63,6 +63,7 @@ pub mod prelude {
 
 /// Explicit advanced pipeline surface for manual graph construction and execution.
 pub mod pipeline {
+    pub use crate::adapters::pipeline::Flush;
     pub use crate::adapters::pipeline::{
         CompiledNode, CompiledOp, CompiledPipeline, InputSlicePtr, LineCacheConfig, PipelineArena,
         PipelineBuilder, PipelineOp, ThreadBufferPool,
@@ -97,6 +98,26 @@ pub use adapters::image_api::ImageApiThumbnailOptions;
 pub use adapters::image_api::{ImageApi, ImageApiLoader};
 pub use domain::error::ViprsError;
 pub use domain::limits::{DecodeLimits, ResourceLimits};
+
+#[cfg(feature = "fft")]
+pub use adapters::freqfilt::{fwfft, invfft};
+pub use adapters::pipeline::{CompiledPipeline, PipelineBuilder};
+pub use adapters::sources::{BlackSource, any::AnySource};
+pub use domain::error::BuildError;
+pub use domain::format::{BandFormat, BandFormatId, F32, F64, U8, U16};
+pub use domain::image::{DemandHint, Image, ImageMetadata, Interpretation, Region, Tile, TileMut};
+pub use domain::op::{DynOperation, Op, OperationBridge};
+#[cfg(feature = "fft")]
+pub use domain::ops::freqfilt::{FwFftOp, InvFftOp};
+pub use domain::ops::point::Linear;
+pub use domain::ops::{
+    arithmetic::{Add, AvgOp, DeviateOp, Multiply, RecombOp, Subtract},
+    create::{EyeOp, GaussmatOp, GaussmatPrecision, SinesOp, TonelutOp},
+    freqfilt::COMPLEX_BANDS,
+    histogram::HistFindOp,
+};
+pub use ports::scheduler::TileScheduler;
+pub use ports::source::ImageSource;
 
 #[cfg(test)]
 mod public_api_tests {

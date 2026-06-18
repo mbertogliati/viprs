@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: BandSplit<U8> — extract one band from a 4-band RGBA image.
 ///
 /// Measures the full pipeline path: MemorySource → BandSplit → MemorySink via RayonScheduler.
@@ -32,7 +33,7 @@ fn bench_bandsplit(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

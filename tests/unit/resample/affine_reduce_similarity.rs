@@ -134,9 +134,9 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut>(
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder, BuildError>,
+        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -213,9 +213,9 @@ mod chaos_monkey_18 {
     fn affine_rotate90_matches_rotate90_for_non_square_input() {
         let image = grayscale_pattern(640, 480);
         let (_rot_pipeline, rotated) =
-            execute_to_image::<U8, U8>(&image, |builder| builder.rotate90())
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.rotate90())
                 .expect("rotate90 should succeed");
-        let (affine_pipeline, affine) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (affine_pipeline, affine) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.affine(
                 [0.0, 1.0, -1.0, 0.0],
                 0.0,
@@ -235,13 +235,13 @@ mod chaos_monkey_18 {
     #[ignore = "BUG: reduce_h(2.0) -> shrink_h(2) disagrees with reduce_h(4.0) on the same axis"]
     fn reduce_h_then_shrink_h_matches_single_reduce_h() {
         let image = grayscale_pattern(96, 17);
-        let (_combined_pipeline, combined) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_combined_pipeline, combined) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .reduce_h(2.0, InterpolationKernel::Nearest)?
                 .shrink_h(2)
         })
         .expect("reduce_h then shrink_h should succeed");
-        let (_direct_pipeline, direct) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (_direct_pipeline, direct) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.reduce_h(4.0, InterpolationKernel::Nearest)
         })
         .expect("single reduce_h should succeed");
@@ -256,7 +256,7 @@ mod chaos_monkey_18 {
     #[test]
     fn similarity_angle_360_is_identity() {
         let image = rgba_pattern(17, 11);
-        let (pipeline, output) = execute_to_image::<U8, U8>(&image, |builder| {
+        let (pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.similarity(1.0, 360.0, InterpolationKernel::Nearest)
         })
         .expect("similarity angle=360 should succeed");

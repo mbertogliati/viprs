@@ -31,7 +31,7 @@ fn memory_source_add_constant_end_to_end() {
         .build()
         .unwrap();
 
-    let mut sink = MemorySink::new(4, 4, 1, 1);
+    let mut sink = MemorySink::new(4, 4, 1, 1).unwrap();
     RayonScheduler::new(2)
         .unwrap()
         .run(&pipeline, &mut sink)
@@ -70,7 +70,7 @@ fn memory_source_clamp_to_edge_does_not_panic() {
         .build()
         .unwrap();
 
-    let mut sink = MemorySink::new(4, 4, 1, 1);
+    let mut sink = MemorySink::new(4, 4, 1, 1).unwrap();
     RayonScheduler::new(1)
         .unwrap()
         .run(&pipeline, &mut sink)

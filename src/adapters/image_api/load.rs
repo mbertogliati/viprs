@@ -7,6 +7,24 @@ use super::{
     Read, ResourceLimits, ViprsError, size_of,
 };
 
+#[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
+use super::{Arc, DecoderSource};
+#[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
+use crate::domain::format::U8;
+
+#[cfg(feature = "jpeg")]
+use super::JpegCodec;
+#[cfg(feature = "png")]
+use super::PNG_IHDR_BIT_DEPTH_OFFSET;
+#[cfg(feature = "png")]
+use super::PngCodec;
+#[cfg(feature = "webp")]
+use super::{WEBP_MAGIC, WEBP_RIFF_HEADER, WebpCodec};
+#[cfg(feature = "png")]
+use crate::domain::format::U16;
+#[cfg(feature = "png")]
+use std::fs;
+
 /// High-level façade for decode → pipeline → encode workflows.
 ///
 /// `ImageApi` is the main user-facing adapter for request/response image
@@ -357,7 +375,8 @@ impl ImageApi {
         Self::from_image_with_limits(image, opts.limits.as_ref(), resource_limits.cloned())
     }
 
-    pub(in crate::adapters::image_api) const fn from_jpeg_bytes_with_options(
+    #[allow(clippy::missing_const_for_fn)] // not const when `jpeg` feature is enabled
+    pub(in crate::adapters::image_api) fn from_jpeg_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,
@@ -368,7 +387,8 @@ impl ImageApi {
                 JpegCodec,
                 Arc::<[u8]>::from(buf),
                 opts.clone(),
-            )?;
+            )?
+            .without_deferred_thumbnail_materialization();
             return Self::from_source_with_limits(
                 source,
                 1,
@@ -389,7 +409,8 @@ impl ImageApi {
         }
     }
 
-    pub(in crate::adapters::image_api) const fn from_png_bytes_with_options(
+    #[allow(clippy::missing_const_for_fn)] // not const when `png` feature is enabled
+    pub(in crate::adapters::image_api) fn from_png_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,
@@ -441,7 +462,8 @@ impl ImageApi {
         resource_limits: Option<ResourceLimits>,
     ) -> Result<Self, ViprsError> {
         let source =
-            DecoderSource::<_, U8>::probed_path_with_options(JpegCodec, path, opts.clone())?;
+            DecoderSource::<_, U8>::probed_path_with_options(JpegCodec, path, opts.clone())?
+                .without_deferred_thumbnail_materialization();
         Self::from_source_with_limits(source, 1, opts.limits.as_ref(), resource_limits)
     }
 

@@ -2,8 +2,10 @@
 /// Provides the `freqmult` module for this domain area.
 pub mod freqmult;
 #[cfg(feature = "fft")]
+/// Forward FFT operation.
 pub mod fwfft;
 #[cfg(feature = "fft")]
+/// Inverse FFT operation.
 pub mod invfft;
 /// Provides the `phasecor` module for this domain area.
 pub mod phasecor;

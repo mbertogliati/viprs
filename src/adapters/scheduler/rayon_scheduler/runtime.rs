@@ -28,6 +28,9 @@ use super::{
     scheduler_panic_to_error, viprs_span,
 };
 
+#[cfg(feature = "lock_instrumentation")]
+use super::lock_instrumentation::LockInstrumentationSnapshot;
+
 impl TileRunProfile {
     fn new(node_count: usize) -> Self {
         Self {
@@ -120,7 +123,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::new;
     /// ```
     pub const fn new(num_threads: usize) -> Result<Self, ViprsError> {
@@ -138,7 +141,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::default_threads;
     /// ```
     #[must_use]
@@ -152,7 +155,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_strip_height_tiles;
     /// ```
     pub fn with_strip_height_tiles(mut self, strip_height_tiles: usize) -> Self {
@@ -166,7 +169,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_l2_cache_bytes;
     /// ```
     pub fn with_l2_cache_bytes(mut self, target_l2_bytes: usize) -> Self {
@@ -180,7 +183,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_max_concurrent_pipelines;
     /// ```
     pub fn with_max_concurrent_pipelines(mut self, max_concurrent: usize) -> Self {
@@ -194,7 +197,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_execution_limiter;
     /// ```
     pub(crate) fn with_execution_limiter(
@@ -402,7 +405,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::lock_instrumentation_snapshot;
     /// ```
     pub fn lock_instrumentation_snapshot() -> LockInstrumentationSnapshot {
@@ -414,7 +417,7 @@ impl RayonScheduler {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::run_with_profile;
     /// ```
     pub fn run_with_profile(

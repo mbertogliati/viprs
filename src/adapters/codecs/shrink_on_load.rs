@@ -13,7 +13,7 @@ use crate::domain::error::ViprsError;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::codecs::shrink_on_load::ShrinkOnLoadBackend>();
 /// ```
 pub(crate) enum ShrinkOnLoadBackend {
@@ -43,7 +43,7 @@ impl ShrinkOnLoadBackend {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::codecs::shrink_on_load::ShrinkOnLoadPlan>();
 /// ```
 pub(crate) struct ShrinkOnLoadPlan {

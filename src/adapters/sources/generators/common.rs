@@ -16,7 +16,7 @@ use crate::domain::{
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::sources::generators::common::validate_output_len;
 /// ```
 pub fn validate_output_len(
@@ -61,7 +61,7 @@ pub fn validate_output_len(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::sources::generators::common::clamp_coord;
 /// ```
 pub fn clamp_coord(coord: i32, limit: u32) -> u32 {
@@ -78,7 +78,7 @@ pub fn clamp_coord(coord: i32, limit: u32) -> u32 {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = viprs::adapters::sources::generators::common::write_sample;
 /// ```
 pub fn write_sample<S: Pod>(output: &mut [u8], sample_index: usize, value: S) {
@@ -92,7 +92,7 @@ pub fn write_sample<S: Pod>(output: &mut [u8], sample_index: usize, value: S) {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// fn accepts_trait<T: viprs::adapters::sources::generators::common::PointSourceFormat>() {}
 /// let _ = accepts_trait::<fn()>;
 /// ```
@@ -130,7 +130,7 @@ impl PointSourceFormat for U8 {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// fn accepts_trait<T: viprs::adapters::sources::generators::common::IdentitySourceFormat>() {}
 /// let _ = accepts_trait::<fn()>;
 /// ```

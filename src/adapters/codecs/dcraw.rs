@@ -29,6 +29,7 @@ use crate::{
     ports::codec::ImageDecoder,
 };
 
+/// File extensions recognized as raw camera formats (decoded via dcraw).
 pub const DCRAW_EXTENSIONS: &[&str] = &[
     "3fr", "ari", "arw", "cap", "cin", "cr2", "cr3", "crw", "dcr", "dng", "erf", "fff", "iiq",
     "k25", "kdc", "mdc", "mos", "mrw", "nef", "nrw", "orf", "ori", "pef", "pxn", "raf", "raw",

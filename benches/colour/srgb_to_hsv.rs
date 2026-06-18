@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 /// Benchmark: SRgbToHsv — convert a U8 sRGB image to HSV (F32 output).
 ///
 /// Measures the full pipeline path: MemorySource<U8> → SRgbToHsv → MemorySink<F32>
@@ -31,7 +32,7 @@ fn bench_srgb_to_hsv(c: &mut Criterion) {
                     .unwrap()
                     .build()
                     .unwrap();
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)

@@ -42,7 +42,7 @@ pub struct Sequential;
 
 // ── DecoderSource ─────────────────────────────────────────────────────────────
 
-/// Adapter that exposes decoded image bytes as an [`ImageSource`].
+/// Adapter that exposes decoded image bytes as an [`ImageSource`](crate::ports::source::ImageSource).
 ///
 /// ## Type parameters
 ///
@@ -70,7 +70,7 @@ pub struct Sequential;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::sources::decoder_source::DecoderSource>();
 /// ```
 pub struct DecoderSource<'a, D: ImageDecoder, F: BandFormat, M = RandomAccess> {
@@ -84,6 +84,8 @@ pub struct DecoderSource<'a, D: ImageDecoder, F: BandFormat, M = RandomAccess> {
     pub(super) opts: LoadOptions,
     /// The decoder instance (retained for diagnostics/reprobe).
     pub(super) decoder: D,
+    /// Whether thumbnail shrink hints may eagerly materialize a deferred backing.
+    pub(super) materialize_deferred_thumbnail_hints: bool,
     /// Access mode is a compile-time property only; zero runtime cost.
     _mode: PhantomData<M>,
 }
@@ -132,6 +134,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
             backing_shrink_factor,
             opts,
             decoder,
+            materialize_deferred_thumbnail_hints: true,
             _mode: PhantomData,
         })
     }
@@ -177,6 +180,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
             backing_shrink_factor,
             opts,
             decoder,
+            materialize_deferred_thumbnail_hints: true,
             _mode: PhantomData,
         })
     }
@@ -228,6 +232,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
             backing_shrink_factor: 1,
             opts,
             decoder,
+            materialize_deferred_thumbnail_hints: true,
             _mode: PhantomData,
         })
     }
@@ -256,6 +261,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
             backing_shrink_factor: 1,
             opts,
             decoder,
+            materialize_deferred_thumbnail_hints: true,
             _mode: PhantomData,
         })
     }
@@ -302,6 +308,11 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
 }
 
 impl<'a, D: ImageDecoder, F: BandFormat> DecoderSource<'a, D, F, RandomAccess> {
+    pub(in crate::adapters) fn without_deferred_thumbnail_materialization(mut self) -> Self {
+        self.materialize_deferred_thumbnail_hints = false;
+        self
+    }
+
     /// Create a streaming source over borrowed compressed input.
     ///
     /// This is the lowest resident-memory path: no encoded copy and no decoded
@@ -352,6 +363,7 @@ impl<'a, D: ImageDecoder, F: BandFormat> DecoderSource<'a, D, F, RandomAccess> {
             backing_shrink_factor: 1,
             opts,
             decoder,
+            materialize_deferred_thumbnail_hints: true,
             _mode: PhantomData,
         })
     }

@@ -102,7 +102,7 @@ pub(super) fn streaming_backing_shrink_factor<D: ImageDecoder, F: BandFormat>(
     }
 }
 
-/// Compressed input retained by a streaming [`DecoderSource`].
+/// Compressed input retained by a streaming [`DecoderSource`](super::DecoderSource).
 ///
 /// Borrowed input is the strictest memory path: the source keeps no encoded copy
 /// and decodes each tile from the caller-owned bytes. Shared input is for sources

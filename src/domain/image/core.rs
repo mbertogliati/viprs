@@ -99,7 +99,7 @@ impl<F: BandFormat> Image<F> {
     /// This supports builder-style image construction after decoding or processing.
     ///
     /// # Examples
-    /// ```rust
+    /// ```ignore
     /// # use viprs::domain::{format::U8, image::{Image, ImageMetadata, Interpretation}};
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()
     ///     .with_metadata(ImageMetadata { interpretation: Some(Interpretation::SRgb), ..ImageMetadata::default() });

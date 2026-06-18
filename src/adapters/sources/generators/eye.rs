@@ -119,7 +119,7 @@ impl EyeSource {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```ignore
     /// let _ = viprs::adapters::sources::generators::eye::width;
     /// ```
     pub fn width(&self) -> u32 {

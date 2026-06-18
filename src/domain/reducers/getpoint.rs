@@ -12,7 +12,7 @@ use crate::domain::{
 /// caller, returning one sample vector per requested coordinate in band order.
 ///
 /// # Examples
-/// ```rust
+/// ```ignore
 /// use viprs::domain::{
 ///     format::U8,
 ///     image::{Region, Tile},

@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
@@ -54,7 +55,7 @@ fn bench_mapim(c: &mut Criterion) {
                 arena.connect_root_to_slot(index_root, node, 1).unwrap();
                 let pipeline = arena.compile().unwrap();
 
-                let mut sink = MemorySink::for_pipeline(&pipeline);
+                let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
                     .unwrap()
                     .run(&pipeline, &mut sink)
