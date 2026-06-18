@@ -80,6 +80,18 @@ fn png_test_output_path(name: &str) -> PathBuf {
     dir.join(format!("{name}-{unique}.png"))
 }
 
+fn indexed_png_bytes() -> Vec<u8> {
+    let mut output = Vec::new();
+    let mut encoder = png::Encoder::new(&mut output, 2, 1);
+    encoder.set_color(png::ColorType::Indexed);
+    encoder.set_depth(png::BitDepth::Eight);
+    encoder.set_palette(vec![255, 0, 0, 0, 255, 0]);
+    let mut writer = encoder.write_header().unwrap();
+    writer.write_image_data(&[0, 1]).unwrap();
+    drop(writer);
+    output
+}
+
 struct PngRowDecodeProbeReset;
 
 impl PngRowDecodeProbeReset {
@@ -188,6 +200,31 @@ fn round_trip_u8_grayscale() {
     assert_eq!(decoded.height(), 4);
     assert_eq!(decoded.bands(), 1);
     assert_eq!(decoded.pixels(), original.pixels());
+}
+
+#[test]
+fn decode_palette_png_expands_indices_to_rgb() {
+    let decoded = PngCodec::default()
+        .decode::<U8>(&indexed_png_bytes())
+        .unwrap();
+
+    assert_eq!(decoded.width(), 2);
+    assert_eq!(decoded.height(), 1);
+    assert_eq!(decoded.bands(), 3);
+    assert_eq!(decoded.pixels(), &[255, 0, 0, 0, 255, 0]);
+}
+
+#[test]
+fn decode_region_palette_png_expands_indices_to_rgb() {
+    let encoded = indexed_png_bytes();
+    let region = Region::new(0, 0, 2, 1);
+    let mut output = vec![0u8; region.pixel_count() * 3];
+
+    PngCodec::default()
+        .decode_region_into::<U8>(&encoded, &LoadOptions::default(), region, &mut output)
+        .unwrap();
+
+    assert_eq!(output, vec![255, 0, 0, 0, 255, 0]);
 }
 
 // ── round-trip U16 RGB ────────────────────────────────────────────────────

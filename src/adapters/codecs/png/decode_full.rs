@@ -2,10 +2,11 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Seek};
 use std::path::Path;
 
+#[cfg(feature = "libspng")]
 use super::state::PNG_XMP_KEYWORD;
 #[cfg(feature = "libspng")]
 use png::ColorType;
-use png::{BitDepth, Decoder as PngReader};
+use png::{BitDepth, Decoder as PngDecoder, Transformations};
 #[cfg(feature = "libspng")]
 use spng::{
     BitDepth as SpngBitDepth, ColorType as SpngColorType, ContextFlags as SpngContextFlags,
@@ -29,9 +30,18 @@ pub(super) fn png_reader<R>(src: R) -> Result<png::Reader<R>, ViprsError>
 where
     R: BufRead + Seek,
 {
-    PngReader::new(src)
+    png_decoder(src)
         .read_info()
         .map_err(|e| ViprsError::Codec(e.to_string()))
+}
+
+pub(super) fn png_decoder<R>(src: R) -> PngDecoder<R>
+where
+    R: BufRead + Seek,
+{
+    let mut decoder = PngDecoder::new(src);
+    decoder.set_transformations(Transformations::EXPAND);
+    decoder
 }
 
 pub(super) fn png_file_reader(path: &Path) -> Result<BufReader<File>, ViprsError> {
@@ -52,8 +62,8 @@ pub(super) fn open_png_sequential_path_session(
 
     let width = info.width;
     let height = info.height;
-    let bit_depth = info.bit_depth;
-    let bands = color_type_to_bands(info.color_type)?;
+    let (color_type, bit_depth) = reader.output_color_type();
+    let bands = color_type_to_bands(color_type)?;
     let row_len = reader
         .output_line_size(width)
         .ok_or_else(|| ViprsError::Codec("png: cannot determine row buffer size".into()))?;
@@ -250,7 +260,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
     src: R,
     factor: usize,
 ) -> Result<(u32, u32, u32, Vec<u8>), ViprsError> {
-    let dec = PngReader::new(src);
+    let dec = png_decoder(src);
     let mut reader = dec
         .read_info()
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
@@ -258,8 +268,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
     let info = reader.info();
     let src_w = info.width as usize;
     let src_h = info.height as usize;
-    let color_type = info.color_type;
-    let bit_depth = info.bit_depth;
+    let (color_type, bit_depth) = reader.output_color_type();
     let bands = color_type_to_bands(color_type)? as usize;
 
     if bit_depth != BitDepth::Eight {
@@ -398,7 +407,7 @@ pub(super) fn decode_png_with_png_crate_reader<F: BandFormat, R>(
 where
     R: BufRead + Seek,
 {
-    let dec = PngReader::new(src);
+    let dec = png_decoder(src);
     let mut reader = dec
         .read_info()
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
@@ -406,8 +415,7 @@ where
     let info = reader.info();
     let width = info.width;
     let height = info.height;
-    let color_type = info.color_type;
-    let bit_depth = info.bit_depth;
+    let (color_type, bit_depth) = reader.output_color_type();
     let bands = color_type_to_bands(color_type)?;
     let metadata = png_metadata(info);
 

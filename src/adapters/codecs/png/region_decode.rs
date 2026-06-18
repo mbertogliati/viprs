@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Cursor, Seek, Write};
 use std::path::Path;
 
-use png::{BitDepth, Decoder as PngReader};
+use png::BitDepth;
 
 use crate::adapters::instrumentation::viprs_span;
 use crate::domain::codec_options::{LoadOptions, SaveOptions};
@@ -15,7 +15,7 @@ use crate::ports::codec::{ImageDecoder, ImageEncoder, ImageMetadataProbe, TileIm
 use super::decode_full::decode_png_with_libspng;
 use super::decode_full::{
     decode_png_with_box_shrink_u8, decode_png_with_png_crate_reader,
-    open_png_sequential_path_session, png_file_reader, png_reader,
+    open_png_sequential_path_session, png_decoder, png_file_reader, png_reader,
 };
 use super::encode::{
     ADAM7_PASSES, MAX_PNG_DECODED_IMAGE_BYTES, adam7_extent, encode_png_to_writer_web_ready,
@@ -289,14 +289,14 @@ where
 {
     #[cfg(test)]
     PNG_ROW_DECODE_PROBE.record_full_raster_decode();
-    let mut reader = PngReader::new(src)
+    let mut reader = png_decoder(src)
         .read_info()
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
     let info = reader.info();
     let width = info.width;
     let height = info.height;
-    let bit_depth = info.bit_depth;
-    let bands = color_type_to_bands(info.color_type)?;
+    let (color_type, bit_depth) = reader.output_color_type();
+    let bands = color_type_to_bands(color_type)?;
     let pixels_len = reader
         .output_buffer_size()
         .ok_or_else(|| ViprsError::Codec("png: cannot determine buffer size".into()))?;
@@ -629,7 +629,8 @@ impl ImageDecoder for PngCodec {
     {
         let reader = png_reader(Cursor::new(src))?;
         let info = reader.info();
-        let bands = color_type_to_bands(info.color_type)?;
+        let (color_type, _) = reader.output_color_type();
+        let bands = color_type_to_bands(color_type)?;
         Ok((info.width, info.height, bands))
     }
 }
@@ -645,7 +646,8 @@ impl TileImageDecoder for PngCodec {
     {
         let reader = png_reader(Cursor::new(src))?;
         let info = reader.info();
-        let bands = color_type_to_bands(info.color_type)?;
+        let (color_type, _) = reader.output_color_type();
+        let bands = color_type_to_bands(color_type)?;
         Ok(ImageMetadataProbe::new(info.width, info.height, bands)
             .with_metadata(png_metadata(info)))
     }
@@ -660,7 +662,8 @@ impl TileImageDecoder for PngCodec {
     {
         let reader = png_reader(BufReader::new(File::open(path)?))?;
         let info = reader.info();
-        let bands = color_type_to_bands(info.color_type)?;
+        let (color_type, _) = reader.output_color_type();
+        let bands = color_type_to_bands(color_type)?;
         Ok(ImageMetadataProbe::new(info.width, info.height, bands)
             .with_metadata(png_metadata(info)))
     }
@@ -677,9 +680,9 @@ impl TileImageDecoder for PngCodec {
     {
         let mut reader = png_reader(Cursor::new(src))?;
         let info = reader.info();
-        let bit_depth = info.bit_depth;
+        let (color_type, bit_depth) = reader.output_color_type();
         let interlaced = info.interlaced;
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(color_type)?;
         if interlaced {
             let _ = (bit_depth, bands);
             // Adam7 region reads are not tile-bounded: materialize the deinterlaced
@@ -769,9 +772,9 @@ impl TileImageDecoder for PngCodec {
 
         let mut reader = png_reader(BufReader::new(File::open(path)?))?;
         let info = reader.info();
-        let bit_depth = info.bit_depth;
+        let (color_type, bit_depth) = reader.output_color_type();
         let interlaced = info.interlaced;
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(color_type)?;
         if interlaced {
             let _ = (bit_depth, bands);
             // Stable on-disk interlaced PNGs reuse a cached eager backing because
