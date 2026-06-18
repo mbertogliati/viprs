@@ -255,6 +255,23 @@ fn identity_bilinear() {
 }
 
 #[test]
+fn identity_nearest_two_band_preserves_samples_without_alpha_unpremultiplication() {
+    let data = vec![11u8, 64, 42, 95, 203, 0, 7, 255];
+    let region = Region::new(0, 0, 2, 2);
+    let result = run_affine_u8_bands(
+        &data,
+        region,
+        2,
+        region,
+        [1.0, 0.0, 0.0, 1.0],
+        0.0,
+        0.0,
+        InterpolationKernel::Nearest,
+    );
+    assert_eq!(result, data);
+}
+
+#[test]
 fn axis_aligned_rgb_bilinear_matches_scalar_reference() {
     let in_region = Region::new(0, 0, 6, 5);
     let out_region = Region::new(0, 0, 4, 3);

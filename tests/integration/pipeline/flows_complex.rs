@@ -205,15 +205,21 @@ fn mean_rect_diff(
     width: u32,
     height: u32,
 ) -> f64 {
-    let bands = lhs.bands() as usize;
+    assert_eq!(
+        (lhs.width(), lhs.height()),
+        (rhs.width(), rhs.height()),
+        "images must share dimensions for region diff"
+    );
+    let bands = lhs.bands().min(rhs.bands()) as usize;
     let mut total = 0.0;
     let mut count = 0usize;
     for y in top..top + height {
         for x in left..left + width {
-            let idx = ((y * lhs.width() + x) * lhs.bands()) as usize;
+            let lhs_idx = ((y * lhs.width() + x) * lhs.bands()) as usize;
+            let rhs_idx = ((y * rhs.width() + x) * rhs.bands()) as usize;
             for band in 0..bands {
-                total += (f64::from(lhs.pixels()[idx + band])
-                    - f64::from(rhs.pixels()[idx + band]))
+                total += (f64::from(lhs.pixels()[lhs_idx + band])
+                    - f64::from(rhs.pixels()[rhs_idx + band]))
                 .abs();
                 count += 1;
             }

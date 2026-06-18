@@ -251,8 +251,8 @@ impl Thumbnail {
         } else {
             self.target_dimensions(input_width, input_height)
         };
-        target_width = target_width.min(input_width).max(1);
-        target_height = target_height.min(input_height).max(1);
+        target_width = target_width.max(1);
+        target_height = target_height.max(1);
         let has_alpha = matches!(bands, 2 | 4);
         let (mut geometry_width, mut geometry_height) = if self.crop {
             let hscale = f64::from(target_width.max(1)) / f64::from(input_width);
@@ -269,10 +269,12 @@ impl Thumbnail {
         } else {
             (target_width, target_height)
         };
-        geometry_width = geometry_width.min(input_width).max(1);
-        geometry_height = geometry_height.min(input_height).max(1);
+        geometry_width = geometry_width.max(1);
+        geometry_height = geometry_height.max(1);
 
         if input_width == 1 || input_height == 1 {
+            target_width = target_width.min(input_width);
+            target_height = target_height.min(input_height);
             let mut geometry_nodes = Vec::new();
             if target_width != input_width || target_height != input_height {
                 let inv_scale_x = f64::from(input_width) / f64::from(target_width);
@@ -735,6 +737,22 @@ mod tests {
 
         assert_eq!((width, height), (1, 1));
         assert_eq!(pixels, vec![10, 20, 30]);
+    }
+
+    #[test]
+    fn thumbnail_upscales_non_single_pixel_inputs() {
+        let (width, height, pixels) = run_thumbnail_pipeline_with_pixels(
+            32,
+            32,
+            3,
+            vec![10; 32 * 32 * 3],
+            64,
+            64,
+            InterpolationKernel::Lanczos3,
+        );
+
+        assert_eq!((width, height), (64, 64));
+        assert_eq!(pixels.len(), 64 * 64 * 3);
     }
 
     #[test]

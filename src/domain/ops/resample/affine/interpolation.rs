@@ -130,18 +130,9 @@ impl<F: BandFormat> Affine<F> {
         ix: i64,
         iy: i64,
     ) -> Option<(i64, i64)> {
-        let x = Self::resolve_source_coord(
-            ix,
-            i64::from(input.region.x),
-            input.region.width,
-            &self.extend,
-        )?;
-        let y = Self::resolve_source_coord(
-            iy,
-            i64::from(input.region.y),
-            input.region.height,
-            &self.extend,
-        )?;
+        let bounds = self.source_bounds.unwrap_or(input.region);
+        let x = Self::resolve_source_coord(ix, i64::from(bounds.x), bounds.width, &self.extend)?;
+        let y = Self::resolve_source_coord(iy, i64::from(bounds.y), bounds.height, &self.extend)?;
         Some((x, y))
     }
 
