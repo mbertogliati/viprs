@@ -1536,7 +1536,7 @@ where
         let ((min_x, max_x), (min_y, max_y)) = self.mapped_input_bounds(output);
         let (left_pad, right_pad) = self.kernel_padding();
         let source_bounds = self.source_bounds;
-        if let Some(bounds) = source_bounds.filter(|bounds| bounds.is_empty()) {
+        if let Some(bounds) = source_bounds.filter(Region::is_empty) {
             return Region::new(bounds.x, bounds.y, 0, 0);
         }
 
