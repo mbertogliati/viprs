@@ -1,11 +1,12 @@
 //! AVIF codec — decode via `libheif-rs`, encode via `ravif` (lossy U8) or
-//! `libheif-rs` (U16 / 10-bit).
+//! `libheif-rs` (U16 / 10-bit, plus optional U8 lossless when the `heif`
+//! feature is enabled).
 //!
-//! Lossy U8 encode stays pure Rust via `ravif`. True lossless U8 AVIF is not a
-//! stable capability in the current dependency stack: `ravif`/`rav1e` do not
-//! implement AV1 lossless, and some linked libheif AV1 encoder builds reject
-//! RGB lossless configuration. U16 encode uses libheif so 10-bit AVIF output
-//! is available behind the existing AVIF feature.
+//! Lossy U8 encode stays pure Rust via `ravif`. `ravif`/`rav1e` still do not
+//! implement true AV1 lossless, so AVIF lossless for `U8` images is only
+//! attempted through libheif when the `heif` feature is enabled, and even then
+//! availability depends on the linked AV1 encoder. U16 encode uses libheif so
+//! 10-bit AVIF output is available behind the existing AVIF feature.
 //! Page sequences decode into [`AnimationFrame`]s for animated thumbnail flows.
 
 use super::heif_support::{
@@ -419,10 +420,18 @@ fn needs_libheif_u8_encode_path(metadata: &ImageMetadata, opts: &SaveOptions) ->
                 || metadata.icc_profile.is_some()))
 }
 
+#[cfg(feature = "heif")]
 fn avif_u8_lossless_unavailable_error(source: &ViprsError) -> ViprsError {
     ViprsError::Codec(format!(
         "avif: true lossless U8 encoding is unavailable in this build: ravif/rav1e do not implement AV1 lossless, and the linked libheif AV1 encoder could not complete the lossless path ({source})"
     ))
+}
+
+#[cfg(not(feature = "heif"))]
+fn avif_u8_lossless_unavailable_error() -> ViprsError {
+    ViprsError::Codec(
+        "avif: true lossless U8 encoding is unavailable in this build: ravif/rav1e do not implement AV1 lossless, and the libheif-backed fallback is only enabled with the `heif` feature".into(),
+    )
 }
 
 fn encode_u8_with_ravif(
@@ -696,15 +705,23 @@ impl ImageEncoder for AvifCodec {
             BandFormatId::U8 => {
                 let pixels = bytemuck::cast_slice::<F::Sample, u8>(image.pixels());
                 if opts.lossless == Some(true) {
-                    return encode_u8_with_libheif(
-                        image.width(),
-                        image.height(),
-                        image.bands(),
-                        pixels,
-                        image.metadata(),
-                        opts,
-                    )
-                    .map_err(|source| avif_u8_lossless_unavailable_error(&source));
+                    #[cfg(feature = "heif")]
+                    {
+                        return encode_u8_with_libheif(
+                            image.width(),
+                            image.height(),
+                            image.bands(),
+                            pixels,
+                            image.metadata(),
+                            opts,
+                        )
+                        .map_err(|source| avif_u8_lossless_unavailable_error(&source));
+                    }
+
+                    #[cfg(not(feature = "heif"))]
+                    {
+                        return Err(avif_u8_lossless_unavailable_error());
+                    }
                 }
                 if needs_libheif_u8_encode_path(image.metadata(), opts) {
                     let _ = shared_libheif("avif")?;
@@ -1160,18 +1177,42 @@ mod tests {
     }
 
     #[test]
-    fn lossless_u8_reports_clear_unsupported_error() {
+    fn lossless_u8_uses_available_backend_honestly() {
         let codec = AvifCodec;
         let image = rgb_u8_gradient(32, 32);
 
         let quality_100 = codec
             .encode_with_options::<U8>(&image, &SaveOptions::default().with_quality(100))
             .unwrap();
+        assert!(!quality_100.is_empty());
+
+        #[cfg(feature = "heif")]
+        if av1_encoder_available() {
+            let lossless = codec
+                .encode_with_options::<U8>(&image, &SaveOptions::default().lossless())
+                .unwrap();
+            let decoded = codec.decode::<U8>(&lossless).unwrap();
+
+            assert_ne!(quality_100, lossless);
+            for (index, (&orig, &decoded_sample)) in image
+                .pixels()
+                .iter()
+                .zip(decoded.pixels().iter())
+                .enumerate()
+            {
+                let diff = (i32::from(orig) - i32::from(decoded_sample)).abs();
+                assert_eq!(
+                    diff, 0,
+                    "pixel sample {index}: original={orig}, decoded={decoded_sample}, diff={diff} > tolerance=0"
+                );
+            }
+            return;
+        }
+
         let lossless_error = codec
             .encode_with_options::<U8>(&image, &SaveOptions::default().lossless())
             .unwrap_err();
 
-        assert!(!quality_100.is_empty());
         assert!(
             lossless_error
                 .to_string()

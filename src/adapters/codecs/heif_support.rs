@@ -442,6 +442,7 @@ pub(crate) fn encode_interleaved(
         let mut image: *mut lh::heif_image = ptr::null_mut();
         let mut options: *mut lh::heif_encoding_options = ptr::null_mut();
         let mut handle: *mut lh::heif_image_handle = ptr::null_mut();
+        let mut nclx_profile: *mut lh::heif_color_profile_nclx = ptr::null_mut();
 
         let result = (|| {
             let error =
@@ -460,44 +461,33 @@ pub(crate) fn encode_interleaved(
                 return Err(format_error(context, error));
             }
 
-            if lossless && compression == CompressionFormat::Av1 {
-                // libheif's AOM plugin still enables chroma delta-q by default,
-                // but libaom rejects that combination in true lossless mode.
-                set_encoder_string_parameter(
-                    context,
-                    encoder,
-                    b"aom:enable-chroma-deltaq\0",
-                    b"0\0",
-                )?;
-            }
-
             let effort = i32::from(effort.unwrap_or(4).min(9));
             let speed = 9 - effort;
             set_encoder_integer_parameter(context, encoder, b"speed\0", speed)?;
 
-            if !(lossless && compression == CompressionFormat::Av1) {
-                let chroma_parameter = match subsampling {
+            let chroma_parameter = if lossless && compression == CompressionFormat::Av1 {
+                "444"
+            } else {
+                match subsampling {
                     HeifSubsampling::Auto if lossless || quality >= 90 => "444",
                     HeifSubsampling::Auto | HeifSubsampling::Subsample420 => "420",
                     HeifSubsampling::Subsample422 => "422",
                     HeifSubsampling::Subsample444 => "444",
-                };
-                set_encoder_string_parameter(
-                    context,
-                    encoder,
-                    b"chroma\0",
-                    match chroma_parameter {
-                        "420" => b"420\0",
-                        "422" => b"422\0",
-                        "444" => b"444\0",
-                        _ => {
-                            return Err(ViprsError::Codec(format!(
-                                "{context}: unsupported chroma"
-                            )));
-                        }
-                    },
-                )?;
-            }
+                }
+            };
+            set_encoder_string_parameter(
+                context,
+                encoder,
+                b"chroma\0",
+                match chroma_parameter {
+                    "420" => b"420\0",
+                    "422" => b"422\0",
+                    "444" => b"444\0",
+                    _ => {
+                        return Err(ViprsError::Codec(format!("{context}: unsupported chroma")));
+                    }
+                },
+            )?;
 
             configure_encoder_threads(context, encoder)?;
             set_encoder_boolean_parameter(context, encoder, b"auto-tiles\0", true)?;
@@ -569,6 +559,18 @@ pub(crate) fn encode_interleaved(
                 )));
             }
             (*options).save_alpha_channel = u8::from(bands == 4);
+            if lossless && compression == CompressionFormat::Av1 {
+                nclx_profile = lh::heif_nclx_color_profile_alloc();
+                if nclx_profile.is_null() {
+                    return Err(ViprsError::Codec(format!(
+                        "{context}: heif_nclx_color_profile_alloc failed"
+                    )));
+                }
+                (*nclx_profile).matrix_coefficients =
+                    lh::heif_matrix_coefficients_heif_matrix_coefficients_RGB_GBR;
+                (*options).output_nclx_profile = nclx_profile;
+                (*options).macOS_compatibility_workaround_no_nclx_profile = 0;
+            }
 
             let error =
                 lh::heif_context_encode_image(ctx, image, encoder, options, &raw mut handle);
@@ -608,6 +610,9 @@ pub(crate) fn encode_interleaved(
         }
         if !options.is_null() {
             lh::heif_encoding_options_free(options);
+        }
+        if !nclx_profile.is_null() {
+            lh::heif_nclx_color_profile_free(nclx_profile);
         }
         if !image.is_null() {
             lh::heif_image_release(image);
