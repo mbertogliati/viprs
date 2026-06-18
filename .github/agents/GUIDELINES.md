@@ -21,6 +21,7 @@ a demand-driven, horizontally-threaded image processing library.
 9. [Concurrency model](#9-concurrency-model)
 10. [Module structure (libvips parity)](#10-module-structure-libvips-parity)
 11. [Dependency policy](#11-dependency-policy)
+12. [Issue filing obligation](#issue-filing-obligation)
 
 **Related:** [CI_GUIDELINES.md](CI_GUIDELINES.md) — GitHub Actions workflow structure for PRs.
 
@@ -646,3 +647,37 @@ When implementing an operation from libvips:
 3. Prefer `no_std`-compatible crates — a future embedded target is in scope.
 4. If transitive dependency count grows by more than five, the PR requires a discussion
    before merge.
+
+---
+
+## Issue filing obligation
+
+Every agent — regardless of role — **must open a GitHub issue** when it encounters
+a problem worth recording that is outside the scope of its current task.
+
+Examples of what triggers an issue:
+
+- A test that fails for reasons unrelated to the current work.
+- A bug discovered while reading code (wrong algorithm, off-by-one, missing edge case).
+- A `// TODO`, `// FIXME`, or `// HACK` with no corresponding issue.
+- A performance anomaly noticed during profiling or benchmarking.
+- A documentation gap or misleading doc comment.
+- A CI or toolchain friction point that cost time.
+- An architectural violation (e.g., `dyn Trait` on a hot path, `unwrap` in library code).
+
+**Do not fix out-of-scope problems inline.** File an issue and keep working on the
+assigned task. The issue is the artifact — it ensures nothing is silently forgotten.
+
+```bash
+gh issue create --title "<concise title>" \
+  --body "<what you found, where, and why it matters>" \
+  --label "<bug|enhancement|performance>"
+```
+
+Before filing, check that no open issue already covers the same finding:
+
+```bash
+gh issue list --search "<keywords>" --state open
+```
+
+If an existing issue partially covers it, add a comment instead of creating a duplicate.
