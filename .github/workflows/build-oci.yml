@@ -46,6 +46,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Read Rust version from rust-toolchain.toml
+        id: rust-version
+        run: echo "version=$(grep '^channel' rust-toolchain.toml | cut -d'"' -f2)" >> "$GITHUB_OUTPUT"
+
       - name: Build and push CI image
         uses: docker/build-push-action@v4
         with:
@@ -55,6 +59,7 @@ jobs:
           push: true
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+            RUST_VERSION=${{ steps.rust-version.outputs.version }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
             ghcr.io/${{ github.repository_owner }}/viprs-ci:${{ github.sha }}
