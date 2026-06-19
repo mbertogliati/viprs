@@ -15,7 +15,7 @@
 //! Encode support:
 //! - sample types: U8, U16, F32
 //! - band counts: 1-band grayscale, 3-band RGB, 4-band RGBA (JPEG only for 1/3 band U8)
-//! - compression: uncompressed, LZW, Deflate, PackBits, JPEG
+//! - compression: uncompressed, `LZW`, `Deflate`, `PackBits`, `JPEG`
 //! - predictor: horizontal by default for LZW / Deflate, matching libvips
 //! - tiled output: `SaveOptions::tile_width` / `SaveOptions::tile_height`
 //! - pyramid output: `SaveOptions::pyramid`
@@ -405,9 +405,9 @@ impl ImageEncoder for TiffEncoder {
                 predictor,
                 tile,
             ),
-            (BandFormatId::U16, _, TiffCompression::Jpeg) => Err(ViprsError::Codec(
-                "tiff: JPEG compression supports only U8 input".into(),
-            )),
+            (BandFormatId::U16 | BandFormatId::F32, _, TiffCompression::Jpeg) => Err(
+                ViprsError::Codec("tiff: JPEG compression supports only U8 input".into()),
+            ),
             (BandFormatId::U16, 1, _) => encode_tiff_document::<tiff_ct::Gray16, U16>(
                 &recast_pages_u16(&pages)?,
                 opts,
@@ -429,9 +429,6 @@ impl ImageEncoder for TiffEncoder {
                 predictor,
                 tile,
             ),
-            (BandFormatId::F32, _, TiffCompression::Jpeg) => Err(ViprsError::Codec(
-                "tiff: JPEG compression supports only U8 input".into(),
-            )),
             (BandFormatId::F32, 1, _) => encode_tiff_document::<tiff_ct::Gray32Float, F32>(
                 &recast_pages_f32(&pages)?,
                 opts,

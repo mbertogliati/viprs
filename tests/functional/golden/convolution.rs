@@ -172,7 +172,11 @@ fn labelregions_source() -> Vec<u8> {
 }
 
 fn run_vips_command(args: &[&str]) {
-    let output = Command::new("/opt/homebrew/bin/vips")
+    if !golden::fixtures_regeneration_requested() {
+        return;
+    }
+    golden::require_vips();
+    let output = Command::new("vips")
         .args(args)
         .output()
         .unwrap_or_else(|err| panic!("failed to run vips {:?}: {err}", args));
@@ -196,13 +200,15 @@ fn write_interpreted_u8_input(
     let raw = write_u8_input_spec(op, case, name, pixels, spec);
     let interpreted = golden::case_dir(op, case).join(format!("{name}-{interpretation}.v"));
     let interpreted_string = interpreted.display().to_string();
-    run_vips_command(&[
-        "copy",
-        raw.as_str(),
-        interpreted_string.as_str(),
-        "--interpretation",
-        interpretation,
-    ]);
+    if golden::fixtures_regeneration_requested() {
+        run_vips_command(&[
+            "copy",
+            raw.as_str(),
+            interpreted_string.as_str(),
+            "--interpretation",
+            interpretation,
+        ]);
+    }
     interpreted_string
 }
 
@@ -210,15 +216,17 @@ fn write_gaussmat_mask(op: &str, case: &str, sigma: f32) -> String {
     let mask_path = golden::case_dir(op, case).join("mask.v");
     let mask_string = mask_path.display().to_string();
     let sigma_arg = sigma.to_string();
-    run_vips_command(&[
-        "gaussmat",
-        mask_string.as_str(),
-        sigma_arg.as_str(),
-        "0.2",
-        "--separable",
-        "--precision",
-        "integer",
-    ]);
+    if golden::fixtures_regeneration_requested() {
+        run_vips_command(&[
+            "gaussmat",
+            mask_string.as_str(),
+            sigma_arg.as_str(),
+            "0.2",
+            "--separable",
+            "--precision",
+            "integer",
+        ]);
+    }
     mask_string
 }
 

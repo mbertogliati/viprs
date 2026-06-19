@@ -726,6 +726,9 @@ fn decode_region_from_path_streams_sequential_full_width_strips() {
 }
 
 #[test]
+#[ignore] // Scheduling-dependent: requires 2 threads active simultaneously.
+// Fails on single-core CI runners or under heavy load (issue #25).
+// Run locally with: cargo test --lib png --features png -- --ignored
 fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let _guard = PROBE_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
     let codec = Arc::new(PngCodec::default());

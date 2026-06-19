@@ -1,3 +1,5 @@
+#[allow(clippy::wildcard_imports)]
+// REASON: TIFF pyramid helpers rely on many sibling codec constants/types.
 use super::*;
 
 pub(super) fn tiff_is_big_endian(bytes: &[u8]) -> Result<bool, ViprsError> {
@@ -100,8 +102,7 @@ pub(super) fn ifd_entry_value_pos(
     }
 
     Err(ViprsError::Codec(format!(
-        "tiff: missing tag {} in IFD",
-        target_tag
+        "tiff: missing tag {target_tag} in IFD"
     )))
 }
 
@@ -268,9 +269,9 @@ pub(super) fn pyramid_levels<F: BandFormat>(
 where
     F::Sample: PyramidSample,
 {
-    let stop_at = tile
-        .map(|(tile_width, tile_height)| tile_width.max(tile_height).max(1))
-        .unwrap_or(DEFAULT_TIFF_TILE_SIZE);
+    let stop_at = tile.map_or(DEFAULT_TIFF_TILE_SIZE, |(tile_width, tile_height)| {
+        tile_width.max(tile_height).max(1)
+    });
     let mut current = image.clone();
     let mut levels = Vec::new();
 

@@ -25,9 +25,7 @@ use crate::domain::ops::colour::{
 /// ```ignore
 /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
 /// ```
-pub(crate) fn normalize_web_output_u8<'a>(
-    image: &'a Image<U8>,
-) -> Result<Cow<'a, Image<U8>>, ViprsError> {
+pub(crate) fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
     {
         Ok(Cow::Borrowed(image))
@@ -47,9 +45,9 @@ pub(crate) fn normalize_web_output_u8<'a>(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
 /// ```
-pub(crate) fn normalize_web_output_u16<'a>(
-    image: &'a Image<U16>,
-) -> Result<Cow<'a, Image<U16>>, ViprsError> {
+pub(crate) fn normalize_web_output_u16(
+    image: &Image<U16>,
+) -> Result<Cow<'_, Image<U16>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
     {
         Ok(Cow::Borrowed(image))
@@ -63,7 +61,10 @@ pub(crate) fn normalize_web_output_u16<'a>(
 
 #[cfg(feature = "icc")]
 mod enabled {
-    use super::*;
+    use super::{
+        Cow, IccImage, IccIntent, IccTransformOptions, Image, Interpretation, U8, U16, ViprsError,
+        icc_transform, needs_srgb_normalization, srgb_profile_bytes,
+    };
 
     fn should_normalize<F>(image: &Image<F>) -> bool
     where
@@ -141,6 +142,18 @@ mod enabled {
         Ok((colour_image, alpha))
     }
 
+    fn normalize_alpha_u8(image: &Image<U8>, srgb: &[u8]) -> Result<Image<U8>, ViprsError> {
+        let (colour, alpha) = split_alpha_u8(image)?;
+        let colour = transformed_u8(icc_transform(&colour, srgb, &srgb_options(8))?)?;
+        join_alpha_u8(&colour, &alpha)
+    }
+
+    fn normalize_alpha_u16(image: &Image<U16>, srgb: &[u8]) -> Result<Image<U16>, ViprsError> {
+        let (colour, alpha) = split_alpha_u16(image)?;
+        let colour = transformed_u16(icc_transform(&colour, srgb, &srgb_options(16))?)?;
+        join_alpha_u16(&colour, &alpha)
+    }
+
     fn join_alpha_u8(colour: &Image<U8>, alpha: &[u8]) -> Result<Image<U8>, ViprsError> {
         let pixel_count = colour.width() as usize * colour.height() as usize;
         if alpha.len() != pixel_count {
@@ -193,9 +206,9 @@ mod enabled {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
     /// ```
-    pub(super) fn normalize_web_output_u8<'a>(
-        image: &'a Image<U8>,
-    ) -> Result<Cow<'a, Image<U8>>, ViprsError> {
+    pub(super) fn normalize_web_output_u8(
+        image: &Image<U8>,
+    ) -> Result<Cow<'_, Image<U8>>, ViprsError> {
         if !should_normalize(image) {
             return Ok(Cow::Borrowed(image));
         }
@@ -203,19 +216,10 @@ mod enabled {
         let srgb = srgb_profile()?;
         let normalized = match image.bands() {
             1 | 3 => transformed_u8(icc_transform(image, &srgb, &srgb_options(8))?)?,
-            2 => {
-                let (colour, alpha) = split_alpha_u8(image)?;
-                let colour = transformed_u8(icc_transform(&colour, &srgb, &srgb_options(8))?)?;
-                join_alpha_u8(&colour, &alpha)?
-            }
             4 if image.metadata().interpretation == Some(Interpretation::Cmyk) => {
                 transformed_u8(icc_transform(image, &srgb, &srgb_options(8))?)?
             }
-            4 => {
-                let (colour, alpha) = split_alpha_u8(image)?;
-                let colour = transformed_u8(icc_transform(&colour, &srgb, &srgb_options(8))?)?;
-                join_alpha_u8(&colour, &alpha)?
-            }
+            2 | 4 => normalize_alpha_u8(image, &srgb)?,
             _ => return Ok(Cow::Borrowed(image)),
         };
         Ok(Cow::Owned(normalized))
@@ -229,9 +233,9 @@ mod enabled {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
     /// ```
-    pub(super) fn normalize_web_output_u16<'a>(
-        image: &'a Image<U16>,
-    ) -> Result<Cow<'a, Image<U16>>, ViprsError> {
+    pub(super) fn normalize_web_output_u16(
+        image: &Image<U16>,
+    ) -> Result<Cow<'_, Image<U16>>, ViprsError> {
         if !should_normalize(image) {
             return Ok(Cow::Borrowed(image));
         }
@@ -239,19 +243,10 @@ mod enabled {
         let srgb = srgb_profile()?;
         let normalized = match image.bands() {
             1 | 3 => transformed_u16(icc_transform(image, &srgb, &srgb_options(16))?)?,
-            2 => {
-                let (colour, alpha) = split_alpha_u16(image)?;
-                let colour = transformed_u16(icc_transform(&colour, &srgb, &srgb_options(16))?)?;
-                join_alpha_u16(&colour, &alpha)?
-            }
             4 if image.metadata().interpretation == Some(Interpretation::Cmyk) => {
                 transformed_u16(icc_transform(image, &srgb, &srgb_options(16))?)?
             }
-            4 => {
-                let (colour, alpha) = split_alpha_u16(image)?;
-                let colour = transformed_u16(icc_transform(&colour, &srgb, &srgb_options(16))?)?;
-                join_alpha_u16(&colour, &alpha)?
-            }
+            2 | 4 => normalize_alpha_u16(image, &srgb)?,
             _ => return Ok(Cow::Borrowed(image)),
         };
         Ok(Cow::Owned(normalized))

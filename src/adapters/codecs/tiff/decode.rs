@@ -1,6 +1,8 @@
 use super::pyramid::{
     choose_pyramid_level, current_page_subifd_offsets, patch_first_ifd_offset, probe_ifd_dimensions,
 };
+#[allow(clippy::wildcard_imports)]
+// REASON: TIFF decode helpers share many sibling codec types/constants.
 use super::*;
 
 pub(super) fn is_tiff_header(header: &[u8]) -> bool {
@@ -48,8 +50,7 @@ pub(super) fn interpretation_from_tags(
     let bits = bit_depth(color_type);
 
     match photometric {
-        Some(PhotometricInterpretation::WhiteIsZero)
-        | Some(PhotometricInterpretation::BlackIsZero) => {
+        Some(PhotometricInterpretation::WhiteIsZero | PhotometricInterpretation::BlackIsZero) => {
             if result_is_float {
                 Interpretation::Multiband
             } else if bits > 8 {
@@ -58,9 +59,7 @@ pub(super) fn interpretation_from_tags(
                 Interpretation::BW
             }
         }
-        Some(PhotometricInterpretation::RGB) | Some(PhotometricInterpretation::YCbCr)
-            if bands >= 3 =>
-        {
+        Some(PhotometricInterpretation::RGB | PhotometricInterpretation::YCbCr) if bands >= 3 => {
             if result_is_float {
                 Interpretation::Scrgb
             } else if bits > 8 {
@@ -107,7 +106,6 @@ pub(super) fn resolution_in_pixels_per_mm(
         });
 
     Ok(value.map(|resolution| match unit {
-        ResolutionUnit::None => resolution,
         ResolutionUnit::Inch => resolution / 25.4,
         ResolutionUnit::Centimeter => resolution / 10.0,
         _ => resolution,
@@ -770,8 +768,7 @@ pub(super) fn copy_tiff_coding_unit_into_window(
         .ok_or_else(|| ViprsError::Codec("tiff: missing coding-unit row stride".into()))?;
     let plane_stride = layout
         .plane_stride
-        .map(std::num::NonZeroUsize::get)
-        .unwrap_or(chunk.len());
+        .map_or(chunk.len(), std::num::NonZeroUsize::get);
     let overlap_x0 = unit_origin.0.max(window_origin.0);
     let overlap_y0 = unit_origin.1.max(window_origin.1);
     let overlap_x1 = (unit_origin.0 + unit_size.0).min(window_origin.0 + window_width as u32);

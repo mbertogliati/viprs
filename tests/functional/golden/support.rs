@@ -23,6 +23,7 @@ static VIPS_BIN: LazyLock<String> = LazyLock::new(|| resolve_bin("vips", "/opt/h
 static VIPSHEADER_BIN: LazyLock<String> =
     LazyLock::new(|| resolve_bin("vipsheader", "/opt/homebrew/bin/vipsheader"));
 const OUTPUT_PLACEHOLDER: &str = "{output}";
+const REGENERATE_FIXTURES_ENV: &str = "VIPRS_REGENERATE_GOLDEN_FIXTURES";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum VipsBandFormat {
@@ -95,6 +96,54 @@ struct GeneratedGolden {
     format: VipsBandFormat,
 }
 
+fn fixture_format_path(op: &str, case: &str) -> PathBuf {
+    fixtures_dir().join(op).join(format!("{case}.fmt"))
+}
+
+fn should_regenerate_fixtures() -> bool {
+    matches!(
+        std::env::var(REGENERATE_FIXTURES_ENV).as_deref(),
+        Ok("1") | Ok("true") | Ok("TRUE") | Ok("yes") | Ok("YES")
+    )
+}
+
+pub fn fixtures_regeneration_requested() -> bool {
+    should_regenerate_fixtures()
+}
+
+fn write_fixture_bytes(op: &str, case: &str, bytes: &[u8]) {
+    let path = fixture_path(op, case);
+    ensure_parent(&path);
+    fs::write(&path, bytes).unwrap_or_else(|e| panic!("failed to write fixture {path:?}: {e}"));
+}
+
+pub fn write_fixture(op: &str, case: &str, bytes: &[u8]) {
+    write_fixture_bytes(op, case, bytes);
+}
+
+fn write_fixture_format(op: &str, case: &str, format: VipsBandFormat) {
+    let path = fixture_format_path(op, case);
+    ensure_parent(&path);
+    fs::write(&path, format.cli_name())
+        .unwrap_or_else(|e| panic!("failed to write fixture format {path:?}: {e}"));
+}
+
+fn read_fixture_format(op: &str, case: &str) -> Option<VipsBandFormat> {
+    let path = fixture_format_path(op, case);
+    let format = fs::read_to_string(&path).ok()?;
+    match format.trim() {
+        "uchar" => Some(VipsBandFormat::U8),
+        "char" => Some(VipsBandFormat::I8),
+        "ushort" => Some(VipsBandFormat::U16),
+        "short" => Some(VipsBandFormat::I16),
+        "uint" => Some(VipsBandFormat::U32),
+        "int" => Some(VipsBandFormat::I32),
+        "float" => Some(VipsBandFormat::F32),
+        "double" => Some(VipsBandFormat::F64),
+        other => panic!("unsupported stored fixture format for op={op} case={case}: {other}"),
+    }
+}
+
 /// Returns `true` when the libvips CLI tools are available on this machine.
 ///
 /// Tests that compare output against the reference libvips should call this
@@ -120,15 +169,16 @@ pub fn skip_without_vips() -> bool {
 
 /// Panics when libvips CLI tools are not installed.
 ///
-/// Prefer checking [`skip_without_vips`] and returning early from the test instead.
+/// Tests that only consume committed fixtures can call this unconditionally. It
+/// only enforces the dependency while regenerating fixtures.
 #[track_caller]
 pub fn require_vips() {
-    assert!(
-        !skip_without_vips(),
-        "libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}; install libvips or mark the test #[ignore]",
-        &*VIPS_BIN,
-        &*VIPSHEADER_BIN
-    );
+    if should_regenerate_fixtures() && !vips_available() {
+        panic!(
+            "libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}; install libvips or mark the test #[ignore]",
+            &*VIPS_BIN, &*VIPSHEADER_BIN
+        );
+    }
 }
 
 fn manifest_dir() -> PathBuf {
@@ -235,6 +285,10 @@ pub fn write_vips_input(
     let dir = case_dir(op, case);
     let raw_path = dir.join(format!("{name}.raw"));
     let image_path = dir.join(format!("{name}.v"));
+    if !should_regenerate_fixtures() {
+        return image_path;
+    }
+
     ensure_parent(&raw_path);
 
     fs::write(&raw_path, bytes)
@@ -319,7 +373,14 @@ fn generate_vips_golden_internal(op: &str, case: &str, vips_cmd: &[&str]) -> Gen
 }
 
 pub fn generate_vips_golden(op: &str, case: &str, vips_cmd: &[&str]) -> Vec<u8> {
-    generate_vips_golden_internal(op, case, vips_cmd).bytes
+    if should_regenerate_fixtures() {
+        let generated = generate_vips_golden_internal(op, case, vips_cmd);
+        write_fixture_bytes(op, case, &generated.bytes);
+        write_fixture_format(op, case, generated.format);
+        generated.bytes
+    } else {
+        read_fixture(op, case)
+    }
 }
 
 pub fn assert_golden_approx(actual: &[u8], expected: &[u8], max_diff: u8) {
@@ -410,7 +471,7 @@ fn assert_f64_ulp(actual: &[u8], expected: &[u8], max_ulp: u64) {
 
 pub fn assert_golden(op: &str, case: &str, actual: &[u8]) {
     let path = fixture_path(op, case);
-    let stored = fs::read(&path).unwrap_or_else(|e| panic!("failed to read fixture {path:?}: {e}"));
+    let stored = read_fixture(op, case);
     assert_eq!(
         actual,
         stored.as_slice(),
@@ -420,8 +481,23 @@ pub fn assert_golden(op: &str, case: &str, actual: &[u8]) {
     );
 }
 
+pub fn read_fixture(op: &str, case: &str) -> Vec<u8> {
+    let path = fixture_path(op, case);
+    fs::read(&path).unwrap_or_else(|e| panic!("failed to read fixture {path:?}: {e}"))
+}
+
 pub fn assert_golden_libvips(op: &str, case: &str, actual: &[u8], vips_cmd: &[&str]) {
-    let expected = generate_vips_golden_internal(op, case, vips_cmd);
+    let expected = if should_regenerate_fixtures() {
+        let generated = generate_vips_golden_internal(op, case, vips_cmd);
+        write_fixture_bytes(op, case, &generated.bytes);
+        write_fixture_format(op, case, generated.format);
+        generated
+    } else {
+        GeneratedGolden {
+            bytes: read_fixture(op, case),
+            format: read_fixture_format(op, case).unwrap_or(VipsBandFormat::U8),
+        }
+    };
 
     if expected.format.is_float() {
         match expected.format {

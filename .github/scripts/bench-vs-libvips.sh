@@ -7,6 +7,9 @@ set -euo pipefail
 # Individual benchmark failures are collected and reported at the end
 # rather than aborting the entire suite — we want maximum data.
 
+# Use pre-built binary if available (CI), otherwise compile via cargo.
+XTASK="${XTASK_BIN:-cargo xtask}"
+
 mkdir -p /tmp/bench-results
 
 # Core ops tested with JPEG (U8) fixtures.
@@ -31,8 +34,7 @@ for size in 512 2048 8192; do
   fi
   for op in $OPS; do
     echo "=== $op @ ${size}px ==="
-    if ! cargo xtask bench "$FIXTURE" "$op" --iterations 20 --json \
-      > "/tmp/bench-results/${op}_${size}.json" 2>/dev/null; then
+    if ! $XTASK bench "$FIXTURE" "$op" --iterations 20 --json       > "/tmp/bench-results/${op}_${size}.json" 2>/dev/null; then
       echo "::warning::Benchmark failed: $op @ ${size}px"
       FAILED_OPS+=("$op@${size}px")
     fi
@@ -40,8 +42,7 @@ for size in 512 2048 8192; do
 
   # Thumbnail with explicit downscale target
   echo "=== thumbnail @ ${size}px ==="
-  if ! cargo xtask bench "$FIXTURE" "thumbnail" "$THUMBNAIL_TARGET" --iterations 20 --json \
-    > "/tmp/bench-results/thumbnail_${size}.json" 2>/dev/null; then
+  if ! $XTASK bench "$FIXTURE" "thumbnail" "$THUMBNAIL_TARGET" --iterations 20 --json     > "/tmp/bench-results/thumbnail_${size}.json" 2>/dev/null; then
     echo "::warning::Benchmark failed: thumbnail @ ${size}px"
     FAILED_OPS+=("thumbnail@${size}px")
   fi
@@ -51,8 +52,7 @@ done
 FIXTURE="tests/fixtures/images/bench_2048x2048.jpg"
 if [ -f "$FIXTURE" ]; then
   echo "=== perceptual_enhance @ 2048px ==="
-  if ! cargo xtask bench "$FIXTURE" "perceptual_enhance" webp --iterations 20 --json \
-    > "/tmp/bench-results/perceptual_enhance_2048.json" 2>/dev/null; then
+  if ! $XTASK bench "$FIXTURE" "perceptual_enhance" webp --iterations 20 --json     > "/tmp/bench-results/perceptual_enhance_2048.json" 2>/dev/null; then
     echo "::warning::Benchmark failed: perceptual_enhance @ 2048px"
     FAILED_OPS+=("perceptual_enhance@2048px")
   fi
@@ -63,8 +63,7 @@ FIXTURE="tests/fixtures/images/bench_512x512.exr"
 if [ -f "$FIXTURE" ]; then
   for op in invert linear add multiply $FLOAT_OPS; do
     echo "=== $op @ 512px EXR ==="
-    if ! cargo xtask bench "$FIXTURE" "$op" --iterations 20 --json \
-      > "/tmp/bench-results/${op}_512_exr.json" 2>/dev/null; then
+    if ! $XTASK bench "$FIXTURE" "$op" --iterations 20 --json       > "/tmp/bench-results/${op}_512_exr.json" 2>/dev/null; then
       echo "::warning::Benchmark failed: $op @ 512px EXR"
       FAILED_OPS+=("$op@512px-EXR")
     fi

@@ -75,7 +75,7 @@ impl<F: BandFormat> std::fmt::Debug for InvFftOp<F> {
         f.debug_struct("InvFftOp")
             .field("width", &self.width)
             .field("height", &self.height)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -263,7 +263,7 @@ mod tests {
         );
         assert_eq!(op.node_spec(4, 3), NodeSpec::identity(4, 3));
         assert_eq!(<InvFftOp<F32> as Op>::OUTPUT_BANDS, Some(1));
-        assert_eq!(format!("{op:?}"), "InvFftOp { width: 6, height: 5 }");
+        assert_eq!(format!("{op:?}"), "InvFftOp { width: 6, height: 5, .. }");
     }
 
     #[test]

@@ -182,7 +182,7 @@ impl ImageEncoder for JpegCodec {
         // SAFETY: the `F::ID == BandFormatId::U8` guard above guarantees `F::Sample == u8`.
         // `Image<F>` and `Image<U8>` therefore have identical layouts for this call site.
         let image =
-            normalize_web_output_u8(unsafe { &*(image as *const Image<F> as *const Image<U8>) })?;
+            normalize_web_output_u8(unsafe { &*std::ptr::from_ref(image).cast::<Image<U8>>() })?;
         let image = image.as_ref();
         let quality = opts.quality.unwrap_or(75);
         let prepared = prepare_encode_input(image)?;
@@ -226,8 +226,8 @@ impl ImageEncoder for JpegCodec {
                 pitch,
                 height,
                 prepared.pixel_format as i32,
-                &mut jpeg_ptr,
-                &mut jpeg_len,
+                std::ptr::addr_of_mut!(jpeg_ptr),
+                std::ptr::addr_of_mut!(jpeg_len),
             )
         };
         if encode_result != 0 {

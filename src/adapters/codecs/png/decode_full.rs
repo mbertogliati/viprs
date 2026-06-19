@@ -62,8 +62,8 @@ pub(super) fn open_png_sequential_path_session(
 
     let width = info.width;
     let height = info.height;
-    let (color_type, bit_depth) = reader.output_color_type();
-    let bands = color_type_to_bands(color_type)?;
+    let bit_depth = info.bit_depth;
+    let bands = color_type_to_bands(info.color_type);
     let row_len = reader
         .output_line_size(width)
         .ok_or_else(|| ViprsError::Codec("png: cannot determine row buffer size".into()))?;
@@ -268,13 +268,13 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
     let info = reader.info();
     let src_w = info.width as usize;
     let src_h = info.height as usize;
-    let (color_type, bit_depth) = reader.output_color_type();
-    let bands = color_type_to_bands(color_type)? as usize;
+    let color_type = info.color_type;
+    let bit_depth = info.bit_depth;
+    let bands = color_type_to_bands(color_type) as usize;
 
     if bit_depth != BitDepth::Eight {
         return Err(ViprsError::Codec(format!(
-            "png: box-shrink decode only supports 8-bit images, got {:?}",
-            bit_depth
+            "png: box-shrink decode only supports 8-bit images, got {bit_depth:?}"
         )));
     }
 
@@ -290,7 +290,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
     // For factor=8:  64×255 = 16320 ≤ 65535 ✓
     // For factor=4:  16×255 = 4080  ≤ 65535 ✓
     // For factor=2:  4×255  = 1020  ≤ 65535 ✓
-    let use_u16_acc = (factor * factor * 255) <= usize::from(u16::MAX);
+    let use_u16_acc = u16::try_from(factor * factor * 255).is_ok();
 
     if use_u16_acc {
         // Fast path: u16 accumulator — twice as many NEON lanes as u32.
@@ -316,8 +316,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
                     1 => accumulate_row_u16::<1>(&src_row, &mut acc, factor, dst_w, src_w),
                     2 => accumulate_row_u16::<2>(&src_row, &mut acc, factor, dst_w, src_w),
                     3 => accumulate_row_u16::<3>(&src_row, &mut acc, factor, dst_w, src_w),
-                    4 => accumulate_row_u16::<4>(&src_row, &mut acc, factor, dst_w, src_w),
-                    _ => accumulate_row_u16::<1>(&src_row, &mut acc, factor, dst_w, src_w),
+                    _ => accumulate_row_u16::<4>(&src_row, &mut acc, factor, dst_w, src_w),
                 }
             }
 
@@ -327,8 +326,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
                     1 => finalize_row_u16::<1>(&acc, dst_row, dst_w, total_u16, amend_u16),
                     2 => finalize_row_u16::<2>(&acc, dst_row, dst_w, total_u16, amend_u16),
                     3 => finalize_row_u16::<3>(&acc, dst_row, dst_w, total_u16, amend_u16),
-                    4 => finalize_row_u16::<4>(&acc, dst_row, dst_w, total_u16, amend_u16),
-                    _ => finalize_row_u16::<1>(&acc, dst_row, dst_w, total_u16, amend_u16),
+                    _ => finalize_row_u16::<4>(&acc, dst_row, dst_w, total_u16, amend_u16),
                 }
             } else {
                 for dx in 0..dst_w {
@@ -368,8 +366,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
                     1 => accumulate_row::<1>(&src_row, &mut acc, factor, dst_w, src_w),
                     2 => accumulate_row::<2>(&src_row, &mut acc, factor, dst_w, src_w),
                     3 => accumulate_row::<3>(&src_row, &mut acc, factor, dst_w, src_w),
-                    4 => accumulate_row::<4>(&src_row, &mut acc, factor, dst_w, src_w),
-                    _ => accumulate_row::<1>(&src_row, &mut acc, factor, dst_w, src_w),
+                    _ => accumulate_row::<4>(&src_row, &mut acc, factor, dst_w, src_w),
                 }
             }
 
@@ -379,8 +376,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
                     1 => finalize_row::<1>(&acc, dst_row, dst_w, total_u32, amend_u32),
                     2 => finalize_row::<2>(&acc, dst_row, dst_w, total_u32, amend_u32),
                     3 => finalize_row::<3>(&acc, dst_row, dst_w, total_u32, amend_u32),
-                    4 => finalize_row::<4>(&acc, dst_row, dst_w, total_u32, amend_u32),
-                    _ => finalize_row::<1>(&acc, dst_row, dst_w, total_u32, amend_u32),
+                    _ => finalize_row::<4>(&acc, dst_row, dst_w, total_u32, amend_u32),
                 }
             } else {
                 for dx in 0..dst_w {
@@ -415,8 +411,9 @@ where
     let info = reader.info();
     let width = info.width;
     let height = info.height;
-    let (color_type, bit_depth) = reader.output_color_type();
-    let bands = color_type_to_bands(color_type)?;
+    let color_type = info.color_type;
+    let bit_depth = info.bit_depth;
+    let bands = color_type_to_bands(color_type);
     let metadata = png_metadata(info);
 
     let buf_size = reader
@@ -595,7 +592,7 @@ fn decode_png_with_libspng_reader<F: BandFormat, R: std::io::Read>(
         SpngColorType::Indexed => ColorType::Indexed,
         SpngColorType::GrayscaleAlpha => ColorType::GrayscaleAlpha,
         SpngColorType::TruecolorAlpha => ColorType::Rgba,
-    })?;
+    });
     let output_format = libspng_output_format(color_type, bit_depth)?;
     let output_size = ctx
         .decoded_image_size(output_format)
@@ -671,7 +668,7 @@ pub(super) fn decode_png_with_libspng<F: BandFormat>(src: &[u8]) -> Result<Image
         SpngColorType::Indexed => ColorType::Indexed,
         SpngColorType::GrayscaleAlpha => ColorType::GrayscaleAlpha,
         SpngColorType::TruecolorAlpha => ColorType::Rgba,
-    })?;
+    });
     let output_format = libspng_output_format(color_type, bit_depth)?;
     let output_size = ctx
         .decoded_image_size(output_format)

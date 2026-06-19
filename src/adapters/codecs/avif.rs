@@ -373,7 +373,7 @@ fn cast_decoded_image<S: BandFormat, D: BandFormat>(
 where
     S::Sample: Clone,
 {
-    let animation_frames = image.animation_frames().map(<[_]>::to_vec);
+    let animation_frames = image.animation_frames().map(ToOwned::to_owned);
     let mut cast = cast_decoded_frame::<S, D>(image, context)?;
     if let Some(frames) = animation_frames {
         let converted_frames = frames
@@ -452,6 +452,10 @@ fn encode_u8_with_ravif(
     let height = height as usize;
 
     let enc = if lossless {
+        // ravif maps quality=100 to rav1e quantizer 0 and stores RGB as 4:4:4,
+        // but rav1e does not expose a true AV1 lossless mode yet. Keep this
+        // path aligned with libvips' matrix/subsampling choices and treat the
+        // round-trip as near-lossless in tests.
         RavifEncoder::new()
             .with_quality(100.0)
             .with_alpha_quality(100.0)
@@ -522,20 +526,28 @@ fn encode_u8_with_libheif(
         )?;
         let mut expanded = Vec::with_capacity(byte_count);
 
-        if bands == 1 {
-            for &sample in pixels {
-                if bit_depth > 8 {
-                    let encoded = (u16::from(sample) << (bit_depth - 8)).to_be_bytes();
-                    expanded.extend_from_slice(&encoded);
-                    expanded.extend_from_slice(&encoded);
-                    expanded.extend_from_slice(&encoded);
-                } else {
-                    expanded.extend_from_slice(&[sample, sample, sample]);
+        match bands {
+            1 => {
+                for &sample in pixels {
+                    if bit_depth > 8 {
+                        let encoded = (u16::from(sample) << (bit_depth - 8)).to_be_bytes();
+                        expanded.extend_from_slice(&encoded);
+                        expanded.extend_from_slice(&encoded);
+                        expanded.extend_from_slice(&encoded);
+                    } else {
+                        expanded.extend_from_slice(&[sample, sample, sample]);
+                    }
                 }
             }
-        } else {
-            for &sample in pixels {
-                expanded.extend_from_slice(&(u16::from(sample) << (bit_depth - 8)).to_be_bytes());
+            3 | 4 => {
+                for &sample in pixels {
+                    expanded.extend_from_slice(&(u16::from(sample) << (bit_depth - 8)).to_be_bytes());
+                }
+            }
+            _ => {
+                return Err(ViprsError::Codec(
+                    "avif: unsupported band count after validation".into(),
+                ));
             }
         }
 
@@ -587,27 +599,35 @@ fn encode_u16_with_libheif(
     )?;
     let mut pixel_bytes = Vec::with_capacity(byte_count);
 
-    if bands == 1 {
-        for &sample in pixels {
-            let narrowed = sample >> (16 - bit_depth);
-            if bit_depth > 8 {
-                let encoded = narrowed.to_be_bytes();
-                pixel_bytes.extend_from_slice(&encoded);
-                pixel_bytes.extend_from_slice(&encoded);
-                pixel_bytes.extend_from_slice(&encoded);
-            } else {
-                let encoded = narrowed as u8;
-                pixel_bytes.extend_from_slice(&[encoded, encoded, encoded]);
+    match bands {
+        1 => {
+            for &sample in pixels {
+                let narrowed = sample >> (16 - bit_depth);
+                if bit_depth > 8 {
+                    let encoded = narrowed.to_be_bytes();
+                    pixel_bytes.extend_from_slice(&encoded);
+                    pixel_bytes.extend_from_slice(&encoded);
+                    pixel_bytes.extend_from_slice(&encoded);
+                } else {
+                    let encoded = narrowed as u8;
+                    pixel_bytes.extend_from_slice(&[encoded, encoded, encoded]);
+                }
             }
         }
-    } else {
-        for &sample in pixels {
-            let narrowed = sample >> (16 - bit_depth);
-            if bit_depth > 8 {
-                pixel_bytes.extend_from_slice(&narrowed.to_be_bytes());
-            } else {
-                pixel_bytes.push(narrowed as u8);
+        3 | 4 => {
+            for &sample in pixels {
+                let narrowed = sample >> (16 - bit_depth);
+                if bit_depth > 8 {
+                    pixel_bytes.extend_from_slice(&narrowed.to_be_bytes());
+                } else {
+                    pixel_bytes.push(narrowed as u8);
+                }
             }
+        }
+        _ => {
+            return Err(ViprsError::Codec(
+                "avif: unsupported band count after validation".into(),
+            ));
         }
     }
 
@@ -1429,7 +1449,7 @@ mod tests {
 
     proptest! {
         #[test]
-        fn prop_ravif_rgb_q0_round_trip_is_within_two_levels(
+        fn prop_near_lossless_round_trip_rgb_stays_within_ravif_rounding(
             (width, height, pixels) in rgb_u8_image(),
         ) {
             let codec = AvifCodec;
@@ -1453,6 +1473,8 @@ mod tests {
             // which upstream still does not treat as true AV1 lossless.
             for (&orig, &decoded_sample) in original.pixels().iter().zip(decoded.pixels().iter()) {
                 let diff = (i32::from(orig) - i32::from(decoded_sample)).abs();
+                // ravif/rav1e's "lossless" RGB path is quantizer-0 4:4:4, but it
+                // still introduces up to ±2 sample rounding on some inputs.
                 prop_assert!(diff <= 2);
             }
         }

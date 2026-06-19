@@ -12,7 +12,7 @@ use super::{
     transform::selected_intent,
 };
 
-fn build_normalize_error(err: ViprsError) -> BuildError {
+fn build_normalize_error(err: &ViprsError) -> BuildError {
     BuildError::SourceHint {
         context: "normalize_to_srgb",
         message: err.to_string(),
@@ -258,11 +258,13 @@ pub(crate) fn build_normalize_to_srgb_op(
     let Some(plan) = normalize_plan(input_bands, interpretation) else {
         return Ok(None);
     };
-    let srgb_profile = srgb_profile_bytes().map_err(build_normalize_error)?;
-    let input_profile = open_profile(input_profile, "input").map_err(build_normalize_error)?;
-    let output_profile = open_profile(&srgb_profile, "output").map_err(build_normalize_error)?;
+    let srgb_profile = srgb_profile_bytes().map_err(|err| build_normalize_error(&err))?;
+    let input_profile =
+        open_profile(input_profile, "input").map_err(|err| build_normalize_error(&err))?;
+    let output_profile =
+        open_profile(&srgb_profile, "output").map_err(|err| build_normalize_error(&err))?;
     let intent = selected_intent(IccIntent::Auto, &input_profile, &output_profile)
-        .map_err(build_normalize_error)?;
+        .map_err(|err| build_normalize_error(&err))?;
     let flags: Flags<DisallowCache> = Flags::NO_CACHE | Flags::BLACKPOINT_COMPENSATION;
     let input_colour_bands = match plan {
         NormalizePlan::Direct => input_bands,
@@ -287,7 +289,7 @@ pub(crate) fn build_normalize_to_srgb_op(
         input_profile.color_space(),
         input_colour_bands,
     )
-    .map_err(build_normalize_error)?;
+    .map_err(|err| build_normalize_error(&err))?;
     let output_pixel_format = match (input_format, output_colour_bands) {
         (BandFormatId::U8, 3) => PixelFormat::RGB_8,
         (BandFormatId::U16, 3) => PixelFormat::RGB_16,
@@ -311,7 +313,7 @@ pub(crate) fn build_normalize_to_srgb_op(
             flags,
         )
         .map_err(lcms_error)
-        .map_err(build_normalize_error)?,
+        .map_err(|err| build_normalize_error(&err))?,
     );
 
     Ok(Some(Box::new(NormalizeToSrgbOp {

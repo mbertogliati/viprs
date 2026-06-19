@@ -18,7 +18,13 @@ fn avg_reducer_libvips() {
         &source,
         ImageSpec::new(WIDTH, HEIGHT, 3, VipsBandFormat::U8),
     );
-    let expected = run_vips_scalar("avg", &input);
+    let expected = if golden::fixtures_regeneration_requested() {
+        let value = run_vips_scalar("avg", &input);
+        write_f64_fixture("avg_reducer_libvips", case, value);
+        value
+    } else {
+        read_f64_fixture("avg_reducer_libvips", case)
+    };
 
     assert!((actual - expected).abs() < f64::EPSILON);
 }
@@ -39,7 +45,13 @@ fn deviate_reducer_libvips() {
         &source,
         ImageSpec::new(WIDTH, HEIGHT, 3, VipsBandFormat::U8),
     );
-    let expected = run_vips_scalar("deviate", &input);
+    let expected = if golden::fixtures_regeneration_requested() {
+        let value = run_vips_scalar("deviate", &input);
+        write_f64_fixture("deviate_reducer_libvips", case, value);
+        value
+    } else {
+        read_f64_fixture("deviate_reducer_libvips", case)
+    };
 
     assert!((actual - expected).abs() <= 1e-6);
 }

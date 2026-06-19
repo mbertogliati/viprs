@@ -218,10 +218,19 @@ fn normalize_to_srgb_matches_web_encode_normalization_for_gray_alpha_sources() {
 
     assert_eq!(actual.bands(), 4);
     assert_eq!(actual.metadata().interpretation, Some(Interpretation::Srgb));
-    assert_eq!(
-        actual.metadata().icc_profile.as_deref(),
-        Some(srgb.as_slice())
+    // Compare ICC profiles ignoring the 12-byte date/time field at header offset 24..36,
+    // which embeds the creation timestamp and varies between profile_load() calls.
+    let actual_icc = actual
+        .metadata()
+        .icc_profile
+        .as_deref()
+        .expect("icc present");
+    assert!(
+        actual_icc.len() == srgb.len(),
+        "ICC profile length mismatch"
     );
+    assert_eq!(&actual_icc[..24], &srgb[..24], "ICC header prefix mismatch");
+    assert_eq!(&actual_icc[36..], &srgb[36..], "ICC profile body mismatch");
     assert_eq!(actual.pixels()[3], 7);
     assert_eq!(actual.pixels()[7], 9);
 }

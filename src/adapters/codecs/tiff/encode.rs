@@ -2,6 +2,8 @@ use super::pyramid::{
     first_ifd_offset, ifd_entry_value_pos, next_ifd_pointer_pos, patch_subifd_offsets,
     pyramid_levels, tiff_read_u32, tiff_write_u32, write_subifd_tag,
 };
+#[allow(clippy::wildcard_imports)]
+// REASON: TIFF encode helpers share many sibling codec symbols.
 use super::*;
 
 pub(super) fn deflate_level(level: Option<u8>) -> DeflateLevel {
@@ -355,7 +357,11 @@ pub(super) fn compress_bytes(
                 .write_to(&mut output, bytes)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
         }
-        TiffCompression::Jpeg => unreachable!("jpeg compression is handled separately"),
+        TiffCompression::Jpeg => {
+            return Err(ViprsError::Codec(
+                "tiff: jpeg compression is handled by encode_jpeg_chunk".into(),
+            ));
+        }
     }
     Ok(output)
 }

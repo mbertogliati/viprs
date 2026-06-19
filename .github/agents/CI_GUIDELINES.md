@@ -22,6 +22,7 @@ Principles: modular checks, shared cache, explicit dependencies, minimum duratio
 - One CI workflow per PR. Multiple workflows on the same PR require multiple required checks — hard to maintain and prone to race conditions.
 - Prefix reusable workflows with `_` to distinguish them from trigger workflows.
 - Never write more than 5 lines of bash inline in the YAML: move it to `scripts/`.
+- Clippy must run with **all** supported CI features enabled. Running clippy with partial features hides errors in feature-gated code.
 
 ---
 
@@ -392,4 +393,18 @@ permissions:
 
 - Pin external actions to a commit SHA, not a tag: `actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683`
 - Never print secrets with `echo`. Use `::add-mask::` if you need to log a sensitive dynamic value.
+
+---
+
+## 11. Push discipline — zero tolerance for speculative CI
+
+**It is COMPLETELY PROHIBITED to push a CI fix without being 100% certain the entire pipeline will pass.**
+
+Before pushing any change that touches CI (workflows, Makefile targets, test files, toolchain config):
+
+1. **Reproduce the exact CI command locally** — run the same `make` target, with the same features and flags that CI uses. If the target runs in a container, reproduce the environment locally (e.g., `docker run`).
+2. **If you cannot reproduce locally** (platform-specific, e.g., x86_64 Linux vs arm64 macOS), document WHY and explain what makes you confident it will pass.
+3. **One push = one green CI run.** If CI fails after your push, your methodology was wrong. Fix the methodology, not just the symptom.
+
+Rationale: each failed CI run wastes 10-15 minutes of compute, blocks other PRs, and erodes trust in the pipeline. Trial-and-error pushing is not engineering — it's guessing.
 - Third-party secrets: scoped to the corresponding environment (dev/staging/prod), not the global repo.
