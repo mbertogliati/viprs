@@ -26,8 +26,8 @@ fn bench_bandsplit(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 4, pixels.clone()).unwrap();
                 let op = BandSplit::<U8>::new(0, 4);
-                // Output has 1 band; OperationBridge::bands must reflect that — see B-50.
-                let dyn_op = Box::new(OperationBridge::new(op, 1u32));
+                // Source is RGBA, so the bridge must preserve the 4 input bands.
+                let dyn_op = Box::new(OperationBridge::new(op, 4u32));
                 let pipeline = PipelineBuilder::from_source(source)
                     .then(dyn_op)
                     .unwrap()

@@ -78,7 +78,8 @@ where
     /// Build an `OperationBridge` configured with the fixed 1-band output.
     #[must_use]
     pub fn into_bridge(self) -> OperationBridge<Self> {
-        OperationBridge::new_pixel_local(self, 1)
+        let input_bands = self.input_bands as u32;
+        OperationBridge::new_pixel_local(self, input_bands)
     }
 }
 
