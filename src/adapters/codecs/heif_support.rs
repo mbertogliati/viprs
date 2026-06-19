@@ -474,15 +474,17 @@ pub(crate) fn encode_interleaved(
             let speed = 9 - effort;
             set_encoder_integer_parameter(context, encoder, b"speed\0", speed)?;
 
-            if !(lossless && compression == CompressionFormat::Av1) {
-                let chroma_parameter = match subsampling {
-                    HeifSubsampling::Auto if lossless || quality >= 90 => b"444\0".as_slice(),
-                    HeifSubsampling::Auto | HeifSubsampling::Subsample420 => b"420\0".as_slice(),
-                    HeifSubsampling::Subsample422 => b"422\0".as_slice(),
-                    HeifSubsampling::Subsample444 => b"444\0".as_slice(),
-                };
-                set_encoder_string_parameter(context, encoder, b"chroma\0", chroma_parameter)?;
-            }
+            let chroma_parameter = match subsampling {
+                HeifSubsampling::Auto if lossless || quality >= 90 => b"444\0".as_slice(),
+                HeifSubsampling::Auto | HeifSubsampling::Subsample420 => b"420\0".as_slice(),
+                HeifSubsampling::Subsample422 => b"422\0".as_slice(),
+                HeifSubsampling::Subsample444 => b"444\0".as_slice(),
+            };
+            // AV1 lossless uses an identity RGB matrix below, and libheif-backed
+            // encoders reject or crash if the chroma parameter is left at a
+            // subsampled default. Keep the encoder config aligned with the frame
+            // layout by always setting chroma explicitly.
+            set_encoder_string_parameter(context, encoder, b"chroma\0", chroma_parameter)?;
 
             configure_encoder_threads(context, encoder)?;
             set_encoder_boolean_parameter(context, encoder, b"auto-tiles\0", true)?;
