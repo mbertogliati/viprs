@@ -8,6 +8,7 @@
 #   make bench      — criterion benchmarks
 #   make bench-vs   — E2E comparison vs libvips (representative matrix)
 #   make bench-vs BENCH_ITER=10  — quick smoke test
+#   make check-cross — cross-arch validation via Docker (auto-detects opposite arch)
 
 CARGO := cargo
 RUSTFLAGS_CI := -Dwarnings
@@ -18,7 +19,7 @@ RUSTFLAGS_CI := -Dwarnings
 #   make check FEATURES="--all-features"
 FEATURES ?= --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
-.PHONY: all check ci fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
+.PHONY: all check ci check-cross fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -82,6 +83,45 @@ coverage:
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) build --release -p xtask --features count-alloc
+
+# ─── Cross-architecture local CI (Docker) ───────────────────────────────────────
+# Verify lint/build/test in x86_64 or arm64 containers — catches arch-specific
+# issues before pushing. Uses the CI container image + rustup for Rust.
+#
+# Usage:
+#   make check-cross                    — run check in opposite arch (auto-detect)
+#   make check-cross ARCH=x86_64       — explicit x86_64
+#   make check-cross ARCH=arm64        — explicit arm64
+
+CI_IMAGE := ghcr.io/mbertogliati/viprs-ci:latest
+
+# Auto-detect: if host is arm64, test x86_64 and vice versa
+HOST_ARCH := $(shell uname -m)
+ifeq ($(HOST_ARCH),arm64)
+  ARCH ?= x86_64
+else ifeq ($(HOST_ARCH),aarch64)
+  ARCH ?= x86_64
+else
+  ARCH ?= arm64
+endif
+
+# Map arch names to Docker platform strings
+ifeq ($(ARCH),x86_64)
+  DOCKER_PLATFORM := linux/amd64
+else ifeq ($(ARCH),amd64)
+  DOCKER_PLATFORM := linux/amd64
+else
+  DOCKER_PLATFORM := linux/arm64
+endif
+
+check-cross:
+	@echo "══════════════════════════════════════════════════════════════"
+	@echo "  check-cross: running 'make check' on $(ARCH) ($(DOCKER_PLATFORM))"
+	@echo "══════════════════════════════════════════════════════════════"
+	docker run --rm --platform $(DOCKER_PLATFORM) \
+		-v "$$(pwd):/workspace" -w /workspace \
+		$(CI_IMAGE) \
+		make check
 
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 
