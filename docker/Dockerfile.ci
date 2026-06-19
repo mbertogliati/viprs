@@ -1,0 +1,24 @@
+# CI image: viprs-perf base + Rust toolchain + clippy + rustfmt.
+#
+# Build:
+#   docker buildx build --platform linux/amd64 -f docker/Dockerfile.ci -t viprs-ci:amd64 --load docker/
+#   docker buildx build --platform linux/arm64 -f docker/Dockerfile.ci -t viprs-ci:arm64 --load docker/
+#
+# Usage:
+#   docker run --rm -v $(pwd):/workspace -w /workspace viprs-ci:amd64 make check
+
+ARG BASE_IMAGE=ghcr.io/mbertogliati/viprs-perf:latest
+FROM ${BASE_IMAGE}
+
+ARG RUST_VERSION=1.96.0
+
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+      curl build-essential pkg-config cmake nasm git clang libclang-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+      sh -s -- -y --default-toolchain ${RUST_VERSION} -c rustfmt,clippy
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+WORKDIR /workspace
