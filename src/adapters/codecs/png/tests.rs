@@ -80,11 +80,23 @@ fn png_test_output_path(name: &str) -> PathBuf {
     dir.join(format!("{name}-{unique}.png"))
 }
 
+fn indexed_png_bytes() -> Vec<u8> {
+    let mut output = Vec::new();
+    let mut encoder = png::Encoder::new(&mut output, 2, 1);
+    encoder.set_color(png::ColorType::Indexed);
+    encoder.set_depth(png::BitDepth::Eight);
+    encoder.set_palette(vec![255, 0, 0, 0, 255, 0]);
+    let mut writer = encoder.write_header().unwrap();
+    writer.write_image_data(&[0, 1]).unwrap();
+    drop(writer);
+    output
+}
+
 struct PngRowDecodeProbeReset;
 
 impl PngRowDecodeProbeReset {
-    fn enable(row_delay: Duration) -> Self {
-        PNG_ROW_DECODE_PROBE.enable(row_delay);
+    fn enable(codec: &PngCodec, row_delay: Duration) -> Self {
+        PNG_ROW_DECODE_PROBE.enable(codec.probe_id(), row_delay);
         Self
     }
 }
@@ -188,6 +200,31 @@ fn round_trip_u8_grayscale() {
     assert_eq!(decoded.height(), 4);
     assert_eq!(decoded.bands(), 1);
     assert_eq!(decoded.pixels(), original.pixels());
+}
+
+#[test]
+fn decode_palette_png_expands_indices_to_rgb() {
+    let decoded = PngCodec::default()
+        .decode::<U8>(&indexed_png_bytes())
+        .unwrap();
+
+    assert_eq!(decoded.width(), 2);
+    assert_eq!(decoded.height(), 1);
+    assert_eq!(decoded.bands(), 3);
+    assert_eq!(decoded.pixels(), &[255, 0, 0, 0, 255, 0]);
+}
+
+#[test]
+fn decode_region_palette_png_expands_indices_to_rgb() {
+    let encoded = indexed_png_bytes();
+    let region = Region::new(0, 0, 2, 1);
+    let mut output = vec![0u8; region.pixel_count() * 3];
+
+    PngCodec::default()
+        .decode_region_into::<U8>(&encoded, &LoadOptions::default(), region, &mut output)
+        .unwrap();
+
+    assert_eq!(output, vec![255, 0, 0, 0, 255, 0]);
 }
 
 // ── round-trip U16 RGB ────────────────────────────────────────────────────
@@ -695,8 +732,9 @@ fn decode_region_from_path_streams_sequential_full_width_strips() {
 fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let _guard = PROBE_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
     let codec = Arc::new(PngCodec::default());
-    // Use a larger image (256×256) so row decode takes long enough for two threads
-    // to overlap, even on slow CI runners with limited parallelism.
+    // Prime a reusable sequential session, then race a matching strip decode against
+    // an unrelated region read while the probe verifies row decode starts only after
+    // the session mutex has been released.
     let pixels: Vec<u8> = (0u8..=255).cycle().take(256 * 256 * 3).collect();
     let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
@@ -715,9 +753,7 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     let partial = Region::new(32, 32, 128, 96);
     let expected_sequential = clamped_region_pixels_u8(&eager, sequential);
     let expected_partial = clamped_region_pixels_u8(&eager, partial);
-    // 10ms per-row delay ensures each decode takes ~640ms (64 rows × 10ms),
-    // giving ample time for both threads to be active simultaneously.
-    let _probe = PngRowDecodeProbeReset::enable(Duration::from_millis(10));
+    let _probe = PngRowDecodeProbeReset::enable(&codec, Duration::ZERO);
     let start = Arc::new(Barrier::new(3));
 
     let sequential_thread = {
@@ -758,9 +794,13 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     assert_eq!(sequential_output, expected_sequential);
     assert_eq!(partial_output, expected_partial);
     assert!(
-        PNG_ROW_DECODE_PROBE.max_active() >= 2,
-        "expected concurrent path decode rows without session-mutex serialization, saw max concurrency {}",
-        PNG_ROW_DECODE_PROBE.max_active()
+        PNG_ROW_DECODE_PROBE.total_rows_for(codec.probe_id()) > 0,
+        "expected the probe to observe row decodes during path-region reads"
+    );
+    assert_eq!(
+        PNG_ROW_DECODE_PROBE.rows_while_sequential_session_mutex_held_for(codec.probe_id()),
+        0,
+        "row decode started while the sequential path session mutex was still held"
     );
 }
 
@@ -870,19 +910,19 @@ fn decode_region_from_path_interlaced_png_reuses_eager_backing() {
     let bottom = Region::new(200, 210, 7, 8);
     let mut top_output = vec![0u8; top.pixel_count() * 3];
     let mut bottom_output = vec![0u8; bottom.pixel_count() * 3];
-    let _probe = PngRowDecodeProbeReset::enable(Duration::ZERO);
+    let _probe = PngRowDecodeProbeReset::enable(&codec, Duration::ZERO);
 
     codec
         .decode_region_from_path::<U8>(&path, &LoadOptions::default(), top, &mut top_output)
         .unwrap();
-    let full_decodes_after_first = PNG_ROW_DECODE_PROBE.full_raster_decodes();
-    let rows_after_first = PNG_ROW_DECODE_PROBE.total_rows();
+    let full_decodes_after_first = PNG_ROW_DECODE_PROBE.full_raster_decodes_for(codec.probe_id());
+    let rows_after_first = PNG_ROW_DECODE_PROBE.total_rows_for(codec.probe_id());
 
     codec
         .decode_region_from_path::<U8>(&path, &LoadOptions::default(), bottom, &mut bottom_output)
         .unwrap();
-    let full_decodes_after_second = PNG_ROW_DECODE_PROBE.full_raster_decodes();
-    let rows_after_second = PNG_ROW_DECODE_PROBE.total_rows();
+    let full_decodes_after_second = PNG_ROW_DECODE_PROBE.full_raster_decodes_for(codec.probe_id());
+    let rows_after_second = PNG_ROW_DECODE_PROBE.total_rows_for(codec.probe_id());
 
     assert_eq!(top_output, clamped_region_pixels_u8(&eager, top));
     assert_eq!(bottom_output, clamped_region_pixels_u8(&eager, bottom));
@@ -915,7 +955,7 @@ fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
     let right = Region::new(32, 0, 32, 64);
     let expected_left = clamped_region_pixels_u8(&image, left);
     let expected_right = clamped_region_pixels_u8(&image, right);
-    let _probe = PngRowDecodeProbeReset::enable(Duration::from_millis(1));
+    let _probe = PngRowDecodeProbeReset::enable(&codec, Duration::from_millis(1));
     let start = Arc::new(Barrier::new(3));
 
     let left_thread = {
@@ -951,9 +991,9 @@ fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
     assert_eq!(left_output, expected_left);
     assert_eq!(right_output, expected_right);
     assert!(
-        PNG_ROW_DECODE_PROBE.max_active() >= 2,
+        PNG_ROW_DECODE_PROBE.max_active_for(codec.probe_id()) >= 2,
         "expected parallel row decode loops, saw max concurrency {}",
-        PNG_ROW_DECODE_PROBE.max_active()
+        PNG_ROW_DECODE_PROBE.max_active_for(codec.probe_id())
     );
 }
 

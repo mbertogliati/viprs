@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn cache_last_op_skips_linear_output_nodes() {
+fn cache_last_op_keeps_linear_output_nodes_for_repeated_runs() {
     let pipeline = PipelineBuilder::new(16, 16)
         .then(non_pixel_local_pass_op(1))
         .unwrap()
@@ -10,8 +10,8 @@ fn cache_last_op_skips_linear_output_nodes() {
         .build()
         .unwrap();
 
-    assert!(pipeline.nodes[0].cache_op_id().is_none());
-    assert!(pipeline.tile_cache.is_none());
+    assert_eq!(pipeline.nodes[0].cache_op_id(), Some(0));
+    assert!(pipeline.tile_cache.is_some());
 }
 
 /// Fused pipeline produces correct output: two consecutive invert ops cancel out.

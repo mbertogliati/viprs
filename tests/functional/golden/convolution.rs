@@ -20,10 +20,6 @@ use viprs::{
 
 use golden::{ImageSpec, VipsBandFormat};
 
-fn ensure_vips() {
-    golden::require_vips();
-}
-
 fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     source_pixels: Vec<u8>,
     width: u32,
@@ -314,7 +310,9 @@ fn assert_f32_matches_u8(actual: &[u8], expected: &[u8], max_abs_diff: f32) {
 
 #[test]
 fn sharpen_libvips_gradient_rgb_center_crop() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 12;
     let height = 10;
@@ -348,7 +346,9 @@ fn sharpen_libvips_gradient_rgb_center_crop() {
 
 #[test]
 fn sobel_libvips_step_edge() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 16;
     let height = 10;
@@ -371,7 +371,9 @@ fn sobel_libvips_step_edge() {
 
 #[test]
 fn canny_libvips_step_edge_sigma_1_4() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 16;
     let height = 10;
@@ -392,7 +394,9 @@ fn canny_libvips_step_edge_sigma_1_4() {
 
 #[test]
 fn convsep_libvips_matches_gaussblur() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 9;
     let height = 7;
@@ -417,7 +421,9 @@ fn convsep_libvips_matches_gaussblur() {
 
 #[test]
 fn dilate_libvips_rect_3x3() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 8;
@@ -448,7 +454,9 @@ fn dilate_libvips_rect_3x3() {
 
 #[test]
 fn erode_libvips_rect_3x3() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 8;
@@ -479,7 +487,9 @@ fn erode_libvips_rect_3x3() {
 
 #[test]
 fn rank_libvips_median_rect_3x3() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 7;
     let height = 7;
@@ -499,7 +509,9 @@ fn rank_libvips_median_rect_3x3() {
 
 #[test]
 fn labelregions_libvips_binary_components() {
-    ensure_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 8;

@@ -3,7 +3,9 @@ use super::support::*;
 // Upstream: test/test-suite/test_resample.py::TestResample::test_resize
 #[test]
 fn libvips_parity_upstream_resample_resize_half_bilinear() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_resize";
     let op = "libvips_parity_resample";
@@ -47,7 +49,9 @@ fn libvips_parity_upstream_resample_resize_half_bilinear() {
 // Upstream: test/test-suite/test_resample.py::TestResample::test_resize
 #[test]
 fn libvips_parity_upstream_resample_resize_geometry_corner_case() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_resize";
     let op = "libvips_parity_resample";
@@ -90,7 +94,9 @@ fn libvips_parity_upstream_resample_resize_geometry_corner_case() {
 // Upstream: test/test-suite/test_resample.py::TestResample::test_reduce
 #[test]
 fn libvips_parity_upstream_resample_reduceh_lanczos3() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_reduce";
     let op = "libvips_parity_resample";
@@ -133,7 +139,9 @@ fn libvips_parity_upstream_resample_reduceh_lanczos3() {
 // Upstream: test/test-suite/test_resample.py::TestResample::test_reduce
 #[test]
 fn libvips_parity_upstream_resample_reducev_lanczos3() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_reduce";
     let op = "libvips_parity_resample";
@@ -176,7 +184,9 @@ fn libvips_parity_upstream_resample_reducev_lanczos3() {
 // Upstream: test/test-suite/test_resample.py::TestResample::test_shrink
 #[test]
 fn libvips_parity_upstream_resample_shrink_factor4() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_shrink";
     let op = "libvips_parity_resample";
@@ -219,7 +229,9 @@ fn libvips_parity_upstream_resample_shrink_factor4() {
 // Upstream: test/test-suite/test_resample.py::TestResample::test_thumbnail
 #[test]
 fn libvips_parity_upstream_resample_thumbnail_width_target() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_thumbnail";
     let op = "libvips_parity_resample";

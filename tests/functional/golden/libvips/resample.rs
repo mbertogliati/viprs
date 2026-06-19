@@ -4,7 +4,9 @@ use super::support_inputs::*;
 
 #[test]
 fn gauss_blur_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     // Non-uniform parity currently diverges from libvips; see B-91.
     let case = "uniform_field";
@@ -23,7 +25,9 @@ fn gauss_blur_libvips() {
 
 #[test]
 fn gauss_blur_libvips_nonuniform_non_square() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 5;
     let height = 3;
@@ -51,7 +55,9 @@ fn gauss_blur_libvips_nonuniform_non_square() {
 
 #[test]
 fn reduceh_linear_factor2_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 6;
@@ -82,7 +88,9 @@ fn reduceh_linear_factor2_libvips() {
 
 #[test]
 fn reducev_linear_factor2_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 6;
     let height = 8;
@@ -113,7 +121,9 @@ fn reducev_linear_factor2_libvips() {
 
 #[test]
 fn reduceh_lanczos3_factor1_5_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 8;
     let height = 6;
@@ -144,7 +154,9 @@ fn reduceh_lanczos3_factor1_5_libvips() {
 
 #[test]
 fn reducev_lanczos3_factor1_5_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 6;
     let height = 8;
@@ -175,7 +187,9 @@ fn reducev_lanczos3_factor1_5_libvips() {
 
 #[test]
 fn shrink_factor4_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 16;
     let height = 16;
@@ -199,7 +213,9 @@ fn shrink_factor4_libvips() {
 
 #[test]
 fn reduce_4x4_edge_pixels_match_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 4;
     let height = 4;

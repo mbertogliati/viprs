@@ -82,7 +82,7 @@ jobs:
         run: make test FEATURES="${{ env.RUST_FEATURES }}"
 
   test-and-coverage:
-    name: "Tests + Coverage (all codecs, ≥86%)"
+    name: "Tests + Coverage (all codecs, ≥87%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
@@ -114,7 +114,6 @@ jobs:
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
-    continue-on-error: true
     strategy:
       matrix:
         include:
@@ -155,7 +154,6 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
-    continue-on-error: true
     strategy:
       matrix:
         include:
@@ -181,7 +179,6 @@ jobs:
     name: "Performance: viprs vs libvips (${{ matrix.arch }})"
     needs: [build-xtask]
     if: "!github.event.pull_request.draft"
-    continue-on-error: true
     runs-on: ${{ matrix.runner }}
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     strategy:
@@ -232,7 +229,7 @@ jobs:
 
   status-gate:
     name: "CI passed"
-    needs: [lint, security, test-unit, test-and-coverage]
+    needs: [lint, security, test-unit, test-and-coverage, benchmarks, build-xtask, bench-vs-libvips]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -240,7 +237,6 @@ jobs:
         run: |
           results='${{ toJSON(needs.*.result) }}'
           echo "Job results: $results"
-          # docs has continue-on-error so its result is always "success".
           # Filter out "skipped" (draft PRs) — only fail on failure/cancelled.
           if echo "$results" | grep -qE '"failure"|"cancelled"'; then
             echo "❌ One or more required checks failed." >> $GITHUB_STEP_SUMMARY

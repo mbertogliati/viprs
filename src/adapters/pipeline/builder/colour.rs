@@ -10,9 +10,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// Only combinations with a `CastSample` impl are supported. Unsupported pairs
     /// return `BuildError::UnsupportedFormat`.
-    pub fn cast(mut self, target: BandFormatId) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn cast(self, target: BandFormatId) -> Result<PipelineBuilder<Identity>, BuildError> {
         // TODO(fusion): integrate cast into Concretize chain.
-        self.flush_pending()?;
         let bands = self.bands;
         let source_fmt = self.current_format;
         let op: Box<dyn DynOperation> =

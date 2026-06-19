@@ -6,7 +6,7 @@ use std::marker::PhantomData;
 use crate::domain::ops::resample::sample_conv::{FromF64, ToF64};
 use crate::domain::{
     format::{BandFormat, BandFormatId},
-    image::{DemandHint, Region, Tile, TileMut},
+    image::{DemandHint, Region, Tile, TileMut, clamp_i64_to_i32},
     kernel::InterpolationKernel,
     op::{NodeSpec, Op},
 };
@@ -38,6 +38,7 @@ impl<F: BandFormat> Affine<F> {
             output_w,
             output_h,
             extend: ExtendMode::Background(vec![0.0]),
+            source_bounds: None,
             premultiplied: false,
             fast_path: Self::build_fast_path(matrix, tx, ty, kernel, output_w, output_h),
             _format: PhantomData,
@@ -48,6 +49,13 @@ impl<F: BandFormat> Affine<F> {
     #[must_use]
     pub fn with_background(mut self, bg: f64) -> Self {
         self.extend = ExtendMode::Background(vec![bg]);
+        self
+    }
+
+    /// Declare the unclamped source-image bounds used for extend handling.
+    #[must_use]
+    pub fn with_source_bounds(mut self, bounds: Region) -> Self {
+        self.source_bounds = Some(bounds);
         self
     }
 
@@ -82,7 +90,7 @@ impl<F: BandFormat> Affine<F> {
 
     #[inline]
     const fn has_alpha(bands: u32) -> bool {
-        matches!(bands, 2 | 4)
+        bands == 4
     }
 
     #[inline]
@@ -357,6 +365,45 @@ impl<F: BandFormat> Affine<F> {
     }
 
     #[inline]
+    fn logical_source_bounds(&self, input: &Tile<F>) -> Region {
+        self.source_bounds.unwrap_or(input.region)
+    }
+
+    #[inline]
+    fn required_input_axis_bounds(start: i64, end: i64, bounds: Option<(i64, u32)>) -> (i32, u32) {
+        let Some((bounds_start, bounds_len)) = bounds else {
+            let clamped_start = clamp_i64_to_i32(start);
+            let clamped_end = clamp_i64_to_i32(end);
+            if i64::from(clamped_end) < i64::from(clamped_start) {
+                return (clamped_start, 0);
+            }
+
+            let width = i64::from(clamped_end) - i64::from(clamped_start) + 1;
+            return (clamped_start, width as u32);
+        };
+        if bounds_len == 0 {
+            return (clamp_i64_to_i32(bounds_start), 0);
+        }
+
+        let bounds_end = bounds_start + i64::from(bounds_len) - 1;
+        let clamped_start = start.max(bounds_start);
+        let clamped_end = end.min(bounds_end);
+        if clamped_end < clamped_start {
+            let empty_origin = if end < bounds_start {
+                bounds_start
+            } else {
+                bounds_end.saturating_add(1)
+            };
+            return (clamp_i64_to_i32(empty_origin), 0);
+        }
+
+        let region_start = clamp_i64_to_i32(clamped_start);
+        let region_end = clamp_i64_to_i32(clamped_end);
+        let width = i64::from(region_end) - i64::from(region_start) + 1;
+        (region_start, width as u32)
+    }
+
+    #[inline]
     pub(super) fn output_region_is_background_only(
         &self,
         input: &Tile<F>,
@@ -371,10 +418,11 @@ impl<F: BandFormat> Affine<F> {
 
         let ((min_x, max_x), (min_y, max_y)) = self.mapped_input_bounds(output);
         let (left_pad, right_pad) = self.kernel_padding();
-        let input_left = i64::from(input.region.x);
-        let input_top = i64::from(input.region.y);
-        let input_right = input_left + i64::from(input.region.width) - 1;
-        let input_bottom = input_top + i64::from(input.region.height) - 1;
+        let source_bounds = self.logical_source_bounds(input);
+        let input_left = i64::from(source_bounds.x);
+        let input_top = i64::from(source_bounds.y);
+        let input_right = input_left + i64::from(source_bounds.width) - 1;
+        let input_bottom = input_top + i64::from(source_bounds.height) - 1;
 
         let required_left = min_x.floor() as i64 - i64::from(left_pad);
         let required_right = max_x.floor() as i64 + i64::from(right_pad);
@@ -398,9 +446,16 @@ impl<F: BandFormat> Affine<F> {
         let Some((resolved_x, resolved_y)) = self.resolve_sample_coords(input, ix, iy) else {
             return self.extend_fill_value(input.bands as usize, band);
         };
-        let tile_x = (resolved_x - i64::from(input.region.x)) as usize;
-        let tile_y = (resolved_y - i64::from(input.region.y)) as usize;
-        let idx = (tile_y * input.region.width as usize + tile_x) * input.bands as usize + band;
+        let tile_x = resolved_x - i64::from(input.region.x);
+        let tile_y = resolved_y - i64::from(input.region.y);
+        if (tile_x as u64) >= u64::from(input.region.width)
+            || (tile_y as u64) >= u64::from(input.region.height)
+        {
+            return self.extend_fill_value(input.bands as usize, band);
+        }
+        let idx = (tile_y as usize * input.region.width as usize + tile_x as usize)
+            * input.bands as usize
+            + band;
         input.data[idx].to_f64()
     }
 
@@ -501,15 +556,19 @@ impl<F: BandFormat> Affine<F> {
         let y0 = y_in as i64;
         let fx = x_in - x0 as f64;
         let fy = y_in - y0 as f64;
+        let source_bounds = self.logical_source_bounds(input);
         let tile_x = x0 - i64::from(input.region.x);
         let tile_y = y0 - i64::from(input.region.y);
-        let in_w = i64::from(input.region.width);
-        let in_h = i64::from(input.region.height);
+        let source_left = i64::from(source_bounds.x);
+        let source_top = i64::from(source_bounds.y);
+        let source_right = source_left + i64::from(source_bounds.width);
+        let source_bottom = source_top + i64::from(source_bounds.height);
 
         let bands = input.bands as usize;
         let row_stride = input.region.width as usize * bands;
 
-        if tile_x >= 0 && tile_y >= 0 && tile_x + 1 < in_w && tile_y + 1 < in_h {
+        if x0 >= source_left && y0 >= source_top && x0 + 1 < source_right && y0 + 1 < source_bottom
+        {
             let base00 = tile_y as usize * row_stride + tile_x as usize * bands;
             let base10 = base00 + row_stride;
             let top_row = &input.data[base00..base00 + (bands * 2)];
@@ -1047,10 +1106,11 @@ impl<F: BandFormat> Affine<F> {
         let out_h = output.region.height as usize;
         let out_w = output.region.width as usize;
         let bands = input.bands as usize;
-        let in_left = i64::from(input.region.x);
-        let in_top = i64::from(input.region.y);
-        let in_right = in_left + i64::from(input.region.width);
-        let in_bottom = in_top + i64::from(input.region.height);
+        let source_bounds = self.logical_source_bounds(input);
+        let in_left = i64::from(source_bounds.x);
+        let in_top = i64::from(source_bounds.y);
+        let in_right = in_left + i64::from(source_bounds.width);
+        let in_bottom = in_top + i64::from(source_bounds.height);
         let row_stride = input.region.width as usize * bands;
 
         for y_local in 0..out_h {
@@ -1065,7 +1125,7 @@ impl<F: BandFormat> Affine<F> {
                 continue;
             }
 
-            let input_row = (y_sample.coord - in_top) as usize * row_stride;
+            let input_row = (y_sample.coord - i64::from(input.region.y)) as usize * row_stride;
             for x_local in 0..out_w {
                 let x_sample = &xs[output.region.x as usize + x_local];
                 let out_base = row_base + x_local * bands;
@@ -1074,7 +1134,8 @@ impl<F: BandFormat> Affine<F> {
                     continue;
                 }
 
-                let input_base = input_row + (x_sample.coord - in_left) as usize * bands;
+                let input_base =
+                    input_row + (x_sample.coord - i64::from(input.region.x)) as usize * bands;
                 output.data[out_base..out_base + bands]
                     .copy_from_slice(&input.data[input_base..input_base + bands]);
             }
@@ -1093,10 +1154,11 @@ impl<F: BandFormat> Affine<F> {
         let out_h = output.region.height as usize;
         let out_w = output.region.width as usize;
         let bands = input.bands as usize;
-        let in_left = i64::from(input.region.x);
-        let in_top = i64::from(input.region.y);
-        let in_right = in_left + i64::from(input.region.width);
-        let in_bottom = in_top + i64::from(input.region.height);
+        let source_bounds = self.logical_source_bounds(input);
+        let in_left = i64::from(source_bounds.x);
+        let in_top = i64::from(source_bounds.y);
+        let in_right = in_left + i64::from(source_bounds.width);
+        let in_bottom = in_top + i64::from(source_bounds.height);
         let row_stride = input.region.width as usize * bands;
 
         for y_local in 0..out_h {
@@ -1118,7 +1180,7 @@ impl<F: BandFormat> Affine<F> {
                 continue;
             }
 
-            let top_row = (y_start - in_top) as usize * row_stride;
+            let top_row = (y_start - i64::from(input.region.y)) as usize * row_stride;
             let bottom_row = top_row + row_stride;
             let wy0 = y_sample.weights[0];
             let wy1 = y_sample.weights[1];
@@ -1138,7 +1200,7 @@ impl<F: BandFormat> Affine<F> {
                     continue;
                 }
 
-                let input_base = (x_start - in_left) as usize * bands;
+                let input_base = (x_start - i64::from(input.region.x)) as usize * bands;
                 let wx0 = x_sample.weights[0];
                 let wx1 = x_sample.weights[1];
 
@@ -1180,10 +1242,11 @@ impl<F: BandFormat> Affine<F> {
         let out_h = output.region.height as usize;
         let out_w = output.region.width as usize;
         let bands = input.bands as usize;
-        let in_left = i64::from(input.region.x);
-        let in_top = i64::from(input.region.y);
-        let in_right = in_left + i64::from(input.region.width);
-        let in_bottom = in_top + i64::from(input.region.height);
+        let source_bounds = self.logical_source_bounds(input);
+        let in_left = i64::from(source_bounds.x);
+        let in_top = i64::from(source_bounds.y);
+        let in_right = in_left + i64::from(source_bounds.width);
+        let in_bottom = in_top + i64::from(source_bounds.height);
         let row_stride = input.region.width as usize * bands;
 
         for y_local in 0..out_h {
@@ -1209,10 +1272,10 @@ impl<F: BandFormat> Affine<F> {
             }
 
             let row_offsets = [
-                (y_start - in_top) as usize * row_stride,
-                (y_start - in_top + 1) as usize * row_stride,
-                (y_start - in_top + 2) as usize * row_stride,
-                (y_start - in_top + 3) as usize * row_stride,
+                (y_start - i64::from(input.region.y)) as usize * row_stride,
+                (y_start - i64::from(input.region.y) + 1) as usize * row_stride,
+                (y_start - i64::from(input.region.y) + 2) as usize * row_stride,
+                (y_start - i64::from(input.region.y) + 3) as usize * row_stride,
             ];
 
             for x_local in 0..out_w {
@@ -1234,7 +1297,7 @@ impl<F: BandFormat> Affine<F> {
                     continue;
                 }
 
-                let input_base = (x_start - in_left) as usize * bands;
+                let input_base = (x_start - i64::from(input.region.x)) as usize * bands;
                 for band in 0..bands {
                     let mut acc = 0.0;
                     for (row_idx, row_offset) in row_offsets.iter().enumerate() {
@@ -1276,10 +1339,11 @@ impl<F: BandFormat> Affine<F> {
         let out_h = output_region.height as usize;
         let out_w = output_region.width as usize;
         let bands = input.bands as usize;
-        let in_left = i64::from(input.region.x);
-        let in_top = i64::from(input.region.y);
-        let in_right = in_left + i64::from(input.region.width);
-        let in_bottom = in_top + i64::from(input.region.height);
+        let source_bounds = self.logical_source_bounds(input);
+        let in_left = i64::from(source_bounds.x);
+        let in_top = i64::from(source_bounds.y);
+        let in_right = in_left + i64::from(source_bounds.width);
+        let in_bottom = in_top + i64::from(source_bounds.height);
         let row_stride = input.region.width as usize * bands;
 
         for y_local in 0..out_h {
@@ -1303,10 +1367,10 @@ impl<F: BandFormat> Affine<F> {
             }
 
             let row_offsets = [
-                (y_start - in_top) as usize * row_stride,
-                (y_start - in_top + 1) as usize * row_stride,
-                (y_start - in_top + 2) as usize * row_stride,
-                (y_start - in_top + 3) as usize * row_stride,
+                (y_start - i64::from(input.region.y)) as usize * row_stride,
+                (y_start - i64::from(input.region.y) + 1) as usize * row_stride,
+                (y_start - i64::from(input.region.y) + 2) as usize * row_stride,
+                (y_start - i64::from(input.region.y) + 3) as usize * row_stride,
             ];
 
             for x_local in 0..out_w {
@@ -1326,7 +1390,7 @@ impl<F: BandFormat> Affine<F> {
                     continue;
                 }
 
-                let input_base = (x_start - in_left) as usize * bands;
+                let input_base = (x_start - i64::from(input.region.x)) as usize * bands;
                 match bands {
                     3 => {
                         let mut acc0 = 0.0;
@@ -1471,13 +1535,28 @@ where
         // cubic/lanczos demand to the taps this implementation actually reads.
         let ((min_x, max_x), (min_y, max_y)) = self.mapped_input_bounds(output);
         let (left_pad, right_pad) = self.kernel_padding();
+        let source_bounds = self.source_bounds;
+        if let Some(bounds) = source_bounds.filter(Region::is_empty) {
+            return Region::new(bounds.x, bounds.y, 0, 0);
+        }
 
-        let x0 = min_x.floor() as i32 - left_pad;
-        let x1 = max_x.floor() as i32 + right_pad;
-        let y0 = min_y.floor() as i32 - left_pad;
-        let y1 = max_y.floor() as i32 + right_pad;
+        let x0 = min_x.floor() as i64 - i64::from(left_pad);
+        let x1 = max_x.floor() as i64 + i64::from(right_pad);
+        let y0 = min_y.floor() as i64 - i64::from(left_pad);
+        let y1 = max_y.floor() as i64 + i64::from(right_pad);
 
-        Region::new(x0, y0, (x1 - x0 + 1) as u32, (y1 - y0 + 1) as u32)
+        let (x, width) = Self::required_input_axis_bounds(
+            x0,
+            x1,
+            source_bounds.map(|bounds| (i64::from(bounds.x), bounds.width)),
+        );
+        let (y, height) = Self::required_input_axis_bounds(
+            y0,
+            y1,
+            source_bounds.map(|bounds| (i64::from(bounds.y), bounds.height)),
+        );
+
+        Region::new(x, y, width, height)
     }
 
     fn node_spec(&self, tile_w: u32, tile_h: u32) -> NodeSpec {
@@ -1491,10 +1570,17 @@ where
         );
         let (left_pad, right_pad) = self.kernel_padding();
         let halo = (left_pad + right_pad) as u32;
+        let mut input_tile_w = out_span_x.ceil() as u32 + 1 + halo;
+        let mut input_tile_h = out_span_y.ceil() as u32 + 1 + halo;
+
+        if let Some(bounds) = self.source_bounds {
+            input_tile_w = input_tile_w.min(bounds.width.saturating_add(halo));
+            input_tile_h = input_tile_h.min(bounds.height.saturating_add(halo));
+        }
 
         NodeSpec {
-            input_tile_w: out_span_x.ceil() as u32 + 1 + halo,
-            input_tile_h: out_span_y.ceil() as u32 + 1 + halo,
+            input_tile_w,
+            input_tile_h,
             output_tile_w: tile_w,
             output_tile_h: tile_h,
             coordinate_driven_source: None,

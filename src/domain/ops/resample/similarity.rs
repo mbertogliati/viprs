@@ -62,7 +62,8 @@ impl<F: BandFormat + Send + Sync> SimilarityOp<F> {
         let matrix = inverse_similarity_matrix(safe_scale, cos, sin);
         let tx = matrix[1].mul_add(f64::from(canvas.top), matrix[0] * f64::from(canvas.left));
         let ty = matrix[3].mul_add(f64::from(canvas.top), matrix[2] * f64::from(canvas.left));
-        let affine = Affine::new(matrix, tx, ty, interpolate, canvas.width, canvas.height);
+        let affine = Affine::new(matrix, tx, ty, interpolate, canvas.width, canvas.height)
+            .with_source_bounds(Region::new(0, 0, input_w, input_h));
 
         Self {
             scale: safe_scale,
@@ -96,7 +97,8 @@ impl<F: BandFormat + Send + Sync> SimilarityOp<F> {
         let cy = f64::from(output_h.saturating_sub(1)) * 0.5;
         let tx = matrix[1].mul_add(-cy, matrix[0].mul_add(-cx, cx));
         let ty = matrix[3].mul_add(-cy, matrix[2].mul_add(-cx, cy));
-        let affine = Affine::new(matrix, tx, ty, interpolate, output_w, output_h);
+        let affine = Affine::new(matrix, tx, ty, interpolate, output_w, output_h)
+            .with_source_bounds(Region::new(0, 0, output_w, output_h));
 
         Self {
             scale: safe_scale,

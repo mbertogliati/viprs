@@ -6,7 +6,7 @@ set -euo pipefail
 
 FEATURES="${BENCH_FEATURES:---features default,simd-pulp,fft,heif,webp,tiff,png}"
 
-if [ -d "target/criterion" ]; then
+if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
   echo "▶ Baseline found — comparing against main"
   make bench-compare FEATURES="$FEATURES"
 else

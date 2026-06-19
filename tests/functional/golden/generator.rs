@@ -61,7 +61,9 @@ fn black_matches_libvips_and_is_all_zero() {
     assert_eq!(actual.len(), 100 * 100 * 3);
     assert!(actual.iter().all(|sample| *sample == 0));
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     golden::assert_golden_libvips(
         "create_black_libvips",
@@ -100,7 +102,9 @@ fn gaussmat_matches_libvips_and_normalized_weights_sum_to_one() {
         assert!((got - want).abs() < 1e-12, "got {got}, want {want}");
     }
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let expected = decode_f64(&golden::generate_vips_golden(
         "create_gaussmat_libvips",
@@ -136,7 +140,9 @@ fn identity_matches_libvips_and_emits_byte_indices() {
             .all(|(index, sample)| *sample == index as u8)
     );
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     golden::assert_golden_libvips(
         "create_identity_libvips",
@@ -158,7 +164,9 @@ fn tonelut_matches_libvips_for_known_curve() {
     assert_eq!(actual[192], 228);
     assert_eq!(actual[255], 254);
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let expected = decode_u16(&golden::generate_vips_golden(
         "create_tonelut_libvips",
@@ -204,7 +212,9 @@ fn sines_matches_libvips_for_known_frequencies() {
         assert!((got - want).abs() < 1e-6, "got {got}, want {want}");
     }
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let expected = decode_f32(&golden::generate_vips_golden(
         "create_sines_libvips",
@@ -239,7 +249,9 @@ fn eye_matches_libvips_and_preserves_first_column_ramp() {
     assert!((actual[64] - (1.0 / max_y_sq)).abs() < 1e-6);
     assert!((actual[63 * 64] - 1.0).abs() < 1e-6);
 
-    golden::require_vips();
+    if golden::skip_without_vips() {
+        return;
+    }
 
     let expected = decode_f32(&golden::generate_vips_golden(
         "create_eye_libvips",

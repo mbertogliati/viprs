@@ -448,6 +448,7 @@ pub(crate) fn encode_interleaved(
         let mut image: *mut lh::heif_image = ptr::null_mut();
         let mut options: *mut lh::heif_encoding_options = ptr::null_mut();
         let mut handle: *mut lh::heif_image_handle = ptr::null_mut();
+        let mut nclx_profile: *mut lh::heif_color_profile_nclx = ptr::null_mut();
 
         let result = (|| {
             let error = lh::heif_context_get_encoder_for_format(
@@ -473,15 +474,17 @@ pub(crate) fn encode_interleaved(
             let speed = 9 - effort;
             set_encoder_integer_parameter(context, encoder, b"speed\0", speed)?;
 
-            if !(lossless && compression == CompressionFormat::Av1) {
-                let chroma_parameter = match subsampling {
-                    HeifSubsampling::Auto if lossless || quality >= 90 => b"444\0".as_slice(),
-                    HeifSubsampling::Auto | HeifSubsampling::Subsample420 => b"420\0".as_slice(),
-                    HeifSubsampling::Subsample422 => b"422\0".as_slice(),
-                    HeifSubsampling::Subsample444 => b"444\0".as_slice(),
-                };
-                set_encoder_string_parameter(context, encoder, b"chroma\0", chroma_parameter)?;
-            }
+            let chroma_parameter = match subsampling {
+                HeifSubsampling::Auto if lossless || quality >= 90 => b"444\0".as_slice(),
+                HeifSubsampling::Auto | HeifSubsampling::Subsample420 => b"420\0".as_slice(),
+                HeifSubsampling::Subsample422 => b"422\0".as_slice(),
+                HeifSubsampling::Subsample444 => b"444\0".as_slice(),
+            };
+            // AV1 lossless uses an identity RGB matrix below, and libheif-backed
+            // encoders reject or crash if the chroma parameter is left at a
+            // subsampled default. Keep the encoder config aligned with the frame
+            // layout by always setting chroma explicitly.
+            set_encoder_string_parameter(context, encoder, b"chroma\0", chroma_parameter)?;
 
             configure_encoder_threads(context, encoder)?;
             set_encoder_boolean_parameter(context, encoder, b"auto-tiles\0", true)?;
@@ -553,6 +556,18 @@ pub(crate) fn encode_interleaved(
                 )));
             }
             (*options).save_alpha_channel = u8::from(bands == 4);
+            if lossless && compression == CompressionFormat::Av1 {
+                nclx_profile = lh::heif_nclx_color_profile_alloc();
+                if nclx_profile.is_null() {
+                    return Err(ViprsError::Codec(format!(
+                        "{context}: heif_nclx_color_profile_alloc failed"
+                    )));
+                }
+                (*nclx_profile).matrix_coefficients =
+                    lh::heif_matrix_coefficients_heif_matrix_coefficients_RGB_GBR;
+                (*options).output_nclx_profile = nclx_profile;
+                (*options).macOS_compatibility_workaround_no_nclx_profile = 0;
+            }
 
             let error = lh::heif_context_encode_image(
                 ctx,
@@ -598,6 +613,9 @@ pub(crate) fn encode_interleaved(
         if !options.is_null() {
             lh::heif_encoding_options_free(options);
         }
+        if !nclx_profile.is_null() {
+            lh::heif_nclx_color_profile_free(nclx_profile);
+        }
         if !image.is_null() {
             lh::heif_image_release(image);
         }
@@ -606,7 +624,7 @@ pub(crate) fn encode_interleaved(
         }
         lh::heif_context_free(ctx);
 
-        return result;
+        result
     }
 }
 

@@ -4,7 +4,9 @@ use super::support_inputs::*;
 
 #[test]
 fn abs_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_ramp";
     let source = signed_f32_source();
@@ -22,7 +24,9 @@ fn abs_libvips() {
 
 #[test]
 fn round_rint_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "fractional_gradient_rint";
     let source = fractional_f32_source();
@@ -37,7 +41,9 @@ fn round_rint_libvips() {
 
 #[test]
 fn round_ceil_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "fractional_gradient_ceil";
     let source = fractional_f32_source();
@@ -52,7 +58,9 @@ fn round_ceil_libvips() {
 
 #[test]
 fn round_floor_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "fractional_gradient_floor";
     let source = fractional_f32_source();
@@ -67,7 +75,9 @@ fn round_floor_libvips() {
 
 #[test]
 fn sign_u8_nonzero_pixels_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_nonzero_pixels";
     let source = grayscale_source();
@@ -85,7 +95,9 @@ fn sign_u8_nonzero_pixels_libvips() {
 
 #[test]
 fn add_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_plus_rhs";
     let source = signed_f32_source();
@@ -106,7 +118,9 @@ fn add_libvips() {
 
 #[test]
 fn subtract_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_minus_rhs";
     let source = signed_f32_source();
@@ -127,7 +141,9 @@ fn subtract_libvips() {
 
 #[test]
 fn multiply_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_times_rhs";
     let source = signed_f32_source();
@@ -148,7 +164,9 @@ fn multiply_libvips() {
 
 #[test]
 fn merge_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "horizontal_zero_overlap_u8";
     let reference = vec![
@@ -196,7 +214,9 @@ fn merge_libvips() {
 
 #[test]
 fn divide_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_divided_by_rhs";
     let source = signed_f32_source();
@@ -217,7 +237,9 @@ fn divide_libvips() {
 
 #[test]
 fn clamp_signed_f32_range_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_gradient_range";
     let source = signed_f32_source();
@@ -243,7 +265,9 @@ fn clamp_signed_f32_range_libvips() {
 
 #[test]
 fn remainder_i32_with_zero_divisors_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_i32_zero_divisors";
     let source = signed_i32_source();
@@ -264,7 +288,9 @@ fn remainder_i32_with_zero_divisors_libvips() {
 
 #[test]
 fn remainder_f32_fractional_rhs_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_f32_fractional_rhs";
     let source = signed_f32_source();
@@ -285,7 +311,9 @@ fn remainder_f32_fractional_rhs_libvips() {
 
 #[test]
 fn invert_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
@@ -298,7 +326,9 @@ fn invert_libvips() {
 
 #[test]
 fn linear_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "signed_scaled_offset";
     let source = signed_f32_source();
@@ -313,7 +343,9 @@ fn linear_libvips() {
 
 #[test]
 fn bandjoin_two_single_bands_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "two_single_band_gradients";
     let primary = grayscale_source();
@@ -330,7 +362,9 @@ fn bandjoin_two_single_bands_libvips() {
 
 #[test]
 fn bandmean_rgb_gradient_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let case = "rgb_gradient";
     let width = 6;

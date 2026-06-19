@@ -47,8 +47,11 @@ const GAUSSBLUR_COPY_SIGMA_THRESHOLD: f64 = 0.2;
 const GAUSSBLUR_MIN_AMPL: f64 = 0.2;
 const SHARPEN_MIN_AMPL: f64 = 0.1;
 const GAUSSBLUR_INTEGER_SCALE: f64 = 20.0;
+#[cfg(target_arch = "aarch64")]
 const SIGMA15_FAST_COEFFS: [i16; 5] = [8, 16, 20, 16, 8];
+#[cfg(target_arch = "aarch64")]
 const SIGMA15_FAST_SCALE: i64 = 68;
+#[cfg(target_arch = "aarch64")]
 const SIGMA15_FAST_ROUNDING: i64 = 34;
 #[cfg(target_arch = "aarch64")]
 const SIGMA15_FAST_RECIPROCAL: u32 = 15_421;
@@ -125,6 +128,7 @@ fn normalise_integer_kernel(kernel: &IntegerKernel1d) -> Vec<f64> {
         .collect()
 }
 
+#[cfg(target_arch = "aarch64")]
 #[inline]
 fn is_sigma15_fast_kernel(coeffs: &[i16], scale: i64, rounding: i64) -> bool {
     coeffs == SIGMA15_FAST_COEFFS
@@ -1535,6 +1539,7 @@ mod tests {
         }
     }
 
+    #[cfg(target_arch = "aarch64")]
     #[test]
     fn sigma15_fast_kernel_matches_integer_path() {
         let kernel = integer_kernel_with_precision(1.5, GAUSSBLUR_MIN_AMPL);

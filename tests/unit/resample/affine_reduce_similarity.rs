@@ -217,9 +217,9 @@ mod chaos_monkey_18 {
                 .expect("rotate90 should succeed");
         let (affine_pipeline, affine) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder.affine(
-                [0.0, 1.0, -1.0, 0.0],
-                0.0,
+                [0.0, -1.0, 1.0, 0.0],
                 f64::from(image.height() - 1),
+                0.0,
                 image.height(),
                 image.width(),
                 InterpolationKernel::Nearest,

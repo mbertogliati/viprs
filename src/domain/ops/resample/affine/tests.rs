@@ -255,6 +255,23 @@ fn identity_bilinear() {
 }
 
 #[test]
+fn identity_nearest_two_band_preserves_samples_without_alpha_unpremultiplication() {
+    let data = vec![11u8, 64, 42, 95, 203, 0, 7, 255];
+    let region = Region::new(0, 0, 2, 2);
+    let result = run_affine_u8_bands(
+        &data,
+        region,
+        2,
+        region,
+        [1.0, 0.0, 0.0, 1.0],
+        0.0,
+        0.0,
+        InterpolationKernel::Nearest,
+    );
+    assert_eq!(result, data);
+}
+
+#[test]
 fn axis_aligned_rgb_bilinear_matches_scalar_reference() {
     let in_region = Region::new(0, 0, 6, 5);
     let out_region = Region::new(0, 0, 4, 3);
@@ -654,6 +671,30 @@ fn node_spec_identity_nohalo_allocates_six_tap_halo() {
 }
 
 #[test]
+fn node_spec_caps_input_tile_to_source_bounds() {
+    let op = Affine::<U8>::new(
+        [1000.0, 0.0, 0.0, 1000.0],
+        0.0,
+        0.0,
+        InterpolationKernel::Nearest,
+        16,
+        16,
+    )
+    .with_source_bounds(Region::new(0, 0, 17, 13));
+
+    assert_eq!(
+        op.node_spec(128, 128),
+        NodeSpec {
+            input_tile_w: 17,
+            input_tile_h: 13,
+            output_tile_w: 128,
+            output_tile_h: 128,
+            coordinate_driven_source: None,
+        }
+    );
+}
+
+#[test]
 fn vsqbs_affine_matches_reference_copy_extend_2x2_to_4x4_upscale() {
     let in_region = Region::new(-1, -1, 5, 5);
     let out_region = Region::new(0, 0, 4, 4);
@@ -891,6 +932,24 @@ fn required_input_region_handles_empty_output_and_background_only_detection() {
 }
 
 #[test]
+fn required_input_region_clamps_to_declared_source_bounds() {
+    let op = Affine::<U8>::new(
+        [1.0, 0.0, 0.0, 1.0],
+        50.0,
+        50.0,
+        InterpolationKernel::Nearest,
+        8,
+        8,
+    )
+    .with_source_bounds(Region::new(0, 0, 4, 4));
+
+    assert_eq!(
+        op.required_input_region(&Region::new(0, 0, 2, 2)),
+        Region::new(4, 4, 0, 0)
+    );
+}
+
+#[test]
 fn process_region_fast_path_rejects_tiles_outside_declared_output_bounds() {
     let op = Affine::<U8>::new(
         [1.0, 0.0, 0.0, 1.0],
@@ -945,6 +1004,24 @@ fn affine_helper_functions_cover_axis_alignment_bilinear_paths_and_background_ch
     op.sample_pixel_bilinear_into(&input, 10.0, 10.0, &mut bilinear);
     assert_eq!(bilinear, [17; 4]);
     assert!(op.output_region_is_background_only(&input, &Region::new(20, 20, 1, 1)));
+}
+
+#[test]
+fn resolved_pixel_base_rejects_source_coords_outside_current_tile_region() {
+    let op = Affine::<U8>::new(
+        [1.0, 0.0, 0.0, 1.0],
+        0.0,
+        0.0,
+        InterpolationKernel::Nearest,
+        4,
+        4,
+    )
+    .with_extend(ExtendMode::Edge)
+    .with_source_bounds(Region::new(0, 0, 4, 4));
+    let input = Tile::<U8>::new(Region::new(1, 1, 2, 2), 1, &[5u8, 6, 7, 8]);
+
+    assert_eq!(op.resolve_sample_coords(&input, 0, 0), Some((0, 0)));
+    assert_eq!(op.resolved_pixel_base(&input, 0, 0), None);
 }
 
 #[test]

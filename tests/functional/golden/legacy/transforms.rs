@@ -4,7 +4,9 @@ use super::support::*;
 #[test]
 #[ignore = "see B-82: affine libvips parity gap is not closed yet"]
 fn affine_rotate30_scale_half_gradient_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 32;
     let height = 24;
@@ -53,7 +55,9 @@ fn affine_rotate30_scale_half_gradient_libvips() {
 #[test]
 #[ignore = "see B-82: affine libvips parity gap is not closed yet"]
 fn affine_rotate30_scale_half_gradient_libvips_with_cache() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 32;
     let height = 24;
@@ -104,7 +108,9 @@ fn affine_rotate30_scale_half_gradient_libvips_with_cache() {
 #[test]
 #[ignore = "see B-82: similarity libvips parity gap is not closed yet"]
 fn similarity_rotate45_scale0_75_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 40;
     let height = 28;
@@ -140,7 +146,9 @@ fn similarity_rotate45_scale0_75_libvips() {
 
 #[test]
 fn thumbnail_width128_preserves_square_aspect_ratio_libvips() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 512;
     let height = 512;
@@ -178,7 +186,9 @@ fn thumbnail_width128_preserves_square_aspect_ratio_libvips() {
 
 #[test]
 fn thumbnail_width128_preserves_square_aspect_ratio_libvips_with_cache() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let width = 512;
     let height = 512;

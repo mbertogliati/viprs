@@ -1,8 +1,12 @@
-//! AVIF codec — decode via `libheif-rs`, encode via `ravif` (U8) or
-//! `libheif-rs` (U16 / 10-bit).
+//! AVIF codec — decode via `libheif-rs`, encode via `ravif` (lossy U8) or
+//! `libheif-rs` (U16 / 10-bit, plus optional U8 lossless when the `heif`
+//! feature is enabled).
 //!
-//! U8 encode stays pure Rust via `ravif`. U16 encode uses libheif's AV1 encoder
-//! so 10-bit AVIF output is available behind the existing AVIF feature.
+//! Lossy U8 encode stays pure Rust via `ravif`. `ravif`/`rav1e` still do not
+//! implement true AV1 lossless, so AVIF lossless for `U8` images is only
+//! attempted through libheif when the `heif` feature is enabled, and even then
+//! availability depends on the linked AV1 encoder. U16 encode uses libheif so
+//! 10-bit AVIF output is available behind the existing AVIF feature.
 //! Page sequences decode into [`AnimationFrame`]s for animated thumbnail flows.
 
 use super::heif_support::{
@@ -183,7 +187,7 @@ fn decode_u16_page(
     opts: &LoadOptions,
     total_pages: u32,
 ) -> Result<Image<U16>, ViprsError> {
-    let metadata = read_metadata("avif", &handle)?;
+    let metadata = read_metadata("avif", handle)?;
     let width = handle.width();
     let height = handle.height();
     let has_alpha = handle.has_alpha_channel();
@@ -196,7 +200,7 @@ fn decode_u16_page(
     let lib_heif = shared_libheif("avif")?;
     let decoded = lib_heif
         .decode(
-            &handle,
+            handle,
             ColorSpace::Rgb(decoded_chroma(bit_depth, has_alpha)),
             None,
         )
@@ -235,7 +239,7 @@ fn decode_u8_page(
     opts: &LoadOptions,
     total_pages: u32,
 ) -> Result<Image<U8>, ViprsError> {
-    let metadata = read_metadata("avif", &handle)?;
+    let metadata = read_metadata("avif", handle)?;
     let width = handle.width();
     let height = handle.height();
     let has_alpha = handle.has_alpha_channel();
@@ -243,7 +247,7 @@ fn decode_u8_page(
 
     let lib_heif = shared_libheif("avif")?;
     let decoded = lib_heif
-        .decode(&handle, ColorSpace::Rgb(decoded_chroma(8, has_alpha)), None)
+        .decode(handle, ColorSpace::Rgb(decoded_chroma(8, has_alpha)), None)
         .map_err(|e| ViprsError::Codec(format!("avif: decode: {e}")))?;
     let plane = decoded
         .planes()
@@ -407,13 +411,27 @@ fn resolved_subsampling(opts: &SaveOptions) -> HeifSubsampling {
 }
 
 #[inline]
-fn needs_libheif_u8_metadata_path(metadata: &ImageMetadata, opts: &SaveOptions) -> bool {
+fn needs_libheif_u8_encode_path(metadata: &ImageMetadata, opts: &SaveOptions) -> bool {
     opts.heif_subsampling.is_some()
         || opts.heif_bit_depth.is_some()
         || (opts.strip_metadata != Some(true)
             && (metadata.exif.is_some()
                 || metadata.xmp.is_some()
                 || metadata.icc_profile.is_some()))
+}
+
+#[cfg(feature = "heif")]
+fn avif_u8_lossless_unavailable_error(source: &ViprsError) -> ViprsError {
+    ViprsError::Codec(format!(
+        "avif: true lossless U8 encoding is unavailable in this build: ravif/rav1e do not implement AV1 lossless, and the linked libheif AV1 encoder could not complete the lossless path ({source})"
+    ))
+}
+
+#[cfg(not(feature = "heif"))]
+fn avif_u8_lossless_unavailable_error() -> ViprsError {
+    ViprsError::Codec(
+        "avif: true lossless U8 encoding is unavailable in this build: ravif/rav1e do not implement AV1 lossless, and the libheif-backed fallback is only enabled with the `heif` feature".into(),
+    )
 }
 
 fn encode_u8_with_ravif(
@@ -707,7 +725,26 @@ impl ImageEncoder for AvifCodec {
         match F::ID {
             BandFormatId::U8 => {
                 let pixels = bytemuck::cast_slice::<F::Sample, u8>(image.pixels());
-                if needs_libheif_u8_metadata_path(image.metadata(), opts) {
+                if opts.lossless == Some(true) {
+                    #[cfg(feature = "heif")]
+                    {
+                        return encode_u8_with_libheif(
+                            image.width(),
+                            image.height(),
+                            image.bands(),
+                            pixels,
+                            image.metadata(),
+                            opts,
+                        )
+                        .map_err(|source| avif_u8_lossless_unavailable_error(&source));
+                    }
+
+                    #[cfg(not(feature = "heif"))]
+                    {
+                        return Err(avif_u8_lossless_unavailable_error());
+                    }
+                }
+                if needs_libheif_u8_encode_path(image.metadata(), opts) {
                     let _ = shared_libheif("avif")?;
                     encode_u8_with_libheif(
                         image.width(),
@@ -1161,24 +1198,48 @@ mod tests {
     }
 
     #[test]
-    fn lossless_mode_is_distinct_from_quality_100() {
+    fn lossless_u8_uses_available_backend_honestly() {
         let codec = AvifCodec;
         let image = rgb_u8_gradient(32, 32);
 
         let quality_100 = codec
             .encode_with_options::<U8>(&image, &SaveOptions::default().with_quality(100))
             .unwrap();
-        let lossless = codec
-            .encode_with_options::<U8>(&image, &SaveOptions::default().lossless())
-            .unwrap();
-        let decoded_lossless = codec.decode::<U8>(&lossless).unwrap();
+        assert!(!quality_100.is_empty());
 
-        assert_ne!(quality_100, lossless);
-        for (&decoded_sample, &original_sample) in
-            decoded_lossless.pixels().iter().zip(image.pixels())
-        {
-            assert!((i16::from(decoded_sample) - i16::from(original_sample)).abs() <= 1);
+        #[cfg(feature = "heif")]
+        if av1_encoder_available() {
+            let lossless = codec
+                .encode_with_options::<U8>(&image, &SaveOptions::default().lossless())
+                .unwrap();
+            let decoded = codec.decode::<U8>(&lossless).unwrap();
+
+            assert_ne!(quality_100, lossless);
+            for (index, (&orig, &decoded_sample)) in image
+                .pixels()
+                .iter()
+                .zip(decoded.pixels().iter())
+                .enumerate()
+            {
+                let diff = (i32::from(orig) - i32::from(decoded_sample)).abs();
+                assert_eq!(
+                    diff, 0,
+                    "pixel sample {index}: original={orig}, decoded={decoded_sample}, diff={diff} > tolerance=0"
+                );
+            }
+            return;
         }
+
+        let lossless_error = codec
+            .encode_with_options::<U8>(&image, &SaveOptions::default().lossless())
+            .unwrap_err();
+
+        assert!(
+            lossless_error
+                .to_string()
+                .contains("true lossless U8 encoding is unavailable"),
+            "unexpected error: {lossless_error}"
+        );
     }
 
     #[test]
@@ -1395,12 +1456,22 @@ mod tests {
             let codec = AvifCodec;
             let original = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
 
-            let encoded = codec.encode_with_options::<U8>(&original, &SaveOptions::default().lossless()).unwrap();
+            let encoded = encode_u8_with_ravif(
+                original.width(),
+                original.height(),
+                original.bands(),
+                original.pixels(),
+                &SaveOptions::default().lossless(),
+            )
+            .unwrap();
             let decoded = codec.decode::<U8>(&encoded).unwrap();
 
             prop_assert_eq!(decoded.width(), width);
             prop_assert_eq!(decoded.height(), height);
             prop_assert_eq!(decoded.bands(), 3);
+            // ravif uses an RGB/identity-matrix path here, so there is no RGB↔YUV
+            // conversion error. The remaining ±2 drift comes from rav1e's q=0 path,
+            // which upstream still does not treat as true AV1 lossless.
             for (&orig, &decoded_sample) in original.pixels().iter().zip(decoded.pixels().iter()) {
                 let diff = (i32::from(orig) - i32::from(decoded_sample)).abs();
                 // ravif/rav1e's "lossless" RGB path is quantizer-0 4:4:4, but it

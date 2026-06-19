@@ -179,15 +179,27 @@ mod chaos_monkey_8 {
     }
 
     #[test]
-    fn embed_negative_offsets_return_typed_error() {
+    fn embed_negative_offsets_succeed_when_source_overlaps_canvas() {
+        let image = patterned_u8(4, 4, 1);
+        let (pipeline, _output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
+            builder.embed_signed(4, 4, -1, -1, 4, 4, ExtendMode::Black)
+        })
+        .expect("embed_signed with negative offsets must succeed when source overlaps canvas");
+
+        assert_eq!(pipeline.width, 4);
+        assert_eq!(pipeline.height, 4);
+    }
+
+    #[test]
+    fn embed_negative_offsets_return_error_when_source_outside_canvas() {
         let image = patterned_u8(4, 4, 1);
         let result = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
-            builder.embed_signed(4, 4, -1, -1, 4, 4, ExtendMode::Black)
+            builder.embed_signed(4, 4, -4, -4, 4, 4, ExtendMode::Black)
         });
 
         assert!(
             result.is_err(),
-            "negative embed offsets unexpectedly succeeded"
+            "embed with source completely outside canvas must fail"
         );
     }
 }

@@ -253,20 +253,28 @@ where
         + crate::domain::ops::resample::sample_conv::ToF64
         + crate::domain::ops::resample::sample_conv::FromF64,
 {
-    /// Creates an affine bridge that reports caller-supplied output dimensions.
-    pub fn new(
+    /// Creates an affine bridge that reports caller-supplied output dimensions and extend mode.
+    pub fn new_with_extend(
         matrix: [f64; 4],
         tx: f64,
         ty: f64,
         kernel: InterpolationKernel,
+        input_w: u32,
+        input_h: u32,
         output_w: u32,
         output_h: u32,
         bands: u32,
         demand_hint: DemandHint,
+        extend: crate::domain::ops::resample::affine::ExtendMode,
     ) -> Result<Self, crate::domain::error::BuildError> {
         use crate::domain::ops::resample::affine::Affine;
-        let affine = Affine::try_new(matrix, tx, ty, kernel, output_w, output_h).map_err(
-            |error| match error {
+        let affine = Affine::try_new(matrix, tx, ty, kernel, output_w, output_h)
+            .map(|affine| {
+                affine
+                    .with_extend(extend)
+                    .with_source_bounds(crate::domain::image::Region::new(0, 0, input_w, input_h))
+            })
+            .map_err(|error| match error {
                 crate::domain::error::ViprsError::DegenerateAffineTransform {
                     matrix,
                     output_width,
@@ -282,8 +290,7 @@ where
                     matrix,
                     reason: "affine validation failed",
                 },
-            },
-        )?;
+            })?;
         Ok(Self {
             inner: crate::domain::op::OperationBridge::new(affine, bands),
             output_w,

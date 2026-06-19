@@ -19,15 +19,17 @@ fn sigma_for_target_width(target: u32, min_ampl: f64) -> f64 {
 
     for _ in 0..48 {
         let sigma = (low + high) * 0.5;
-        let op = LogmatOp::<F32>::new(sigma, min_ampl).unwrap();
-        if op.width() < target {
-            low = sigma;
-        } else {
-            high = sigma;
+        match LogmatOp::<F32>::new(sigma, min_ampl) {
+            Ok(op) if op.width() < target => {
+                low = sigma;
+            }
+            Ok(_) | Err(_) => {
+                high = sigma;
+            }
         }
     }
 
-    high
+    low
 }
 
 fn bench_case(

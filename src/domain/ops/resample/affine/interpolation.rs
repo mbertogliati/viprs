@@ -130,18 +130,9 @@ impl<F: BandFormat> Affine<F> {
         ix: i64,
         iy: i64,
     ) -> Option<(i64, i64)> {
-        let x = Self::resolve_source_coord(
-            ix,
-            i64::from(input.region.x),
-            input.region.width,
-            &self.extend,
-        )?;
-        let y = Self::resolve_source_coord(
-            iy,
-            i64::from(input.region.y),
-            input.region.height,
-            &self.extend,
-        )?;
+        let bounds = self.source_bounds.unwrap_or(input.region);
+        let x = Self::resolve_source_coord(ix, i64::from(bounds.x), bounds.width, &self.extend)?;
+        let y = Self::resolve_source_coord(iy, i64::from(bounds.y), bounds.height, &self.extend)?;
         Some((x, y))
     }
 
@@ -150,6 +141,11 @@ impl<F: BandFormat> Affine<F> {
         let (resolved_x, resolved_y) = self.resolve_sample_coords(input, ix, iy)?;
         let tile_x = resolved_x - i64::from(input.region.x);
         let tile_y = resolved_y - i64::from(input.region.y);
+        if (tile_x as u64) >= u64::from(input.region.width)
+            || (tile_y as u64) >= u64::from(input.region.height)
+        {
+            return None;
+        }
         let width = input.region.width as usize;
         let bands = input.bands as usize;
         Some((tile_y as usize * width + tile_x as usize) * bands)

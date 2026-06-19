@@ -14,7 +14,7 @@
 
 use std::marker::PhantomData;
 
-use crate::domain::{format::BandFormat, kernel::InterpolationKernel};
+use crate::domain::{format::BandFormat, image::Region, kernel::InterpolationKernel};
 
 pub use crate::domain::ops::conversion::embed::ExtendMode;
 
@@ -45,6 +45,7 @@ pub struct Affine<F: BandFormat> {
     output_h: u32,
     /// libvips-style extend mode for samples that fall outside the source tile.
     extend: ExtendMode,
+    source_bounds: Option<Region>,
     premultiplied: bool,
     fast_path: Option<AffineFastPath>,
     _format: PhantomData<F>,

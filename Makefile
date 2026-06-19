@@ -45,10 +45,10 @@ clippy:
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used \
 		-A clippy::nursery -A clippy::cast_ptr_alignment
 
-## Compile check (lib mandatory; xtask best-effort — requires system codec libs)
+## Compile check (lib mandatory; xtask validated separately in container CI job)
 build:
 	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) check --lib $(FEATURES)
-	$(CARGO) check -p xtask || echo "xtask check skipped (missing system libs)"
+	$(CARGO) check -p xtask || echo "⚠ xtask requires system codec libs — validated by the build-xtask CI job"
 
 ## Unit tests only (containerless CI — no system libs)
 test:
@@ -76,14 +76,9 @@ deny:
 audit:
 	$(CARGO) audit
 
-## Full test suite with coverage instrumentation (≥90% on ops/ and codecs/).
-## Runs lib unit tests with coverage instrumentation.
-## Integration tests are excluded because pre-existing pipeline bugs on x86_64 CI
-## cause false negatives (issues #24, affine geometry, tile sizing).
-## Threshold matches current lib-only LINE coverage (~87% regions, ~86.7% lines).
-## Requires system libs for all codec features.
+## Coverage over full test suite (≥87% current baseline gate on ops/ and codecs/) — requires system libs
 coverage:
-	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
+	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 87
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
@@ -106,21 +101,42 @@ BENCH_CI_ENV := RUSTFLAGS="-Ctarget-cpu=native" \
 	CARGO_PROFILE_BENCH_CODEGEN_UNITS=16 \
 	CARGO_PROFILE_BENCH_DEBUG=0
 
+CRITERION_BENCHES := $(shell awk 'BEGIN { in_bench = 0; name = ""; path = "" } \
+	/^\[\[bench\]\]/ { \
+		if (in_bench && path !~ /^benches\/iai\// && name != "") print name; \
+		in_bench = 1; name = ""; path = ""; next \
+	} \
+	in_bench && /^name = "/ { name = $$3; gsub(/"/, "", name); next } \
+	in_bench && /^path = "/ { path = $$3; gsub(/"/, "", path); next } \
+	END { if (in_bench && path !~ /^benches\/iai\// && name != "") print name }' Cargo.toml)
+
 bench-ci:
-	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
-		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'
+	@set -e; \
+	for bench in $(CRITERION_BENCHES); do \
+		echo "▶ Running $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'; \
+	done
 
 ## Save baseline on main (CI calls this after merge to main)
 bench-baseline:
-	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
-		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-		--save-baseline main '/512'
+	@set -e; \
+	for bench in $(CRITERION_BENCHES); do \
+		echo "▶ Saving baseline for $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
+			--save-baseline main '/512'; \
+	done
 
 ## Compare PR against main baseline — fails if any benchmark regresses >5%
 bench-compare:
-	$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench '*' \
-		-- --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-		--baseline main '/512'
+	@set -e; \
+	for bench in $(CRITERION_BENCHES); do \
+		echo "▶ Comparing $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
+			--baseline main '/512'; \
+	done
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
 ## Runs the representative scenario matrix from PERFORMANCE.md:

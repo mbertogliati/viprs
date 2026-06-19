@@ -2,7 +2,9 @@ use super::support::*;
 
 #[test]
 fn libvips_parity_upstream_arithmetic_add() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_arithmetic.py::TestArithmetic::test_add";
     let op = "libvips_parity_arithmetic";
@@ -53,7 +55,9 @@ fn libvips_parity_upstream_arithmetic_add() {
 // Upstream: test/test-suite/test_arithmetic.py::TestArithmetic::test_sub
 #[test]
 fn libvips_parity_upstream_arithmetic_subtract() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_arithmetic.py::TestArithmetic::test_sub";
     let op = "libvips_parity_arithmetic";
@@ -104,7 +108,9 @@ fn libvips_parity_upstream_arithmetic_subtract() {
 // Upstream: test/test-suite/test_arithmetic.py::TestArithmetic::test_mul
 #[test]
 fn libvips_parity_upstream_arithmetic_multiply() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_arithmetic.py::TestArithmetic::test_mul";
     let op = "libvips_parity_arithmetic";
@@ -155,7 +161,9 @@ fn libvips_parity_upstream_arithmetic_multiply() {
 // Upstream: test/test-suite/test_arithmetic.py::TestArithmetic::test_div
 #[test]
 fn libvips_parity_upstream_arithmetic_divide() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_arithmetic.py::TestArithmetic::test_div";
     let op = "libvips_parity_arithmetic";
@@ -206,7 +214,9 @@ fn libvips_parity_upstream_arithmetic_divide() {
 // Upstream: test/test-suite/test_arithmetic.py::TestArithmetic::test_abs
 #[test]
 fn libvips_parity_upstream_arithmetic_abs() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_arithmetic.py::TestArithmetic::test_abs";
     let op = "libvips_parity_arithmetic";
@@ -242,7 +252,9 @@ fn libvips_parity_upstream_arithmetic_abs() {
 // Upstream: test/test-suite/test_arithmetic.py::TestArithmetic::test_invert
 #[test]
 fn libvips_parity_upstream_arithmetic_invert() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_arithmetic.py::TestArithmetic::test_invert";
     let op = "libvips_parity_arithmetic";

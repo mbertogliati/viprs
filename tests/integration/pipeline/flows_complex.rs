@@ -205,15 +205,21 @@ fn mean_rect_diff(
     width: u32,
     height: u32,
 ) -> f64 {
-    let bands = lhs.bands() as usize;
+    assert_eq!(
+        (lhs.width(), lhs.height()),
+        (rhs.width(), rhs.height()),
+        "images must share dimensions for region diff"
+    );
+    let bands = lhs.bands().min(rhs.bands()) as usize;
     let mut total = 0.0;
     let mut count = 0usize;
     for y in top..top + height {
         for x in left..left + width {
-            let idx = ((y * lhs.width() + x) * lhs.bands()) as usize;
+            let lhs_idx = ((y * lhs.width() + x) * lhs.bands()) as usize;
+            let rhs_idx = ((y * rhs.width() + x) * rhs.bands()) as usize;
             for band in 0..bands {
-                total += (f64::from(lhs.pixels()[idx + band])
-                    - f64::from(rhs.pixels()[idx + band]))
+                total += (f64::from(lhs.pixels()[lhs_idx + band])
+                    - f64::from(rhs.pixels()[rhs_idx + band]))
                 .abs();
                 count += 1;
             }
@@ -275,6 +281,28 @@ fn checkerboard_f32(width: u32, height: u32) -> Image<F32> {
         .flat_map(|y| (0..width).map(move |x| if (x + y) % 2 == 0 { 1.0 } else { -1.0 }))
         .collect();
     Image::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build f32 image")
+}
+
+#[cfg(feature = "fft")]
+fn registration_fixture_f32(width: u32, height: u32) -> Image<F32> {
+    let pixels = (0..height)
+        .flat_map(|y| {
+            (0..width).map(move |x| {
+                let x = x as f32;
+                let y = y as f32;
+                let ramp = x * 0.11 + y * 0.07;
+                let wave = (x * 0.37).sin() + (y * 0.23).cos();
+                let interaction = ((x + 1.0) * (y + 2.0) * 0.013).sin();
+                let marker = match (x as u32, y as u32) {
+                    (mx, my) if mx == width / 3 && my == height / 4 => 2.5,
+                    (mx, my) if mx == width * 2 / 3 && my == height * 3 / 5 => -1.75,
+                    _ => 0.0,
+                };
+                ramp + wave + interaction + marker
+            })
+        })
+        .collect();
+    Image::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build registration image")
 }
 
 #[cfg(feature = "fft")]
@@ -389,10 +417,10 @@ fn flow1_full_thumbnail_pipeline_preserves_geometry_alpha_and_hashes() {
     );
     assert!(alpha_is_preserved(&rgba_output));
     assert_eq!(
-        upscale_pipeline.width, 1600,
-        "upscale path should honour requested width"
+        upscale_pipeline.width, 512,
+        "Width thumbnails must not upscale beyond the source width"
     );
-    assert_eq!(upscale_output.height(), 1600);
+    assert_eq!(upscale_output.height(), 512);
     assert!(
         thumb_output
             .pixels()
@@ -490,8 +518,13 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
 #[test]
 #[cfg(feature = "fft")]
 fn flow3_phase_correlation_registration_detects_known_offsets_and_non_power_of_two_inputs() {
-    let reference = checkerboard_f32(32, 24);
+    let reference = registration_fixture_f32(31, 29);
     let shifted = circular_shift(&reference, 5, 7);
+    assert_ne!(
+        shifted.pixels(),
+        reference.pixels(),
+        "registration fixture must change under the tested shift"
+    );
     let ref_fft = fwfft(&reference).expect("fwfft reference");
     let shifted_fft = fwfft(&shifted).expect("fwfft shifted");
     let cross_power = run_phasecor(
@@ -537,7 +570,7 @@ fn flow3_phase_correlation_registration_detects_known_offsets_and_non_power_of_t
         0
     );
     assert!(
-        checkerboard_f32(31, 29)
+        registration_fixture_f32(31, 29)
             .pixels()
             .iter()
             .all(|value| value.is_finite())

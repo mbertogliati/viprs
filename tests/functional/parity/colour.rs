@@ -3,7 +3,9 @@ use super::support::*;
 // Upstream: test/test-suite/test_resample.py::TestResample::test_thumbnail
 #[test]
 fn libvips_parity_upstream_resample_thumbnail_fit_box() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_resample.py::TestResample::test_thumbnail";
     let op = "libvips_parity_resample";
@@ -53,7 +55,9 @@ fn libvips_parity_upstream_resample_thumbnail_fit_box() {
 // Upstream: test/test-suite/test_colour.py::TestColour::test_colourspace
 #[test]
 fn libvips_parity_upstream_colour_srgb_to_lab() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_colour.py::TestColour::test_colourspace";
     let op = "libvips_parity_colour";
@@ -95,7 +99,9 @@ fn libvips_parity_upstream_colour_srgb_to_lab() {
 // Upstream: test/test-suite/test_colour.py::TestColour::test_colourspace
 #[test]
 fn libvips_parity_upstream_colour_lab_to_srgb() {
-    ensure_vips();
+    if skip_without_vips() {
+        return;
+    }
 
     let upstream = "test/test-suite/test_colour.py::TestColour::test_colourspace";
     let op = "libvips_parity_colour";

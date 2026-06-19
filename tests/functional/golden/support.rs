@@ -152,6 +152,21 @@ pub fn vips_available() -> bool {
     Path::new(VIPS_BIN.as_str()).exists() && Path::new(VIPSHEADER_BIN.as_str()).exists()
 }
 
+/// Returns `true` when the current test should return early because the
+/// libvips CLI tools are unavailable in this environment.
+#[must_use]
+pub fn skip_without_vips() -> bool {
+    if vips_available() {
+        return false;
+    }
+
+    eprintln!(
+        "skipping: libvips parity test requires the `vips` and `vipsheader` CLIs at {} and {}",
+        &*VIPS_BIN, &*VIPSHEADER_BIN
+    );
+    true
+}
+
 /// Panics when libvips CLI tools are not installed.
 ///
 /// Tests that only consume committed fixtures can call this unconditionally. It

@@ -33,8 +33,8 @@ pub(crate) const WIDTH: u32 = 8;
 pub(crate) const HEIGHT: u32 = 8;
 pub(crate) const OUTPUT_PLACEHOLDER: &str = "{output}";
 
-pub(crate) fn ensure_vips() {
-    golden::require_vips();
+pub(crate) fn skip_without_vips() -> bool {
+    golden::skip_without_vips()
 }
 
 fn fixture_metadata(upstream: &str, op: &str, case: &str) -> String {

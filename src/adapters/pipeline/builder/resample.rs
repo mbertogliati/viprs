@@ -21,6 +21,44 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self.reduce_h_with_hint(factor, kernel, DemandHint::ThinStrip)
     }
 
+    #[inline]
+    fn forward_affine_to_backward(
+        matrix: [f64; 4],
+        tx: f64,
+        ty: f64,
+        output_w: u32,
+        output_h: u32,
+    ) -> Result<([f64; 4], f64, f64), BuildError> {
+        if !matrix.iter().all(|value| value.is_finite()) || !tx.is_finite() || !ty.is_finite() {
+            return Err(BuildError::InvalidAffineMatrix {
+                matrix,
+                reason: "matrix coefficients and translation must be finite",
+            });
+        }
+
+        let determinant = matrix[0].mul_add(matrix[3], -matrix[1] * matrix[2]);
+        if determinant.abs() <= f64::EPSILON {
+            return Err(BuildError::DegenerateAffineTransform {
+                matrix,
+                output_width: output_w,
+                output_height: output_h,
+                reason: "matrix determinant is singular",
+            });
+        }
+
+        let inv_det = 1.0 / determinant;
+        let backward_matrix = [
+            matrix[3] * inv_det,
+            -matrix[1] * inv_det,
+            -matrix[2] * inv_det,
+            matrix[0] * inv_det,
+        ];
+        let backward_tx = -(backward_matrix[0] * tx + backward_matrix[1] * ty);
+        let backward_ty = -(backward_matrix[2] * tx + backward_matrix[3] * ty);
+
+        Ok((backward_matrix, backward_tx, backward_ty))
+    }
+
     fn reduce_h_with_hint(
         self,
         factor: f64,
@@ -407,8 +445,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
 
     /// Apply an affine transform to the image.
     ///
-    /// `matrix` is `[a, b, c, d]` (row-major 2×2) mapping output pixel coordinates
-    /// to input pixel coordinates: `x_in = a*x_out + b*y_out + tx`, etc.
+    /// `matrix` is `[a, b, c, d]` (row-major 2×2) in forward form:
+    /// `x_out = a*x_in + b*y_in + tx`, `y_out = c*x_in + d*y_in + ty`.
+    /// The builder converts this to the internal backward-mapped affine kernel,
+    /// so positive translations move the image right/down and expose zero-filled
+    /// background on the uncovered edges.
     /// `output_w` and `output_h` fix the output image dimensions; the pipeline
     /// compiler propagates these via `AffineBridge::output_width`/`output_height`.
     pub fn affine(
@@ -420,18 +461,21 @@ impl<Op: Flush> PipelineBuilder<Op> {
         output_h: u32,
         kernel: InterpolationKernel,
     ) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.affine_with_hint(
-            matrix,
-            tx,
-            ty,
+        let (backward_matrix, backward_tx, backward_ty) =
+            Self::forward_affine_to_backward(matrix, tx, ty, output_w, output_h)?;
+        self.affine_backward_with_extend_and_hint(
+            backward_matrix,
+            backward_tx,
+            backward_ty,
             output_w,
             output_h,
             kernel,
             DemandHint::SmallTile,
+            crate::domain::ops::resample::affine::ExtendMode::Background(vec![0.0]),
         )
     }
 
-    fn affine_with_hint(
+    fn affine_backward_with_extend_and_hint(
         self,
         matrix: [f64; 4],
         tx: f64,
@@ -440,78 +484,101 @@ impl<Op: Flush> PipelineBuilder<Op> {
         output_h: u32,
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
+        extend: crate::domain::ops::resample::affine::ExtendMode,
     ) -> Result<PipelineBuilder<Identity>, BuildError> {
         let bands = self.bands;
+        let (input_w, input_h) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
-            BandFormatId::U8 => Box::new(AffineBridge::<U8>::new(
+            BandFormatId::U8 => Box::new(AffineBridge::<U8>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend.clone(),
             )?),
-            BandFormatId::U16 => Box::new(AffineBridge::<U16>::new(
+            BandFormatId::U16 => Box::new(AffineBridge::<U16>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend.clone(),
             )?),
-            BandFormatId::I16 => Box::new(AffineBridge::<I16>::new(
+            BandFormatId::I16 => Box::new(AffineBridge::<I16>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend.clone(),
             )?),
-            BandFormatId::U32 => Box::new(AffineBridge::<U32>::new(
+            BandFormatId::U32 => Box::new(AffineBridge::<U32>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend.clone(),
             )?),
-            BandFormatId::I32 => Box::new(AffineBridge::<I32>::new(
+            BandFormatId::I32 => Box::new(AffineBridge::<I32>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend.clone(),
             )?),
-            BandFormatId::F32 => Box::new(AffineBridge::<F32>::new(
+            BandFormatId::F32 => Box::new(AffineBridge::<F32>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend.clone(),
             )?),
-            BandFormatId::F64 => Box::new(AffineBridge::<F64>::new(
+            BandFormatId::F64 => Box::new(AffineBridge::<F64>::new_with_extend(
                 matrix,
                 tx,
                 ty,
                 kernel,
+                input_w,
+                input_h,
                 output_w,
                 output_h,
                 bands,
                 demand_hint,
+                extend,
             )?),
         };
         self.then(op)
@@ -627,7 +694,16 @@ impl<Op: Flush> PipelineBuilder<Op> {
                     output_width,
                     output_height,
                     kernel,
-                } => builder.affine(matrix, tx, ty, output_width, output_height, kernel)?,
+                } => builder.affine_backward_with_extend_and_hint(
+                    matrix,
+                    tx,
+                    ty,
+                    output_width,
+                    output_height,
+                    kernel,
+                    DemandHint::SmallTile,
+                    crate::domain::ops::resample::affine::ExtendMode::Copy,
+                )?,
             };
         }
 
@@ -820,7 +896,6 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 self.arena.set_dimensions(width, height);
             }
         }
-
         if self.last_node.is_none() && plan.shrink_factor.is_some() {
             (input_width, input_height) = self.current_dimensions();
             plan = thumbnail.into_pipeline_nodes_without_shrink_hint(
@@ -867,7 +942,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                     } else {
                         DemandHint::SmallTile
                     };
-                    builder.affine_with_hint(
+                    builder.affine_backward_with_extend_and_hint(
                         matrix,
                         tx,
                         ty,
@@ -875,6 +950,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                         output_height,
                         kernel,
                         demand_hint,
+                        crate::domain::ops::resample::affine::ExtendMode::Copy,
                     )?
                 }
                 ThumbnailNode::ExtractArea {
