@@ -541,7 +541,8 @@ fn encode_u8_with_libheif(
             }
             3 | 4 => {
                 for &sample in pixels {
-                    expanded.extend_from_slice(&(u16::from(sample) << (bit_depth - 8)).to_be_bytes());
+                    expanded
+                        .extend_from_slice(&(u16::from(sample) << (bit_depth - 8)).to_be_bytes());
                 }
             }
             _ => {
