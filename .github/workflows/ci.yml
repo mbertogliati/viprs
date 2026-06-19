@@ -34,21 +34,15 @@ jobs:
     name: "Lint (fmt + clippy)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-toolchain
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: "1.96.0"
           components: rustfmt, clippy
-      - name: Install system libraries for all-features clippy
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            ${{ env.CONTAINER_BUILD_DEPS }} \
-            libturbojpeg0-dev \
-            libwebp-dev \
-            libheif-dev \
-            liblcms2-dev \
-            libopenjp2-7-dev
+      - name: Install nasm (needed by rav1e for AVIF)
+        run: apt-get update -qq && apt-get install -y --no-install-recommends nasm
       - name: Check formatting
         run: make fmt
       - name: Clippy
