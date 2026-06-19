@@ -54,7 +54,7 @@ pub(crate) use common::{
 #[cfg(test)]
 pub(crate) use static_decode::decode_static_webp_pixels;
 
-/// WebP codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
+/// WebP codec: implements both [`crate::ports::codec::ImageDecoder`] and [`crate::ports::codec::ImageEncoder`].
 ///
 /// Zero-sized: all state is derived from the input data at call time.
 pub struct WebpCodec;

@@ -50,7 +50,7 @@ impl Default for PngEncoder {
     }
 }
 
-/// PNG codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
+/// PNG codec: implements both [`crate::ports::codec::ImageDecoder`] and [`crate::ports::codec::ImageEncoder`].
 ///
 /// Only U8 and U16 band formats are supported. All other formats return
 /// [`ViprsError::Codec`].
