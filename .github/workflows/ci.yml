@@ -82,7 +82,7 @@ jobs:
         run: make test FEATURES="${{ env.RUST_FEATURES }}"
 
   test-and-coverage:
-    name: "Tests + Coverage (all codecs, ≥90%)"
+    name: "Tests + Coverage (all codecs, ≥86%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
