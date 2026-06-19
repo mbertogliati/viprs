@@ -192,6 +192,36 @@ sudo dnf install -y \
 | `cargo xtask perf <input> <op> --metrics simd` | SIMD instruction ratio | Vectorization validation |
 | `cargo xtask perf <input> <op> --metrics hw` | Cache / PMU metrics | Deep performance investigations |
 
+## Development
+
+### Quick validation
+
+```bash
+make check          # fmt + clippy + build + test (native)
+make ci             # full CI pipeline locally
+```
+
+### Cross-architecture validation
+
+Runs any Makefile target inside the pre-built [`viprs-ci`](https://ghcr.io/mbertogliati/viprs-ci) Docker image
+on the opposite architecture (ARM mac → x86_64, or vice versa). Catches arch-specific issues
+(e.g., x86 SIMD lint errors invisible on ARM) before pushing.
+
+```bash
+make cross CMD=clippy          # clippy on opposite arch
+make cross CMD=test            # tests on opposite arch
+make cross CMD=build           # just compile
+make cross CMD=check           # full check (fmt+clippy+build+test)
+make check-cross               # shorthand for CMD=check
+
+# Force a specific architecture:
+make cross CMD=clippy ARCH=x86_64
+make cross CMD=clippy ARCH=arm64
+```
+
+> **First run** pulls the image (~1.5 GB). Subsequent runs start instantly.
+> Compilation under QEMU emulation is slower than native — use for validation, not iteration.
+
 ## Minimum Supported Rust Version (MSRV)
 
 **1.92**
