@@ -7,12 +7,12 @@ use crate::domain::image::{ImageMetadata, Interpretation};
 use super::state::PNG_XMP_KEYWORD;
 
 /// Map a PNG `ColorType` to a band count.
-pub(super) fn color_type_to_bands(color_type: ColorType) -> Result<u32, ViprsError> {
+pub(super) const fn color_type_to_bands(color_type: ColorType) -> u32 {
     match color_type {
-        ColorType::Grayscale => Ok(1),
-        ColorType::GrayscaleAlpha => Ok(2),
-        ColorType::Rgb | ColorType::Indexed => Ok(3),
-        ColorType::Rgba => Ok(4),
+        ColorType::Grayscale => 1,
+        ColorType::GrayscaleAlpha => 2,
+        ColorType::Rgb | ColorType::Indexed => 3,
+        ColorType::Rgba => 4,
     }
 }
 

@@ -401,7 +401,7 @@ pub(super) fn webp_decode_window_into_buffer(
         // SAFETY: `src` points to a valid WebP bitstream that remains alive for the
         // duration of the call, `output` owns the external buffer described by
         // `config.output`, and libwebp writes at most that buffer.
-        unsafe { WebPDecode(src, src_len, &mut config) }
+        unsafe { WebPDecode(src, src_len, std::ptr::from_mut(&mut config)) }
     };
     if status != VP8StatusCode::VP8_STATUS_OK {
         return Err(ViprsError::Codec(format!(

@@ -260,7 +260,11 @@ fn decode_png_sequential_session_into<F: BandFormat>(
                         output,
                     )?;
                 }
-                _ => unreachable!(),
+                _ => {
+                    return Err(ViprsError::Codec(
+                        "png: unexpected sequential decode format/bit-depth mismatch".into(),
+                    ));
+                }
             }
         }
     }
@@ -273,8 +277,7 @@ fn png_bytes_per_sample(bit_depth: BitDepth) -> Result<usize, ViprsError> {
         BitDepth::Eight => Ok(1),
         BitDepth::Sixteen => Ok(2),
         _ => Err(ViprsError::Codec(format!(
-            "png: unsupported bit depth {:?}",
-            bit_depth
+            "png: unsupported bit depth {bit_depth:?}"
         ))),
     }
 }
@@ -294,7 +297,7 @@ where
     let width = info.width;
     let height = info.height;
     let bit_depth = info.bit_depth;
-    let bands = color_type_to_bands(info.color_type)?;
+    let bands = color_type_to_bands(info.color_type);
     let pixels_len = reader
         .output_buffer_size()
         .ok_or_else(|| ViprsError::Codec("png: cannot determine buffer size".into()))?;
@@ -627,7 +630,7 @@ impl ImageDecoder for PngCodec {
     {
         let reader = png_reader(Cursor::new(src))?;
         let info = reader.info();
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(info.color_type);
         Ok((info.width, info.height, bands))
     }
 }
@@ -643,7 +646,7 @@ impl TileImageDecoder for PngCodec {
     {
         let reader = png_reader(Cursor::new(src))?;
         let info = reader.info();
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(info.color_type);
         Ok(ImageMetadataProbe::new(info.width, info.height, bands)
             .with_metadata(png_metadata(info)))
     }
@@ -658,7 +661,7 @@ impl TileImageDecoder for PngCodec {
     {
         let reader = png_reader(BufReader::new(File::open(path)?))?;
         let info = reader.info();
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(info.color_type);
         Ok(ImageMetadataProbe::new(info.width, info.height, bands)
             .with_metadata(png_metadata(info)))
     }
@@ -677,7 +680,7 @@ impl TileImageDecoder for PngCodec {
         let info = reader.info();
         let bit_depth = info.bit_depth;
         let interlaced = info.interlaced;
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(info.color_type);
         if interlaced {
             let _ = (bit_depth, bands);
             // Adam7 region reads are not tile-bounded: materialize the deinterlaced
@@ -698,11 +701,7 @@ impl TileImageDecoder for PngCodec {
                 output,
             );
             let store_result = self.store_row_scratch(row_scratch);
-            match (result, store_result) {
-                (Ok(()), Ok(())) => Ok(()),
-                (Err(err), _) => Err(err),
-                (Ok(()), Err(err)) => Err(err),
-            }
+            result.and(store_result)
         }
     }
 
@@ -738,11 +737,7 @@ impl TileImageDecoder for PngCodec {
             {
                 let result = decode_png_sequential_session_into::<F>(&mut existing, region, output);
                 let store_result = self.store_sequential_path_session(Some(existing));
-                return match (result, store_result) {
-                    (Ok(()), Ok(())) => Ok(()),
-                    (Err(err), _) => Err(err),
-                    (Ok(()), Err(err)) => Err(err),
-                };
+                return result.and(store_result);
             }
         }
 
@@ -753,18 +748,14 @@ impl TileImageDecoder for PngCodec {
         {
             let result = decode_png_sequential_session_into::<F>(&mut session, region, output);
             let store_result = self.store_sequential_path_session(Some(session));
-            return match (result, store_result) {
-                (Ok(()), Ok(())) => Ok(()),
-                (Err(err), _) => Err(err),
-                (Ok(()), Err(err)) => Err(err),
-            };
+            return result.and(store_result);
         }
 
         let mut reader = png_reader(BufReader::new(File::open(path)?))?;
         let info = reader.info();
         let bit_depth = info.bit_depth;
         let interlaced = info.interlaced;
-        let bands = color_type_to_bands(info.color_type)?;
+        let bands = color_type_to_bands(info.color_type);
         if interlaced {
             let _ = (bit_depth, bands);
             // Stable on-disk interlaced PNGs reuse a cached eager backing because
@@ -785,11 +776,7 @@ impl TileImageDecoder for PngCodec {
                 output,
             );
             let store_result = self.store_row_scratch(row_scratch);
-            match (result, store_result) {
-                (Ok(()), Ok(())) => Ok(()),
-                (Err(err), _) => Err(err),
-                (Ok(()), Err(err)) => Err(err),
-            }
+            result.and(store_result)
         }
     }
 }

@@ -175,14 +175,32 @@ fn metadata_with_profile(
     metadata
 }
 
-fn output_interpretation(spec: OutputSpec) -> Option<Interpretation> {
+fn output_interpretation(spec: OutputSpec) -> Interpretation {
     match spec {
-        OutputSpec::U8Rgb | OutputSpec::U16Rgb => Some(Interpretation::Srgb),
-        OutputSpec::U8Gray => Some(Interpretation::BW),
-        OutputSpec::U16Gray => Some(Interpretation::Grey16),
-        OutputSpec::U8Cmyk | OutputSpec::U16Cmyk => Some(Interpretation::Cmyk),
-        OutputSpec::F32Lab => Some(Interpretation::Lab),
-        OutputSpec::F32Xyz => Some(Interpretation::Xyz),
+        OutputSpec::U8Rgb | OutputSpec::U16Rgb => Interpretation::Srgb,
+        OutputSpec::U8Gray => Interpretation::BW,
+        OutputSpec::U16Gray => Interpretation::Grey16,
+        OutputSpec::U8Cmyk | OutputSpec::U16Cmyk => Interpretation::Cmyk,
+        OutputSpec::F32Lab => Interpretation::Lab,
+        OutputSpec::F32Xyz => Interpretation::Xyz,
+    }
+}
+
+fn u8_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
+    match spec {
+        OutputSpec::U8Rgb => Some((PixelFormat::RGB_8, 3)),
+        OutputSpec::U8Gray => Some((PixelFormat::GRAY_8, 1)),
+        OutputSpec::U8Cmyk => Some((PixelFormat::CMYK_8, 4)),
+        _ => None,
+    }
+}
+
+fn u16_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
+    match spec {
+        OutputSpec::U16Rgb => Some((PixelFormat::RGB_16, 3)),
+        OutputSpec::U16Gray => Some((PixelFormat::GRAY_16, 1)),
+        OutputSpec::U16Cmyk => Some((PixelFormat::CMYK_16, 4)),
+        _ => None,
     }
 }
 
@@ -241,95 +259,78 @@ pub(super) fn transform_int_input(
     spec: OutputSpec,
 ) -> Result<IccImage, ViprsError> {
     let interp = output_interpretation(spec);
-    match spec {
-        OutputSpec::U8Rgb | OutputSpec::U8Gray | OutputSpec::U8Cmyk => {
-            let (out_fmt, out_bands) = match spec {
-                OutputSpec::U8Rgb => (PixelFormat::RGB_8, 3u32),
-                OutputSpec::U8Gray => (PixelFormat::GRAY_8, 1u32),
-                OutputSpec::U8Cmyk => (PixelFormat::CMYK_8, 4u32),
-                _ => unreachable!(),
-            };
-            let transform = Transform::<u8, u8, _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                out_fmt,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let (_pixels, sample_count) = checked_icc_output_sizes(width, height, out_bands)?;
-            let mut output = vec![0u8; sample_count];
-            transform.transform_pixels(src, &mut output);
-            let metadata = metadata_with_profile(meta, output_bytes, interp);
-            Image::from_buffer(width, height, out_bands, output)
-                .map(|img| IccImage::U8(img.with_metadata(metadata)))
-                .map_err(|e| icc_error(e.to_string()))
-        }
-        OutputSpec::U16Rgb | OutputSpec::U16Gray | OutputSpec::U16Cmyk => {
-            let (out_fmt, out_bands) = match spec {
-                OutputSpec::U16Rgb => (PixelFormat::RGB_16, 3u32),
-                OutputSpec::U16Gray => (PixelFormat::GRAY_16, 1u32),
-                OutputSpec::U16Cmyk => (PixelFormat::CMYK_16, 4u32),
-                _ => unreachable!(),
-            };
-            let transform = Transform::<u8, u8, _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                out_fmt,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let (_pixels, sample_count) = checked_icc_output_sizes(width, height, out_bands)?;
-            let mut output = vec![0u16; sample_count];
-            transform.transform_pixels(src, bytemuck::cast_slice_mut(&mut output));
-            let metadata = metadata_with_profile(meta, output_bytes, interp);
-            Image::from_buffer(width, height, out_bands, output)
-                .map(|img| IccImage::U16(img.with_metadata(metadata)))
-                .map_err(|e| icc_error(e.to_string()))
-        }
-        OutputSpec::F32Lab => {
-            let transform = Transform::<u8, [f32; 3], _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                PixelFormat::Lab_FLT,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let pixels = checked_icc_output_pixels(width, height, 3)?;
-            let mut output = vec![[0.0f32; 3]; pixels];
-            transform.transform_pixels(src, &mut output);
-            let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
-                .map_err(|(_e, _b)| icc_error("f32 ICC output cast failed"))?;
-            let metadata = metadata_with_profile(meta, output_bytes, interp);
-            Image::from_buffer(width, height, 3, output)
-                .map(|img| IccImage::F32(img.with_metadata(metadata)))
-                .map_err(|e| icc_error(e.to_string()))
-        }
-        OutputSpec::F32Xyz => {
-            let transform = Transform::<u8, [f32; 3], _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                PixelFormat::XYZ_FLT,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let pixels = checked_icc_output_pixels(width, height, 3)?;
-            let mut output = vec![[0.0f32; 3]; pixels];
-            transform.transform_pixels(src, &mut output);
-            let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
-                .map_err(|(_e, _b)| icc_error("f32 ICC output cast failed"))?;
-            let metadata = metadata_with_profile(meta, output_bytes, interp);
-            Image::from_buffer(width, height, 3, output)
-                .map(|img| IccImage::F32(img.with_metadata(metadata)))
-                .map_err(|e| icc_error(e.to_string()))
-        }
+    if let Some((out_fmt, out_bands)) = u8_output_format(spec) {
+        let transform = Transform::<u8, u8, _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            out_fmt,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let (_pixels, sample_count) = checked_icc_output_sizes(width, height, out_bands)?;
+        let mut output = vec![0u8; sample_count];
+        transform.transform_pixels(src, &mut output);
+        let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
+        Image::from_buffer(width, height, out_bands, output)
+            .map(|img| IccImage::U8(img.with_metadata(metadata)))
+            .map_err(|e| icc_error(e.to_string()))
+    } else if let Some((out_fmt, out_bands)) = u16_output_format(spec) {
+        let transform = Transform::<u8, u8, _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            out_fmt,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let (_pixels, sample_count) = checked_icc_output_sizes(width, height, out_bands)?;
+        let mut output = vec![0u16; sample_count];
+        transform.transform_pixels(src, bytemuck::cast_slice_mut(&mut output));
+        let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
+        Image::from_buffer(width, height, out_bands, output)
+            .map(|img| IccImage::U16(img.with_metadata(metadata)))
+            .map_err(|e| icc_error(e.to_string()))
+    } else if matches!(spec, OutputSpec::F32Lab) {
+        let transform = Transform::<u8, [f32; 3], _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            PixelFormat::Lab_FLT,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let pixels = checked_icc_output_pixels(width, height, 3)?;
+        let mut output = vec![[0.0f32; 3]; pixels];
+        transform.transform_pixels(src, &mut output);
+        let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
+            .map_err(|(_e, _b)| icc_error("f32 ICC output cast failed"))?;
+        let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
+        Image::from_buffer(width, height, 3, output)
+            .map(|img| IccImage::F32(img.with_metadata(metadata)))
+            .map_err(|e| icc_error(e.to_string()))
+    } else {
+        let transform = Transform::<u8, [f32; 3], _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            PixelFormat::XYZ_FLT,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let pixels = checked_icc_output_pixels(width, height, 3)?;
+        let mut output = vec![[0.0f32; 3]; pixels];
+        transform.transform_pixels(src, &mut output);
+        let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
+            .map_err(|(_e, _b)| icc_error("f32 ICC output cast failed"))?;
+        let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
+        Image::from_buffer(width, height, 3, output)
+            .map(|img| IccImage::F32(img.with_metadata(metadata)))
+            .map_err(|e| icc_error(e.to_string()))
     }
 }
 
@@ -358,97 +359,80 @@ fn transform_f32_pcs(
     let in_fmt = input_pixel_format(image, input_profile)?;
     let src = bytemuck::cast_slice::<f32, [f32; 3]>(image.pixels());
     let interp = output_interpretation(spec);
-    match spec {
-        OutputSpec::U8Rgb | OutputSpec::U8Gray | OutputSpec::U8Cmyk => {
-            let (out_fmt, out_bands) = match spec {
-                OutputSpec::U8Rgb => (PixelFormat::RGB_8, 3u32),
-                OutputSpec::U8Gray => (PixelFormat::GRAY_8, 1u32),
-                OutputSpec::U8Cmyk => (PixelFormat::CMYK_8, 4u32),
-                _ => unreachable!(),
-            };
-            let transform = Transform::<[f32; 3], u8, _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                out_fmt,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let (_pixels, sample_count) =
-                checked_icc_output_sizes(image.width(), image.height(), out_bands)?;
-            let mut output = vec![0u8; sample_count];
-            transform.transform_pixels(src, &mut output);
-            let metadata = metadata_with_profile(image.metadata(), output_bytes, interp);
-            Image::from_buffer(image.width(), image.height(), out_bands, output)
-                .map(|img| IccImage::U8(img.with_metadata(metadata)))
-                .map_err(|e| icc_error(e.to_string()))
-        }
-        OutputSpec::U16Rgb | OutputSpec::U16Gray | OutputSpec::U16Cmyk => {
-            let (out_fmt, out_bands) = match spec {
-                OutputSpec::U16Rgb => (PixelFormat::RGB_16, 3u32),
-                OutputSpec::U16Gray => (PixelFormat::GRAY_16, 1u32),
-                OutputSpec::U16Cmyk => (PixelFormat::CMYK_16, 4u32),
-                _ => unreachable!(),
-            };
-            let transform = Transform::<[f32; 3], u8, _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                out_fmt,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let (_pixels, sample_count) =
-                checked_icc_output_sizes(image.width(), image.height(), out_bands)?;
-            let mut output = vec![0u16; sample_count];
-            transform.transform_pixels(src, bytemuck::cast_slice_mut(&mut output));
-            let metadata = metadata_with_profile(image.metadata(), output_bytes, interp);
-            Image::from_buffer(image.width(), image.height(), out_bands, output)
-                .map(|img| IccImage::U16(img.with_metadata(metadata)))
-                .map_err(|e| icc_error(e.to_string()))
-        }
-        OutputSpec::F32Lab => {
-            let transform = Transform::<[f32; 3], [f32; 3], _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                PixelFormat::Lab_FLT,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let pixels = checked_icc_output_pixels(image.width(), image.height(), 3)?;
-            let mut output = vec![[0.0f32; 3]; pixels];
-            transform.transform_pixels(src, &mut output);
-            let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
-                .map_err(|(_err, _buf)| icc_error("f32 ICC output cast failed"))?;
-            let metadata = metadata_with_profile(image.metadata(), output_bytes, interp);
-            Image::from_buffer(image.width(), image.height(), 3, output)
-                .map(|image| IccImage::F32(image.with_metadata(metadata)))
-                .map_err(|err| icc_error(err.to_string()))
-        }
-        OutputSpec::F32Xyz => {
-            let transform = Transform::<[f32; 3], [f32; 3], _, _>::new_flags(
-                input_profile,
-                in_fmt,
-                output_profile,
-                PixelFormat::XYZ_FLT,
-                intent,
-                flags,
-            )
-            .map_err(super::lcms_error)?;
-            let pixels = checked_icc_output_pixels(image.width(), image.height(), 3)?;
-            let mut output = vec![[0.0f32; 3]; pixels];
-            transform.transform_pixels(src, &mut output);
-            let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
-                .map_err(|(_err, _buf)| icc_error("f32 ICC output cast failed"))?;
-            let metadata = metadata_with_profile(image.metadata(), output_bytes, interp);
-            Image::from_buffer(image.width(), image.height(), 3, output)
-                .map(|image| IccImage::F32(image.with_metadata(metadata)))
-                .map_err(|err| icc_error(err.to_string()))
-        }
+    if let Some((out_fmt, out_bands)) = u8_output_format(spec) {
+        let transform = Transform::<[f32; 3], u8, _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            out_fmt,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let (_pixels, sample_count) =
+            checked_icc_output_sizes(image.width(), image.height(), out_bands)?;
+        let mut output = vec![0u8; sample_count];
+        transform.transform_pixels(src, &mut output);
+        let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
+        Image::from_buffer(image.width(), image.height(), out_bands, output)
+            .map(|img| IccImage::U8(img.with_metadata(metadata)))
+            .map_err(|e| icc_error(e.to_string()))
+    } else if let Some((out_fmt, out_bands)) = u16_output_format(spec) {
+        let transform = Transform::<[f32; 3], u8, _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            out_fmt,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let (_pixels, sample_count) =
+            checked_icc_output_sizes(image.width(), image.height(), out_bands)?;
+        let mut output = vec![0u16; sample_count];
+        transform.transform_pixels(src, bytemuck::cast_slice_mut(&mut output));
+        let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
+        Image::from_buffer(image.width(), image.height(), out_bands, output)
+            .map(|img| IccImage::U16(img.with_metadata(metadata)))
+            .map_err(|e| icc_error(e.to_string()))
+    } else if matches!(spec, OutputSpec::F32Lab) {
+        let transform = Transform::<[f32; 3], [f32; 3], _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            PixelFormat::Lab_FLT,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let pixels = checked_icc_output_pixels(image.width(), image.height(), 3)?;
+        let mut output = vec![[0.0f32; 3]; pixels];
+        transform.transform_pixels(src, &mut output);
+        let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
+            .map_err(|(_err, _buf)| icc_error("f32 ICC output cast failed"))?;
+        let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
+        Image::from_buffer(image.width(), image.height(), 3, output)
+            .map(|image| IccImage::F32(image.with_metadata(metadata)))
+            .map_err(|err| icc_error(err.to_string()))
+    } else {
+        let transform = Transform::<[f32; 3], [f32; 3], _, _>::new_flags(
+            input_profile,
+            in_fmt,
+            output_profile,
+            PixelFormat::XYZ_FLT,
+            intent,
+            flags,
+        )
+        .map_err(super::lcms_error)?;
+        let pixels = checked_icc_output_pixels(image.width(), image.height(), 3)?;
+        let mut output = vec![[0.0f32; 3]; pixels];
+        transform.transform_pixels(src, &mut output);
+        let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
+            .map_err(|(_err, _buf)| icc_error("f32 ICC output cast failed"))?;
+        let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
+        Image::from_buffer(image.width(), image.height(), 3, output)
+            .map(|image| IccImage::F32(image.with_metadata(metadata)))
+            .map_err(|err| icc_error(err.to_string()))
     }
 }
 

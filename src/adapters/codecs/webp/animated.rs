@@ -29,7 +29,14 @@ impl WebpDemux {
             // SAFETY: `data` points to `src`, which stays alive for the lifetime of the
             // returned demux handle; we pass a null parser state because we require a
             // complete in-memory WebP stream.
-            unsafe { WebPDemuxInternal(&data, 0, std::ptr::null_mut(), WebPGetDemuxABIVersion()) }
+            unsafe {
+                WebPDemuxInternal(
+                    std::ptr::from_ref(&data),
+                    0,
+                    std::ptr::null_mut(),
+                    WebPGetDemuxABIVersion(),
+                )
+            }
         };
         if demux.is_null() {
             return Err(ViprsError::Codec("webp: unable to parse container".into()));
@@ -85,7 +92,7 @@ impl WebpDemux {
             unsafe { std::slice::from_raw_parts(iter.chunk.bytes, iter.chunk.size) }.to_vec()
         };
         // SAFETY: `iter` was initialized by `WebPDemuxGetChunk` and has not been released yet.
-        unsafe { WebPDemuxReleaseChunkIterator(&mut iter) };
+        unsafe { WebPDemuxReleaseChunkIterator(std::ptr::from_mut(&mut iter)) };
         Some(bytes)
     }
 }
@@ -112,7 +119,7 @@ impl WebpFrameIter {
             return Ok(false);
         }
         // SAFETY: `self.iter` is an iterator initialized by libwebp and remains valid until released in `Drop`.
-        let ok = unsafe { WebPDemuxNextFrame(&mut self.iter) };
+        let ok = unsafe { WebPDemuxNextFrame(std::ptr::from_mut(&mut self.iter)) };
         if ok == 0 {
             return Err(ViprsError::Codec(
                 "webp: truncated animated frame sequence".into(),
@@ -125,7 +132,7 @@ impl WebpFrameIter {
 impl Drop for WebpFrameIter {
     fn drop(&mut self) {
         // SAFETY: `self.iter` was initialized by libwebp and has not been released yet, so releasing it here matches `WebPDemuxGetFrame`.
-        unsafe { WebPDemuxReleaseIterator(&mut self.iter) };
+        unsafe { WebPDemuxReleaseIterator(std::ptr::from_mut(&mut self.iter)) };
     }
 }
 

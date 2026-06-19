@@ -364,13 +364,12 @@ fn extract_icc_profile(src: &[u8]) -> Result<Option<Vec<u8>>, ViprsError> {
             }
 
             let chunk_len = payload[ICC_PROFILE_SIGNATURE.len() + 2..].len();
-            total_len = match total_len.checked_add(chunk_len) {
-                Some(total) => total,
-                None => {
-                    error = Some("jpeg: ICC profile length overflow".to_string());
-                    return false;
-                }
-            };
+            if let Some(total) = total_len.checked_add(chunk_len) {
+                total_len = total;
+            } else {
+                error = Some("jpeg: ICC profile length overflow".to_string());
+                return false;
+            }
             if total_len > MAX_JPEG_ICC_PROFILE_BYTES {
                 error = Some(format!(
                     "jpeg: ICC profile exceeds safety limit {MAX_JPEG_ICC_PROFILE_BYTES} bytes"

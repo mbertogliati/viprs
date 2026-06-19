@@ -16,6 +16,9 @@ env:
   CARGO_TERM_COLOR: always
   # Features for containerless CI jobs (no native C libraries needed).
   RUST_FEATURES: "--features default,simd-pulp"
+  # Keep this in sync with Makefile CONTAINER_FEATURES so clippy checks every
+  # feature-gated module compiled in container CI.
+  CLIPPY_FEATURES: "--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation"
   # Source-built libs live in /usr/local/lib (container jobs only)
   PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
   # Common container build tools — avoids duplicating the apt-get list in every job.
@@ -39,7 +42,7 @@ jobs:
       - name: Check formatting
         run: make fmt
       - name: Clippy
-        run: make clippy FEATURES="${{ env.RUST_FEATURES }}"
+        run: make clippy FEATURES="${{ env.CLIPPY_FEATURES }}"
       - name: Build docs (deny warnings)
         run: make doc FEATURES="${{ env.RUST_FEATURES }}"
 

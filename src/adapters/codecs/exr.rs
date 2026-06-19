@@ -5,7 +5,7 @@
 
 #![cfg(feature = "exr")]
 
-//! OpenEXR codec — decode HDR half/float images and encode HDR float images via the pure-Rust
+//! `OpenEXR` codec — decode HDR half/float images and encode HDR float images via the pure-Rust
 //! `exr` crate.
 //!
 //! Decode supports arbitrary flat channel sets and multipart files. Standard
@@ -361,7 +361,7 @@ impl InterleavedChannelsReader {
     }
 }
 
-impl<'s> ReadChannels<'s> for ReadInterleavedChannels {
+impl ReadChannels<'_> for ReadInterleavedChannels {
     type Reader = InterleavedChannelsReader;
 
     fn create_channels_reader(
@@ -751,7 +751,7 @@ fn recast_image_from_f32<F: BandFormat>(image: Image<F32>) -> Result<Image<F>, V
     let height = image.height();
     let bands = image.bands();
     let metadata = image.metadata().clone();
-    let frames = image.frames().map(|frames| frames.to_vec());
+    let frames = image.frames().map(ToOwned::to_owned);
     let samples = bytemuck::allocation::try_cast_vec::<f32, F::Sample>(image.into_buffer())
         .map_err(|(error, _)| {
             ViprsError::from(ExrCodecError::CastError {
@@ -1053,7 +1053,11 @@ fn encode_exr_single_layer_fast(
                 .to_buffered(Cursor::new(&mut output))
                 .map_err(exr_error)?;
         }
-        _ => unreachable!("single-layer fast path only supports 1-4 bands"),
+        _ => {
+            return Err(
+                ExrCodecError::Backend(format!("exr: unsupported band count {bands}")).into(),
+            );
+        }
     }
 
     Ok(output)
