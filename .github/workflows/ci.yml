@@ -39,6 +39,16 @@ jobs:
       - uses: ./.github/actions/setup-toolchain
         with:
           components: rustfmt, clippy
+      - name: Install system libraries for all-features clippy
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            ${{ env.CONTAINER_BUILD_DEPS }} \
+            libturbojpeg0-dev \
+            libwebp-dev \
+            libheif-dev \
+            liblcms2-dev \
+            libopenjp2-7-dev
       - name: Check formatting
         run: make fmt
       - name: Clippy
