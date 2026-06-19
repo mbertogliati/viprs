@@ -58,9 +58,9 @@ impl SimdLevel {
         }
         #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
         if std::arch::is_x86_feature_detected!("avx512f") {
-            return SimdLevel::Avx512F;
+            return Self::Avx512F;
         } else if std::arch::is_x86_feature_detected!("avx2") {
-            return SimdLevel::Avx2;
+            return Self::Avx2;
         }
         Self::Scalar
     }
