@@ -544,7 +544,7 @@ fn convert_u8_image_to_f32(image: &Image<U8>) -> Result<Image<F32>, ViprsError> 
         .pixels()
         .iter()
         .copied()
-        .map(|sample| sample.cast_to())
+        .map(CastSample::cast_to)
         .collect();
 
     let mut converted =
