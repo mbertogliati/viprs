@@ -8,7 +8,8 @@
 #   make bench      — criterion benchmarks
 #   make bench-vs   — E2E comparison vs libvips (representative matrix)
 #   make bench-vs BENCH_ITER=10  — quick smoke test
-#   make check-cross — cross-arch validation via Docker (auto-detects opposite arch)
+#   make cross CMD=clippy — run any target in opposite arch via Docker
+#   make check-cross     — shorthand for make cross CMD=check
 
 CARGO := cargo
 RUSTFLAGS_CI := -Dwarnings
@@ -19,7 +20,7 @@ RUSTFLAGS_CI := -Dwarnings
 #   make check FEATURES="--all-features"
 FEATURES ?= --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
-.PHONY: all check ci check-cross fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
+.PHONY: all check ci cross check-cross fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -114,14 +115,27 @@ else
   DOCKER_PLATFORM := linux/arm64
 endif
 
-check-cross:
+## Run any make target in the opposite architecture via Docker.
+## Usage:
+##   make cross CMD=clippy              — clippy on opposite arch
+##   make cross CMD=test                — tests on opposite arch
+##   make cross CMD=build               — build on opposite arch
+##   make cross CMD=check               — full check on opposite arch
+##   make cross CMD=clippy ARCH=arm64   — explicit arch
+CMD ?= check
+
+cross:
 	@echo "══════════════════════════════════════════════════════════════"
-	@echo "  check-cross: running 'make check' on $(ARCH) ($(DOCKER_PLATFORM))"
+	@echo "  cross: running 'make $(CMD)' on $(ARCH) ($(DOCKER_PLATFORM))"
 	@echo "══════════════════════════════════════════════════════════════"
 	docker run --rm --platform $(DOCKER_PLATFORM) \
 		-v "$$(pwd):/workspace" -w /workspace \
 		$(CI_IMAGE) \
-		make check
+		make $(CMD)
+
+## Shorthand: make check-cross = make cross CMD=check
+check-cross: CMD = check
+check-cross: cross
 
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 
