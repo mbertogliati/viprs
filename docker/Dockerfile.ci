@@ -21,4 +21,7 @@ RUN apt-get update -qq && \
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+# Override viprs-perf benchmark entrypoint — CI image runs arbitrary commands
+ENTRYPOINT []
+
 WORKDIR /workspace

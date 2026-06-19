@@ -129,6 +129,7 @@ cross:
 	@echo "  cross: running 'make $(CMD)' on $(ARCH) ($(DOCKER_PLATFORM))"
 	@echo "══════════════════════════════════════════════════════════════"
 	docker run --rm --platform $(DOCKER_PLATFORM) \
+		--entrypoint "" \
 		-v "$$(pwd):/workspace" -w /workspace \
 		$(CI_IMAGE) \
 		make $(CMD)

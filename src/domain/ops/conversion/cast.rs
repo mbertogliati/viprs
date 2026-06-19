@@ -231,6 +231,8 @@ where
 
     #[cfg(not(target_arch = "aarch64"))]
     #[inline]
+    #[allow(clippy::missing_const_for_fn)]
+    // REASON: Uses x86 SIMD intrinsics not available in const context.
     fn try_process_neon(_input: &[From::Sample], _output: &mut [To::Sample]) -> bool {
         false
     }
@@ -303,6 +305,9 @@ unsafe fn cast_f32_to_u8_neon(input: &[f32], output: &mut [u8]) {
 #[inline]
 #[target_feature(enable = "avx2")]
 // SAFETY: caller must dispatch only when AVX2 is available and pass equal-length slices so every 8-byte load and 8-lane store stays in bounds.
+// REASON: SIMD intrinsics (_mm_loadl_epi64 / _mm_storel_epi64) handle alignment internally;
+// the pointer cast is intentional and safe within unsafe SIMD blocks.
+#[allow(clippy::cast_ptr_alignment)]
 unsafe fn cast_u8_to_f32_avx2(input: &[u8], output: &mut [f32]) {
     debug_assert_eq!(input.len(), output.len());
 
@@ -332,6 +337,9 @@ unsafe fn cast_u8_to_f32_avx2(input: &[u8], output: &mut [f32]) {
 #[inline]
 #[target_feature(enable = "avx2")]
 // SAFETY: caller must dispatch only when AVX2 is available and pass equal-length slices so every 8-lane load and 8-byte packed store stays in bounds.
+// REASON: SIMD intrinsics (_mm_loadl_epi64 / _mm_storel_epi64) handle alignment internally;
+// the pointer cast is intentional and safe within unsafe SIMD blocks.
+#[allow(clippy::cast_ptr_alignment)]
 unsafe fn cast_f32_to_u8_avx2(input: &[f32], output: &mut [u8]) {
     debug_assert_eq!(input.len(), output.len());
 

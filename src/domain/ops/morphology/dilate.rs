@@ -557,6 +557,9 @@ unsafe fn dilate_rect_5_neon(
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 // SAFETY: caller must dispatch only when AVX2 is available and provide three halo-extended rows plus an output row of matching logical width.
+// REASON: SIMD intrinsics (_mm256_loadu_si256 etc.) handle alignment internally;
+// the pointer cast is intentional and safe within unsafe SIMD blocks.
+#[allow(clippy::cast_ptr_alignment)]
 unsafe fn dilate_rect_3_avx2(
     row0: &[u8],
     row1: &[u8],
@@ -629,6 +632,9 @@ unsafe fn dilate_rect_3_avx2(
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 // SAFETY: caller must dispatch only when AVX2 is available and provide five halo-extended rows plus an output row of matching logical width.
+// REASON: SIMD intrinsics (_mm256_loadu_si256 etc.) handle alignment internally;
+// the pointer cast is intentional and safe within unsafe SIMD blocks.
+#[allow(clippy::cast_ptr_alignment)]
 unsafe fn dilate_rect_5_avx2(
     row0: &[u8],
     row1: &[u8],
