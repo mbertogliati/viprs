@@ -79,7 +79,7 @@ struct GifEncodeBuffer {
 }
 
 impl GifEncodeBuffer {
-    fn new() -> Self {
+    const fn new() -> Self {
         Self {
             quantized_histogram: Vec::new(),
             quantized_sum_r: Vec::new(),
@@ -132,7 +132,7 @@ impl GifEncodeBuffer {
         pixel_count: usize,
         width: usize,
     ) -> (&mut [u8], &mut [[i32; 3]]) {
-        let GifEncodeBuffer {
+        let Self {
             index_map,
             dither_errors,
             ..
@@ -162,7 +162,7 @@ impl GifCodec {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::gif::new;
     /// ```
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             encode_buffer: Mutex::new(GifEncodeBuffer::new()),
         }
@@ -207,7 +207,7 @@ impl ColorBox {
         (max_range, self.total_weight)
     }
 
-    fn channel_ranges(&self) -> [u8; 3] {
+    const fn channel_ranges(&self) -> [u8; 3] {
         [
             self.max[0].saturating_sub(self.min[0]),
             self.max[1].saturating_sub(self.min[1]),
@@ -480,7 +480,7 @@ fn clear_frame_rect_rgba(
     Ok(())
 }
 
-fn frame_has_transparency(frame: &Frame<'_>) -> bool {
+const fn frame_has_transparency(frame: &Frame<'_>) -> bool {
     frame.transparent.is_some()
 }
 
@@ -623,7 +623,7 @@ fn nearest_palette_offset(rgb: [u8; 3], opaque_palette: &[[u8; 3]]) -> u8 {
     best_index as u8
 }
 
-fn encode_index(offset: u8, transparent: bool) -> u8 {
+const fn encode_index(offset: u8, transparent: bool) -> u8 {
     if transparent {
         offset.saturating_add(1)
     } else {
@@ -723,15 +723,16 @@ fn remap_exact_palette(
         }
 
         let rgb = [pixel[0], pixel[1], pixel[2]];
-        let palette_offset = if let Ok(found) = opaque_palette.binary_search(&rgb) {
-            found as u8
-        } else {
-            debug_assert!(
-                false,
-                "exact-palette remap requires every opaque pixel to exist in the palette"
-            );
-            0
-        };
+        let palette_offset = opaque_palette.binary_search(&rgb).map_or_else(
+            |_| {
+                debug_assert!(
+                    false,
+                    "exact-palette remap requires every opaque pixel to exist in the palette"
+                );
+                0
+            },
+            |found| found as u8,
+        );
         *index = encode_index(palette_offset, has_transparent_index);
     }
 }
@@ -753,12 +754,10 @@ fn quantize_frame<'a>(
     let pixel_count = usize::from(width) * usize::from(height);
     let exact_palette = exact_palette(pixel_bytes, bands, usize::from(opaque_limit));
     let uses_exact_palette = exact_palette.is_some();
-    let opaque_palette = if let Some(exact_palette) = exact_palette {
-        exact_palette
-    } else {
+    let opaque_palette = exact_palette.unwrap_or_else(|| {
         build_quantized_histogram(pixel_bytes, bands, buffer);
         median_cut_palette(buffer, usize::from(opaque_limit))
-    };
+    });
 
     let palette_bytes = build_palette_bytes(&opaque_palette, uses_transparency);
     if uses_exact_palette && !opaque_palette.is_empty() {
@@ -1094,6 +1093,7 @@ impl ImageEncoder for GifCodec {
                     .map_err(|e| ViprsError::Codec(e.to_string()))?;
             }
         }
+        drop(encode_buffer);
 
         Ok(output)
     }

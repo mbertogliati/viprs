@@ -280,7 +280,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
 
     let dst_w = src_w.div_ceil(factor);
     let dst_h = src_h.div_ceil(factor);
-    let has_partial_columns = (src_w % factor) != 0;
+    let has_partial_columns = !src_w.is_multiple_of(factor);
 
     let mut src_row = vec![0u8; src_w * bands];
     let mut dst_pixels = vec![0u8; dst_w * dst_h * bands];

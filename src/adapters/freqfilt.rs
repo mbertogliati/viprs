@@ -12,6 +12,7 @@ use crate::domain::{
 use rustfft::{FftPlanner, num_complex::Complex};
 
 /// Frequency-domain images are stored as `Image<F64>` with bands `[real, imag]`.
+///
 /// The zero-frequency bin is centered with an `fftshift`-style layout so
 /// frequency masks can be built around `(width / 2, height / 2)`.
 ///

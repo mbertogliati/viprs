@@ -3,7 +3,7 @@ use crate::domain::{
     format::{BandFormat, BandFormatId, F32, U8, U16},
     image::{Image, ImageMetadata},
 };
-use lcms2::{ColorSpaceSignature, DisallowCache, Flags, Intent, PixelFormat, Profile, Transform};
+use lcms2::{ColorSpaceSignature, Flags, Intent, PixelFormat, Profile, Transform};
 use std::borrow::Cow;
 
 use super::profiles::{
@@ -175,7 +175,7 @@ fn metadata_with_profile(
     metadata
 }
 
-fn output_interpretation(spec: OutputSpec) -> Interpretation {
+const fn output_interpretation(spec: OutputSpec) -> Interpretation {
     match spec {
         OutputSpec::U8Rgb | OutputSpec::U16Rgb => Interpretation::Srgb,
         OutputSpec::U8Gray => Interpretation::BW,
@@ -186,7 +186,7 @@ fn output_interpretation(spec: OutputSpec) -> Interpretation {
     }
 }
 
-fn u8_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
+const fn u8_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
     match spec {
         OutputSpec::U8Rgb => Some((PixelFormat::RGB_8, 3)),
         OutputSpec::U8Gray => Some((PixelFormat::GRAY_8, 1)),
@@ -195,7 +195,7 @@ fn u8_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
     }
 }
 
-fn u16_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
+const fn u16_output_format(spec: OutputSpec) -> Option<(PixelFormat, u32)> {
     match spec {
         OutputSpec::U16Rgb => Some((PixelFormat::RGB_16, 3)),
         OutputSpec::U16Gray => Some((PixelFormat::GRAY_16, 1)),

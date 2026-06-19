@@ -42,7 +42,7 @@ impl Fft2dScratch {
         let pixel_count = u64::from(width)
             .checked_mul(u64::from(height))
             .and_then(|n| n.try_into().ok())
-            .ok_or(ViprsError::ImageTooLarge {
+            .ok_or_else(|| ViprsError::ImageTooLarge {
                 width,
                 height,
                 bands: 1,

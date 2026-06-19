@@ -29,7 +29,7 @@ pub(super) fn bands_to_color_type(bands: u32) -> Result<ColorType, ViprsError> {
     }
 }
 
-fn png_interpretation(
+const fn png_interpretation(
     color_type: ColorType,
     bit_depth: BitDepth,
     has_srgb: bool,
@@ -105,7 +105,7 @@ fn png_xmp(info: &Info<'_>) -> Option<Vec<u8>> {
     })
 }
 
-pub(super) fn png_filter(filter: PngFilterStrategy) -> Filter {
+pub(super) const fn png_filter(filter: PngFilterStrategy) -> Filter {
     match filter {
         PngFilterStrategy::Adaptive => Filter::Adaptive,
         PngFilterStrategy::None => Filter::NoFilter,

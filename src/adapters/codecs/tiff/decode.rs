@@ -74,6 +74,8 @@ pub(super) fn interpretation_from_tags(
     }
 }
 
+#[allow(deprecated)]
+// REASON: tiff crate deprecation, upgrade tracked in backlog.
 pub(super) fn resolution_in_pixels_per_mm(
     decoder: &mut Decoder<Cursor<&[u8]>>,
     tag: Tag,
@@ -156,7 +158,7 @@ pub(super) fn extract_metadata(
     })
 }
 
-pub(super) fn decoding_result_name(result: &DecodingResult) -> &'static str {
+pub(super) const fn decoding_result_name(result: &DecodingResult) -> &'static str {
     match result {
         DecodingResult::U8(_) => "U8",
         DecodingResult::U16(_) => "U16",
@@ -219,7 +221,7 @@ pub(super) fn decode_current_page<F: BandFormat>(
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
-struct DecodedPage<F: BandFormat> {
+pub struct DecodedPage<F: BandFormat> {
     samples: Vec<F::Sample>,
     result_is_float: bool,
 }
@@ -253,10 +255,10 @@ pub(super) fn decode_current_page_serial<F: BandFormat>(
     })
 }
 
-pub(super) fn decoder_for_page<'a>(
-    src: &'a [u8],
+pub(super) fn decoder_for_page(
+    src: &[u8],
     page_index: u32,
-) -> Result<Decoder<Cursor<&'a [u8]>>, ViprsError> {
+) -> Result<Decoder<Cursor<&[u8]>>, ViprsError> {
     let mut decoder =
         Decoder::new(Cursor::new(src)).map_err(|e| ViprsError::Codec(e.to_string()))?;
     for _ in 0..page_index {

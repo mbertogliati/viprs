@@ -337,7 +337,7 @@ fn decode_u8_samples(src: &[u8], opts: &LoadOptions) -> Result<Image<U8>, ViprsE
     Ok(image)
 }
 
-fn decoded_chroma(bit_depth: u8, has_alpha: bool) -> RgbChroma {
+const fn decoded_chroma(bit_depth: u8, has_alpha: bool) -> RgbChroma {
     if bit_depth > 8 {
         if has_alpha {
             RgbChroma::HdrRgbaBe

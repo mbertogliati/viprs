@@ -50,6 +50,7 @@ fn rotate90_rejects_zero_band_sources() {
     ));
 }
 
+#[test]
 fn point_mode_pipeline_handles_zero_width_source_after_upstream_op() {
     use crate::{
         adapters::sinks::memory::MemorySink,

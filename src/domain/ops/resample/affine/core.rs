@@ -54,7 +54,7 @@ impl<F: BandFormat> Affine<F> {
 
     /// Declare the unclamped source-image bounds used for extend handling.
     #[must_use]
-    pub fn with_source_bounds(mut self, bounds: Region) -> Self {
+    pub const fn with_source_bounds(mut self, bounds: Region) -> Self {
         self.source_bounds = Some(bounds);
         self
     }

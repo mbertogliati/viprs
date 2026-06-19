@@ -25,7 +25,7 @@ use crate::domain::ops::colour::{
 /// ```ignore
 /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
 /// ```
-pub(crate) fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, ViprsError> {
+pub fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
     {
         Ok(Cow::Borrowed(image))
@@ -45,9 +45,7 @@ pub(crate) fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image
 /// ```ignore
 /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
 /// ```
-pub(crate) fn normalize_web_output_u16(
-    image: &Image<U16>,
-) -> Result<Cow<'_, Image<U16>>, ViprsError> {
+pub fn normalize_web_output_u16(image: &Image<U16>) -> Result<Cow<'_, Image<U16>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
     {
         Ok(Cow::Borrowed(image))
@@ -73,7 +71,7 @@ mod enabled {
         needs_srgb_normalization(image.metadata().icc_profile.as_deref())
     }
 
-    fn srgb_options(depth: u8) -> IccTransformOptions<'static> {
+    const fn srgb_options(depth: u8) -> IccTransformOptions<'static> {
         IccTransformOptions {
             input_profile: None,
             intent: IccIntent::Auto,

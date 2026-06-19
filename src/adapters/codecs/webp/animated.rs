@@ -110,7 +110,7 @@ struct WebpFrameIter {
 
 impl WebpFrameIter {
     #[inline]
-    fn current(&self) -> &WebPIterator {
+    const fn current(&self) -> &WebPIterator {
         &self.iter
     }
 
@@ -597,25 +597,23 @@ pub(super) fn decode_animated_webp_region_into<F: BandFormat>(
     let mut iter = demux.first_frame()?;
 
     loop {
-        if dispose_method == WebPMuxAnimDispose::WEBP_MUX_DISPOSE_BACKGROUND {
-            if let Some(dispose_overlap) = webp_overlap_region(strip_window, dispose_area) {
-                let clear_area = WebpFrameArea {
-                    left: u32::try_from(dispose_overlap.x.saturating_sub(strip_window.x)).map_err(
-                        |_| ViprsError::Codec("webp: negative dispose x overlap".into()),
-                    )?,
-                    top: u32::try_from(dispose_overlap.y.saturating_sub(strip_window.y)).map_err(
-                        |_| ViprsError::Codec("webp: negative dispose y overlap".into()),
-                    )?,
-                    width: dispose_overlap.width,
-                    height: dispose_overlap.height,
-                };
-                webp_clear_rgba_area(
-                    &mut canvas,
-                    strip_window.width,
-                    strip_window.height,
-                    clear_area,
-                );
-            }
+        if dispose_method == WebPMuxAnimDispose::WEBP_MUX_DISPOSE_BACKGROUND
+            && let Some(dispose_overlap) = webp_overlap_region(strip_window, dispose_area)
+        {
+            let clear_area = WebpFrameArea {
+                left: u32::try_from(dispose_overlap.x.saturating_sub(strip_window.x))
+                    .map_err(|_| ViprsError::Codec("webp: negative dispose x overlap".into()))?,
+                top: u32::try_from(dispose_overlap.y.saturating_sub(strip_window.y))
+                    .map_err(|_| ViprsError::Codec("webp: negative dispose y overlap".into()))?,
+                width: dispose_overlap.width,
+                height: dispose_overlap.height,
+            };
+            webp_clear_rgba_area(
+                &mut canvas,
+                strip_window.width,
+                strip_window.height,
+                clear_area,
+            );
         }
 
         let frame = *iter.current();
@@ -625,10 +623,11 @@ pub(super) fn decode_animated_webp_region_into<F: BandFormat>(
             .map_err(|_| ViprsError::Codec("webp: negative frame height".into()))?;
         let area = webp_frame_area(&frame, effective_shrink_factor)?;
         if let Some(overlap) = webp_overlap_region(strip_window, area) {
-            let mut source_left = 0;
-            if overlap.x as u32 > area.left {
-                source_left = (overlap.x as u32 - area.left) * u32::from(effective_shrink_factor);
-            }
+            let source_left = if overlap.x as u32 > area.left {
+                (overlap.x as u32 - area.left) * u32::from(effective_shrink_factor)
+            } else {
+                0
+            };
             let source_top = (overlap.y as u32 - area.top) * u32::from(effective_shrink_factor);
             let plan = webp_decode_rgba_fragment_window(
                 frame.fragment,

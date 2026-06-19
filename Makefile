@@ -10,12 +10,13 @@
 #   make bench-vs BENCH_ITER=10  — quick smoke test
 
 CARGO := cargo
-RUSTFLAGS_CI := -Dwarnings -Adead_code
+RUSTFLAGS_CI := -Dwarnings
 
 # Features that require system libraries (libjxl, libheif, libjpeg-turbo, etc.)
 # CI runs inside a container with all deps; local devs enable what they have installed.
-# Override: make check FEATURES="--features jpeg,png,webp"
-FEATURES ?= --all-features
+# Default features match CI (CONTAINER_FEATURES). Override locally if needed:
+#   make check FEATURES="--all-features"
+FEATURES ?= --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
 .PHONY: all check ci fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
 
@@ -37,18 +38,16 @@ else
 	$(CARGO) fmt --all -- --check
 endif
 
-## Clippy: enforce perf + unwrap/expect ban. Pedantic/nursery are in Cargo.toml [lints.clippy]
-## but produce cross-platform false positives (x86 SIMD code not visible on ARM dev machines).
-## Allow nursery entirely and specific pedantic lints that are architecture-dependent.
+## Clippy: enforce perf + unwrap/expect ban + pedantic + nursery (via Cargo.toml [lints.clippy]).
+## -Dwarnings ensures no warning passes silently.
 clippy:
-	RUSTFLAGS="-A dead_code" $(CARGO) clippy --lib $(FEATURES) -- \
-		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used \
-		-A clippy::nursery -A clippy::cast_ptr_alignment
+	RUSTFLAGS="-Dwarnings" $(CARGO) clippy --lib $(FEATURES) -- \
+		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
 
-## Compile check (lib mandatory; xtask validated separately in container CI job)
+## Compile check (lib mandatory; xtask checked here and in container CI job)
 build:
 	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) check --lib $(FEATURES)
-	$(CARGO) check -p xtask || echo "⚠ xtask requires system codec libs — validated by the build-xtask CI job"
+	$(CARGO) check -p xtask
 
 ## Unit tests only (containerless CI — no system libs)
 test:
@@ -76,9 +75,9 @@ deny:
 audit:
 	$(CARGO) audit
 
-## Coverage over full test suite (≥87% current baseline gate on ops/ and codecs/) — requires system libs
+## Threshold: ≥87% line coverage (enforced).
 coverage:
-	$(CARGO) llvm-cov $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 87
+	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 87
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:

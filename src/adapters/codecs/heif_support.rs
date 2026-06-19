@@ -34,7 +34,7 @@ enum ExifEndian {
 /// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::codecs::heif_support::HeifWriteMetadata>();
 /// ```
-pub(crate) struct HeifWriteMetadata<'a> {
+pub struct HeifWriteMetadata<'a> {
     pub exif: Option<&'a [u8]>,
     pub xmp: Option<&'a [u8]>,
     /// Raw ICC profile bytes (typically "rICC" or "prof" colour profile).
@@ -49,7 +49,7 @@ pub(crate) struct HeifWriteMetadata<'a> {
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::shared_libheif;
 /// ```
-pub(crate) fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsError> {
+pub fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsError> {
     match LIBHEIF.get_or_init(|| LibHeif::new_checked().map_err(|e| e.to_string())) {
         Ok(lib_heif) => Ok(lib_heif),
         Err(message) => Err(ViprsError::Codec(format!(
@@ -67,7 +67,7 @@ pub(crate) fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsErr
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_sample_count;
 /// ```
-pub(crate) fn checked_interleaved_sample_count(
+pub fn checked_interleaved_sample_count(
     width: u32,
     height: u32,
     bands: u32,
@@ -96,7 +96,7 @@ pub(crate) fn checked_interleaved_sample_count(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_row_bytes;
 /// ```
-pub(crate) fn checked_interleaved_row_bytes(
+pub fn checked_interleaved_row_bytes(
     width: u32,
     bands: u32,
     bytes_per_sample: usize,
@@ -125,7 +125,7 @@ pub(crate) fn checked_interleaved_row_bytes(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_byte_count;
 /// ```
-pub(crate) fn checked_interleaved_byte_count(
+pub fn checked_interleaved_byte_count(
     width: u32,
     height: u32,
     bands: u32,
@@ -150,7 +150,7 @@ pub(crate) fn checked_interleaved_byte_count(
         })
 }
 
-fn ok_error() -> lh::heif_error {
+const fn ok_error() -> lh::heif_error {
     lh::heif_error {
         code: lh::heif_error_code_heif_error_Ok,
         subcode: lh::heif_suberror_code_heif_suberror_Unspecified,
@@ -263,7 +263,7 @@ fn encode_context_to_bytes(
 }
 
 #[inline]
-fn is_unsupported_parameter(error: lh::heif_error) -> bool {
+const fn is_unsupported_parameter(error: lh::heif_error) -> bool {
     error.subcode == lh::heif_suberror_code_heif_suberror_Unsupported_parameter
 }
 
@@ -397,7 +397,7 @@ fn configure_encoder_threads(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::encode_interleaved;
 /// ```
-pub(crate) fn encode_interleaved(
+pub fn encode_interleaved(
     context: &str,
     compression: CompressionFormat,
     width: u32,
@@ -540,7 +540,7 @@ pub(crate) fn encode_interleaved(
             if let Some(icc) = metadata.icc_profile.filter(|data| !data.is_empty()) {
                 let error = lh::heif_image_set_raw_color_profile(
                     image,
-                    b"rICC\0".as_ptr().cast(),
+                    c"rICC".as_ptr().cast(),
                     icc.as_ptr().cast(),
                     icc.len(),
                 );
@@ -636,10 +636,7 @@ pub(crate) fn encode_interleaved(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::read_metadata;
 /// ```
-pub(crate) fn read_metadata(
-    context: &str,
-    handle: &ImageHandle,
-) -> Result<ImageMetadata, ViprsError> {
+pub fn read_metadata(context: &str, handle: &ImageHandle) -> Result<ImageMetadata, ViprsError> {
     let mut metadata = ImageMetadata::default();
 
     // Read raw ICC colour profile (rICC or prof) from the image handle.
@@ -794,7 +791,7 @@ fn apply_orientation_to_pixels<T: Copy>(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::heif_support::normalize_decoded_image;
 /// ```
-pub(crate) fn normalize_decoded_image<F: BandFormat>(
+pub fn normalize_decoded_image<F: BandFormat>(
     image: Image<F>,
     no_rotate: bool,
     context: &str,

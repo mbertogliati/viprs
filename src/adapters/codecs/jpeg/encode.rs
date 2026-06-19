@@ -78,7 +78,10 @@ fn streaming_jpeg_color_type(
     }
 }
 
-fn streaming_sampling_factor(quality: u8, subsampling: JpegSubsampling) -> StreamingSamplingFactor {
+const fn streaming_sampling_factor(
+    quality: u8,
+    subsampling: JpegSubsampling,
+) -> StreamingSamplingFactor {
     match subsampling {
         JpegSubsampling::Auto => {
             if quality < 90 {

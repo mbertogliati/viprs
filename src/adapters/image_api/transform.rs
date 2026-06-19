@@ -178,7 +178,7 @@ impl ImageApi {
     pub fn thumbnail(self, width: u32) -> Result<Self, BuildError> {
         #[cfg(feature = "icc")]
         {
-            return self.thumbnail_with_options(width, ImageApiThumbnailOptions::default());
+            self.thumbnail_with_options(width, ImageApiThumbnailOptions::default())
         }
 
         #[cfg(not(feature = "icc"))]

@@ -53,8 +53,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
             -matrix[2] * inv_det,
             matrix[0] * inv_det,
         ];
-        let backward_tx = -(backward_matrix[0] * tx + backward_matrix[1] * ty);
-        let backward_ty = -(backward_matrix[2] * tx + backward_matrix[3] * ty);
+        let backward_tx = -backward_matrix[1].mul_add(ty, backward_matrix[0] * tx);
+        let backward_ty = -backward_matrix[3].mul_add(ty, backward_matrix[2] * tx);
 
         Ok((backward_matrix, backward_tx, backward_ty))
     }
@@ -500,7 +500,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 output_h,
                 bands,
                 demand_hint,
-                extend.clone(),
+                extend,
             )?),
             BandFormatId::U16 => Box::new(AffineBridge::<U16>::new_with_extend(
                 matrix,
@@ -513,7 +513,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 output_h,
                 bands,
                 demand_hint,
-                extend.clone(),
+                extend,
             )?),
             BandFormatId::I16 => Box::new(AffineBridge::<I16>::new_with_extend(
                 matrix,
@@ -526,7 +526,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 output_h,
                 bands,
                 demand_hint,
-                extend.clone(),
+                extend,
             )?),
             BandFormatId::U32 => Box::new(AffineBridge::<U32>::new_with_extend(
                 matrix,
@@ -539,7 +539,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 output_h,
                 bands,
                 demand_hint,
-                extend.clone(),
+                extend,
             )?),
             BandFormatId::I32 => Box::new(AffineBridge::<I32>::new_with_extend(
                 matrix,
@@ -552,7 +552,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 output_h,
                 bands,
                 demand_hint,
-                extend.clone(),
+                extend,
             )?),
             BandFormatId::F32 => Box::new(AffineBridge::<F32>::new_with_extend(
                 matrix,
@@ -565,7 +565,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 output_h,
                 bands,
                 demand_hint,
-                extend.clone(),
+                extend,
             )?),
             BandFormatId::F64 => Box::new(AffineBridge::<F64>::new_with_extend(
                 matrix,

@@ -16,7 +16,7 @@ use crate::domain::error::ViprsError;
 /// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::codecs::shrink_on_load::ShrinkOnLoadBackend>();
 /// ```
-pub(crate) enum ShrinkOnLoadBackend {
+pub enum ShrinkOnLoadBackend {
     /// libjpeg-turbo exposes DCT-domain scaling via `scale_num/scale_denom`.
     JpegTurboScaledIdct,
     /// `libwebp-sys 0.9.6` exposes `WebPDecoderConfig.options.use_scaling`.
@@ -27,6 +27,8 @@ pub(crate) enum ShrinkOnLoadBackend {
 }
 
 impl ShrinkOnLoadBackend {
+    #[allow(dead_code)]
+    // REASON: Part of codec introspection API, not yet called externally.
     #[inline]
     pub(crate) const fn codec_name(self) -> &'static str {
         match self {
@@ -46,7 +48,7 @@ impl ShrinkOnLoadBackend {
 /// ```ignore
 /// let _ = core::mem::size_of::<viprs::adapters::codecs::shrink_on_load::ShrinkOnLoadPlan>();
 /// ```
-pub(crate) struct ShrinkOnLoadPlan {
+pub struct ShrinkOnLoadPlan {
     factor: u8,
     backend: ShrinkOnLoadBackend,
 }
@@ -65,6 +67,8 @@ impl ShrinkOnLoadPlan {
         self.factor
     }
 
+    #[allow(dead_code)]
+    // REASON: Part of codec introspection API, not yet called externally.
     #[inline]
     pub(crate) const fn backend(self) -> ShrinkOnLoadBackend {
         self.backend
@@ -75,7 +79,7 @@ impl ShrinkOnLoadPlan {
 ///
 /// Unsupported values are treated as "no shrink" per the decoder contract.
 #[inline]
-pub(crate) const fn normalize_shrink_factor(factor: u8) -> u8 {
+pub const fn normalize_shrink_factor(factor: u8) -> u8 {
     match factor {
         2 | 4 | 8 => factor,
         _ => 1,

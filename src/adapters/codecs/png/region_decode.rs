@@ -18,8 +18,7 @@ use super::decode_full::{
     open_png_sequential_path_session, png_decoder, png_file_reader, png_reader,
 };
 use super::encode::{
-    ADAM7_PASSES, MAX_PNG_DECODED_IMAGE_BYTES, adam7_extent, encode_png_to_writer_web_ready,
-    encode_png_web_ready,
+    MAX_PNG_DECODED_IMAGE_BYTES, encode_png_to_writer_web_ready, encode_png_web_ready,
 };
 use super::metadata::{color_type_to_bands, png_filter, png_metadata};
 #[cfg(test)]
@@ -147,10 +146,10 @@ where
 
             match (F::ID, bit_depth) {
                 (BandFormatId::U8, BitDepth::Eight) => {
-                    copy_png_row_u8(&row, width, bands, region, out_y, output);
+                    copy_png_row_u8(row, width, bands, region, out_y, output);
                 }
                 (BandFormatId::U16, BitDepth::Sixteen) => {
-                    copy_png_row_u16(&row, width, bands, region, out_y, output)?;
+                    copy_png_row_u16(row, width, bands, region, out_y, output)?;
                 }
                 _ => {
                     return Err(ViprsError::Codec(format!(
@@ -362,175 +361,6 @@ fn decode_png_region_from_full_raster<F: BandFormat>(
     Ok(())
 }
 
-fn decode_png_region_interlaced_rows<F: BandFormat, R>(
-    reader: &mut png::Reader<R>,
-    bit_depth: BitDepth,
-    bands: u32,
-    #[cfg(test)] probe_codec_id: usize,
-    region: Region,
-    output: &mut [u8],
-) -> Result<(), ViprsError>
-where
-    R: BufRead + Seek,
-{
-    validate_png_region_output::<F>(region, bands, output)?;
-    if region.width == 0 || region.height == 0 {
-        return Ok(());
-    }
-
-    let width = reader.info().width;
-    let height = reader.info().height;
-    let bands = bands as usize;
-    let bytes_per_sample = png_bytes_per_sample(bit_depth)?;
-    let bytes_per_pixel = bands * bytes_per_sample;
-
-    match (F::ID, bit_depth) {
-        (BandFormatId::U8, BitDepth::Eight) => {
-            for (x_start, y_start, x_step, y_step) in ADAM7_PASSES {
-                let pass_width = adam7_extent(width, x_start, x_step);
-                let pass_height = adam7_extent(height, y_start, y_step);
-                if pass_width == 0 || pass_height == 0 {
-                    continue;
-                }
-
-                for pass_row in 0..pass_height {
-                    let y = y_start + pass_row * y_step;
-                    #[cfg(test)]
-                    let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter_for(probe_codec_id);
-                    let row = reader
-                        .next_interlaced_row()
-                        .map_err(|e| ViprsError::Codec(e.to_string()))?
-                        .ok_or_else(|| {
-                            ViprsError::Codec("png: unexpected end of Adam7 rows".into())
-                        })?;
-                    if !matches!(row.interlace(), png::InterlaceInfo::Adam7(_)) {
-                        return Err(ViprsError::Codec(
-                            "png: expected Adam7 row while decoding interlaced PNG".into(),
-                        ));
-                    }
-
-                    let pass_row = row.data();
-                    let expected_len = pass_width as usize * bytes_per_pixel;
-                    if pass_row.len() != expected_len {
-                        return Err(ViprsError::Codec(format!(
-                            "png: Adam7 row size mismatch (got {}, expected {expected_len})",
-                            pass_row.len()
-                        )));
-                    }
-
-                    for out_y in 0..region.height {
-                        if clamp_region_coordinate(region.y, out_y, height) as u32 != y {
-                            continue;
-                        }
-
-                        for out_x in 0..region.width {
-                            let src_x = clamp_region_coordinate(region.x, out_x, width) as u32;
-                            if src_x < x_start {
-                                continue;
-                            }
-                            let delta = src_x - x_start;
-                            if delta % x_step != 0 {
-                                continue;
-                            }
-
-                            let pass_column = (delta / x_step) as usize;
-                            let src = pass_column * bytes_per_pixel;
-                            let dst = (out_y as usize * region.width as usize + out_x as usize)
-                                * bytes_per_pixel;
-                            output[dst..dst + bytes_per_pixel]
-                                .copy_from_slice(&pass_row[src..src + bytes_per_pixel]);
-                        }
-                    }
-                }
-            }
-        }
-        (BandFormatId::U16, BitDepth::Sixteen) => {
-            let output_samples: &mut [u16] = bytemuck::try_cast_slice_mut(output)
-                .map_err(|_| ViprsError::Codec("png: output buffer size mismatch".into()))?;
-
-            for (x_start, y_start, x_step, y_step) in ADAM7_PASSES {
-                let pass_width = adam7_extent(width, x_start, x_step);
-                let pass_height = adam7_extent(height, y_start, y_step);
-                if pass_width == 0 || pass_height == 0 {
-                    continue;
-                }
-
-                for pass_row in 0..pass_height {
-                    let y = y_start + pass_row * y_step;
-                    #[cfg(test)]
-                    let _row_decode_probe = PNG_ROW_DECODE_PROBE.enter_for(probe_codec_id);
-                    let row = reader
-                        .next_interlaced_row()
-                        .map_err(|e| ViprsError::Codec(e.to_string()))?
-                        .ok_or_else(|| {
-                            ViprsError::Codec("png: unexpected end of Adam7 rows".into())
-                        })?;
-                    if !matches!(row.interlace(), png::InterlaceInfo::Adam7(_)) {
-                        return Err(ViprsError::Codec(
-                            "png: expected Adam7 row while decoding interlaced PNG".into(),
-                        ));
-                    }
-
-                    let pass_row = row.data();
-                    let expected_len = pass_width as usize * bytes_per_pixel;
-                    if pass_row.len() != expected_len {
-                        return Err(ViprsError::Codec(format!(
-                            "png: Adam7 row size mismatch (got {}, expected {expected_len})",
-                            pass_row.len()
-                        )));
-                    }
-
-                    for out_y in 0..region.height {
-                        if clamp_region_coordinate(region.y, out_y, height) as u32 != y {
-                            continue;
-                        }
-
-                        for out_x in 0..region.width {
-                            let src_x = clamp_region_coordinate(region.x, out_x, width) as u32;
-                            if src_x < x_start {
-                                continue;
-                            }
-                            let delta = src_x - x_start;
-                            if delta % x_step != 0 {
-                                continue;
-                            }
-
-                            let pass_column = (delta / x_step) as usize;
-                            let src = pass_column * bytes_per_pixel;
-                            let dst =
-                                (out_y as usize * region.width as usize + out_x as usize) * bands;
-                            for band in 0..bands {
-                                let sample = src + band * bytes_per_sample;
-                                output_samples[dst + band] =
-                                    u16::from_be_bytes([pass_row[sample], pass_row[sample + 1]]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        _ => {
-            return Err(ViprsError::Codec(format!(
-                "png: format/bit-depth mismatch — requested {:?} but file has {:?}",
-                F::ID,
-                bit_depth
-            )));
-        }
-    }
-
-    if reader
-        .next_interlaced_row()
-        .map_err(|e| ViprsError::Codec(e.to_string()))?
-        .is_some()
-    {
-        return Err(ViprsError::Codec(
-            "png: Adam7 decoder left unread interlaced rows".into(),
-        ));
-    }
-
-    Ok(())
-}
-
 // ── ImageDecoder ──────────────────────────────────────────────────────────────
 
 impl ImageDecoder for PngCodec {
@@ -595,26 +425,25 @@ impl ImageDecoder for PngCodec {
         // When a shrink hint is present and the target format is U8, decode
         // row-by-row with an inline box filter. This avoids materialising the
         // full decoded image (e.g. 200 MB for 8192×8192 RGB) before shrinking.
-        if F::ID == BandFormatId::U8 {
-            if let Some(factor) = opts.shrink_factor {
-                let factor = factor.get() as usize;
-                if factor > 1 {
-                    // The pure-Rust `png` crate (miniz_oxide + BufReader) is competitive with
-                    // libvips for this box-shrink path. The libspng progressive-row API is
-                    // slower here because the C→Rust FFI boundary is crossed 8192 times (once
-                    // per row), while miniz_oxide stays entirely in Rust with branch-predictor-
-                    // friendly sequential memory access.
-                    let result =
-                        decode_png_with_box_shrink_u8(BufReader::new(File::open(path)?), factor);
+        if F::ID == BandFormatId::U8
+            && let Some(factor) = opts.shrink_factor
+        {
+            let factor = factor.get() as usize;
+            if factor > 1 {
+                // The pure-Rust `png` crate (miniz_oxide + BufReader) is competitive with
+                // libvips for this box-shrink path. The libspng progressive-row API is
+                // slower here because the C→Rust FFI boundary is crossed 8192 times (once
+                // per row), while miniz_oxide stays entirely in Rust with branch-predictor-
+                // friendly sequential memory access.
+                let result =
+                    decode_png_with_box_shrink_u8(BufReader::new(File::open(path)?), factor);
 
-                    let (width, height, bands, pixels) = result?;
-                    let samples: Vec<F::Sample> =
-                        bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels).map_err(
-                            |(e, _)| ViprsError::Codec(format!("png: cast error: {e:?}")),
-                        )?;
-                    return Image::from_buffer(width, height, bands, samples)
-                        .map_err(|e| ViprsError::Codec(e.to_string()));
-                }
+                let (width, height, bands, pixels) = result?;
+                let samples: Vec<F::Sample> =
+                    bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels)
+                        .map_err(|(e, _)| ViprsError::Codec(format!("png: cast error: {e:?}")))?;
+                return Image::from_buffer(width, height, bands, samples)
+                    .map_err(|e| ViprsError::Codec(e.to_string()));
             }
         }
 
@@ -681,7 +510,7 @@ impl TileImageDecoder for PngCodec {
     {
         let mut reader = png_reader(Cursor::new(src))?;
         let info = reader.info();
-        let (color_type, bit_depth) = reader.output_color_type();
+        let (_color_type, bit_depth) = reader.output_color_type();
         let interlaced = info.interlaced;
         let bands = color_type_to_bands(info.color_type);
         if interlaced {
@@ -775,7 +604,7 @@ impl TileImageDecoder for PngCodec {
 
         let mut reader = png_reader(BufReader::new(File::open(path)?))?;
         let info = reader.info();
-        let (color_type, bit_depth) = reader.output_color_type();
+        let (_color_type, bit_depth) = reader.output_color_type();
         let interlaced = info.interlaced;
         let bands = color_type_to_bands(info.color_type);
         if interlaced {

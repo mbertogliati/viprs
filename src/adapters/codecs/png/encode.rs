@@ -327,7 +327,7 @@ fn adam7_scanlines(
     scanlines
 }
 
-pub(super) fn adam7_extent(extent: u32, start: u32, step: u32) -> u32 {
+pub(super) const fn adam7_extent(extent: u32, start: u32, step: u32) -> u32 {
     if extent <= start {
         0
     } else {

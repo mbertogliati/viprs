@@ -226,6 +226,8 @@ fn current_resident_kb() -> u64 {
         as libc::mach_msg_type_number_t;
     // SAFETY: `info` points to valid writable memory for `mach_task_basic_info`, and `count`
     // is initialized to the number of `integer_t` words required by the kernel API.
+    // REASON: mach2 crate migration tracked as tech debt; libc version still functional.
+    #[allow(deprecated)]
     let result = unsafe {
         libc::task_info(
             libc::mach_task_self(),

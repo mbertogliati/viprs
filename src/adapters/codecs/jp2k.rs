@@ -73,9 +73,9 @@ fn validate_load_options(opts: &LoadOptions) -> Result<(), ViprsError> {
 
 #[inline]
 fn codec_format_from_bytes(src: &[u8]) -> Result<sys::CODEC_FORMAT, ViprsError> {
-    if src.starts_with(&J2K_CODESTREAM_MAGIC) {
+    if src.starts_with(J2K_CODESTREAM_MAGIC) {
         Ok(sys::CODEC_FORMAT::OPJ_CODEC_J2K)
-    } else if src.starts_with(&JP2_RFC3745_MAGIC) {
+    } else if src.starts_with(JP2_RFC3745_MAGIC) {
         Ok(sys::CODEC_FORMAT::OPJ_CODEC_JP2)
     } else {
         Err(ViprsError::Codec(
@@ -107,11 +107,11 @@ struct WrappedSlice<'a> {
 }
 
 impl<'a> WrappedSlice<'a> {
-    fn new(buf: &'a [u8]) -> Self {
+    const fn new(buf: &'a [u8]) -> Self {
         Self { offset: 0, buf }
     }
 
-    fn remaining(&self) -> usize {
+    const fn remaining(&self) -> usize {
         self.buf.len().saturating_sub(self.offset)
     }
 
@@ -719,7 +719,7 @@ fn decode_tiled_path_fast<F: BandFormat>(
     decode_tiled_stream_fast(codec_format, stream_ptr, opts)
 }
 
-fn map_interpretation(color_space: J2kColorSpace, bands: u32, wide: bool) -> Interpretation {
+const fn map_interpretation(color_space: J2kColorSpace, bands: u32, wide: bool) -> Interpretation {
     match color_space {
         J2kColorSpace::Gray => {
             if wide {
@@ -789,7 +789,7 @@ const PARALLEL_PACK_MIN_PIXELS: usize = 512 * 512;
 const FAST_TILED_MIN_PIXELS: usize = 4096 * 4096;
 
 #[inline]
-fn raw_components(image: &sys::opj_image_t) -> &[sys::opj_image_comp_t] {
+const fn raw_components(image: &sys::opj_image_t) -> &[sys::opj_image_comp_t] {
     if image.comps.is_null() || image.numcomps == 0 {
         &[]
     } else {
@@ -800,7 +800,7 @@ fn raw_components(image: &sys::opj_image_t) -> &[sys::opj_image_comp_t] {
 }
 
 #[inline]
-fn raw_component_data(component: &sys::opj_image_comp_t) -> &[i32] {
+const fn raw_component_data(component: &sys::opj_image_comp_t) -> &[i32] {
     let len = (component.w as usize).saturating_mul(component.h as usize);
     if component.data.is_null() || len == 0 {
         &[]
@@ -820,7 +820,7 @@ fn raw_resolution_count(info: &sys::opj_codestream_info_v2_t) -> u32 {
     }
 }
 
-fn raw_map_interpretation(
+const fn raw_map_interpretation(
     color_space: sys::OPJ_COLOR_SPACE,
     bands: u32,
     wide: bool,
@@ -1033,7 +1033,7 @@ fn copy_fast_tiled_u16<const BANDS: usize>(
 }
 
 #[inline]
-fn decoded_component(component: &sys::opj_image_comp_t) -> DecodedComponent<'_> {
+const fn decoded_component(component: &sys::opj_image_comp_t) -> DecodedComponent<'_> {
     DecodedComponent {
         data: raw_component_data(component),
         precision: component.prec,
@@ -1153,10 +1153,9 @@ fn fill_unsigned_u8_rows<const BANDS: usize>(
             let start = row_idx * width;
             let end = start + width;
             let component_rows = components.map(|component| &component.data[start..end]);
-            for x in 0..width {
-                let offset = x * BANDS;
+            for (x, pixel) in row.chunks_exact_mut(BANDS).take(width).enumerate() {
                 for band in 0..BANDS {
-                    row[offset + band] = component_rows[band][x] as u8;
+                    pixel[band] = component_rows[band][x] as u8;
                 }
             }
         },
@@ -1177,10 +1176,9 @@ fn fill_unsigned_u16_rows<const BANDS: usize>(
             let start = row_idx * width;
             let end = start + width;
             let component_rows = components.map(|component| &component.data[start..end]);
-            for x in 0..width {
-                let offset = x * BANDS;
+            for (x, pixel) in row.chunks_exact_mut(BANDS).take(width).enumerate() {
                 for band in 0..BANDS {
-                    row[offset + band] = component_rows[band][x] as u16;
+                    pixel[band] = component_rows[band][x] as u16;
                 }
             }
         },
@@ -1420,7 +1418,7 @@ fn is_jp2k_extension(path: &Path) -> bool {
         })
 }
 
-fn opj_color_space_for_bands(bands: u32) -> sys::OPJ_COLOR_SPACE {
+const fn opj_color_space_for_bands(bands: u32) -> sys::OPJ_COLOR_SPACE {
     match bands {
         1 => sys::COLOR_SPACE::OPJ_CLRSPC_GRAY,
         4 => sys::COLOR_SPACE::OPJ_CLRSPC_CMYK,
@@ -1911,8 +1909,8 @@ fn finish_decoded_image<F: BandFormat>(
 ) -> Result<Image<F>, ViprsError> {
     match F::ID {
         BandFormatId::U8 => {
-            let (width, height, bands, samples) = decode_pixels_u8(&decoded)?;
-            let metadata = decoded_metadata(&decoded, bands, false);
+            let (width, height, bands, samples) = decode_pixels_u8(decoded)?;
+            let metadata = decoded_metadata(decoded, bands, false);
             let samples = bytemuck::allocation::try_cast_vec::<u8, F::Sample>(samples)
                 .map_err(|(err, _)| ViprsError::Codec(format!("jp2k: cast error: {err:?}")))?;
             Image::from_buffer(width, height, bands, samples)
@@ -1920,8 +1918,8 @@ fn finish_decoded_image<F: BandFormat>(
                 .map_err(|err| ViprsError::Codec(err.to_string()))
         }
         BandFormatId::U16 => {
-            let (width, height, bands, samples) = decode_pixels_u16(&decoded)?;
-            let metadata = decoded_metadata(&decoded, bands, true);
+            let (width, height, bands, samples) = decode_pixels_u16(decoded)?;
+            let metadata = decoded_metadata(decoded, bands, true);
             let samples = bytemuck::allocation::try_cast_vec::<u16, F::Sample>(samples)
                 .map_err(|(err, _)| ViprsError::Codec(format!("jp2k: cast error: {err:?}")))?;
             Image::from_buffer(width, height, bands, samples)
@@ -1948,7 +1946,7 @@ impl ImageDecoder for Jp2kCodec {
     where
         Self: Sized,
     {
-        header.starts_with(&JP2_RFC3745_MAGIC) || header.starts_with(&J2K_CODESTREAM_MAGIC)
+        header.starts_with(JP2_RFC3745_MAGIC) || header.starts_with(J2K_CODESTREAM_MAGIC)
     }
 
     fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {

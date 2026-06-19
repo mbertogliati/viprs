@@ -275,10 +275,7 @@ where
     let mut current = image.clone();
     let mut levels = Vec::new();
 
-    loop {
-        let Some(next) = downsample_half(&current)? else {
-            break;
-        };
+    while let Some(next) = downsample_half(&current)? {
         let should_stop = next.width() <= stop_at || next.height() <= stop_at;
         levels.push(next.clone());
         if should_stop || (next.width() == 1 && next.height() == 1) {
