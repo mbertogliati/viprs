@@ -232,7 +232,7 @@ fn encode_context_to_bytes(
     context: &str,
     ctx: *mut lh::heif_context,
 ) -> Result<Vec<u8>, ViprsError> {
-    let mut output = Vec::new();
+    let mut output: Vec<u8> = Vec::new();
     let mut writer = lh::heif_writer {
         writer_api_version: 1,
         write: Some(vec_writer),
@@ -247,7 +247,13 @@ fn encode_context_to_bytes(
         // touch `output` again until `heif_context_write()` returns, so there is no
         // mutable aliasing or data race. We keep the direct C path because
         // `libheif-rs` 0.20 `write_to_bytes()` still uses a broken `vector_writer`.
-        unsafe { lh::heif_context_write(ctx, &mut writer, (&mut output as *mut Vec<u8>).cast()) }
+        unsafe {
+            lh::heif_context_write(
+                ctx,
+                std::ptr::from_mut(&mut writer),
+                std::ptr::from_mut(&mut output).cast(),
+            )
+        }
     };
     if error.code != lh::heif_error_code_heif_error_Ok {
         return Err(format_error(context, error));
@@ -263,9 +269,9 @@ fn is_unsupported_parameter(error: lh::heif_error) -> bool {
 
 #[inline]
 fn available_threads() -> i32 {
-    std::thread::available_parallelism()
-        .map(|threads| i32::try_from(threads.get()).unwrap_or(i32::MAX))
-        .unwrap_or(1)
+    std::thread::available_parallelism().map_or(1, |threads| {
+        i32::try_from(threads.get()).unwrap_or(i32::MAX)
+    })
 }
 
 fn set_encoder_integer_parameter(
@@ -354,10 +360,10 @@ fn configure_encoder_threads(
                     let mut maximum = 0;
                     let error = lh::heif_encoder_parameter_get_valid_integer_values(
                         parameter,
-                        &mut have_minimum,
-                        &mut have_maximum,
-                        &mut minimum,
-                        &mut maximum,
+                        std::ptr::from_mut(&mut have_minimum),
+                        std::ptr::from_mut(&mut have_maximum),
+                        std::ptr::from_mut(&mut minimum),
+                        std::ptr::from_mut(&mut maximum),
                         ptr::null_mut(),
                         ptr::null_mut(),
                     );
@@ -444,8 +450,11 @@ pub(crate) fn encode_interleaved(
         let mut handle: *mut lh::heif_image_handle = ptr::null_mut();
 
         let result = (|| {
-            let error =
-                lh::heif_context_get_encoder_for_format(ctx, compression as _, &mut encoder);
+            let error = lh::heif_context_get_encoder_for_format(
+                ctx,
+                compression as _,
+                std::ptr::from_mut(&mut encoder),
+            );
             if error.code != lh::heif_error_code_heif_error_Ok {
                 return Err(format_error(context, error));
             }
@@ -466,22 +475,12 @@ pub(crate) fn encode_interleaved(
 
             if !(lossless && compression == CompressionFormat::Av1) {
                 let chroma_parameter = match subsampling {
-                    HeifSubsampling::Auto if lossless || quality >= 90 => "444",
-                    HeifSubsampling::Auto | HeifSubsampling::Subsample420 => "420",
-                    HeifSubsampling::Subsample422 => "422",
-                    HeifSubsampling::Subsample444 => "444",
+                    HeifSubsampling::Auto if lossless || quality >= 90 => b"444\0".as_slice(),
+                    HeifSubsampling::Auto | HeifSubsampling::Subsample420 => b"420\0".as_slice(),
+                    HeifSubsampling::Subsample422 => b"422\0".as_slice(),
+                    HeifSubsampling::Subsample444 => b"444\0".as_slice(),
                 };
-                set_encoder_string_parameter(
-                    context,
-                    encoder,
-                    b"chroma\0",
-                    match chroma_parameter {
-                        "420" => b"420\0",
-                        "422" => b"422\0",
-                        "444" => b"444\0",
-                        _ => unreachable!(),
-                    },
-                )?;
+                set_encoder_string_parameter(context, encoder, b"chroma\0", chroma_parameter)?;
             }
 
             configure_encoder_threads(context, encoder)?;
@@ -493,7 +492,7 @@ pub(crate) fn encode_interleaved(
                 height as _,
                 lh::heif_colorspace_heif_colorspace_RGB,
                 chroma,
-                &mut image,
+                std::ptr::from_mut(&mut image),
             );
             if error.code != lh::heif_error_code_heif_error_Ok {
                 return Err(format_interleaved_error(context, bands, bit_depth, error));
@@ -514,7 +513,7 @@ pub(crate) fn encode_interleaved(
             let plane = lh::heif_image_get_plane(
                 image,
                 lh::heif_channel_heif_channel_interleaved,
-                &mut stride,
+                std::ptr::from_mut(&mut stride),
             );
             if plane.is_null() {
                 return Err(ViprsError::Codec(format!(
@@ -555,7 +554,13 @@ pub(crate) fn encode_interleaved(
             }
             (*options).save_alpha_channel = u8::from(bands == 4);
 
-            let error = lh::heif_context_encode_image(ctx, image, encoder, options, &mut handle);
+            let error = lh::heif_context_encode_image(
+                ctx,
+                image,
+                encoder,
+                options,
+                std::ptr::from_mut(&mut handle),
+            );
             if error.code != lh::heif_error_code_heif_error_Ok {
                 return Err(format_interleaved_error(context, bands, bit_depth, error));
             }
@@ -910,7 +915,7 @@ mod tests {
 
     #[test]
     fn vec_writer_appends_multiple_chunks() {
-        let mut output = Vec::new();
+        let mut output: Vec<u8> = Vec::new();
         let first = [1_u8, 2, 3];
         let second = [4_u8, 5];
 
@@ -920,7 +925,7 @@ mod tests {
                 ptr::null_mut(),
                 first.as_ptr().cast::<c_void>(),
                 first.len(),
-                (&mut output as *mut Vec<u8>).cast::<c_void>(),
+                std::ptr::from_mut(&mut output).cast::<c_void>(),
             )
         };
         // SAFETY: same invariant as above for the second chunk.
@@ -929,7 +934,7 @@ mod tests {
                 ptr::null_mut(),
                 second.as_ptr().cast::<c_void>(),
                 second.len(),
-                (&mut output as *mut Vec<u8>).cast::<c_void>(),
+                std::ptr::from_mut(&mut output).cast::<c_void>(),
             )
         };
 
@@ -940,7 +945,7 @@ mod tests {
 
     #[test]
     fn vec_writer_rejects_null_data_when_size_is_nonzero() {
-        let mut output = Vec::new();
+        let mut output: Vec<u8> = Vec::new();
 
         // SAFETY: `userdata` points to a live `Vec<u8>`, and the test exercises the explicit null-data guard in `vec_writer`.
         let error = unsafe {
@@ -948,7 +953,7 @@ mod tests {
                 ptr::null_mut(),
                 ptr::null(),
                 1,
-                (&mut output as *mut Vec<u8>).cast::<c_void>(),
+                std::ptr::from_mut(&mut output).cast::<c_void>(),
             )
         };
 

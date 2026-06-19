@@ -1,11 +1,11 @@
-//! Jp2K adapter module.
+//! `Jp2K` adapter module.
 //!
 //! This module provides concrete codec-related infrastructure used by the
 //! adapter layer for loading, saving, or normalizing external image formats.
 
 #![cfg(feature = "jp2k")]
 
-//! JPEG 2000 codec using `jpeg2k` for decode and OpenJPEG FFI for encode.
+//! JPEG 2000 codec using `jpeg2k` for decode and `OpenJPEG` FFI for encode.
 
 use std::ffi::CString;
 use std::num::NonZeroUsize;
@@ -107,8 +107,8 @@ struct WrappedSlice<'a> {
 }
 
 impl<'a> WrappedSlice<'a> {
-    fn new(buf: &'a [u8]) -> Box<Self> {
-        Box::new(Self { offset: 0, buf })
+    fn new(buf: &'a [u8]) -> Self {
+        Self { offset: 0, buf }
     }
 
     fn remaining(&self) -> usize {
@@ -146,7 +146,7 @@ unsafe extern "C" fn buf_read_stream_free_fn(p_data: *mut c_void) {
     }
 
     // SAFETY: OpenJPEG passes back the Box allocation created in openjpeg_stream_from_bytes.
-    unsafe { drop(Box::from_raw(p_data as *mut WrappedSlice<'static>)) };
+    unsafe { drop(Box::from_raw(p_data.cast::<WrappedSlice<'static>>())) };
 }
 
 unsafe extern "C" fn buf_read_stream_read_fn(
@@ -159,21 +159,21 @@ unsafe extern "C" fn buf_read_stream_read_fn(
     }
 
     // SAFETY: OpenJPEG provides the same WrappedSlice pointer registered as user data.
-    let slice = unsafe { &mut *(p_data as *mut WrappedSlice<'static>) };
+    let slice = unsafe { &mut *p_data.cast::<WrappedSlice<'static>>() };
     // SAFETY: OpenJPEG requests a writable output buffer of nb_bytes bytes.
-    let out_buf = unsafe { std::slice::from_raw_parts_mut(p_buffer as *mut u8, nb_bytes) };
+    let out_buf = unsafe { std::slice::from_raw_parts_mut(p_buffer.cast::<u8>(), nb_bytes) };
     slice.read_into(out_buf).unwrap_or(usize::MAX)
 }
 
 unsafe extern "C" fn buf_read_stream_skip_fn(nb_bytes: i64, p_data: *mut c_void) -> i64 {
     // SAFETY: OpenJPEG provides the same WrappedSlice pointer registered as user data.
-    let slice = unsafe { &mut *(p_data as *mut WrappedSlice<'static>) };
+    let slice = unsafe { &mut *p_data.cast::<WrappedSlice<'static>>() };
     slice.consume(nb_bytes.max(0) as usize) as i64
 }
 
 unsafe extern "C" fn buf_read_stream_seek_fn(nb_bytes: i64, p_data: *mut c_void) -> i32 {
     // SAFETY: OpenJPEG provides the same WrappedSlice pointer registered as user data.
-    let slice = unsafe { &mut *(p_data as *mut WrappedSlice<'static>) };
+    let slice = unsafe { &mut *p_data.cast::<WrappedSlice<'static>>() };
     let seek_offset = nb_bytes.max(0) as usize;
     let new_offset = slice.seek(seek_offset);
     i32::from(seek_offset == new_offset)
@@ -219,7 +219,7 @@ impl Drop for OpenJpegInfo {
         let mut info_ptr = self.0;
         if !info_ptr.is_null() {
             // SAFETY: pointer is created by opj_get_cstr_info and freed once here.
-            unsafe { sys::opj_destroy_cstr_info(&mut info_ptr) };
+            unsafe { sys::opj_destroy_cstr_info(&raw mut info_ptr) };
         }
     }
 }
@@ -253,20 +253,19 @@ impl OpenJpegDecodedImage {
             sys::COLOR_SPACE::OPJ_CLRSPC_EYCC => J2kColorSpace::EYCC,
             sys::COLOR_SPACE::OPJ_CLRSPC_CMYK => J2kColorSpace::CMYK,
             sys::COLOR_SPACE::OPJ_CLRSPC_UNSPECIFIED => J2kColorSpace::Unspecified,
-            _ => J2kColorSpace::Unknown,
+            sys::COLOR_SPACE::OPJ_CLRSPC_UNKNOWN => J2kColorSpace::Unknown,
         }
     }
 }
 
 fn openjpeg_stream_from_bytes(src: &[u8]) -> Result<OpenJpegStream, ViprsError> {
-    let data = WrappedSlice::new(src);
-    let data_ptr = Box::into_raw(data) as *mut c_void;
+    let data_ptr = Box::into_raw(Box::new(WrappedSlice::new(src))).cast::<c_void>();
 
     // SAFETY: OpenJPEG returns an owned input stream pointer or null on failure.
     let stream_ptr = unsafe { sys::opj_stream_default_create(1) };
     if stream_ptr.is_null() {
         // SAFETY: stream creation failed, so ownership of data_ptr stays with Rust.
-        unsafe { drop(Box::from_raw(data_ptr as *mut WrappedSlice<'static>)) };
+        unsafe { drop(Box::from_raw(data_ptr.cast::<WrappedSlice<'static>>())) };
         return Err(ViprsError::Codec(
             "jp2k: failed to create OpenJPEG input stream".into(),
         ));
@@ -305,20 +304,21 @@ fn decoder_params(opts: &LoadOptions) -> sys::opj_dparameters_t {
         sys::opj_set_default_decoder_parameters(decoder_params.as_mut_ptr());
         decoder_params.assume_init()
     };
-    decoder_params.cp_reduce = opts.page.unwrap_or(0).max(0);
+    decoder_params.cp_reduce = opts.page.unwrap_or(0);
     decoder_params
 }
 
 fn configure_decoder_threads(codec: *mut sys::opj_codec_t, opts: &LoadOptions) {
     let thread_count = opts
         .decoder_threads
-        .map(NonZeroUsize::get)
-        .unwrap_or_else(|| {
-            std::thread::available_parallelism()
-                .map(|parallelism| parallelism.get())
-                .unwrap_or(1)
-                .min(DEFAULT_DECODER_THREADS_CAP)
-        })
+        .map_or_else(
+            || {
+                std::thread::available_parallelism()
+                    .map_or(1, NonZeroUsize::get)
+                    .min(DEFAULT_DECODER_THREADS_CAP)
+            },
+            NonZeroUsize::get,
+        )
         .min(i32::MAX as usize) as i32;
     if thread_count <= 1 {
         return;
@@ -384,7 +384,7 @@ fn resolution_count_from_codec(codec: *mut sys::opj_codec_t) -> u32 {
 
 fn decode_openjpeg_stream(
     codec_format: sys::CODEC_FORMAT,
-    stream: OpenJpegStream,
+    stream: &OpenJpegStream,
     opts: &LoadOptions,
 ) -> Result<OpenJpegDecodedImage, ViprsError> {
     let mut decoder_params = decoder_params(opts);
@@ -392,7 +392,7 @@ fn decode_openjpeg_stream(
 
     let mut image_ptr: *mut sys::opj_image_t = ptr::null_mut();
     // SAFETY: stream and codec are initialized and live for the duration of the call.
-    if unsafe { sys::opj_read_header(stream.0, codec_guard.0, &mut image_ptr) } == 0 {
+    if unsafe { sys::opj_read_header(stream.0, codec_guard.0, &raw mut image_ptr) } == 0 {
         return Err(ViprsError::Codec("jp2k: opj_read_header failed".into()));
     }
     let image_guard = OpenJpegImage(image_ptr);
@@ -419,7 +419,7 @@ fn decode_openjpeg_bytes(
 ) -> Result<OpenJpegDecodedImage, ViprsError> {
     let codec_format = codec_format_from_bytes(src)?;
     let stream = openjpeg_stream_from_bytes(src)?;
-    decode_openjpeg_stream(codec_format, stream, opts)
+    decode_openjpeg_stream(codec_format, &stream, opts)
 }
 
 fn decode_openjpeg_path(
@@ -428,12 +428,12 @@ fn decode_openjpeg_path(
 ) -> Result<OpenJpegDecodedImage, ViprsError> {
     let codec_format = codec_format_from_path(path)?;
     let stream = openjpeg_stream_from_path(path)?;
-    decode_openjpeg_stream(codec_format, stream, opts)
+    decode_openjpeg_stream(codec_format, &stream, opts)
 }
 
 fn probe_openjpeg_stream(
     codec_format: sys::CODEC_FORMAT,
-    stream: OpenJpegStream,
+    stream: &OpenJpegStream,
 ) -> Result<(u32, u32, u32), ViprsError> {
     let probe_opts = LoadOptions::default();
     let mut decoder_params = decoder_params(&probe_opts);
@@ -441,7 +441,7 @@ fn probe_openjpeg_stream(
 
     let mut image_ptr: *mut sys::opj_image_t = ptr::null_mut();
     // SAFETY: stream and codec are initialized and live for the duration of the call.
-    if unsafe { sys::opj_read_header(stream.0, codec_guard.0, &mut image_ptr) } == 0 {
+    if unsafe { sys::opj_read_header(stream.0, codec_guard.0, &raw mut image_ptr) } == 0 {
         return Err(ViprsError::Codec(
             "jp2k probe: opj_read_header failed".into(),
         ));
@@ -458,13 +458,13 @@ fn probe_openjpeg_stream(
 fn probe_openjpeg_bytes(src: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
     let codec_format = codec_format_from_bytes(src)?;
     let stream = openjpeg_stream_from_bytes(src)?;
-    probe_openjpeg_stream(codec_format, stream)
+    probe_openjpeg_stream(codec_format, &stream)
 }
 
 fn probe_openjpeg_path(path: &Path) -> Result<(u32, u32, u32), ViprsError> {
     let codec_format = codec_format_from_path(path)?;
     let stream = openjpeg_stream_from_path(path)?;
-    probe_openjpeg_stream(codec_format, stream)
+    probe_openjpeg_stream(codec_format, &stream)
 }
 
 fn decode_tiled_stream_fast<F: BandFormat>(
@@ -472,43 +472,6 @@ fn decode_tiled_stream_fast<F: BandFormat>(
     stream_ptr: *mut sys::opj_stream_t,
     opts: &LoadOptions,
 ) -> Result<Option<Image<F>>, ViprsError> {
-    struct OpenJpegStream(*mut sys::opj_stream_t);
-    impl Drop for OpenJpegStream {
-        fn drop(&mut self) {
-            // SAFETY: pointer is created by OpenJPEG stream constructors and freed once here.
-            unsafe { sys::opj_stream_destroy(self.0) };
-        }
-    }
-
-    struct OpenJpegCodec(*mut sys::opj_codec_t);
-    impl Drop for OpenJpegCodec {
-        fn drop(&mut self) {
-            // SAFETY: pointer is created by opj_create_decompress and freed once here.
-            unsafe { sys::opj_destroy_codec(self.0) };
-        }
-    }
-
-    struct OpenJpegImage(*mut sys::opj_image_t);
-    impl Drop for OpenJpegImage {
-        fn drop(&mut self) {
-            if !self.0.is_null() {
-                // SAFETY: pointer is created by opj_read_header and freed once here.
-                unsafe { sys::opj_image_destroy(self.0) };
-            }
-        }
-    }
-
-    struct OpenJpegInfo(*mut sys::opj_codestream_info_v2_t);
-    impl Drop for OpenJpegInfo {
-        fn drop(&mut self) {
-            let mut info_ptr = self.0;
-            if !info_ptr.is_null() {
-                // SAFETY: pointer is created by opj_get_cstr_info and freed once here.
-                unsafe { sys::opj_destroy_cstr_info(&mut info_ptr) };
-            }
-        }
-    }
-
     let stream_guard = OpenJpegStream(stream_ptr);
     // SAFETY: OpenJPEG returns an owned decoder pointer or null on failure.
     let codec_ptr = unsafe { sys::opj_create_decompress(codec_format) };
@@ -525,7 +488,7 @@ fn decode_tiled_stream_fast<F: BandFormat>(
         sys::opj_set_default_decoder_parameters(decoder_params.as_mut_ptr());
         decoder_params.assume_init()
     };
-    decoder_params.cp_reduce = opts.page.unwrap_or(0).max(0) as u32;
+    decoder_params.cp_reduce = opts.page.unwrap_or(0);
 
     // SAFETY: codec pointer is valid for the lifetime of this decode call.
     unsafe {
@@ -537,14 +500,14 @@ fn decode_tiled_stream_fast<F: BandFormat>(
     }
 
     // SAFETY: codec pointer and decoder params are initialized and valid.
-    if unsafe { sys::opj_setup_decoder(codec_guard.0, &mut decoder_params) } == 0 {
+    if unsafe { sys::opj_setup_decoder(codec_guard.0, &raw mut decoder_params) } == 0 {
         return Err(ViprsError::Codec("jp2k: opj_setup_decoder failed".into()));
     }
     configure_decoder_threads(codec_guard.0, opts);
 
     let mut image_ptr: *mut sys::opj_image_t = ptr::null_mut();
     // SAFETY: stream and codec are initialized and live for the duration of the call.
-    if unsafe { sys::opj_read_header(stream_guard.0, codec_guard.0, &mut image_ptr) } == 0 {
+    if unsafe { sys::opj_read_header(stream_guard.0, codec_guard.0, &raw mut image_ptr) } == 0 {
         return Err(ViprsError::Codec("jp2k: opj_read_header failed".into()));
     }
     let image_guard = OpenJpegImage(image_ptr);
@@ -621,14 +584,13 @@ fn decode_tiled_stream_fast<F: BandFormat>(
                             tile_left,
                             tile_top,
                         )?,
-                        4 => copy_fast_tiled_u8::<4>(
+                        _ => copy_fast_tiled_u8::<4>(
                             &mut pixels,
                             tile_image,
                             &plan,
                             tile_left,
                             tile_top,
                         )?,
-                        _ => unreachable!(),
                     }
                 }
             }
@@ -688,14 +650,13 @@ fn decode_tiled_stream_fast<F: BandFormat>(
                             tile_left,
                             tile_top,
                         )?,
-                        4 => copy_fast_tiled_u16::<4>(
+                        _ => copy_fast_tiled_u16::<4>(
                             &mut pixels,
                             tile_image,
                             &plan,
                             tile_left,
                             tile_top,
                         )?,
-                        _ => unreachable!(),
                     }
                 }
             }
@@ -716,14 +677,13 @@ fn decode_tiled_bytes_fast<F: BandFormat>(
     opts: &LoadOptions,
 ) -> Result<Option<Image<F>>, ViprsError> {
     let codec_format = codec_format_from_bytes(src)?;
-    let data = WrappedSlice::new(src);
-    let data_ptr = Box::into_raw(data) as *mut c_void;
+    let data_ptr = Box::into_raw(Box::new(WrappedSlice::new(src))).cast::<c_void>();
 
     // SAFETY: OpenJPEG returns an owned input stream pointer or null on failure.
     let stream_ptr = unsafe { sys::opj_stream_default_create(1) };
     if stream_ptr.is_null() {
         // SAFETY: stream creation failed, so ownership of data_ptr stays with Rust.
-        unsafe { drop(Box::from_raw(data_ptr as *mut WrappedSlice<'static>)) };
+        unsafe { drop(Box::from_raw(data_ptr.cast::<WrappedSlice<'static>>())) };
         return Err(ViprsError::Codec(
             "jp2k: failed to create OpenJPEG input stream".into(),
         ));
@@ -921,7 +881,7 @@ fn fast_tiled_decode_plan<F: BandFormat>(
     info: &sys::opj_codestream_info_v2_t,
     opts: &LoadOptions,
 ) -> Result<Option<FastTiledDecodePlan>, ViprsError> {
-    if opts.page.unwrap_or(0).max(0) != 0 || (info.tw == 1 && info.th == 1) {
+    if opts.page.unwrap_or(0) != 0 || (info.tw == 1 && info.th == 1) {
         return Ok(None);
     }
 
@@ -1137,14 +1097,12 @@ fn validate_decode_layout(image: &OpenJpegDecodedImage) -> Result<(u32, u32, u32
 fn scale_to_u8(component: &DecodedComponent<'_>, value: i32) -> u8 {
     if component.signed {
         let old_max = 1_i64 << (component.precision - 1);
-        const NEW_MAX: i64 = 1 << 7;
-        ((((i64::from(value)) * NEW_MAX) / old_max) + NEW_MAX) as u8
+        ((((i64::from(value)) * 128) / old_max) + 128) as u8
     } else if component.precision == 8 {
         value as u8
     } else {
         let old_max = (1_u64 << component.precision) - 1;
-        const NEW_MAX: u64 = u8::MAX as u64;
-        (((value as u64) * NEW_MAX) / old_max) as u8
+        (((value as u64) * u64::from(u8::MAX)) / old_max) as u8
     }
 }
 
@@ -1152,14 +1110,12 @@ fn scale_to_u8(component: &DecodedComponent<'_>, value: i32) -> u8 {
 fn scale_to_u16(component: &DecodedComponent<'_>, value: i32) -> u16 {
     if component.signed {
         let old_max = 1_i64 << (component.precision - 1);
-        const NEW_MAX: i64 = 1 << 15;
-        ((((i64::from(value)) * NEW_MAX) / old_max) + NEW_MAX) as u16
+        ((((i64::from(value)) * 32_768) / old_max) + 32_768) as u16
     } else if component.precision == 16 {
         value as u16
     } else {
         let old_max = (1_u64 << component.precision) - 1;
-        const NEW_MAX: u64 = u16::MAX as u64;
-        (((value as u64) * NEW_MAX) / old_max) as u16
+        (((value as u64) * u64::from(u16::MAX)) / old_max) as u16
     }
 }
 
@@ -1339,7 +1295,12 @@ fn decode_pixels_u8(image: &OpenJpegDecodedImage) -> Result<(u32, u32, u32, Vec<
                 pixels[offset + 3] = decode_sample_u8(&a, wide_precision, idx);
             }
         }
-        _ => unreachable!(),
+        _ => {
+            return Err(ViprsError::Codec(format!(
+                "jp2k decode: unsupported component layout ({})",
+                image.num_components()
+            )));
+        }
     }
 
     Ok((width, height, bands, pixels))
@@ -1436,7 +1397,12 @@ fn decode_pixels_u16(
                 pixels[offset + 3] = decode_sample_u16(&a, wide_precision, idx);
             }
         }
-        _ => unreachable!(),
+        _ => {
+            return Err(ViprsError::Codec(format!(
+                "jp2k decode: unsupported component layout ({})",
+                image.num_components()
+            )));
+        }
     }
 
     Ok((width, height, bands, pixels))
@@ -1477,11 +1443,11 @@ struct EncodedJp2Buffer {
 }
 
 impl EncodedJp2Buffer {
-    fn new(capacity: usize) -> Box<Self> {
-        Box::new(Self {
+    fn new(capacity: usize) -> Self {
+        Self {
             offset: 0,
             bytes: Vec::with_capacity(capacity),
-        })
+        }
     }
 
     fn reserve_for(&mut self, len: usize) {
@@ -1540,7 +1506,7 @@ unsafe extern "C" fn encoded_jp2_buffer_free_fn(p_data: *mut c_void) {
     }
 
     // SAFETY: OpenJPEG passes back the Box allocation registered in encode_to_jp2_bytes.
-    unsafe { drop(Box::from_raw(p_data as *mut EncodedJp2Buffer)) };
+    unsafe { drop(Box::from_raw(p_data.cast::<EncodedJp2Buffer>())) };
 }
 
 unsafe extern "C" fn encoded_jp2_buffer_write_fn(
@@ -1553,21 +1519,21 @@ unsafe extern "C" fn encoded_jp2_buffer_write_fn(
     }
 
     // SAFETY: OpenJPEG provides the same EncodedJp2Buffer pointer registered as user data.
-    let buffer = unsafe { &mut *(p_data as *mut EncodedJp2Buffer) };
+    let buffer = unsafe { &mut *p_data.cast::<EncodedJp2Buffer>() };
     // SAFETY: OpenJPEG provides a readable buffer of nb_bytes bytes for the callback lifetime.
-    let input = unsafe { std::slice::from_raw_parts(p_buffer as *const u8, nb_bytes) };
+    let input = unsafe { std::slice::from_raw_parts(p_buffer.cast::<u8>(), nb_bytes) };
     buffer.write_from(input)
 }
 
 unsafe extern "C" fn encoded_jp2_buffer_skip_fn(nb_bytes: i64, p_data: *mut c_void) -> i64 {
     // SAFETY: OpenJPEG provides the same EncodedJp2Buffer pointer registered as user data.
-    let buffer = unsafe { &mut *(p_data as *mut EncodedJp2Buffer) };
+    let buffer = unsafe { &mut *p_data.cast::<EncodedJp2Buffer>() };
     buffer.skip_by(nb_bytes).unwrap_or(-1)
 }
 
 unsafe extern "C" fn encoded_jp2_buffer_seek_fn(nb_bytes: i64, p_data: *mut c_void) -> i32 {
     // SAFETY: OpenJPEG provides the same EncodedJp2Buffer pointer registered as user data.
-    let buffer = unsafe { &mut *(p_data as *mut EncodedJp2Buffer) };
+    let buffer = unsafe { &mut *p_data.cast::<EncodedJp2Buffer>() };
     i32::from(buffer.seek_to(nb_bytes))
 }
 
@@ -1645,7 +1611,7 @@ fn pack_tile_component_data<F: BandFormat>(
     tile_width: u32,
     tile_height: u32,
     output: &mut Vec<u8>,
-) {
+) -> Result<(), ViprsError> {
     let sample_size = std::mem::size_of::<F::Sample>();
     let tile_pixels = tile_width as usize * tile_height as usize;
     let image_width = image.width() as usize;
@@ -1672,7 +1638,7 @@ fn pack_tile_component_data<F: BandFormat>(
                             // SAFETY: `pixels_ptr` comes from `image.pixels()`, and `sample_idx`
                             // stays within `expected_samples` because `tile_left/top`, `local_x/y`,
                             // and `component_idx` are bounded by the current tile and band count.
-                            unsafe { *(pixels_ptr.add(sample_idx) as *const u8) }
+                            unsafe { *pixels_ptr.add(sample_idx).cast::<u8>() }
                         };
                         component_bytes[dst_row + local_x] = sample;
                     }
@@ -1696,7 +1662,7 @@ fn pack_tile_component_data<F: BandFormat>(
                             // SAFETY: `pixels_ptr` comes from `image.pixels()`, and `sample_idx`
                             // stays within `expected_samples` because `tile_left/top`, `local_x/y`,
                             // and `component_idx` are bounded by the current tile and band count.
-                            unsafe { *(pixels_ptr.add(sample_idx) as *const u16) }
+                            unsafe { *pixels_ptr.add(sample_idx).cast::<u16>() }
                         }
                         .to_ne_bytes();
                         component_bytes[dst_offset..dst_offset + sample_size]
@@ -1705,8 +1671,14 @@ fn pack_tile_component_data<F: BandFormat>(
                 }
             }
         }
-        _ => unreachable!(),
+        _ => {
+            return Err(ViprsError::Codec(format!(
+                "jp2k encode: unsupported format {:?}",
+                F::ID
+            )));
+        }
     }
+    Ok(())
 }
 
 fn encode_to_jp2_bytes<F: BandFormat>(
@@ -1776,7 +1748,12 @@ fn encode_to_jp2_bytes<F: BandFormat>(
     encoder_params.tile_size_on = 1;
     encoder_params.cp_tdx = tile_width;
     encoder_params.cp_tdy = tile_height;
-    encoder_params.tcp_mct = if bands >= 3 { 1 } else { 0 };
+    // c_char is i8 on x86/macOS but u8 on ARM Linux — cast via i32 for portability.
+    encoder_params.tcp_mct = if bands >= 3 {
+        1 as std::os::raw::c_char
+    } else {
+        0 as std::os::raw::c_char
+    };
     encoder_params.numresolution = libvips_num_resolutions(width, height);
 
     // SAFETY: component_params points to initialized component descriptors for this call.
@@ -1793,13 +1770,6 @@ fn encode_to_jp2_bytes<F: BandFormat>(
         ));
     }
 
-    struct OpenJpegImage(*mut sys::opj_image_t);
-    impl Drop for OpenJpegImage {
-        fn drop(&mut self) {
-            // SAFETY: pointer is created by OpenJPEG image constructors and freed once here.
-            unsafe { sys::opj_image_destroy(self.0) };
-        }
-    }
     let image_guard = OpenJpegImage(image_ptr);
 
     // SAFETY: image_ptr points to valid OpenJPEG image returned above.
@@ -1818,13 +1788,6 @@ fn encode_to_jp2_bytes<F: BandFormat>(
         ));
     }
 
-    struct OpenJpegCodec(*mut sys::opj_codec_t);
-    impl Drop for OpenJpegCodec {
-        fn drop(&mut self) {
-            // SAFETY: pointer is created by opj_create_compress and freed once here.
-            unsafe { sys::opj_destroy_codec(self.0) };
-        }
-    }
     let codec_guard = OpenJpegCodec(codec_ptr);
 
     // SAFETY: codec pointer is valid for the lifetime of this encode call.
@@ -1837,7 +1800,8 @@ fn encode_to_jp2_bytes<F: BandFormat>(
     }
 
     // SAFETY: codec/image/params pointers are valid and initialized.
-    if unsafe { sys::opj_setup_encoder(codec_guard.0, &mut encoder_params, image_guard.0) } == 0 {
+    if unsafe { sys::opj_setup_encoder(codec_guard.0, &raw mut encoder_params, image_guard.0) } == 0
+    {
         return Err(ViprsError::Codec("jp2k: opj_setup_encoder failed".into()));
     }
 
@@ -1868,21 +1832,11 @@ fn encode_to_jp2_bytes<F: BandFormat>(
         ));
     }
 
-    struct OpenJpegStream(*mut sys::opj_stream_t);
-    impl Drop for OpenJpegStream {
-        fn drop(&mut self) {
-            // SAFETY: pointer is created by opj_stream_create_default_file_stream.
-            unsafe { sys::opj_stream_destroy(self.0) };
-        }
-    }
     let stream_guard = OpenJpegStream(stream_ptr);
-    let encoded_buffer = EncodedJp2Buffer::new(estimated_encoded_capacity(
-        source_bytes,
-        tile_capacity,
-        lossless,
-        opts.quality,
-    ));
-    let encoded_buffer_ptr = Box::into_raw(encoded_buffer) as *mut c_void;
+    let encoded_buffer_ptr = Box::into_raw(Box::new(EncodedJp2Buffer::new(
+        estimated_encoded_capacity(source_bytes, tile_capacity, lossless, opts.quality),
+    )))
+    .cast::<c_void>();
 
     // SAFETY: stream_guard owns the stream and encoded_buffer_ptr remains valid until stream destruction.
     unsafe {
@@ -1920,7 +1874,7 @@ fn encode_to_jp2_bytes<F: BandFormat>(
                 current_tile_width,
                 current_tile_height,
                 &mut tile_buffer,
-            );
+            )?;
             let tile_index = tile_y * tiles_across + tile_x;
             // SAFETY: encoder has started, tile buffer is planar per OpenJPEG contract, and tiles are written sequentially.
             encoded = unsafe {
@@ -1948,12 +1902,12 @@ fn encode_to_jp2_bytes<F: BandFormat>(
 
     // SAFETY: `encoded_buffer_ptr` is the Box allocation registered as stream user data and
     // has not been freed because ownership is transferred back only after this successful encode.
-    let encoded_buffer_ptr = unsafe { &mut *(encoded_buffer_ptr as *mut EncodedJp2Buffer) };
+    let encoded_buffer_ptr = unsafe { &mut *encoded_buffer_ptr.cast::<EncodedJp2Buffer>() };
     Ok(std::mem::take(&mut encoded_buffer_ptr.bytes))
 }
 
 fn finish_decoded_image<F: BandFormat>(
-    decoded: OpenJpegDecodedImage,
+    decoded: &OpenJpegDecodedImage,
 ) -> Result<Image<F>, ViprsError> {
     match F::ID {
         BandFormatId::U8 => {
@@ -1974,7 +1928,10 @@ fn finish_decoded_image<F: BandFormat>(
                 .map(|image| image.with_metadata(metadata))
                 .map_err(|err| ViprsError::Codec(err.to_string()))
         }
-        _ => unreachable!(),
+        _ => Err(ViprsError::Codec(format!(
+            "jp2k decode: unsupported target format {:?}",
+            F::ID
+        ))),
     }
 }
 
@@ -2014,7 +1971,7 @@ impl ImageDecoder for Jp2kCodec {
         }
 
         let decoded = decode_openjpeg_bytes(src, opts)?;
-        finish_decoded_image(decoded)
+        finish_decoded_image(&decoded)
     }
 
     fn decode_path_with_options<F: BandFormat>(
@@ -2033,7 +1990,7 @@ impl ImageDecoder for Jp2kCodec {
         }
 
         let decoded = decode_openjpeg_path(path, opts)?;
-        finish_decoded_image(decoded)
+        finish_decoded_image(&decoded)
     }
 
     fn probe(&self, src: &[u8]) -> Result<(u32, u32, u32), ViprsError>

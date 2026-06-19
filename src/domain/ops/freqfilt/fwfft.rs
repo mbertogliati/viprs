@@ -222,7 +222,7 @@ impl<F: BandFormat> std::fmt::Debug for FwFftOp<F> {
         f.debug_struct("FwFftOp")
             .field("width", &self.width)
             .field("height", &self.height)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -414,7 +414,7 @@ mod tests {
             <FwFftOp<F32> as Op>::OUTPUT_BANDS,
             Some(COMPLEX_BANDS as usize)
         );
-        assert_eq!(format!("{op:?}"), "FwFftOp { width: 5, height: 7 }");
+        assert_eq!(format!("{op:?}"), "FwFftOp { width: 5, height: 7, .. }");
     }
 
     #[test]

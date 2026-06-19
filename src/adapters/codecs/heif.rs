@@ -252,7 +252,7 @@ fn cast_decoded_image<S: BandFormat, D: BandFormat>(
 where
     S::Sample: Clone,
 {
-    let animation_frames = image.animation_frames().map(|frames| frames.to_vec());
+    let animation_frames = image.animation_frames().map(ToOwned::to_owned);
     let mut cast = cast_decoded_frame::<S, D>(image, context)?;
     if let Some(frames) = animation_frames {
         let converted_frames = frames
@@ -536,7 +536,11 @@ fn encode_u8_with_libheif(
                         .extend_from_slice(&(u16::from(sample) << (bit_depth - 8)).to_be_bytes());
                 }
             }
-            _ => unreachable!(),
+            _ => {
+                return Err(ViprsError::Codec(
+                    "heif: unsupported band count after validation".into(),
+                ));
+            }
         }
 
         storage = expanded;
@@ -614,7 +618,11 @@ fn encode_u16_with_libheif(
                 }
             }
         }
-        _ => unreachable!(),
+        _ => {
+            return Err(ViprsError::Codec(
+                "heif: unsupported band count after validation".into(),
+            ));
+        }
     }
 
     let lib_heif = shared_libheif("heif")?;

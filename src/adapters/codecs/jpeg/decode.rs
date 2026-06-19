@@ -177,7 +177,7 @@ impl ImageDecoder for JpegCodec {
         // same heap allocation.
         let samples: Vec<F::Sample> = unsafe {
             let mut v = std::mem::ManuallyDrop::new(pixels_u8);
-            Vec::from_raw_parts(v.as_mut_ptr() as *mut F::Sample, v.len(), v.capacity())
+            Vec::from_raw_parts(v.as_mut_ptr().cast::<F::Sample>(), v.len(), v.capacity())
         };
 
         let metadata = ImageMetadata {

@@ -391,8 +391,7 @@ fn validate_frame_bounds(
     let frame_bottom = u32::from(frame_top) + u32::from(frame_height);
     if frame_right > canvas_width || frame_bottom > canvas_height {
         return Err(ViprsError::Codec(format!(
-            "gif: frame rect {}x{} at ({}, {}) exceeds logical screen {}x{}",
-            frame_width, frame_height, frame_left, frame_top, canvas_width, canvas_height
+            "gif: frame rect {frame_width}x{frame_height} at ({frame_left}, {frame_top}) exceeds logical screen {canvas_width}x{canvas_height}"
         )));
     }
     Ok(())
@@ -724,15 +723,14 @@ fn remap_exact_palette(
         }
 
         let rgb = [pixel[0], pixel[1], pixel[2]];
-        let palette_offset = match opaque_palette.binary_search(&rgb) {
-            Ok(found) => found as u8,
-            Err(_) => {
-                debug_assert!(
-                    false,
-                    "exact-palette remap requires every opaque pixel to exist in the palette"
-                );
-                0
-            }
+        let palette_offset = if let Ok(found) = opaque_palette.binary_search(&rgb) {
+            found as u8
+        } else {
+            debug_assert!(
+                false,
+                "exact-palette remap requires every opaque pixel to exist in the palette"
+            );
+            0
         };
         *index = encode_index(palette_offset, has_transparent_index);
     }
@@ -850,7 +848,7 @@ impl ImageDecoder for GifCodec {
     /// pixel buffer is the first frame and whose `frames()` sequence contains
     /// every decoded frame.
     ///
-    /// GIF LoadOptions are silently ignored per the codec contract.
+    /// GIF `LoadOptions` are silently ignored per the codec contract.
     fn decode_with_options<F: BandFormat>(
         &self,
         src: &[u8],

@@ -408,6 +408,7 @@ impl RayonScheduler {
     /// ```ignore
     /// let _ = viprs::adapters::scheduler::rayon_scheduler::lock_instrumentation_snapshot;
     /// ```
+    #[must_use]
     pub fn lock_instrumentation_snapshot() -> LockInstrumentationSnapshot {
         lock_instrumentation::snapshot()
     }

@@ -47,7 +47,7 @@ fn encode_pixels<F: BandFormat>(image: &Image<F>) -> Result<(BitDepth, Cow<'_, [
 
 fn encode_png<F: BandFormat>(
     image: &Image<F>,
-    encoder: &PngEncoder,
+    encoder: PngEncoder,
     strip_metadata: bool,
 ) -> Result<Vec<u8>, ViprsError> {
     viprs_span!(tracing::Level::INFO, "viprs.encode", format = "png");
@@ -62,25 +62,25 @@ pub(super) fn encode_png_web_ready<F: BandFormat>(
     strip_metadata: bool,
 ) -> Result<Vec<u8>, ViprsError> {
     if !image.metadata().has_icc_profile() {
-        return encode_png(image, encoder, strip_metadata);
+        return encode_png(image, *encoder, strip_metadata);
     }
 
     match F::ID {
         BandFormatId::U8 => {
             // SAFETY: this match arm is reached only when `F::ID == BandFormatId::U8`,
             // which guarantees `F::Sample == u8` and makes the image layout identical.
-            let image = unsafe { &*(image as *const Image<F> as *const Image<U8>) }.clone();
+            let image = unsafe { &*std::ptr::from_ref(image).cast::<Image<U8>>() }.clone();
             let normalized = normalize_web_output_u8(&image)?;
-            encode_png(normalized.as_ref(), encoder, strip_metadata)
+            encode_png(normalized.as_ref(), *encoder, strip_metadata)
         }
         BandFormatId::U16 => {
             // SAFETY: this match arm is reached only when `F::ID == BandFormatId::U16`,
             // which guarantees `F::Sample == u16` and makes the image layout identical.
-            let image = unsafe { &*(image as *const Image<F> as *const Image<U16>) }.clone();
+            let image = unsafe { &*std::ptr::from_ref(image).cast::<Image<U16>>() }.clone();
             let normalized = normalize_web_output_u16(&image)?;
-            encode_png(normalized.as_ref(), encoder, strip_metadata)
+            encode_png(normalized.as_ref(), *encoder, strip_metadata)
         }
-        _ => encode_png(image, encoder, strip_metadata),
+        _ => encode_png(image, *encoder, strip_metadata),
     }
 }
 
@@ -91,31 +91,31 @@ pub(super) fn encode_png_to_writer_web_ready<F: BandFormat>(
     writer: &mut dyn Write,
 ) -> Result<(), ViprsError> {
     if !image.metadata().has_icc_profile() {
-        return encode_png_to_writer(image, encoder, strip_metadata, writer);
+        return encode_png_to_writer(image, *encoder, strip_metadata, writer);
     }
 
     match F::ID {
         BandFormatId::U8 => {
             // SAFETY: this match arm is reached only when `F::ID == BandFormatId::U8`,
             // which guarantees `F::Sample == u8` and makes the image layout identical.
-            let image = unsafe { &*(image as *const Image<F> as *const Image<U8>) }.clone();
+            let image = unsafe { &*std::ptr::from_ref(image).cast::<Image<U8>>() }.clone();
             let normalized = normalize_web_output_u8(&image)?;
-            encode_png_to_writer(normalized.as_ref(), encoder, strip_metadata, writer)
+            encode_png_to_writer(normalized.as_ref(), *encoder, strip_metadata, writer)
         }
         BandFormatId::U16 => {
             // SAFETY: this match arm is reached only when `F::ID == BandFormatId::U16`,
             // which guarantees `F::Sample == u16` and makes the image layout identical.
-            let image = unsafe { &*(image as *const Image<F> as *const Image<U16>) }.clone();
+            let image = unsafe { &*std::ptr::from_ref(image).cast::<Image<U16>>() }.clone();
             let normalized = normalize_web_output_u16(&image)?;
-            encode_png_to_writer(normalized.as_ref(), encoder, strip_metadata, writer)
+            encode_png_to_writer(normalized.as_ref(), *encoder, strip_metadata, writer)
         }
-        _ => encode_png_to_writer(image, encoder, strip_metadata, writer),
+        _ => encode_png_to_writer(image, *encoder, strip_metadata, writer),
     }
 }
 
 fn encode_png_to_writer<F: BandFormat, W: Write>(
     image: &Image<F>,
-    encoder: &PngEncoder,
+    encoder: PngEncoder,
     strip_metadata: bool,
     output: W,
 ) -> Result<(), ViprsError> {
@@ -198,7 +198,7 @@ fn encode_interlaced_png(
     bit_depth: BitDepth,
     pixel_bytes: &[u8],
     metadata: &ImageMetadata,
-    encoder: &PngEncoder,
+    encoder: PngEncoder,
     strip_metadata: bool,
 ) -> Result<Vec<u8>, ViprsError> {
     let mut output = Vec::new();
@@ -271,9 +271,8 @@ fn adam7_scanlines(
     filter: Filter,
 ) -> Vec<u8> {
     let bytes_per_sample = match bit_depth {
-        BitDepth::Eight => 1usize,
         BitDepth::Sixteen => 2usize,
-        _ => unreachable!("PNG encoder only supports 8-bit and 16-bit output"),
+        _ => 1,
     };
     let bytes_per_pixel = color_type.samples() * bytes_per_sample;
     let total_scanline_bytes = ADAM7_PASSES
@@ -383,17 +382,25 @@ fn filter_row_into(
         Filter::Adaptive => {
             adaptive_filter_row_into(row, previous_row, bytes_per_pixel, output, scratch)
         }
-        Filter::NoFilter | Filter::Sub | Filter::Up | Filter::Avg | Filter::Paeth => {
+        Filter::NoFilter => {
             filter_row_bytes_into(row, previous_row, bytes_per_pixel, filter, output);
-            match filter {
-                Filter::NoFilter => 0,
-                Filter::Sub => 1,
-                Filter::Up => 2,
-                Filter::Avg => 3,
-                Filter::Paeth => 4,
-                Filter::Adaptive => unreachable!(),
-                _ => unreachable!(),
-            }
+            0
+        }
+        Filter::Sub => {
+            filter_row_bytes_into(row, previous_row, bytes_per_pixel, filter, output);
+            1
+        }
+        Filter::Up => {
+            filter_row_bytes_into(row, previous_row, bytes_per_pixel, filter, output);
+            2
+        }
+        Filter::Avg => {
+            filter_row_bytes_into(row, previous_row, bytes_per_pixel, filter, output);
+            3
+        }
+        Filter::Paeth => {
+            filter_row_bytes_into(row, previous_row, bytes_per_pixel, filter, output);
+            4
         }
         _ => adaptive_filter_row_into(row, previous_row, bytes_per_pixel, output, scratch),
     }
@@ -423,16 +430,14 @@ fn filter_row_bytes_into(
             0
         };
         output[index] = match filter {
-            Filter::NoFilter => byte,
             Filter::Sub => byte.wrapping_sub(left),
             Filter::Up => byte.wrapping_sub(up),
             Filter::Avg => {
-                let average = ((u16::from(left) + u16::from(up)) / 2) as u8;
+                let average = left.midpoint(up);
                 byte.wrapping_sub(average)
             }
             Filter::Paeth => byte.wrapping_sub(paeth_predictor(left, up, up_left)),
-            Filter::Adaptive => unreachable!(),
-            _ => unreachable!(),
+            Filter::NoFilter | _ => byte,
         };
     }
 }

@@ -105,7 +105,7 @@ fn webp_attach_metadata(
             // SAFETY: `mux` is live, `bitstream` points to the encoded still-image bytes
             // for the duration of the call, and `copy_data = 1` lets libwebp own its copy
             // before we return.
-            unsafe { WebPMuxSetImage(mux, &bitstream, 1) }
+            unsafe { WebPMuxSetImage(mux, std::ptr::from_ref(&bitstream), 1) }
         };
         if status != WebPMuxError::WEBP_MUX_OK {
             return Err(ViprsError::Codec(format!(
@@ -122,7 +122,14 @@ fn webp_attach_metadata(
                 // SAFETY: `mux` is live, the 4CC is null-terminated, `chunk` points to the ICC
                 // bytes for the duration of the call, and `copy_data = 1` transfers the chunk
                 // contents into mux-owned storage.
-                unsafe { WebPMuxSetChunk(mux, WEBP_ICC_CHUNK_FOURCC.as_ptr().cast(), &chunk, 1) }
+                unsafe {
+                    WebPMuxSetChunk(
+                        mux,
+                        WEBP_ICC_CHUNK_FOURCC.as_ptr().cast(),
+                        std::ptr::from_ref(&chunk),
+                        1,
+                    )
+                }
             };
             if status != WebPMuxError::WEBP_MUX_OK {
                 return Err(ViprsError::Codec(format!(
@@ -140,7 +147,14 @@ fn webp_attach_metadata(
                 // SAFETY: `mux` is live, the 4CC is null-terminated, `chunk` points to the XMP
                 // bytes for the duration of the call, and `copy_data = 1` transfers the chunk
                 // contents into mux-owned storage.
-                unsafe { WebPMuxSetChunk(mux, WEBP_XMP_CHUNK_FOURCC.as_ptr().cast(), &chunk, 1) }
+                unsafe {
+                    WebPMuxSetChunk(
+                        mux,
+                        WEBP_XMP_CHUNK_FOURCC.as_ptr().cast(),
+                        std::ptr::from_ref(&chunk),
+                        1,
+                    )
+                }
             };
             if status != WebPMuxError::WEBP_MUX_OK {
                 return Err(ViprsError::Codec(format!(
@@ -170,7 +184,7 @@ fn webp_attach_metadata(
             unsafe { std::slice::from_raw_parts(assembled.bytes, assembled.size) }.to_vec()
         };
         // SAFETY: `assembled.bytes` was allocated by libwebp and must be freed with `WebPFree`.
-        unsafe { WebPFree(assembled.bytes as *mut c_void) };
+        unsafe { WebPFree(assembled.bytes.cast_mut().cast::<c_void>()) };
         Ok(bytes)
     })();
 
@@ -214,7 +228,7 @@ fn encode_webp_advanced(
     // call, and all libwebp-owned allocations are released via `WebPPictureFree` /
     // `WebPMemoryWriterClear` before returning.
     unsafe {
-        if WebPValidateConfig(&config) == 0 {
+        if WebPValidateConfig(std::ptr::from_ref(&config)) == 0 {
             return Err(ViprsError::Codec(
                 "webp: invalid encoder configuration".into(),
             ));
@@ -236,11 +250,15 @@ fn encode_webp_advanced(
             })?,
         };
         let imported = match layout {
-            PixelLayout::Rgb => WebPPictureImportRGB(&mut picture, pixels.as_ptr(), stride),
-            PixelLayout::Rgba => WebPPictureImportRGBA(&mut picture, pixels.as_ptr(), stride),
+            PixelLayout::Rgb => {
+                WebPPictureImportRGB(std::ptr::from_mut(&mut picture), pixels.as_ptr(), stride)
+            }
+            PixelLayout::Rgba => {
+                WebPPictureImportRGBA(std::ptr::from_mut(&mut picture), pixels.as_ptr(), stride)
+            }
         };
         if imported == 0 {
-            WebPPictureFree(&mut picture);
+            WebPPictureFree(std::ptr::from_mut(&mut picture));
             return Err(ViprsError::Codec(
                 "webp: failed to import pixels into encoder picture".into(),
             ));
@@ -250,9 +268,13 @@ fn encode_webp_advanced(
         WebPMemoryWriterInit(writer.as_mut_ptr());
         let mut writer = writer.assume_init();
         picture.writer = Some(WebPMemoryWrite);
-        picture.custom_ptr = (&mut writer as *mut WebPMemoryWriter).cast();
+        picture.custom_ptr = std::ptr::from_mut(&mut writer).cast();
 
-        let encoded = if WebPEncode(&config, &mut picture) != 0 {
+        let encoded = if WebPEncode(
+            std::ptr::from_ref(&config),
+            std::ptr::from_mut(&mut picture),
+        ) != 0
+        {
             let bytes = std::slice::from_raw_parts(writer.mem, writer.size).to_vec();
             Ok(bytes)
         } else {
@@ -262,8 +284,8 @@ fn encode_webp_advanced(
             )))
         };
 
-        WebPPictureFree(&mut picture);
-        WebPMemoryWriterClear(&mut writer);
+        WebPPictureFree(std::ptr::from_mut(&mut picture));
+        WebPMemoryWriterClear(std::ptr::from_mut(&mut writer));
         encoded
     }
 }
@@ -301,7 +323,7 @@ impl ImageEncoder for WebpCodec {
         require_u8::<F>()?;
         let image = normalize_web_output_u8(
             // SAFETY: `require_u8::<F>()` above guarantees `F::Sample == u8`.
-            unsafe { &*(image as *const Image<F> as *const Image<U8>) },
+            unsafe { &*std::ptr::from_ref(image).cast::<Image<U8>>() },
         )?;
         let image = image.as_ref();
 

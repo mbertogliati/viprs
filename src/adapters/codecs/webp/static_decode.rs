@@ -228,7 +228,8 @@ unsafe extern "C" fn webp_strip_setup(io: *mut Vp8Io) -> c_int {
         WEBP_CSP_MODE::MODE_YUV
     };
     // SAFETY: `state.options` outlives the callback, and `io` is libwebp's live decode state.
-    let ok = unsafe { WebPIoInitFromOptions(&state.options, io, intermediate_mode) };
+    let ok =
+        unsafe { WebPIoInitFromOptions(std::ptr::from_ref(&state.options), io, intermediate_mode) };
     if ok == 0 {
         return 0;
     }
@@ -492,7 +493,7 @@ fn webp_decode_strip_incremental_into_buffer(
 
     // SAFETY: `config` and `state` remain alive for the decoder lifetime, and the hooks only
     // borrow `state` during `WebPIAppend`.
-    let idec = unsafe { WebPIDecode(std::ptr::null(), 0, &mut config) };
+    let idec = unsafe { WebPIDecode(std::ptr::null(), 0, std::ptr::from_mut(&mut config)) };
     if idec.is_null() {
         return Err(ViprsError::Codec(
             "webp: incremental decoder init failed".into(),
@@ -507,7 +508,7 @@ fn webp_decode_strip_incremental_into_buffer(
                 Some(webp_strip_put),
                 Some(webp_strip_setup),
                 Some(webp_strip_teardown),
-                (&mut state as *mut WebpStripDecodeState).cast::<c_void>(),
+                std::ptr::from_mut(&mut state).cast::<c_void>(),
             )
         };
         if hooks_ok == 0 {
