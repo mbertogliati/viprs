@@ -57,7 +57,7 @@ build:
 
 ## Unit tests only (containerless CI — no system libs)
 test:
-	$(CARGO) test --lib $(FEATURES)
+	$(CARGO) test --workspace --lib $(FEATURES)
 
 ## Full test suite: unit + doctests (requires system libs for all codec features)
 ## Uses the same feature set as xtask (all codecs that compile together without conflicts).
@@ -65,13 +65,13 @@ test:
 CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
 test-all:
-	$(CARGO) test --lib $(CONTAINER_FEATURES)
-	$(CARGO) test --tests $(CONTAINER_FEATURES)
-	$(CARGO) test --doc $(CONTAINER_FEATURES)
+	$(CARGO) test --workspace --lib $(CONTAINER_FEATURES)
+	$(CARGO) test --workspace --tests $(CONTAINER_FEATURES)
+	$(CARGO) test --workspace --doc $(CONTAINER_FEATURES)
 
 ## Documentation (deny warnings)
 doc:
-	RUSTDOCFLAGS="-Dwarnings" $(CARGO) doc --no-deps $(FEATURES)
+	RUSTDOCFLAGS="-Dwarnings" $(CARGO) doc --workspace --no-deps $(FEATURES)
 
 ## License/advisory audit
 deny:
@@ -83,7 +83,7 @@ audit:
 
 ## Threshold: ≥86% line coverage (enforced).
 coverage:
-	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
+	$(CARGO) llvm-cov --workspace --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
