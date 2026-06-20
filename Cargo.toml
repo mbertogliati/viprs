@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports", "crates/viprs-ops-pixel", "crates/viprs-ops-spatial", "crates/viprs-ops-colour", "crates/viprs-ops-composite"]
+members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports", "crates/viprs-ops-pixel", "crates/viprs-ops-spatial", "crates/viprs-ops-colour", "crates/viprs-ops-composite", "crates/viprs-codecs"]
 resolver = "3"
 
 [workspace.package]
@@ -77,6 +77,7 @@ viprs-ops-pixel = { path = "crates/viprs-ops-pixel" }
 viprs-ops-spatial = { path = "crates/viprs-ops-spatial" }
 viprs-ops-colour = { path = "crates/viprs-ops-colour" }
 viprs-ops-composite = { path = "crates/viprs-ops-composite" }
+viprs-codecs = { path = "crates/viprs-codecs", default-features = false }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
@@ -85,34 +86,7 @@ rayon = { version = "1", optional = true }
 tracing = { version = "0.1", optional = true }
 memmap2 = { version = "0.9", optional = true }
 rustfft = { version = "6", optional = true }
-jpeg-encoder = { version = "0.6", optional = true }
-turbojpeg = { version = "1", optional = true, default-features = false, features = ["pkg-config", "require-simd"] }
-png = { version = "0.18", optional = true }
-spng = { version = "0.2.0-alpha.3", optional = true }
-flate2 = { version = "1", optional = true }
-crc32fast = { version = "1", optional = true }
-webp = { version = "0.3", optional = true, default-features = false }
-libwebp-sys = { version = "0.9", optional = true }
-tiff = { version = "0.11.3", optional = true }
-weezl = { version = "0.1", optional = true }
-gif = { version = "0.13", optional = true }
-exr = { version = "1.74.0", optional = true }
-ravif = { version = "0.11", optional = true }
-rgb = { version = "0.8", optional = true }
-libheif-rs = { version = "0.20", optional = true }
-libheif-sys = { version = "1.16.2", optional = true }
 pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
-resvg = { version = "0.47.0", optional = true }
-jxl-oxide = { version = "0.12.6", optional = true }
-jpegxl-rs = { version = "0.14.0", optional = true, default-features = false }
-lcms2 = { version = "6.1.1", optional = true }
-fitsio-sys = { version = "0.5.7", optional = true, features = ["fitsio-src"] }
-hdf5-pure-rust = { version = "0.3.6", optional = true }
-jpeg2k = { version = "0.10.1", optional = true }
-openjpeg-sys = { version = "1.0.12", optional = true }
-openslide-rs = { version = "2.4.0", optional = true, default-features = false }
-nifti = { version = "0.17.0", optional = true }
-image = { version = "0.25.10", optional = true, default-features = false, features = ["bmp"] }
 
 [dev-dependencies]
 proptest = "1"
@@ -126,42 +100,42 @@ libc = "0.2"
 default = ["rayon", "mmap", "simd-pulp"]
 ffi = []
 lock_instrumentation = []
-rayon = ["dep:rayon"]
-tracing = ["dep:tracing"]
-mmap = ["dep:memmap2"]
+rayon = ["dep:rayon", "viprs-codecs/rayon"]
+tracing = ["dep:tracing", "viprs-codecs/tracing"]
+mmap = ["dep:memmap2", "viprs-codecs/mmap"]
 # Optional compute/color features.
 fft = ["dep:rustfft", "viprs-ops-composite/fft"]
 # Native codec flags intentionally keep the C-backed implementations for throughput.
 # See README.md for per-OS install commands and feature-specific system dependencies.
-jpeg = ["dep:turbojpeg", "dep:jpeg-encoder", "icc"]
-bmp = ["dep:image"]
-png = ["dep:png", "dep:flate2", "dep:crc32fast", "icc"]
-libspng = ["png", "dep:spng"]
-webp = ["dep:webp", "dep:libwebp-sys", "icc"] # C-backed libwebp path used for encode/decode.
-tiff = ["dep:tiff", "dep:jpeg-encoder", "dep:weezl"]
-gif = ["dep:gif"]
-exr = ["dep:exr"]
-radiance = []
-pfm = []
-avif = ["dep:ravif", "dep:rgb", "dep:libheif-rs", "dep:libheif-sys"] # Requires libheif.
-heif = ["dep:libheif-rs", "dep:libheif-sys"] # Requires libheif.
+jpeg = ["viprs-codecs/jpeg", "icc"]
+bmp = ["viprs-codecs/bmp"]
+png = ["viprs-codecs/png", "icc"]
+libspng = ["png", "viprs-codecs/libspng"]
+webp = ["viprs-codecs/webp", "icc"] # C-backed libwebp path used for encode/decode.
+tiff = ["viprs-codecs/tiff"]
+gif = ["viprs-codecs/gif"]
+exr = ["viprs-codecs/exr"]
+radiance = ["viprs-codecs/radiance"]
+pfm = ["viprs-codecs/pfm"]
+avif = ["viprs-codecs/avif"] # Requires libheif.
+heif = ["viprs-codecs/heif"] # Requires libheif.
 simd-pulp = ["dep:pulp", "viprs-ops-spatial/simd-pulp"]
-svg = ["dep:resvg"]
-jxl = ["dep:jxl-oxide", "dep:jpegxl-rs"]
-icc = ["dep:lcms2", "viprs-ops-colour/icc"] # Requires lcms2.
-fits = ["dep:fitsio-sys"]
-mat-hdf5 = ["dep:hdf5-pure-rust"]
-magick = []
-pdf-poppler = []
-jp2k = ["dep:jpeg2k", "dep:openjpeg-sys"] # Requires OpenJPEG when using system toolchains.
-openslide = ["dep:openslide-rs"] # Requires OpenSlide.
-uhdr = ["jpeg"]
-deepzoom = []
-dcraw = []
-csv = []
-vips-format = []
-nifti = ["dep:nifti"]
-pnm = []
+svg = ["viprs-codecs/svg"]
+jxl = ["viprs-codecs/jxl"]
+icc = ["viprs-codecs/icc", "viprs-ops-colour/icc"] # Requires lcms2.
+fits = ["viprs-codecs/fits"]
+mat-hdf5 = ["viprs-codecs/mat-hdf5"]
+magick = ["viprs-codecs/magick"]
+pdf-poppler = ["viprs-codecs/pdf-poppler"]
+jp2k = ["viprs-codecs/jp2k"] # Requires OpenJPEG when using system toolchains.
+openslide = ["viprs-codecs/openslide"] # Requires OpenSlide.
+uhdr = ["viprs-codecs/uhdr", "jpeg"]
+deepzoom = ["viprs-codecs/deepzoom"]
+dcraw = ["viprs-codecs/dcraw"]
+csv = ["viprs-codecs/csv"]
+vips-format = ["viprs-codecs/vips-format"]
+nifti = ["viprs-codecs/nifti"]
+pnm = ["viprs-codecs/pnm"]
 
 [[example]]
 name = "thumbnail"

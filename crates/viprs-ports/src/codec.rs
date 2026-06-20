@@ -1,8 +1,8 @@
 //! Codec port traits: [`crate::codec::ImageDecoder`] and
 //! [`crate::codec::ImageEncoder`].
 //!
-//! Concrete implementations live under `src/adapters/codecs/` and are gated
-//! by Cargo feature flags (e.g., `feature = "jpeg"`). The traits here have no
+//! Concrete implementations live in the `viprs-codecs` crate and are gated by
+//! Cargo feature flags (e.g., `feature = "jpeg"`). The traits here have no
 //! feature dependencies — they express only the capability contract.
 //!
 //! # Dynamic registries
