@@ -1,0 +1,33 @@
+.github/workflows/ci.yml
+  s_10f4f0046081e9::t_6ac150584879d8 72
+Cargo.lock
+  s_54ad9d3ea9fe10::t_60ace7495763e8 3042
+Cargo.toml
+  s_10f4f0046081e9::t_ce3b0c025492e4 93,126
+benches/sources/decoder_source.rs
+  s_10f4f0046081e9::t_1d80852a390e58 159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4a51a5805cfa2e3bbb6512036a8df61873f7cd41",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_54ad9d3ea9fe10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
