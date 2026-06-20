@@ -1,5 +1,5 @@
-//! Codec port traits: [`crate::ports::codec::ImageDecoder`] and
-//! [`crate::ports::codec::ImageEncoder`].
+//! Codec port traits: [`crate::codec::ImageDecoder`] and
+//! [`crate::codec::ImageEncoder`].
 //!
 //! Concrete implementations live under `src/adapters/codecs/` and are gated
 //! by Cargo feature flags (e.g., `feature = "jpeg"`). The traits here have no
@@ -15,19 +15,19 @@
 //!
 //! # Codec API v2
 //!
-//! [`crate::ports::codec::ImageDecoder::decode_with_options`] and
-//! [`crate::ports::codec::ImageEncoder::encode_with_options`]
+//! [`crate::codec::ImageDecoder::decode_with_options`] and
+//! [`crate::codec::ImageEncoder::encode_with_options`]
 //! accept [`LoadOptions`] / [`SaveOptions`] for shrink-on-load, quality control,
 //! and other hints.  The base `decode` / `encode` methods remain unchanged for
 //! backward compatibility — they delegate to the `*_with_options` variant with
 //! default options.
 
-use crate::domain::codec_options::{LoadOptions, SaveOptions};
-use crate::domain::error::ViprsError;
+use viprs_core::codec_options::{LoadOptions, SaveOptions};
+use viprs_core::error::ViprsError;
 use std::{any::Any, fs, io::Write, path::Path};
 
-use crate::domain::format::{BandFormat, BandFormatId};
-use crate::domain::image::{Image, ImageMetadata, Region};
+use viprs_core::format::{BandFormat, BandFormatId};
+use viprs_core::image::{Image, ImageMetadata, Region};
 
 /// Header information needed to expose a decoded byte stream as an [`ImageSource`].
 ///
@@ -35,7 +35,7 @@ use crate::domain::image::{Image, ImageMetadata, Region};
 /// and metadata without owning decoded pixels. Tile-streaming decoders return this
 /// from [`TileImageDecoder::probe_with_options`] before any tile is requested.
 ///
-/// [`ImageSource`]: crate::ports::source::ImageSource
+/// [`ImageSource`]: crate::source::ImageSource
 ///
 /// # Examples
 ///
@@ -284,7 +284,7 @@ pub trait ImageDecoder: Send + Sync {
 
 /// Capability to decode individual regions into caller-owned tile buffers.
 ///
-/// This is the streaming counterpart to [`crate::ports::codec::ImageDecoder`]. Implementors must be
+/// This is the streaming counterpart to [`crate::codec::ImageDecoder`]. Implementors must be
 /// able to satisfy any requested [`Region`] without allocating a full decoded
 /// frame. The scheduler may call this through `DecoderSource::read_region` from
 /// multiple threads and in arbitrary tile order, so implementations must keep
@@ -402,7 +402,7 @@ pub trait TileImageDecoder: ImageDecoder {
     /// `output.len()` must be exactly `region.pixel_count() * bands *
     /// size_of::<F::Sample>()`, where `bands` is the value returned by
     /// [`Self::probe_with_options`]. Coordinates outside image bounds must use
-    /// the same clamp-to-edge extension as [`crate::ports::source::ImageSource`].
+    /// the same clamp-to-edge extension as [`crate::source::ImageSource`].
     ///
     /// # Errors
     ///
@@ -683,7 +683,7 @@ pub trait ImageCodec: Send + Sync {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::format::U8;
+    use viprs_core::format::U8;
 
     /// Minimal round-trip codec used to verify the trait contract compiles and
     /// behaves correctly with a trivial raw-pixel format.

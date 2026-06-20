@@ -3068,6 +3068,7 @@ dependencies = [
  "tracing",
  "turbojpeg",
  "viprs-core",
+ "viprs-ports",
  "webp",
  "weezl",
 ]
@@ -3080,6 +3081,13 @@ dependencies = [
  "bytemuck",
  "proptest",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "viprs-ports"
+version = "0.1.0"
+dependencies = [
+ "viprs-core",
 ]
 
 [[package]]

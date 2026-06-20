@@ -6,7 +6,7 @@
 
 use std::any::Any;
 
-use crate::domain::{error::ViprsError, image::Region};
+use viprs_core::{error::ViprsError, image::Region};
 
 /// A consumer of pixel data — the exit point of a pipeline.
 ///

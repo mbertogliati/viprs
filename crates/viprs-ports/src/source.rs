@@ -4,7 +4,7 @@
 //! mapped files, decoders, or generated images. The scheduler reads tiles
 //! through these traits without learning any infrastructure-specific details.
 
-use crate::domain::{
+use viprs_core::{
     error::ViprsError,
     format::{BandFormat, BandFormatId},
     image::{DemandHint, ImageMetadata, Region},

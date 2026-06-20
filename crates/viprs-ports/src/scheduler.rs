@@ -9,13 +9,11 @@
 
 use std::sync::Mutex;
 
-use crate::{
-    domain::{
-        cancel::CancellationToken, error::ViprsError, format::BandFormat, image::Region,
-        reducer::TileReducer,
-    },
-    ports::sink::{ConcurrentSink, ImageSink},
+use viprs_core::{
+    cancel::CancellationToken, error::ViprsError, format::BandFormat, image::Region,
+    reducer::TileReducer,
 };
+use crate::sink::{ConcurrentSink, ImageSink};
 
 /// Drives a compiled pipeline by requesting and delivering tiles.
 ///

@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "xtask", "crates/viprs-core"]
+members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports"]
 resolver = "3"
 
 [workspace.package]
@@ -72,6 +72,7 @@ missing_docs = "deny"
 
 [dependencies]
 viprs-core = { path = "crates/viprs-core" }
+viprs-ports = { path = "crates/viprs-ports" }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
