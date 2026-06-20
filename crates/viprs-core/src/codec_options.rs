@@ -23,7 +23,7 @@ use crate::{format::BandFormatId, image::Interpretation, limits::DecodeLimits};
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::RawEndianness;
+/// # use viprs_core::codec_options::RawEndianness;
 /// let _native = RawEndianness::native();
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,7 +60,7 @@ impl RawEndianness {
 /// # Examples
 /// ```rust
 /// # use std::num::NonZeroU8;
-/// # use viprs::domain::codec_options::LoadOptions;
+/// # use viprs_core::codec_options::LoadOptions;
 /// let options = LoadOptions::default().with_shrink(NonZeroU8::new(2).unwrap());
 /// assert_eq!(options.shrink_factor.unwrap().get(), 2);
 /// ```
@@ -291,7 +291,7 @@ impl Default for LoadOptions {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::SaveOptions;
+/// # use viprs_core::codec_options::SaveOptions;
 /// let options = SaveOptions::default().with_quality(90).lossless();
 /// assert_eq!(options.quality, Some(90));
 /// ```
@@ -416,7 +416,7 @@ pub struct SaveOptions {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::TiffCompression;
+/// # use viprs_core::codec_options::TiffCompression;
 /// assert!(matches!(TiffCompression::Lzw, TiffCompression::Lzw));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -439,7 +439,7 @@ pub enum TiffCompression {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::TiffPredictor;
+/// # use viprs_core::codec_options::TiffPredictor;
 /// assert!(matches!(TiffPredictor::Horizontal, TiffPredictor::Horizontal));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -456,7 +456,7 @@ pub enum TiffPredictor {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::JpegSubsampling;
+/// # use viprs_core::codec_options::JpegSubsampling;
 /// assert!(matches!(JpegSubsampling::Off, JpegSubsampling::Off));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -479,7 +479,7 @@ pub enum JpegSubsampling {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::PngFilterStrategy;
+/// # use viprs_core::codec_options::PngFilterStrategy;
 /// assert!(matches!(PngFilterStrategy::Adaptive, PngFilterStrategy::Adaptive));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -504,7 +504,7 @@ pub enum PngFilterStrategy {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::HeifCompression;
+/// # use viprs_core::codec_options::HeifCompression;
 /// assert!(matches!(HeifCompression::Auto, HeifCompression::Auto));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -527,7 +527,7 @@ pub enum HeifCompression {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::HeifSubsampling;
+/// # use viprs_core::codec_options::HeifSubsampling;
 /// assert!(matches!(HeifSubsampling::Subsample444, HeifSubsampling::Subsample444));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -548,7 +548,7 @@ pub enum HeifSubsampling {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::codec_options::HeifBitDepth;
+/// # use viprs_core::codec_options::HeifBitDepth;
 /// assert_eq!(HeifBitDepth::Ten.as_u8(), 10);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

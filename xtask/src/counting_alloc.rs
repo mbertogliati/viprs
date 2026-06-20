@@ -1,7 +1,9 @@
 //! Counting allocator — tracks number of allocations and total bytes.
 //!
-//! Activated by the `count-alloc` feature flag. When active, wraps the system
-//! allocator and increments atomic counters on every alloc/dealloc.
+//! Installed as xtask's process-global allocator. Counter reporting for some
+//! benchmark paths is feature-gated, but the allocator itself always wraps the
+//! system allocator and increments atomic counters on every alloc/dealloc while
+//! tracking is enabled.
 //!
 //! Usage: call `reset()` before the measured section, then `snapshot()` after.
 
@@ -118,10 +120,24 @@ pub fn snapshot() -> AllocStats {
 
 #[cfg(test)]
 mod tests {
-    use super::{CountingSession, decrease_live_bytes, increase_live_bytes, reset, snapshot};
+    use std::sync::{Mutex, MutexGuard, OnceLock};
+
+    use super::{
+        CountingSession, decrease_live_bytes, increase_live_bytes, reset, set_enabled, snapshot,
+    };
+
+    fn allocation_test_guard() -> MutexGuard<'static, ()> {
+        static TEST_GUARD: OnceLock<Mutex<()>> = OnceLock::new();
+        TEST_GUARD
+            .get_or_init(|| Mutex::new(()))
+            .lock()
+            .expect("counting allocator test guard should not be poisoned")
+    }
 
     #[test]
     fn counts_allocations_only_while_session_is_active() {
+        let _guard = allocation_test_guard();
+        set_enabled(false);
         reset();
         let inactive = vec![1u8; 32];
         std::hint::black_box(inactive);
@@ -142,13 +158,21 @@ mod tests {
         std::hint::black_box(after);
         let after_stats = snapshot();
         assert_eq!(after_stats.alloc_count, 0);
+
+        set_enabled(false);
+        reset();
     }
 
     #[test]
     fn live_bytes_helpers_saturate_instead_of_wrapping() {
+        let _guard = allocation_test_guard();
+        set_enabled(false);
         reset();
         assert_eq!(decrease_live_bytes(8), 0);
         assert_eq!(increase_live_bytes(4), 4);
         assert_eq!(decrease_live_bytes(10), 0);
+
+        set_enabled(false);
+        reset();
     }
 }

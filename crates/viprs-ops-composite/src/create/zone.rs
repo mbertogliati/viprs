@@ -12,7 +12,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::zone::ZoneOp;
+/// use viprs_ops_composite::create::zone::ZoneOp;
 ///
 /// let op = ZoneOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

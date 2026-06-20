@@ -11,7 +11,7 @@ use crate::error::ViprsError;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::cancel::CancellationToken;
+/// # use viprs_core::cancel::CancellationToken;
 /// let token = CancellationToken::new();
 /// assert!(!token.is_cancelled());
 /// ```
@@ -27,7 +27,7 @@ impl CancellationToken {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::cancel::CancellationToken;
+    /// # use viprs_core::cancel::CancellationToken;
     /// let token = CancellationToken::new();
     /// assert!(!token.is_cancelled());
     /// ```
@@ -44,7 +44,7 @@ impl CancellationToken {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::cancel::CancellationToken;
+    /// # use viprs_core::cancel::CancellationToken;
     /// let token = CancellationToken::new();
     /// token.cancel();
     /// assert!(token.is_cancelled());
@@ -59,7 +59,7 @@ impl CancellationToken {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::cancel::CancellationToken;
+    /// # use viprs_core::cancel::CancellationToken;
     /// let token = CancellationToken::new();
     /// assert!(!token.is_cancelled());
     /// ```

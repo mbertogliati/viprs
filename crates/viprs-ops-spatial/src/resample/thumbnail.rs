@@ -147,7 +147,7 @@ pub enum ThumbnailTarget {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::resample::thumbnail::Thumbnail;
+/// use viprs_ops_spatial::resample::thumbnail::Thumbnail;
 ///
 /// let op = Thumbnail::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

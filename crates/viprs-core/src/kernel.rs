@@ -15,7 +15,7 @@
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::kernel::InterpolationKernel;
+/// # use viprs_core::kernel::InterpolationKernel;
 /// assert_eq!(InterpolationKernel::Lanczos3.window_size(), 6);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::arrayjoin::ArrayJoinOp;
+/// use viprs_ops_composite::conversion::arrayjoin::ArrayJoinOp;
 ///
 /// let op = ArrayJoinOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

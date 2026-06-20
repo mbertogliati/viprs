@@ -79,7 +79,7 @@ pub enum BlendMode {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::composite::CompositeOp;
+/// use viprs_ops_composite::conversion::composite::CompositeOp;
 ///
 /// let op = CompositeOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

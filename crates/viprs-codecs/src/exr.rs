@@ -69,7 +69,7 @@ const EXR_INVALID_MULTIPART_BLOCK_REFERENCE_PREFIX: &str =
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::exr::ExrCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::exr::ExrCodec>();
 /// ```
 pub struct ExrCodec;
 

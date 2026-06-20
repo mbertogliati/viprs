@@ -20,11 +20,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let jpeg = ImageApi::open("photo.png")?.flatten()?.encode_jpeg(85)?;
     /// let _ = jpeg;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_jpeg(self, quality: u8) -> Result<Vec<u8>, ViprsError> {
         #[cfg(feature = "jpeg")]
@@ -62,11 +62,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let mut bytes = Vec::new();
     /// ImageApi::open("photo.png")?.flatten()?.encode_jpeg_to(&mut bytes, 85)?;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_jpeg_to<W: Write>(self, writer: &mut W, quality: u8) -> Result<(), ViprsError> {
         #[cfg(feature = "jpeg")]
@@ -106,11 +106,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let png = ImageApi::open("photo.jpg")?.encode_png()?;
     /// let _ = png;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_png(self) -> Result<Vec<u8>, ViprsError> {
         #[cfg(feature = "png")]
@@ -141,11 +141,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let mut bytes = Vec::new();
     /// ImageApi::open("photo.jpg")?.encode_png_to(&mut bytes)?;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_png_to<W: Write>(self, writer: &mut W) -> Result<(), ViprsError> {
         #[cfg(feature = "png")]
@@ -181,11 +181,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let webp = ImageApi::open("photo.jpg")?.encode_webp(80)?;
     /// let _ = webp;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_webp(self, quality: u8) -> Result<Vec<u8>, ViprsError> {
         #[cfg(feature = "webp")]
@@ -223,11 +223,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let mut bytes = Vec::new();
     /// ImageApi::open("photo.jpg")?.encode_webp_to(&mut bytes, 80)?;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_webp_to<W: Write>(self, writer: &mut W, quality: u8) -> Result<(), ViprsError> {
         #[cfg(feature = "webp")]
@@ -267,10 +267,10 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// ImageApi::open("photo.jpg")?.thumbnail(400)?.save("thumb.webp")?;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn save(self, path: impl AsRef<Path>) -> Result<(), ViprsError> {
         let resource_limits = self.resource_limits.clone();

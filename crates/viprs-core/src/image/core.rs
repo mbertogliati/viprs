@@ -100,7 +100,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```ignore
-    /// # use viprs::domain::{format::U8, image::{Image, ImageMetadata, Interpretation}};
+    /// # use viprs_core::{format::U8, image::{Image, ImageMetadata, Interpretation}};
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()
     ///     .with_metadata(ImageMetadata { interpretation: Some(Interpretation::SRgb), ..ImageMetadata::default() });
     /// assert_eq!(image.metadata().interpretation, Some(Interpretation::SRgb));
@@ -118,7 +118,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let frame = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap().with_frames(vec![frame]);
     /// assert_eq!(image.frames().unwrap().len(), 1);
@@ -155,7 +155,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let image = Image::<U8>::from_buffer(2, 1, 1, vec![0, 1]).unwrap();
     /// assert_eq!(image.width(), 2);
     /// ```
@@ -169,7 +169,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let image = Image::<U8>::from_buffer(1, 2, 1, vec![0, 1]).unwrap();
     /// assert_eq!(image.height(), 2);
     /// ```
@@ -183,7 +183,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let image = Image::<U8>::from_buffer(1, 1, 3, vec![0, 0, 0]).unwrap();
     /// assert_eq!(image.bands(), 3);
     /// ```
@@ -197,7 +197,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
     /// assert_eq!(image.pixels(), &[7]);
     /// ```
@@ -211,7 +211,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
     /// assert!(image.metadata().interpretation.is_none());
     /// ```
@@ -226,7 +226,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let frame = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap().with_frames(vec![frame]);
     /// assert_eq!(image.frames().unwrap().len(), 1);
@@ -248,7 +248,7 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Image};
+    /// # use viprs_core::{format::U8, image::Image};
     /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![9]).unwrap();
     /// assert_eq!(image.into_buffer(), vec![9]);
     /// ```

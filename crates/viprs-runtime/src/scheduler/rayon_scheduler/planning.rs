@@ -307,7 +307,7 @@ pub(super) fn ensure_scratch_buffer(scratch: &mut Vec<u8>, required_len: usize) 
 pub(super) fn logical_producer_region(
     pipeline: &CompiledPipeline,
     pool: &ThreadBufferPool,
-    node: &crate::adapters::pipeline::CompiledNode,
+    node: &crate::pipeline::CompiledNode,
     slot: usize,
     input_region: Region,
     producer_idx: Option<usize>,
@@ -439,7 +439,7 @@ pub(super) fn propagate_node_output_plan(
 pub(super) fn prepare_multi_input_slot(
     pipeline: &CompiledPipeline,
     pool: &mut ThreadBufferPool,
-    node: &crate::adapters::pipeline::CompiledNode,
+    node: &crate::pipeline::CompiledNode,
     node_idx: usize,
     buffers: &[Vec<u8>],
     slot: usize,

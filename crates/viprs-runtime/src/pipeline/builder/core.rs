@@ -132,7 +132,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::current_format;
+    /// let _ = viprs_runtime::pipeline::builder::current_format;
     /// ```
     #[allow(dead_code)]
     // REASON: diagnostics and future builder extensions still query the staged output format.
@@ -146,7 +146,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::node_count;
+    /// let _ = viprs_runtime::pipeline::builder::node_count;
     /// ```
     #[allow(dead_code)]
     // REASON: diagnostics and future builder extensions still query arena node counts.
@@ -197,7 +197,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::current_dimensions;
+    /// let _ = viprs_runtime::pipeline::builder::current_dimensions;
     /// ```
     pub(crate) fn current_dimensions(&self) -> (u32, u32) {
         let mut width = self.arena.width;
@@ -245,7 +245,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::flush_into_identity;
+    /// let _ = viprs_runtime::pipeline::builder::flush_into_identity;
     /// ```
     pub fn flush_into_identity(mut self) -> Result<PipelineBuilder<Identity>, BuildError> {
         self.flush_pending()?;
@@ -297,7 +297,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::normalize_to_srgb;
+    /// let _ = viprs_runtime::pipeline::builder::normalize_to_srgb;
     /// ```
     pub fn normalize_to_srgb(self) -> Result<PipelineBuilder<Identity>, BuildError> {
         let builder = self.flush_into_identity()?;
@@ -367,7 +367,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::build;
+    /// let _ = viprs_runtime::pipeline::builder::build;
     /// ```
     pub fn build(mut self) -> Result<CompiledPipeline, BuildError> {
         self.flush_pending()?;
@@ -384,7 +384,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// and the system picks the optimal execution strategy.
     ///
     /// ```ignore
-    /// use viprs::domain::ops::point::{Invert, Linear};
+    /// use viprs_core::ops::point::{Invert, Linear};
     /// let pipeline = PipelineBuilder::from_source(src)
     ///     .apply(Invert)?          // point op → fused
     ///     .apply(Linear::new(2.0, -0.5))?  // point op → fused

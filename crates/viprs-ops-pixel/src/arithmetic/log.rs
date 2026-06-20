@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::log::Log;
+/// use viprs_ops_pixel::arithmetic::log::Log;
 ///
 /// let op = Log::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

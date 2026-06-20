@@ -18,7 +18,7 @@ pub struct RankState<T> {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::morphology::rank::RankOp;
+/// use viprs_ops_spatial::morphology::rank::RankOp;
 ///
 /// let op = RankOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

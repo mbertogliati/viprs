@@ -32,7 +32,7 @@ impl Default for Cell {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::worley::WorleyOp;
+/// use viprs_ops_composite::create::worley::WorleyOp;
 ///
 /// let op = WorleyOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

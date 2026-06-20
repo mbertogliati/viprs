@@ -41,7 +41,7 @@ pub enum Interesting {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::smartcrop::SmartcropOp;
+/// use viprs_ops_composite::conversion::smartcrop::SmartcropOp;
 ///
 /// let op = SmartcropOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

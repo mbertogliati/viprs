@@ -9,7 +9,7 @@ use super::core::checked_image_buffer_len;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::image::Region;
+/// # use viprs_core::image::Region;
 /// let region = Region::new(-1, 2, 3, 4);
 /// assert_eq!(region.width, 3);
 /// assert_eq!(region.height, 4);
@@ -46,7 +46,7 @@ impl Region {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::image::Region;
+    /// # use viprs_core::image::Region;
     /// let region = Region::new(1, 2, 5, 6);
     /// assert_eq!(region.x, 1);
     /// assert_eq!(region.y, 2);
@@ -67,7 +67,7 @@ impl Region {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::image::Region;
+    /// # use viprs_core::image::Region;
     /// let region = Region::new(0, 0, 4, 3);
     /// assert_eq!(region.pixel_count(), 12);
     /// ```
@@ -92,7 +92,7 @@ impl Region {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::image::Region;
+    /// # use viprs_core::image::Region;
     /// let region = Region::new(0, 0, 2, 2);
     /// assert_eq!(region.checked_pixel_count(), Some(4));
     /// ```
@@ -139,7 +139,7 @@ impl Region {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::image::Region;
+    /// # use viprs_core::image::Region;
     /// assert!(Region::new(0, 0, 0, 5).is_empty());
     /// ```
     #[must_use]
@@ -168,7 +168,7 @@ impl<'a, F: BandFormat> Tile<'a, F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::{Region, Tile}};
+    /// # use viprs_core::{format::U8, image::{Region, Tile}};
     /// let data = [1_u8, 2, 3, 4];
     /// let tile = Tile::<U8>::new(Region::new(0, 0, 2, 2), 1, &data);
     /// assert_eq!(tile.bands, 1);
@@ -221,7 +221,7 @@ impl<'a, F: BandFormat> TileMut<'a, F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::{Region, TileMut}};
+    /// # use viprs_core::{format::U8, image::{Region, TileMut}};
     /// let mut data = [0_u8; 4];
     /// let tile = TileMut::<U8>::new(Region::new(0, 0, 2, 2), 1, &mut data);
     /// assert_eq!(tile.region.width, 2);

@@ -171,7 +171,7 @@ impl SinesSource {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::generators::sines::format;
+    /// let _ = viprs_runtime::sources::generators::sines::format;
     /// ```
     pub const fn format(&self) -> BandFormatId {
         match &self.0 {

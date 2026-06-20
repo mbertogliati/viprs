@@ -8,7 +8,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::rect::RectOp;
+/// use viprs_ops_pixel::arithmetic::rect::RectOp;
 ///
 /// let op = RectOp;
 /// // Run `op` through a compiled image pipeline.

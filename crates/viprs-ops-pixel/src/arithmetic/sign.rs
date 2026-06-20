@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::sign::Sign;
+/// use viprs_ops_pixel::arithmetic::sign::Sign;
 ///
 /// let op = Sign::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

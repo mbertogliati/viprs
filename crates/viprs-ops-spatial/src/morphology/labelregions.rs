@@ -40,7 +40,7 @@ impl LabelRegionsState {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::morphology::labelregions::LabelRegionsOp;
+/// use viprs_ops_spatial::morphology::labelregions::LabelRegionsOp;
 ///
 /// let op = LabelRegionsOp;
 /// // Run `op` through a compiled image pipeline.

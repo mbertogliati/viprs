@@ -4,7 +4,7 @@
 #
 # Usage:
 #   make check      — fast local validation (lint + compile + test)
-#   make ci         — full CI pipeline (everything CI runs)
+#   make ci         — core CI validation shared with GitHub Actions
 #   make bench      — criterion benchmarks
 #   make bench-vs   — E2E comparison vs libvips (representative matrix)
 #   make bench-vs BENCH_ITER=10  — quick smoke test
@@ -18,21 +18,20 @@
 CARGO := cargo
 RUSTFLAGS_CI := -Dwarnings
 
-# Features that require system libraries (libjxl, libheif, libjpeg-turbo, etc.)
-# CI runs inside a container with all deps; local devs enable what they have installed.
-# Default features match CI (CONTAINER_FEATURES). Override locally if needed:
-#   make check FEATURES="--all-features"
-FEATURES ?= --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
+# --all-features is the default. The build.rs in viprs-codecs emits compile_error!
+# if a required system library is missing, so this is safe on any machine.
+# Override: make check FEATURES="--features jpeg,png"
+FEATURES ?= --all-features
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test doc deny audit bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
-## Fast local validation: format + lint + compile + unit tests
+## Fast local validation: format + lint + tests
 check: fmt clippy test
 
-## Full CI pipeline (mirrors .github/workflows/ci.yml exactly)
-ci: fmt clippy build test doc deny audit
+## Core CI validation: format + lint + compile + test + docs + audits
+ci: fmt clippy test doc deny audit
 
 # ─── Individual targets ────────────────────────────────────────────────────────
 
@@ -51,19 +50,14 @@ clippy:
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
 	$(CARGO) check -p xtask
 
-## Unit tests only (containerless CI — no system libs)
+## All tests: unit + integration + doctests
 test:
 	$(CARGO) test --workspace --lib $(FEATURES)
-
-## Full test suite: unit + doctests (requires system libs for all codec features)
-## Uses the same feature set as xtask (all codecs that compile together without conflicts).
-## Full test suite with all codec features (container).
-CONTAINER_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
-
-test-all:
-	$(CARGO) test --workspace --lib $(CONTAINER_FEATURES)
-	$(CARGO) test --workspace --tests $(CONTAINER_FEATURES)
-	$(CARGO) test --workspace --doc $(CONTAINER_FEATURES)
+	$(CARGO) test --workspace --tests --exclude xtask $(FEATURES)
+	# xtask installs a process-global counting allocator, so exact-counter tests
+	# must not overlap with unrelated allocations from other xtask tests.
+	$(CARGO) test -p xtask --tests -- --test-threads=1
+	$(CARGO) test --workspace --doc $(FEATURES)
 
 ## Documentation (deny warnings)
 doc:
@@ -79,7 +73,7 @@ audit:
 
 ## Threshold: ≥86% line coverage (enforced).
 coverage:
-	$(CARGO) llvm-cov --workspace --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
+	$(CARGO) llvm-cov --workspace --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:

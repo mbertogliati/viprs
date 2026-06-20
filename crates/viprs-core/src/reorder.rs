@@ -12,7 +12,7 @@ use crate::op::NodeSpec;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::reorder::ReorderNodeId;
+/// # use viprs_core::reorder::ReorderNodeId;
 /// let node: ReorderNodeId = 0;
 /// assert_eq!(node, 0);
 /// ```
@@ -25,7 +25,7 @@ pub type ReorderNodeId = usize;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{op::NodeSpec, reorder::ReorderNode};
+/// # use viprs_core::{op::NodeSpec, reorder::ReorderNode};
 /// let node = ReorderNode::transform(NodeSpec::identity(8, 8));
 /// assert!(node.retains_output_tile);
 /// ```
@@ -44,7 +44,7 @@ impl ReorderNode {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{op::NodeSpec, reorder::ReorderNode};
+    /// # use viprs_core::{op::NodeSpec, reorder::ReorderNode};
     /// let node = ReorderNode::transform(NodeSpec::identity(4, 4));
     /// assert!(node.retains_output_tile);
     /// ```
@@ -62,7 +62,7 @@ impl ReorderNode {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{op::NodeSpec, reorder::ReorderNode};
+    /// # use viprs_core::{op::NodeSpec, reorder::ReorderNode};
     /// let node = ReorderNode::view(NodeSpec::identity(4, 4));
     /// assert!(!node.retains_output_tile);
     /// ```
@@ -81,7 +81,7 @@ impl ReorderNode {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::reorder::ReorderPlan;
+/// # use viprs_core::reorder::ReorderPlan;
 /// let plan = ReorderPlan { order: vec![0, 1], peak_live_tiles: 1 };
 /// assert_eq!(plan.peak_live_tiles, 1);
 /// ```
@@ -99,7 +99,7 @@ pub struct ReorderPlan {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::reorder::ReorderError;
+/// # use viprs_core::reorder::ReorderError;
 /// assert!(matches!(ReorderError::Cycle, ReorderError::Cycle));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -121,7 +121,7 @@ pub enum ReorderError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{op::NodeSpec, reorder::{stable_topological_order, ReorderNode}};
+/// # use viprs_core::{op::NodeSpec, reorder::{stable_topological_order, ReorderNode}};
 /// let nodes = [ReorderNode::transform(NodeSpec::identity(1, 1))];
 /// let order = stable_topological_order(&nodes, &[]).unwrap();
 /// assert_eq!(order, vec![0]);
@@ -166,7 +166,7 @@ pub fn stable_topological_order(
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{op::NodeSpec, reorder::{peak_live_tiles_for_order, ReorderNode}};
+/// # use viprs_core::{op::NodeSpec, reorder::{peak_live_tiles_for_order, ReorderNode}};
 /// let nodes = [ReorderNode::transform(NodeSpec::identity(1, 1))];
 /// assert_eq!(peak_live_tiles_for_order(&nodes, &[], &[0]).unwrap(), 1);
 /// ```
@@ -214,7 +214,7 @@ pub fn peak_live_tiles_for_order(
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{op::NodeSpec, reorder::{peak_buffer_slots_for_order, ReorderNode}};
+/// # use viprs_core::{op::NodeSpec, reorder::{peak_buffer_slots_for_order, ReorderNode}};
 /// let nodes = [ReorderNode::transform(NodeSpec::identity(1, 1))];
 /// assert!(peak_buffer_slots_for_order(&nodes, &[], &[0]).unwrap() >= 1);
 /// ```
@@ -313,7 +313,7 @@ pub fn peak_buffer_slots_for_order(
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{op::NodeSpec, reorder::{reorder_dag, ReorderNode}};
+/// # use viprs_core::{op::NodeSpec, reorder::{reorder_dag, ReorderNode}};
 /// let nodes = [ReorderNode::transform(NodeSpec::identity(1, 1))];
 /// let plan = reorder_dag(&nodes, &[]).unwrap();
 /// assert_eq!(plan.order, vec![0]);

@@ -7,7 +7,7 @@ use super::{DrawMode, draw_circle_in_region, validate_ink};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_circle::DrawCircleOp;
+/// use viprs_ops_composite::draw::draw_circle::DrawCircleOp;
 ///
 /// let op = DrawCircleOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -32,7 +32,7 @@ pub struct FindTrimPartial {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::find_trim::FindTrimOp;
+/// use viprs_ops_pixel::arithmetic::find_trim::FindTrimOp;
 ///
 /// let op = FindTrimOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

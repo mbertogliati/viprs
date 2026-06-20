@@ -27,8 +27,8 @@ use viprs_core::{
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::{cancel::CancellationToken, error::ViprsError, image::Region};
-/// use viprs::ports::{
+/// use viprs_core::{cancel::CancellationToken, error::ViprsError, image::Region};
+/// use viprs_ports::{
 ///     scheduler::TileScheduler,
 ///     sink::ImageSink,
 /// };
@@ -73,8 +73,8 @@ pub trait TileScheduler<P>: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, image::Region};
-    /// # use viprs::ports::{scheduler::TileScheduler, sink::ImageSink};
+    /// # use viprs_core::{error::ViprsError, image::Region};
+    /// # use viprs_ports::{scheduler::TileScheduler, sink::ImageSink};
     /// # struct NoopScheduler;
     /// # struct FakePipeline;
     /// # struct Sink;
@@ -106,8 +106,8 @@ pub trait TileScheduler<P>: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{cancel::CancellationToken, error::ViprsError, image::Region};
-    /// # use viprs::ports::{scheduler::TileScheduler, sink::ImageSink};
+    /// # use viprs_core::{cancel::CancellationToken, error::ViprsError, image::Region};
+    /// # use viprs_ports::{scheduler::TileScheduler, sink::ImageSink};
     /// # struct NoopScheduler;
     /// # struct FakePipeline;
     /// # struct Sink;
@@ -165,8 +165,8 @@ pub trait TileScheduler<P>: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, image::Region};
-    /// # use viprs::ports::{scheduler::TileScheduler, sink::{ConcurrentSink, ImageSink}};
+    /// # use viprs_core::{error::ViprsError, image::Region};
+    /// # use viprs_ports::{scheduler::TileScheduler, sink::{ConcurrentSink, ImageSink}};
     /// # struct NoopScheduler;
     /// # struct FakePipeline;
     /// # impl TileScheduler<FakePipeline> for NoopScheduler {
@@ -207,8 +207,8 @@ pub trait TileScheduler<P>: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{cancel::CancellationToken, error::ViprsError, image::Region};
-    /// # use viprs::ports::{scheduler::TileScheduler, sink::{ConcurrentSink, ImageSink}};
+    /// # use viprs_core::{cancel::CancellationToken, error::ViprsError, image::Region};
+    /// # use viprs_ports::{scheduler::TileScheduler, sink::{ConcurrentSink, ImageSink}};
     /// # struct NoopScheduler;
     /// # struct FakePipeline;
     /// # impl TileScheduler<FakePipeline> for NoopScheduler {
@@ -294,13 +294,13 @@ pub trait TileScheduler<P>: Send + Sync {
 /// # Examples
 ///
 /// ```ignore
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     error::ViprsError,
 ///     format::U8,
 ///     image::Region,
 ///     reducer::TileReducer,
 /// };
-/// use viprs::ports::{
+/// use viprs_ports::{
 ///     scheduler::{ReducingScheduler, TileScheduler},
 ///     sink::{ConcurrentSink, ImageSink},
 /// };
@@ -369,7 +369,7 @@ pub trait TileScheduler<P>: Send + Sync {
 ///         _reducer: &R,
 ///     ) -> Result<R::Output, ViprsError>
 ///     where
-///         F: viprs::domain::format::BandFormat,
+///         F: viprs_core::format::BandFormat,
 ///         R: TileReducer<F>,
 ///     {
 ///         Err(ViprsError::Scheduler("example scheduler".into()))
@@ -398,8 +398,8 @@ pub trait ReducingScheduler<P>: TileScheduler<P> {
     /// # Examples
     ///
     /// ```ignore
-    /// # use viprs::domain::{error::ViprsError, format::{BandFormat, U8}, image::Region, reducer::TileReducer};
-    /// # use viprs::ports::{scheduler::{ReducingScheduler, TileScheduler}, sink::{ConcurrentSink, ImageSink}};
+    /// # use viprs_core::{error::ViprsError, format::{BandFormat, U8}, image::Region, reducer::TileReducer};
+    /// # use viprs_ports::{scheduler::{ReducingScheduler, TileScheduler}, sink::{ConcurrentSink, ImageSink}};
     /// # struct NoopScheduler;
     /// # struct FakePipeline;
     /// # struct SharedSink;

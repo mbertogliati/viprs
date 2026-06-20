@@ -16,7 +16,7 @@ use super::math::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::srgb_lab_roundtrip::SRgbLabRoundtrip;
+/// use viprs_ops_colour::colour::srgb_lab_roundtrip::SRgbLabRoundtrip;
 ///
 /// let op = SRgbLabRoundtrip;
 /// // Run `op` through a compiled image pipeline.

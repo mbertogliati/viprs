@@ -203,9 +203,9 @@ fn apply_unified_mixed_chain() {
 
 #[test]
 fn apply_consecutive_point_ops_auto_fuse_into_single_node() {
-    use crate::adapters::sources::memory::MemorySource;
     use crate::domain::format::U8;
     use crate::domain::ops::point::{Invert as ConcretizeInvert, Linear};
+    use crate::sources::memory::MemorySource;
 
     let builder =
         PipelineBuilder::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
@@ -230,8 +230,8 @@ fn apply_consecutive_point_ops_auto_fuse_into_single_node() {
 
 #[test]
 fn convenience_point_ops_auto_fuse_into_single_node() {
-    use crate::adapters::sources::memory::MemorySource;
     use crate::domain::format::U8;
+    use crate::sources::memory::MemorySource;
 
     let builder =
         PipelineBuilder::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())

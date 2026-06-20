@@ -139,7 +139,7 @@ impl Default for FrequencyMaskOptions {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::frequency_mask::FrequencyMaskOp;
+/// use viprs_ops_composite::create::frequency_mask::FrequencyMaskOp;
 ///
 /// let op = FrequencyMaskOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

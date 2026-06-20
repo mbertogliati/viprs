@@ -333,7 +333,7 @@ impl<F: BandFormat> MergeCommon<F> {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::mosaicing::merge::MergeOp;
+/// use viprs_ops_composite::mosaicing::merge::MergeOp;
 ///
 /// let op = MergeOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

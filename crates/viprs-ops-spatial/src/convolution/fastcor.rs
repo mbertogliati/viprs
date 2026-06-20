@@ -18,7 +18,7 @@ use super::common::{FromF64, ToF64};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::fastcor::FastCorOp;
+/// use viprs_ops_spatial::convolution::fastcor::FastCorOp;
 ///
 /// let op = FastCorOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

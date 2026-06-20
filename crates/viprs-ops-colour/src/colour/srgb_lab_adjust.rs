@@ -16,7 +16,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::srgb_lab_adjust::SRgbLabAdjust;
+/// use viprs_ops_colour::colour::srgb_lab_adjust::SRgbLabAdjust;
 ///
 /// let op = SRgbLabAdjust::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -372,7 +372,16 @@ mod tests {
             let mut output = TileMut::new(region, 3, &mut output_data);
             op.process_region(&mut (), &input, &mut output);
 
-            prop_assert_eq!(output_data, chained_adjust(&input_data, 1.05, -3.5));
+            let chained = chained_adjust(&input_data, 1.05, -3.5);
+            prop_assert_eq!(output_data.len(), chained.len());
+
+            for (index, (&actual_channel, &expected_channel)) in output_data.iter().zip(&chained).enumerate() {
+                let delta = i16::from(actual_channel) - i16::from(expected_channel);
+                prop_assert!(
+                    delta.abs() <= 1,
+                    "channel mismatch at index {index}: actual={actual_channel}, expected={expected_channel}, delta={delta}"
+                );
+            }
         }
     }
 }

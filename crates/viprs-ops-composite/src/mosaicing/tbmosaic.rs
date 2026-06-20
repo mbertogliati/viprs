@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::mosaicing::tbmosaic::TbMosaicOp;
+/// use viprs_ops_composite::mosaicing::tbmosaic::TbMosaicOp;
 ///
 /// let op = TbMosaicOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

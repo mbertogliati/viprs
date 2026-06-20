@@ -12,7 +12,7 @@ use crate::colour::math::ab_to_hue_degrees;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::oklab::oklab_to_oklch::OklabToOklch;
+/// use viprs_ops_colour::colour::oklab::oklab_to_oklch::OklabToOklch;
 ///
 /// let op = OklabToOklch;
 /// // Run `op` through a compiled image pipeline.

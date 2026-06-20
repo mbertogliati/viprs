@@ -24,7 +24,7 @@ pub enum ArenaNodeOp {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = core::mem::size_of::<viprs::adapters::pipeline::arena::ArenaNode>();
+/// let _ = core::mem::size_of::<viprs_runtime::pipeline::arena::ArenaNode>();
 /// ```
 pub struct ArenaNode {
     pub op: ArenaNodeOp,
@@ -39,7 +39,7 @@ pub struct ArenaNode {
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::pipeline::PipelineArena;
+/// use viprs_runtime::pipeline::PipelineArena;
 ///
 /// let arena = PipelineArena::new(64, 64);
 /// let _ = arena;
@@ -70,7 +70,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let arena = PipelineArena::new(32, 32);
     /// let _ = arena;
@@ -99,8 +99,8 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```ignore
-    /// use viprs::{
-    ///     adapters::{pipeline::PipelineArena, sources::ZeroSource},
+    /// use viprs_runtime::{
+    ///     pipeline::PipelineArena, sources::ZeroSource,
     ///     domain::format::U8,
     /// };
     ///
@@ -130,7 +130,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::arena::set_sequential;
+    /// let _ = viprs_runtime::pipeline::arena::set_sequential;
     /// ```
     pub(crate) const fn set_sequential(&mut self, sequential: bool) {
         self.sequential = sequential;
@@ -142,7 +142,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::arena::set_line_cache_request;
+    /// let _ = viprs_runtime::pipeline::arena::set_line_cache_request;
     /// ```
     pub(crate) const fn set_line_cache_request(
         &mut self,
@@ -157,7 +157,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::arena::set_demand_hint_override;
+    /// let _ = viprs_runtime::pipeline::arena::set_demand_hint_override;
     /// ```
     pub(crate) const fn set_demand_hint_override(&mut self, demand_hint: Option<DemandHint>) {
         self.demand_hint_override = demand_hint;
@@ -171,7 +171,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let mut arena = PipelineArena::new(8, 8);
     /// let _ = &mut arena;
@@ -193,7 +193,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let mut arena = PipelineArena::new(8, 8);
     /// let _ = &mut arena;
@@ -216,7 +216,7 @@ impl PipelineArena {
     ///
     /// ```rust,no_run
     /// use std::num::NonZeroUsize;
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let mut arena = PipelineArena::new(8, 8);
     /// let _ = arena.enable_cache(0, NonZeroUsize::new(1024).unwrap());
@@ -248,7 +248,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let mut arena = PipelineArena::new(8, 8);
     /// let _ = arena.connect(0, 1);
@@ -265,7 +265,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let mut arena = PipelineArena::new(8, 8);
     /// let _ = arena.connect_to_slot(0, 2, 1);
@@ -314,7 +314,7 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let mut arena = PipelineArena::new(32, 32);
     /// arena.set_dimensions(16, 16);
@@ -332,11 +332,11 @@ impl PipelineArena {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::PipelineArena;
+    /// use viprs_runtime::pipeline::PipelineArena;
     ///
     /// let arena = PipelineArena::new(8, 8);
     /// let _compiled = arena.compile()?;
-    /// # Ok::<(), viprs::domain::error::BuildError>(())
+    /// # Ok::<(), viprs_core::error::BuildError>(())
     /// ```
     pub fn compile(self) -> Result<CompiledPipeline, BuildError> {
         let cache_max_bytes = self.cache_max_bytes;
@@ -871,7 +871,7 @@ fn node_input_slot_count(op: &ArenaNodeOp) -> usize {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::pipeline::arena::format_sample_size;
+/// let _ = viprs_runtime::pipeline::arena::format_sample_size;
 /// ```
 pub(super) const fn format_sample_size(id: BandFormatId) -> usize {
     match id {
@@ -922,7 +922,7 @@ fn max_region_extent(lhs: Region, rhs: Region) -> Region {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::pipeline::arena::source_region_for_scheduler_tile;
+/// let _ = viprs_runtime::pipeline::arena::source_region_for_scheduler_tile;
 /// ```
 pub fn source_region_for_scheduler_tile(
     compiled_nodes: &[CompiledNode],

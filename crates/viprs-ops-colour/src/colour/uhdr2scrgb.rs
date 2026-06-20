@@ -18,7 +18,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::uhdr2scrgb::UhdrToScRgb;
+/// use viprs_ops_colour::colour::uhdr2scrgb::UhdrToScRgb;
 ///
 /// let op = UhdrToScRgb::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

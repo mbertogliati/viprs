@@ -22,6 +22,9 @@ const JPEG_SOI: [u8; 2] = [0xFF, 0xD8];
 const JPEG_EOI: [u8; 2] = [0xFF, 0xD9];
 const MPF_SIGNATURE: &[u8] = b"MPF\0";
 const HDRGM_NAMESPACE: &str = "http://ns.adobe.com/hdr-gain-map/1.0/";
+// REASON: the lib target does not read APP1 XMP packets directly, but tests and
+// future metadata helpers share the canonical signature bytes from this module.
+#[allow(dead_code)]
 const XMP_SIGNATURE: &[u8] = b"http://ns.adobe.com/xap/1.0/\0";
 const DEFAULT_GAINMAP_OFFSET: f32 = 1.0 / 64.0;
 
@@ -31,7 +34,7 @@ const DEFAULT_GAINMAP_OFFSET: f32 = 1.0 / 64.0;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::uhdr::UhdrCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::uhdr::UhdrCodec>();
 /// ```
 pub struct UhdrCodec;
 
@@ -354,25 +357,21 @@ fn parse_float_array_from_xml(xml: &str, name: &str) -> Option<Vec<f32>> {
 }
 
 fn parse_bool_attr(xml: &str, name: &str) -> Option<bool> {
-    let value = extract_attr(xml, name)?;
-    match value.trim() {
+    extract_attr(xml, name).and_then(|value| match value.trim() {
         "True" | "true" | "1" => Some(true),
         "False" | "false" | "0" => Some(false),
         _ => None,
-    }
+    })
 }
 
 fn expand_channels(values: Option<Vec<f32>>, default: [f32; 3]) -> Result<[f32; 3], ViprsError> {
-    match values {
-        None => Ok(default),
-        Some(values) => match values.as_slice() {
-            [value] => Ok([*value; 3]),
-            [red, green, blue] => Ok([*red, *green, *blue]),
-            _ => Err(ViprsError::Codec(
-                "uhdr: gain map XMP arrays must contain 1 or 3 values".into(),
-            )),
-        },
-    }
+    values.map_or(Ok(default), |values| match values.as_slice() {
+        [value] => Ok([*value; 3]),
+        [red, green, blue] => Ok([*red, *green, *blue]),
+        _ => Err(ViprsError::Codec(
+            "uhdr: gain map XMP arrays must contain 1 or 3 values".into(),
+        )),
+    })
 }
 
 fn parse_gainmap_xmp(xmp: &[u8]) -> Result<Option<ParsedGainMapMetadata>, ViprsError> {

@@ -32,7 +32,7 @@ const PDF_BANDS: u32 = 4;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::pdf_poppler::PdfPopplerDecoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::pdf_poppler::PdfPopplerDecoder>();
 /// ```
 pub struct PdfPopplerDecoder;
 

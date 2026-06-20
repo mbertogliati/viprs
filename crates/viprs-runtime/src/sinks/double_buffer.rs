@@ -10,8 +10,8 @@ use std::{
 use crossbeam_channel::{Receiver, Sender, bounded};
 
 use crate::{
-    adapters::pipeline::CompiledPipeline,
     domain::{error::ViprsError, format::BandFormatId, image::Region},
+    pipeline::CompiledPipeline,
     ports::sink::{ConcurrentSink, ImageSink},
 };
 

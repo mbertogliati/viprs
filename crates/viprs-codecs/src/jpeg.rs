@@ -14,7 +14,7 @@
 //! EXIF autorotation is also handled in the adapter. The previous decoder path
 //! ignored EXIF orientation and emitted pixels exactly as stored in the file.
 
-mod common;
+pub(crate) mod common;
 mod decode;
 mod encode;
 

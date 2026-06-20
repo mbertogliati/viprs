@@ -21,23 +21,23 @@
 //!
 //! # Datatype mapping
 //!
-//! | NIfTI DT_* | viprs    |
+//! | `NIfTI DT_*` | `viprs` |
 //! |------------|----------|
-//! | DT_UINT8   | U8       |
-//! | DT_UINT16  | U16      |
-//! | DT_INT16   | I16      |
-//! | DT_INT32   | I32      |
-//! | DT_UINT32  | U32      |
-//! | DT_FLOAT32 | F32      |
-//! | DT_FLOAT64 | F64      |
-//! | DT_RGB     | U8 × 3 bands |
-//! | DT_RGBA32  | U8 × 4 bands |
+//! | `DT_UINT8`   | `U8`       |
+//! | `DT_UINT16`  | `U16`      |
+//! | `DT_INT16`   | `I16`      |
+//! | `DT_INT32`   | `I32`      |
+//! | `DT_UINT32`  | `U32`      |
+//! | `DT_FLOAT32` | `F32`      |
+//! | `DT_FLOAT64` | `F64`      |
+//! | `DT_RGB`     | `U8` × 3 bands |
+//! | `DT_RGBA32`  | `U8` × 4 bands |
 //!
-//! Note: DT_INT8 is not supported because viprs has no `I8` `BandFormat`.
+//! Note: `DT_INT8` is not supported because `viprs` has no `I8` `BandFormat`.
 //!
 //! # References
 //!
-//! - NIfTI-1 specification: https://nifti.nimh.nih.gov/pub/dist/src/niftilib/nifti1.h
+//! - NIfTI-1 specification: <https://nifti.nimh.nih.gov/pub/dist/src/niftilib/nifti1.h>
 //! - libvips parity: `.libvips_repo/libvips/foreign/niftiload.c`
 
 use ::nifti::{InMemNiftiVolume, NiftiObject, ReaderOptions};
@@ -50,10 +50,10 @@ use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── NIfTI-1 datatype constants ─────────────────────────────────────────────
 
-/// NIfTI-1 `datatype` field values (subset supported by libvips parity).
+/// `NIfTI-1` `datatype` field values (subset supported by libvips parity).
 ///
-/// Note: `DT_INT8` (256) is omitted because viprs has no `I8` `BandFormat`.
-/// NIfTI files with `DT_INT8` data will return a `ViprsError::Codec` on decode.
+/// Note: `DT_INT8` (256) is omitted because `viprs` has no `I8` `BandFormat`.
+/// `NIfTI` files with `DT_INT8` data will return a `ViprsError::Codec` on decode.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(i16)]
 enum NiftiDatatype {
@@ -69,7 +69,7 @@ enum NiftiDatatype {
 }
 
 impl NiftiDatatype {
-    fn from_i16(v: i16) -> Option<Self> {
+    const fn from_i16(v: i16) -> Option<Self> {
         match v {
             2 => Some(Self::Uint8),
             4 => Some(Self::Int16),
@@ -124,9 +124,9 @@ impl NiftiDatatype {
 struct Nifti1Header {
     /// Image dimensions: `dim[0] = ndim`, `dim[1..7] = size along each axis`.
     dim: [i16; 8],
-    /// NIfTI datatype code.
+    /// `NIfTI` `datatype` code.
     datatype: i16,
-    /// Byte offset from start of file to pixel data.
+    /// Byte offset from the start of the file to the pixel data.
     vox_offset: f32,
     /// The magic field (`"n+1\0"` = single-file, `"ni1\0"` = dual-file).
     magic: [u8; 4],
@@ -155,7 +155,7 @@ impl Nifti1Header {
                 .try_into()
                 .map_err(|_| ViprsError::Codec("nifti: dim[0] slice error".into()))?,
         );
-        let little_endian = dim0_le >= 1 && dim0_le <= 7;
+        let little_endian = (1..=7).contains(&dim0_le);
 
         let read_i16 = |offset: usize| -> i16 {
             let bytes: [u8; 2] = src[offset..offset + 2].try_into().unwrap_or([0; 2]);
@@ -176,8 +176,8 @@ impl Nifti1Header {
         };
 
         let mut dim = [0i16; 8];
-        for i in 0..8 {
-            dim[i] = read_i16(Self::DIM_OFFSET + i * 2);
+        for (index, value) in dim.iter_mut().enumerate() {
+            *value = read_i16(Self::DIM_OFFSET + index * 2);
         }
 
         let datatype = read_i16(Self::DATATYPE_OFFSET);
@@ -186,7 +186,7 @@ impl Nifti1Header {
         let mut magic = [0u8; 4];
         magic.copy_from_slice(&src[Self::MAGIC_OFFSET..Self::MAGIC_OFFSET + 4]);
 
-        Ok(Nifti1Header {
+        Ok(Self {
             dim,
             datatype,
             vox_offset,
@@ -205,12 +205,16 @@ impl Nifti1Header {
         }
     }
 
-    fn ndim(&self) -> i16 {
+    const fn ndim(&self) -> i16 {
         self.dim[0]
     }
 
-    fn width(&self) -> u32 {
-        self.dim[1].max(1) as u32
+    const fn width(&self) -> u32 {
+        if self.dim[1] > 1 {
+            self.dim[1] as u32
+        } else {
+            1
+        }
     }
 
     /// Height, folding higher spatial dims in as libvips does.
@@ -232,7 +236,7 @@ impl Nifti1Header {
     }
 
     /// Byte offset from the beginning of the `src` buffer to pixel data.
-    fn pixel_data_offset(&self) -> usize {
+    const fn pixel_data_offset(&self) -> usize {
         let off = self.vox_offset as usize;
         // Minimum is 352 (header + 4-byte extension block).
         if off < Self::SIZE + 4 {
@@ -313,7 +317,7 @@ fn band_format_to_nifti(id: BandFormatId, bands: u32) -> Result<NiftiDatatype, V
         BandFormatId::I32 => NiftiDatatype::Int32,
         BandFormatId::F32 => NiftiDatatype::Float32,
         BandFormatId::F64 => NiftiDatatype::Float64,
-        _ => {
+        BandFormatId::U8 => {
             return Err(ViprsError::Codec(format!(
                 "nifti: band format {id:?} cannot be encoded as NIfTI-1"
             )));
@@ -322,7 +326,7 @@ fn band_format_to_nifti(id: BandFormatId, bands: u32) -> Result<NiftiDatatype, V
     Ok(dt)
 }
 
-fn pick_interpretation(bands: u32, id: BandFormatId) -> Interpretation {
+const fn pick_interpretation(bands: u32, id: BandFormatId) -> Interpretation {
     match (bands, id) {
         (3, BandFormatId::U8) => Interpretation::Srgb,
         (3, BandFormatId::U16 | BandFormatId::I16) => Interpretation::Rgb16,
@@ -331,17 +335,19 @@ fn pick_interpretation(bands: u32, id: BandFormatId) -> Interpretation {
     }
 }
 
+fn ends_with_ignore_ascii_case(name: &str, suffix: &str) -> bool {
+    name.len() >= suffix.len() && name[name.len() - suffix.len()..].eq_ignore_ascii_case(suffix)
+}
+
 fn nifti_path_supported(path: &Path) -> bool {
     path.file_name()
         .and_then(std::ffi::OsStr::to_str)
-        .map(|name| {
-            let lower = name.to_ascii_lowercase();
-            lower.ends_with(".nii")
-                || lower.ends_with(".nii.gz")
-                || lower.ends_with(".hdr")
-                || lower.ends_with(".hdr.gz")
+        .is_some_and(|name| {
+            ends_with_ignore_ascii_case(name, ".nii")
+                || ends_with_ignore_ascii_case(name, ".nii.gz")
+                || ends_with_ignore_ascii_case(name, ".hdr")
+                || ends_with_ignore_ascii_case(name, ".hdr.gz")
         })
-        .unwrap_or(false)
 }
 
 fn dimensions_from_header(dim: [u16; 8]) -> Result<(u32, u32), ViprsError> {
@@ -354,8 +360,8 @@ fn dimensions_from_header(dim: [u16; 8]) -> Result<(u32, u32), ViprsError> {
 
     let width = u32::from(dim[1].max(1));
     let mut height = u32::from(dim[2].max(1));
-    for axis in 3..=ndim {
-        height = height.saturating_mul(u32::from(dim[axis].max(1)));
+    for value in dim.iter().take(ndim + 1).skip(3) {
+        height = height.saturating_mul(u32::from((*value).max(1)));
     }
 
     Ok((width, height))
@@ -465,7 +471,7 @@ impl NiftiCodec {
         }
 
         let ndim = hdr.ndim();
-        if ndim < 1 || ndim > 7 {
+        if !(1..=7).contains(&ndim) {
             return Err(ViprsError::Codec(format!(
                 "nifti: unsupported ndim={ndim}; must be 1–7"
             )));

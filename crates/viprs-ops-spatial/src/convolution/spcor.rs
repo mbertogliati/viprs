@@ -18,7 +18,7 @@ use super::common::ToF64;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::spcor::SpcorOp;
+/// use viprs_ops_spatial::convolution::spcor::SpcorOp;
 ///
 /// let op = SpcorOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

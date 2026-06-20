@@ -18,7 +18,7 @@ use std::sync::OnceLock;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::ucs_to_lch::UcsToLch;
+/// use viprs_ops_colour::colour::ucs_to_lch::UcsToLch;
 ///
 /// let op = UcsToLch;
 /// // Run `op` through a compiled image pipeline.

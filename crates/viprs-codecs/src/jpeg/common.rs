@@ -463,7 +463,7 @@ const fn exif_field_type_size(field_type: u16) -> Option<usize> {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::jpeg::extract_exif_orientation;
+/// let _ = viprs_codecs::jpeg::extract_exif_orientation;
 /// ```
 pub fn extract_exif_orientation(exif: &[u8]) -> Option<u8> {
     let tiff = exif.strip_prefix(EXIF_SIGNATURE)?;
@@ -789,7 +789,7 @@ pub(super) fn crop_strict_shrink_edges(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::jpeg::apply_exif_orientation;
+/// let _ = viprs_codecs::jpeg::apply_exif_orientation;
 /// ```
 pub fn apply_exif_orientation(
     pixels: Vec<u8>,
@@ -854,10 +854,10 @@ pub fn apply_exif_orientation(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::jpeg::orient_u8_image;
+/// let _ = viprs_codecs::jpeg::orient_u8_image;
 /// ```
 #[cfg(feature = "uhdr")]
-pub(crate) fn orient_u8_image(
+pub fn orient_u8_image(
     image: &Image<U8>,
     orientation: u8,
     codec_name: &str,

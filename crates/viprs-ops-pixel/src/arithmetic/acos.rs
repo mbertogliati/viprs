@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::acos::ACos;
+/// use viprs_ops_pixel::arithmetic::acos::ACos;
 ///
 /// let op = ACos::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

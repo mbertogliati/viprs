@@ -36,8 +36,8 @@ type DynOpFactory = fn(u32, BandFormatId) -> Result<Box<dyn DynOperation>, Build
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::colour_dispatcher::ColourspaceDispatcher;
-/// # use viprs::domain::colorspace::ColorspaceId;
+/// # use viprs_runtime::colour_dispatcher::ColourspaceDispatcher;
+/// # use viprs_runtime::domain::colorspace::ColorspaceId;
 /// let path = ColourspaceDispatcher::new().find_path(ColorspaceId::SRgb, ColorspaceId::Lab);
 /// assert!(path.is_some());
 /// ```
@@ -57,7 +57,7 @@ impl ColourspaceEdge {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{colour_dispatcher::ColourspaceDispatcher, colorspace::ColorspaceId, format::BandFormatId};
+    /// # use viprs_runtime::{colour_dispatcher::ColourspaceDispatcher, domain::{colorspace::ColorspaceId, format::BandFormatId}};
     /// let edge = ColourspaceDispatcher::new()
     ///     .find_path(ColorspaceId::SRgb, ColorspaceId::Lab)
     ///     .unwrap()
@@ -83,7 +83,7 @@ impl ColourspaceEdge {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{colour_dispatcher::ColourspaceDispatcher, colorspace::ColorspaceId};
+/// # use viprs_runtime::{colour_dispatcher::ColourspaceDispatcher, domain::colorspace::ColorspaceId};
 /// let dispatcher = ColourspaceDispatcher::new();
 /// assert!(dispatcher.find_path(ColorspaceId::SRgb, ColorspaceId::Lab).is_some());
 /// ```
@@ -435,7 +435,7 @@ impl ColourspaceDispatcher {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::colour_dispatcher::ColourspaceDispatcher;
+    /// # use viprs_runtime::colour_dispatcher::ColourspaceDispatcher;
     /// let dispatcher = ColourspaceDispatcher::new();
     /// let _ = dispatcher;
     /// ```
@@ -450,7 +450,7 @@ impl ColourspaceDispatcher {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{colour_dispatcher::ColourspaceDispatcher, colorspace::ColorspaceId};
+    /// # use viprs_runtime::{colour_dispatcher::ColourspaceDispatcher, domain::colorspace::ColorspaceId};
     /// let path = ColourspaceDispatcher::new().find_path(ColorspaceId::SRgb, ColorspaceId::Lab);
     /// assert!(path.is_some());
     /// ```
@@ -487,7 +487,7 @@ impl ColourspaceDispatcher {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{colour_dispatcher::ColourspaceDispatcher, colorspace::ColorspaceId, format::BandFormatId};
+    /// # use viprs_runtime::{colour_dispatcher::ColourspaceDispatcher, domain::{colorspace::ColorspaceId, format::BandFormatId}};
     /// let ops = ColourspaceDispatcher::new()
     ///     .build_path(ColorspaceId::SRgb, ColorspaceId::Lab, 3, BandFormatId::U8)
     ///     .unwrap()

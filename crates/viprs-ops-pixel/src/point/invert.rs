@@ -11,7 +11,7 @@ use viprs_core::format::{BandFormat, PointSample};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::invert::Invert;
+/// use viprs_ops_pixel::point::invert::Invert;
 ///
 /// let op = Invert;
 /// // Run `op` through a compiled image pipeline.

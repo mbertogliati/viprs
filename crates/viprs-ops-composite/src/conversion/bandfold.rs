@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::bandfold::BandfoldOp;
+/// use viprs_ops_composite::conversion::bandfold::BandfoldOp;
 ///
 /// let op = BandfoldOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

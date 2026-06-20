@@ -128,7 +128,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::shrink_h;
+    /// let _ = viprs_runtime::pipeline::builder::shrink_h;
     /// ```
     pub fn shrink_h(self, factor: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
         self.shrink_h_with_ceil(factor, false)
@@ -140,7 +140,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::shrink_h_with_ceil;
+    /// let _ = viprs_runtime::pipeline::builder::shrink_h_with_ceil;
     /// ```
     pub fn shrink_h_with_ceil(
         self,
@@ -214,7 +214,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::shrink;
+    /// let _ = viprs_runtime::pipeline::builder::shrink;
     /// ```
     pub fn shrink(
         self,
@@ -344,7 +344,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::reduce;
+    /// let _ = viprs_runtime::pipeline::builder::reduce;
     /// ```
     pub fn reduce(
         self,
@@ -387,7 +387,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::shrink_v;
+    /// let _ = viprs_runtime::pipeline::builder::shrink_v;
     /// ```
     pub fn shrink_v(self, factor: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
         self.shrink_v_with_ceil(factor, false)
@@ -399,7 +399,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::shrink_v_with_ceil;
+    /// let _ = viprs_runtime::pipeline::builder::shrink_v_with_ceil;
     /// ```
     pub fn shrink_v_with_ceil(
         self,
@@ -590,7 +590,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::similarity;
+    /// let _ = viprs_runtime::pipeline::builder::similarity;
     /// ```
     pub fn similarity(
         self,
@@ -632,7 +632,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::resize;
+    /// let _ = viprs_runtime::pipeline::builder::resize;
     /// ```
     pub fn resize(self, resize: Resize) -> Result<PipelineBuilder<Identity>, BuildError> {
         if self.bands == 0 {
@@ -716,7 +716,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::premultiply;
+    /// let _ = viprs_runtime::pipeline::builder::premultiply;
     /// ```
     pub fn premultiply(self) -> Result<PipelineBuilder<Identity>, BuildError> {
         let bands = self.bands;
@@ -766,7 +766,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::unpremultiply;
+    /// let _ = viprs_runtime::pipeline::builder::unpremultiply;
     /// ```
     pub fn unpremultiply(self) -> Result<PipelineBuilder<Identity>, BuildError> {
         let bands = self.bands;
@@ -799,7 +799,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::flatten;
+    /// let _ = viprs_runtime::pipeline::builder::flatten;
     /// ```
     pub fn flatten(self, background: [f32; 4]) -> Result<PipelineBuilder<Identity>, BuildError> {
         let input_bands = self.bands;
@@ -864,7 +864,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::pipeline::builder::thumbnail;
+    /// let _ = viprs_runtime::pipeline::builder::thumbnail;
     /// ```
     #[allow(clippy::needless_pass_by_value)]
     // REASON: public API stability for the builder-style `thumbnail` entry point.

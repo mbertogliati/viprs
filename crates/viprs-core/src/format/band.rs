@@ -12,7 +12,7 @@ mod private {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::format::BandFormatId;
+/// # use viprs_core::format::BandFormatId;
 /// assert_eq!(BandFormatId::U8, BandFormatId::U8);
 /// ```
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -40,7 +40,7 @@ pub enum BandFormatId {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::format::{BandFormat, U8};
+/// # use viprs_core::format::{BandFormat, U8};
 /// assert_eq!(U8::ID, <U8 as BandFormat>::ID);
 /// ```
 pub trait BandFormat: private::Sealed + Send + Sync + 'static {
@@ -57,7 +57,7 @@ pub trait BandFormat: private::Sealed + Send + Sync + 'static {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::format::{NumericBand, U8};
+/// # use viprs_core::format::{NumericBand, U8};
 /// fn accepts_numeric<F: NumericBand>() {}
 /// accepts_numeric::<U8>();
 /// ```

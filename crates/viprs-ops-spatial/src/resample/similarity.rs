@@ -23,7 +23,7 @@ pub type InterpolationKind = InterpolationKernel;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::resample::similarity::SimilarityOp;
+/// use viprs_ops_spatial::resample::similarity::SimilarityOp;
 ///
 /// let op = SimilarityOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

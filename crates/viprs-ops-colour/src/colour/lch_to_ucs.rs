@@ -12,7 +12,7 @@ use crate::colour::math::{c_to_ucs, ch_to_hucs, l_to_ucs};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::lch_to_ucs::LchToUcs;
+/// use viprs_ops_colour::colour::lch_to_ucs::LchToUcs;
 ///
 /// let op = LchToUcs;
 /// // Run `op` through a compiled image pipeline.

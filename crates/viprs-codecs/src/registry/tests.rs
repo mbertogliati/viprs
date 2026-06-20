@@ -803,7 +803,7 @@ fn registry_returns_typed_deferred_encode_error() {
 
 #[test]
 fn registry_returns_family_specific_deferred_errors_for_document_slide_and_fallbacks() {
-    let registry = ForeignRegistry::new();
+    let registry = ForeignRegistry::default();
     let image = Image::<U8>::from_buffer(1, 1, 1, vec![3]).unwrap();
 
     #[cfg(all(not(feature = "magick"), not(feature = "dcraw")))]
@@ -811,7 +811,7 @@ fn registry_returns_family_specific_deferred_errors_for_document_slide_and_fallb
         (
             "openslide",
             "svs",
-            b"slide-bytes".as_slice(),
+            b"\0slide-bytes".as_slice(),
             "feature `openslide`",
         ),
         (
@@ -832,7 +832,7 @@ fn registry_returns_family_specific_deferred_errors_for_document_slide_and_fallb
         (
             "openslide",
             "svs",
-            b"slide-bytes".as_slice(),
+            b"\0slide-bytes".as_slice(),
             "feature `openslide`",
         ),
         (
@@ -847,7 +847,7 @@ fn registry_returns_family_specific_deferred_errors_for_document_slide_and_fallb
         (
             "openslide",
             "svs",
-            b"slide-bytes".as_slice(),
+            b"\0slide-bytes".as_slice(),
             "feature `openslide`",
         ),
         (
@@ -861,7 +861,7 @@ fn registry_returns_family_specific_deferred_errors_for_document_slide_and_fallb
     let decode_cases = [(
         "openslide",
         "svs",
-        b"slide-bytes".as_slice(),
+        b"\0slide-bytes".as_slice(),
         "feature `openslide`",
     )];
     for (name, extension, bytes, expected_task) in decode_cases {

@@ -16,7 +16,7 @@ use super::common::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::boolean::lshift::LShift;
+/// use viprs_ops_pixel::boolean::lshift::LShift;
 ///
 /// let op = LShift::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -25,7 +25,7 @@ struct Scanner<'a> {
 }
 
 impl<'a> Scanner<'a> {
-    fn new(src: &'a [u8]) -> Self {
+    const fn new(src: &'a [u8]) -> Self {
         Self { src, pos: 0 }
     }
 
@@ -33,7 +33,7 @@ impl<'a> Scanner<'a> {
         self.src.get(self.pos).copied()
     }
 
-    fn advance(&mut self) {
+    const fn advance(&mut self) {
         if self.pos < self.src.len() {
             self.pos += 1;
         }
@@ -142,7 +142,7 @@ impl<'a> Scanner<'a> {
         }
     }
 
-    fn at_eof(&self) -> bool {
+    const fn at_eof(&self) -> bool {
         self.pos >= self.src.len()
     }
 }
@@ -208,17 +208,15 @@ fn decode_csv(
         let mut row_scanner = Scanner::new(&src[data_start..]);
         // Skip comment lines before first data row.
         loop {
-            match row_scanner.peek() {
-                None => break,
-                Some(b'#') => {
-                    while let Some(c) = row_scanner.peek() {
-                        row_scanner.advance();
-                        if c == b'\n' {
-                            break;
-                        }
+            if row_scanner.peek() == Some(b'#') {
+                while let Some(c) = row_scanner.peek() {
+                    row_scanner.advance();
+                    if c == b'\n' {
+                        break;
                     }
                 }
-                _ => break,
+            } else {
+                break;
             }
         }
         loop {
@@ -237,9 +235,7 @@ fn decode_csv(
     }
 
     // Pass 2: count data rows.
-    let height = if let Some(limit) = limit_lines {
-        limit
-    } else {
+    let height = limit_lines.unwrap_or_else(|| {
         let mut rows = 0u32;
         let mut row_scanner = Scanner::new(&src[data_start..]);
         let mut in_row = false;
@@ -279,7 +275,7 @@ fn decode_csv(
             }
         }
         rows
-    };
+    });
 
     if height == 0 {
         return Err(ViprsError::Codec("csv: no data rows found".into()));
@@ -294,7 +290,7 @@ fn decode_csv(
 
     for row in 0..(height as usize) {
         // Skip comment lines before this data row.
-        while let Some(b'#') = decode_scanner.peek() {
+        while decode_scanner.peek() == Some(b'#') {
             while let Some(c) = decode_scanner.peek() {
                 decode_scanner.advance();
                 if c == b'\n' {
@@ -363,7 +359,8 @@ fn encode_csv<F: BandFormat>(image: &Image<F>, separator: &str) -> Result<Vec<u8
                 output.extend_from_slice(separator.as_bytes());
             }
             // Use Rust's default f64 display, which is locale-independent.
-            let s = format!("{}", samples[row * width + col]);
+            let sample = samples[row * width + col];
+            let s = format!("{sample}");
             output.extend_from_slice(s.as_bytes());
         }
         output.push(b'\n');
@@ -424,7 +421,7 @@ fn checked_csv_encode_capacity(width: u32, height: u32) -> Result<usize, ViprsEr
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::csv::CsvCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::csv::CsvCodec>();
 /// ```
 pub struct CsvCodec;
 
@@ -432,13 +429,15 @@ impl CsvCodec {
     /// Returns true if `header` looks like a CSV (any printable ASCII).
     ///
     /// CSV has no magic bytes, so this is a conservative heuristic: the first
-    /// byte must be printable ASCII, excluding bytes that appear in binary
-    /// formats.  The registry uses extension-based detection for save; for load
-    /// the user must call the codec explicitly (matching libvips behaviour).
-    fn sniff_header(header: &[u8]) -> bool {
-        // A CSV file starts with printable ASCII. We require the first byte to
-        // be a digit, letter, quote, minus, or `#` (comment).
-        matches!(header.first(), Some(&b) if b.is_ascii_graphic() || b == b' ')
+    /// byte must look like the start of a numeric/comment/quoted field instead
+    /// of matching arbitrary printable text. The registry uses
+    /// extension-based detection for save; for load the user must call the
+    /// codec explicitly (matching libvips behaviour).
+    const fn sniff_header(header: &[u8]) -> bool {
+        matches!(
+            header.first(),
+            Some(b'0'..=b'9' | b'"' | b'-' | b'+' | b'#')
+        )
     }
 }
 

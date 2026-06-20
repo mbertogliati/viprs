@@ -7,7 +7,7 @@ use super::{DrawMode, draw_rect_in_region, validate_ink};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_rect::DrawRectOp;
+/// use viprs_ops_composite::draw::draw_rect::DrawRectOp;
 ///
 /// let op = DrawRectOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

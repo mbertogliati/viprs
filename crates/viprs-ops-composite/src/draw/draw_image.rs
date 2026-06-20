@@ -77,7 +77,7 @@ impl DrawImageSample for f64 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_image::DrawImageOp;
+/// use viprs_ops_composite::draw::draw_image::DrawImageOp;
 ///
 /// let op = DrawImageOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

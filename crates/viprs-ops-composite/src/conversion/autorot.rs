@@ -23,7 +23,7 @@ pub enum AutorotAngle {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::autorot::AutorotOp;
+/// use viprs_ops_composite::conversion::autorot::AutorotOp;
 ///
 /// let op = AutorotOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

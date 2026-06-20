@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::asin::ASin;
+/// use viprs_ops_pixel::arithmetic::asin::ASin;
 ///
 /// let op = ASin::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

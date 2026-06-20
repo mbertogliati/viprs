@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_ismonotonic::HistIsMonotonicOp;
+/// use viprs_ops_colour::histogram::hist_ismonotonic::HistIsMonotonicOp;
 ///
 /// let op = HistIsMonotonicOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

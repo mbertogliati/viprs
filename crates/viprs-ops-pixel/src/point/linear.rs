@@ -20,7 +20,7 @@ use std::arch::aarch64::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::linear::Linear;
+/// use viprs_ops_pixel::point::linear::Linear;
 ///
 /// let op = Linear::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

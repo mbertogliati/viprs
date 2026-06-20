@@ -23,7 +23,7 @@ pub enum LogmatPrecision {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::logmat::LogmatOp;
+/// use viprs_ops_composite::create::logmat::LogmatOp;
 ///
 /// let op = LogmatOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

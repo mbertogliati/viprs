@@ -29,7 +29,7 @@ pub struct MeasurePartial {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::measure::MeasureOp;
+/// use viprs_ops_pixel::arithmetic::measure::MeasureOp;
 ///
 /// let op = MeasureOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

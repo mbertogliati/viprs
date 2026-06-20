@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::gaussnoise::GaussnoiseOp;
+/// use viprs_ops_composite::create::gaussnoise::GaussnoiseOp;
 ///
 /// let op = GaussnoiseOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

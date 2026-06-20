@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::oklab::oklab_to_xyz::OklabToXyz;
+/// use viprs_ops_colour::colour::oklab::oklab_to_xyz::OklabToXyz;
 ///
 /// let op = OklabToXyz;
 /// // Run `op` through a compiled image pipeline.

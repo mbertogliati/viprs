@@ -16,7 +16,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::ifthenelse::IfThenElseOp;
+/// use viprs_ops_composite::conversion::ifthenelse::IfThenElseOp;
 ///
 /// let op = IfThenElseOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

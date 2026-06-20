@@ -12,7 +12,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::eye::EyeOp;
+/// use viprs_ops_composite::create::eye::EyeOp;
 ///
 /// let op = EyeOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

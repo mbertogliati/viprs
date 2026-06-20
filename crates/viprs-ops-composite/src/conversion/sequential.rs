@@ -6,7 +6,7 @@
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::sequential::LineCacheOp;
+/// use viprs_ops_composite::conversion::sequential::LineCacheOp;
 ///
 /// let op = LineCacheOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.
@@ -43,7 +43,7 @@ impl Default for LineCacheOp {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::sequential::SequentialOp;
+/// use viprs_ops_composite::conversion::sequential::SequentialOp;
 ///
 /// let op = SequentialOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

@@ -11,7 +11,7 @@ const RADIANCE_EXP_BIAS: i32 = 128;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::radiance_to_float::RadianceToFloat;
+/// use viprs_ops_colour::colour::radiance_to_float::RadianceToFloat;
 ///
 /// let op = RadianceToFloat;
 /// // Run `op` through a compiled image pipeline.

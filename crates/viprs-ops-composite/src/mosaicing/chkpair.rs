@@ -14,7 +14,7 @@ const DEFAULT_MAX_HYPOTHESES: usize = 256;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::mosaicing::chkpair::ChkpairOp;
+/// use viprs_ops_composite::mosaicing::chkpair::ChkpairOp;
 ///
 /// let op = ChkpairOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::labq_to_labs::LabQToLabS;
+/// use viprs_ops_colour::colour::labq_to_labs::LabQToLabS;
 ///
 /// let op = LabQToLabS;
 /// // Run `op` through a compiled image pipeline.

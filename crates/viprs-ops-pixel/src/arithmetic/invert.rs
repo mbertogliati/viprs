@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::invert::Invert;
+/// use viprs_ops_pixel::arithmetic::invert::Invert;
 ///
 /// let op = Invert::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

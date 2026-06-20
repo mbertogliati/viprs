@@ -18,7 +18,7 @@ struct ControlPoint {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::buildlut::BuildlutOp;
+/// use viprs_ops_composite::create::buildlut::BuildlutOp;
 ///
 /// let op = BuildlutOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

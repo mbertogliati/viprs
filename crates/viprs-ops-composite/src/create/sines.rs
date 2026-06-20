@@ -14,7 +14,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::sines::SinesOp;
+/// use viprs_ops_composite::create::sines::SinesOp;
 ///
 /// let op = SinesOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

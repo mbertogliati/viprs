@@ -67,7 +67,7 @@ const TIFFTAG_NEWSUBFILETYPE_REDUCED_IMAGE: u32 = 1;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::tiff::TiffDecoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::tiff::TiffDecoder>();
 /// ```
 pub struct TiffDecoder;
 
@@ -79,7 +79,7 @@ pub struct TiffDecoder;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::tiff::TiffEncoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::tiff::TiffEncoder>();
 /// ```
 pub struct TiffEncoder {
     compression: TiffCompression,
@@ -122,7 +122,7 @@ impl TiffEncoder {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::tiff::TiffCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::tiff::TiffCodec>();
 /// ```
 pub struct TiffCodec {
     encoder: TiffEncoder,

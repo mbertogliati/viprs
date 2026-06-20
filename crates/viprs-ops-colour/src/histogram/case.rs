@@ -12,7 +12,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::case::CaseOp;
+/// use viprs_ops_colour::histogram::case::CaseOp;
 ///
 /// let op = CaseOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

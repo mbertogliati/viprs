@@ -104,7 +104,7 @@ impl SmudgeSample for f64 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_smudge::DrawSmudgeOp;
+/// use viprs_ops_composite::draw::draw_smudge::DrawSmudgeOp;
 ///
 /// let op = DrawSmudgeOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

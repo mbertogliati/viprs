@@ -9,7 +9,7 @@ use super::core::Image;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::image::Interpretation;
+/// # use viprs_core::image::Interpretation;
 /// assert_eq!(Interpretation::Rgb.max_alpha(), 255.0);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -100,7 +100,7 @@ impl Default for UhdrGainMapMetadata {
 ///
 /// # Examples
 /// ```ignore
-/// # use viprs::domain::image::{Interpretation, MetadataOverrides};
+/// # use viprs_core::image::{Interpretation, MetadataOverrides};
 /// let overrides = MetadataOverrides {
 ///     interpretation: Some(Interpretation::SRgb),
 ///     ..MetadataOverrides::default()
@@ -128,7 +128,7 @@ pub struct MetadataOverrides {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{format::U8, image::{Image, UhdrGainMap}};
+/// # use viprs_core::{format::U8, image::{Image, UhdrGainMap}};
 /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
 /// let gain_map = UhdrGainMap {
 ///     image: Box::new(image),
@@ -161,7 +161,7 @@ impl UhdrGainMap {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::{Image, UhdrGainMap}};
+    /// # use viprs_core::{format::U8, image::{Image, UhdrGainMap}};
     /// let gain_map = UhdrGainMap {
     ///     image: Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()),
     ///     metadata: Default::default(),
@@ -182,7 +182,7 @@ impl UhdrGainMap {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::{Image, UhdrGainMap}};
+    /// # use viprs_core::{format::U8, image::{Image, UhdrGainMap}};
     /// let gain_map = UhdrGainMap {
     ///     image: Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()),
     ///     metadata: Default::default(),
@@ -203,7 +203,7 @@ impl UhdrGainMap {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::image::FrameDisposal;
+/// # use viprs_core::image::FrameDisposal;
 /// assert_eq!(FrameDisposal::default(), FrameDisposal::Keep);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -225,7 +225,7 @@ pub enum FrameDisposal {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::image::AnimationLoopCount;
+/// # use viprs_core::image::AnimationLoopCount;
 /// let loop_count = AnimationLoopCount::Finite(2);
 /// assert!(matches!(loop_count, AnimationLoopCount::Finite(2)));
 /// ```
@@ -315,7 +315,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// # use viprs::domain::image::{ImageMetadata, Interpretation};
+/// # use viprs_core::image::{ImageMetadata, Interpretation};
 /// let metadata = ImageMetadata {
 ///     interpretation: Some(Interpretation::SRgb),
 ///     ..ImageMetadata::default()
@@ -420,7 +420,7 @@ impl ImageMetadata {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::image::ImageMetadata;
+    /// # use viprs_core::image::ImageMetadata;
     /// let mut metadata = ImageMetadata { orientation: Some(6), ..ImageMetadata::default() };
     /// metadata.remove_orientation();
     /// assert_eq!(metadata.orientation, None);
@@ -439,7 +439,7 @@ impl ImageMetadata {
     ///
     /// # Examples
     /// ```ignore
-    /// # use viprs::domain::image::{ImageMetadata, Interpretation, MetadataOverrides};
+    /// # use viprs_core::image::{ImageMetadata, Interpretation, MetadataOverrides};
     /// let metadata = ImageMetadata::default();
     /// let merged = metadata.merge_overrides(&MetadataOverrides {
     ///     interpretation: Some(Interpretation::SRgb),
@@ -476,7 +476,7 @@ impl ImageMetadata {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::image::ImageMetadata;
+    /// # use viprs_core::image::ImageMetadata;
     /// let metadata = ImageMetadata::default();
     /// assert!(metadata.uhdr_gainmap().is_none());
     /// ```

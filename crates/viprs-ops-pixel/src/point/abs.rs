@@ -11,7 +11,7 @@ use viprs_core::format::{BandFormat, PointSample};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::abs::Abs;
+/// use viprs_ops_pixel::point::abs::Abs;
 ///
 /// let op = Abs;
 /// // Run `op` through a compiled image pipeline.

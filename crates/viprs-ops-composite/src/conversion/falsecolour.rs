@@ -337,7 +337,7 @@ fn f64_to_u8_index(value: f64) -> u8 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::falsecolour::FalsecolourOp;
+/// use viprs_ops_composite::conversion::falsecolour::FalsecolourOp;
 ///
 /// let op = FalsecolourOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

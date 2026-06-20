@@ -74,7 +74,7 @@ enum ScaleTransfer {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::scale::ScaleOp;
+/// use viprs_ops_composite::conversion::scale::ScaleOp;
 ///
 /// let op = ScaleOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

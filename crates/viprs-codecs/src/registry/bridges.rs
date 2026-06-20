@@ -275,7 +275,7 @@ where
 }
 
 #[cfg(any(test, feature = "dcraw", feature = "openslide"))]
-pub(crate) fn boxed_extension_decoder<C>(
+pub fn boxed_extension_decoder<C>(
     codec: C,
     file_extensions: &'static [&'static str],
 ) -> Box<dyn ImageCodec>

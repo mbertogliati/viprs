@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::grid::GridOp;
+/// use viprs_ops_composite::conversion::grid::GridOp;
 ///
 /// let op = GridOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

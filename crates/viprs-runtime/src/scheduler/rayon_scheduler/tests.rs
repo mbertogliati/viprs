@@ -1016,7 +1016,7 @@ fn run_with_profile_reduces_serial_sink_to_one_lock_per_tile() {
 
 #[test]
 fn view_only_pipeline_direct_writes_into_memory_sink() {
-    use crate::{adapters::pipeline::PipelineBuilder, adapters::sources::memory::MemorySource};
+    use crate::{pipeline::PipelineBuilder, sources::memory::MemorySource};
 
     let width = 128;
     let height = 96;
@@ -1067,8 +1067,8 @@ fn view_only_pipeline_direct_writes_into_memory_sink() {
 #[test]
 fn branch_point_op_cache_stays_within_two_locks_per_output_tile() {
     use crate::{
-        adapters::pipeline::PipelineArena,
         domain::{format::BandFormatId, ops::conversion::BandJoin},
+        pipeline::PipelineArena,
     };
 
     let pixels: Vec<u8> = (0..100 * 100).map(|value| (value % 251) as u8).collect();
@@ -1107,12 +1107,12 @@ fn branch_point_op_cache_stays_within_two_locks_per_output_tile() {
 #[test]
 fn source_cache_plus_branch_point_op_cache_stays_within_four_locks_per_output_tile() {
     use crate::{
-        adapters::pipeline::PipelineArena,
         domain::{format::BandFormatId, ops::conversion::BandJoin},
+        pipeline::PipelineArena,
     };
 
     let pixels: Vec<u8> = (0..100 * 100).map(|value| (value % 251) as u8).collect();
-    let source = crate::adapters::sources::tile_cache::TileCache::new(
+    let source = crate::sources::tile_cache::TileCache::new(
         MemorySource::<U8>::new(100, 100, 1, pixels).unwrap(),
         std::num::NonZeroUsize::new(100 * 100).unwrap(),
     );
@@ -1190,7 +1190,7 @@ fn run_with_reducer_rejects_format_mismatch() {
 
 #[test]
 fn sequential_access_runs_tiles_in_row_major_order() {
-    use crate::{adapters::pipeline::PipelineBuilder, domain::op::OperationBridge};
+    use crate::{domain::op::OperationBridge, pipeline::PipelineBuilder};
 
     let state = Arc::new(TrackingSourceState::default());
     let source = TrackingSource::new(32, 256, Arc::clone(&state));
@@ -1220,7 +1220,7 @@ fn sequential_access_runs_tiles_in_row_major_order() {
 
 #[test]
 fn sequential_access_reduces_in_flight_tile_memory() {
-    use crate::{adapters::pipeline::PipelineBuilder, domain::op::OperationBridge};
+    use crate::{domain::op::OperationBridge, pipeline::PipelineBuilder};
 
     let parallel_state = Arc::new(TrackingSourceState::default());
     let parallel_source = TrackingSource::new(64, 256, Arc::clone(&parallel_state));
@@ -1267,14 +1267,8 @@ fn sequential_access_reduces_in_flight_tile_memory() {
 fn sequential_line_cache_keeps_a_bounded_window() {
     let state = Arc::new(TrackingSourceState::default());
     let source = TrackingSource::new(8, 12, Arc::clone(&state));
-    let mut cache = SequentialLineCache::new(
-        8,
-        12,
-        1,
-        4,
-        2,
-        crate::adapters::pipeline::LineCacheAccess::Sequential,
-    );
+    let mut cache =
+        SequentialLineCache::new(8, 12, 1, 4, 2, crate::pipeline::LineCacheAccess::Sequential);
     let mut output = vec![0u8; 16];
 
     cache
@@ -1307,14 +1301,8 @@ fn sequential_line_cache_keeps_a_bounded_window() {
 fn linecache_random_access_rereads_cached_lines_without_extra_source_reads() {
     let state = Arc::new(TrackingSourceState::default());
     let source = TrackingSource::new(8, 12, Arc::clone(&state));
-    let mut cache = SequentialLineCache::new(
-        8,
-        12,
-        1,
-        5,
-        2,
-        crate::adapters::pipeline::LineCacheAccess::Random,
-    );
+    let mut cache =
+        SequentialLineCache::new(8, 12, 1, 5, 2, crate::pipeline::LineCacheAccess::Random);
     let mut output = vec![0u8; 16];
 
     cache
@@ -1347,14 +1335,8 @@ fn linecache_random_access_rereads_cached_lines_without_extra_source_reads() {
 fn linecache_chaos_sequential_access_rejects_requests_behind_retained_window() {
     let state = Arc::new(TrackingSourceState::default());
     let source = TrackingSource::new(8, 12, Arc::clone(&state));
-    let mut cache = SequentialLineCache::new(
-        8,
-        12,
-        1,
-        4,
-        2,
-        crate::adapters::pipeline::LineCacheAccess::Sequential,
-    );
+    let mut cache =
+        SequentialLineCache::new(8, 12, 1, 4, 2, crate::pipeline::LineCacheAccess::Sequential);
     let mut output = vec![0u8; 16];
 
     cache
@@ -1888,7 +1870,7 @@ fn affine_identity_bilinear_runs_without_source_buffer_overflow() {
 
 #[test]
 fn run_returns_image_too_large_for_full_image_source_only_overflow() {
-    use crate::{adapters::pipeline::PipelineArena, ports::scheduler::TileScheduler};
+    use crate::{pipeline::PipelineArena, ports::scheduler::TileScheduler};
 
     struct HugeSource;
 
@@ -1958,13 +1940,13 @@ fn run_returns_image_too_large_for_full_image_source_only_overflow() {
 #[ignore = "fails on master too: available region containment regression in rayon scheduler"]
 fn execute_tile_propagates_distinct_regions_per_input_slot() {
     use crate::{
-        adapters::pipeline::{PipelineArena, ThreadBufferPool},
         domain::{
             error::ViprsError,
             format::U8,
             image::{Tile, TileMut},
             op::{DynOperation, Op, OperationBridge},
         },
+        pipeline::{PipelineArena, ThreadBufferPool},
         ports::source::{DynImageSource, ImageSource},
     };
     use std::{
@@ -2170,13 +2152,13 @@ fn execute_tile_propagates_distinct_regions_per_input_slot() {
 #[test]
 fn execute_tile_materializes_coordinate_dependency_before_root_source_slot() {
     use crate::{
-        adapters::pipeline::{PipelineArena, ThreadBufferPool},
         domain::{
             error::ViprsError,
             format::U8,
             image::{Tile, TileMut},
             op::{DynOperation, NodeSpec, Op, OperationBridge, SourceReadPlan},
         },
+        pipeline::{PipelineArena, ThreadBufferPool},
         ports::source::{DynImageSource, ImageSource},
     };
     use std::{

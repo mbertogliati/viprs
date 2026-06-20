@@ -12,7 +12,7 @@ use crate::{format::BandFormat, image::TileMut};
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{draw::DrawOp, format::U8, image::{Region, TileMut}};
+/// # use viprs_core::{draw::DrawOp, format::U8, image::{Region, TileMut}};
 /// struct Fill;
 /// impl DrawOp<U8> for Fill {
 ///     fn draw(&self, tile: &mut TileMut<U8>) {

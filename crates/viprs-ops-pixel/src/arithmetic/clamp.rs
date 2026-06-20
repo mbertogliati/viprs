@@ -11,7 +11,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::clamp::ClampOp;
+/// use viprs_ops_pixel::arithmetic::clamp::ClampOp;
 ///
 /// let op = ClampOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

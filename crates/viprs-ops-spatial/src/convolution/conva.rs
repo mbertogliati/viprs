@@ -74,7 +74,7 @@ enum ConvaMode<F: BandFormat> {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::conva::ConvaOp;
+/// use viprs_ops_spatial::convolution::conva::ConvaOp;
 ///
 /// let op = ConvaOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -71,7 +71,7 @@ pub struct Sequential;
 /// # Examples
 ///
 /// ```ignore
-/// let _ = core::mem::size_of::<viprs::adapters::sources::decoder_source::DecoderSource>();
+/// let _ = core::mem::size_of::<viprs_runtime::sources::decoder_source::DecoderSource>();
 /// ```
 pub struct DecoderSource<'a, D: ImageDecoder, F: BandFormat, M = RandomAccess> {
     pub(super) backing: DecoderBacking<'a, D, F>,
@@ -269,7 +269,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
     /// Create a streaming source from shared compressed input.
     ///
     /// The returned source is `'static`, so it can be inserted into
-    /// [`PipelineBuilder::from_source`](crate::adapters::pipeline::PipelineBuilder::from_source).
+    /// [`PipelineBuilder::from_source`](crate::pipeline::PipelineBuilder::from_source).
     ///
     /// # Errors
     ///

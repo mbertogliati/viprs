@@ -2,7 +2,7 @@ use super::*;
 
 #[test]
 fn colourspace_builder_supports_lab_lch_lab() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![50.0, 20.0, -30.0]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -20,7 +20,7 @@ fn colourspace_builder_supports_lab_lch_lab() {
 
 #[test]
 fn colourspace_builder_supports_srgb_scrgb_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -38,7 +38,7 @@ fn colourspace_builder_supports_srgb_scrgb_and_back() {
 
 #[test]
 fn colourspace_builder_supports_lab_xyz_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![53.23, 80.1, 67.2]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -56,7 +56,7 @@ fn colourspace_builder_supports_lab_xyz_and_back() {
 
 #[test]
 fn colourspace_builder_supports_scrgb_xyz_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.4, 0.5, 0.6]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -205,7 +205,7 @@ fn colourspace_builder_supports_lab_to_bw() {
 
 #[test]
 fn colourspace_builder_supports_srgb_cmyk() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -221,7 +221,7 @@ fn colourspace_builder_supports_srgb_cmyk() {
 
 #[test]
 fn colourspace_builder_supports_cmyk_xyz_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 4, vec![0, 255, 255, 0]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -239,7 +239,7 @@ fn colourspace_builder_supports_cmyk_xyz_and_back() {
 
 #[test]
 fn colourspace_builder_supports_srgb_cmyk_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -257,7 +257,7 @@ fn colourspace_builder_supports_srgb_cmyk_and_back() {
 
 #[test]
 fn colourspace_builder_supports_xyz_oklab_oklch_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.95047, 1.0, 1.08883]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -279,7 +279,7 @@ fn colourspace_builder_supports_xyz_oklab_oklch_and_back() {
 
 #[test]
 fn colourspace_builder_supports_xyz_yxy_xyz() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.4, 0.5, 0.6]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -297,7 +297,7 @@ fn colourspace_builder_supports_xyz_yxy_xyz() {
 
 #[test]
 fn colourspace_builder_supports_lch_ucs_and_back() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![50.0, 20.0, 120.0]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -315,7 +315,7 @@ fn colourspace_builder_supports_lch_ucs_and_back() {
 
 #[test]
 fn colourspace_builder_maps_cmc_interpretation_to_lch_route() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::Cmc);

@@ -72,7 +72,7 @@ struct ParsedPfm {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::pfm::PfmCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::pfm::PfmCodec>();
 /// ```
 pub struct PfmCodec;
 
@@ -231,8 +231,7 @@ fn endian_from_metadata(metadata: &ImageMetadata) -> bool {
     metadata
         .extra
         .get(PFM_ENDIAN_KEY)
-        .map(|value| value.eq_ignore_ascii_case("little"))
-        .unwrap_or(false)
+        .is_some_and(|value| value.eq_ignore_ascii_case("little"))
 }
 
 fn scale_from_metadata(metadata: &ImageMetadata) -> f32 {

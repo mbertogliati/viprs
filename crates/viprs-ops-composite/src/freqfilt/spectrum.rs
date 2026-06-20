@@ -18,7 +18,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::freqfilt::spectrum::SpectrumOp;
+/// use viprs_ops_composite::freqfilt::spectrum::SpectrumOp;
 ///
 /// let op = SpectrumOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

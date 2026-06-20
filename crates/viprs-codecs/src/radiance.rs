@@ -32,7 +32,7 @@ const ASPECT_KEY: &str = "radiance.aspect";
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::radiance::RadianceCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::radiance::RadianceCodec>();
 /// ```
 pub struct RadianceCodec;
 
@@ -257,7 +257,7 @@ fn decode_old_style_scanline(
 }
 
 fn decode_scanline(src: &[u8], width: usize) -> Result<(Vec<[u8; 4]>, usize), ViprsError> {
-    if width < MIN_SCANLINE_LEN || width > MAX_SCANLINE_LEN || src.len() < 4 {
+    if !(MIN_SCANLINE_LEN..=MAX_SCANLINE_LEN).contains(&width) || src.len() < 4 {
         return decode_old_style_scanline(src, width);
     }
 

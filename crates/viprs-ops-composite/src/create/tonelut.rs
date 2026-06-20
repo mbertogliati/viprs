@@ -14,7 +14,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::tonelut::TonelutOp;
+/// use viprs_ops_composite::create::tonelut::TonelutOp;
 ///
 /// let op = TonelutOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

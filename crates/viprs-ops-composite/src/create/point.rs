@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::point::PointOp;
+/// use viprs_ops_composite::create::point::PointOp;
 ///
 /// let op = PointOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

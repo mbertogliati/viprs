@@ -137,7 +137,7 @@ struct PipelineOutputTarget {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::adapters::scheduler::rayon_scheduler::NodeRunProfile;
+/// use viprs_runtime::scheduler::rayon_scheduler::NodeRunProfile;
 ///
 /// let profile = NodeRunProfile::default();
 /// assert_eq!(profile.exec_count, 0);
@@ -160,7 +160,7 @@ pub struct NodeRunProfile {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::adapters::scheduler::rayon_scheduler::PipelineRunProfile;
+/// use viprs_runtime::scheduler::rayon_scheduler::PipelineRunProfile;
 ///
 /// let profile = PipelineRunProfile::default();
 /// assert_eq!(profile.tile_count, 0);

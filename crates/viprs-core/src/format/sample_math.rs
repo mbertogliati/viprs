@@ -666,7 +666,7 @@ impl PairMinMaxSample for f64 {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::format::Math2Sample;
+/// # use viprs_core::format::Math2Sample;
 /// assert_eq!(2.0_f32.s_pow2(3.0), 8.0);
 /// ```
 pub trait Math2Sample: Copy + 'static {
@@ -738,7 +738,7 @@ impl Math2Sample for f64 {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::format::RemSample;
+/// # use viprs_core::format::RemSample;
 /// assert_eq!(5_u8.s_remainder(2), 1);
 /// ```
 pub trait RemSample: Copy + 'static {

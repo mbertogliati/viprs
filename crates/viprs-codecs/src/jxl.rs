@@ -36,7 +36,7 @@ const EXIF_SIGNATURE: &[u8] = b"Exif\0\0";
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::jxl::JxlCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::jxl::JxlCodec>();
 /// ```
 pub struct JxlCodec;
 
@@ -164,7 +164,9 @@ fn decode_samples<F: BandFormat>(src: &[u8]) -> Result<Vec<F::Sample>, ViprsErro
                 bytemuck::allocation::try_cast_vec::<u16, F::Sample>(samples)
                     .map_err(|(err, _)| ViprsError::Codec(format!("jxl: cast error: {err:?}")))
             }
-            _ => unreachable!(),
+            other => Err(ViprsError::Codec(format!(
+                "jxl: unsupported output format {other:?}; only U8 and U16 are supported"
+            ))),
         }
     })
 }

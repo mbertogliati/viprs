@@ -83,7 +83,7 @@ impl IndexBuffer {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::histogram::hist_find_indexed::HistFindIndexedOp;
+/// use viprs_ops_colour::histogram::hist_find_indexed::HistFindIndexedOp;
 ///
 /// let op = HistFindIndexedOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

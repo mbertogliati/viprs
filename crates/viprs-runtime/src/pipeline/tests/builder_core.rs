@@ -53,8 +53,8 @@ fn rotate90_rejects_zero_band_sources() {
 #[test]
 fn point_mode_pipeline_handles_zero_width_source_after_upstream_op() {
     use crate::{
-        adapters::sinks::memory::MemorySink,
         domain::ops::{arithmetic::Invert, conversion::subsample::SubsampleBridge},
+        sinks::memory::MemorySink,
     };
 
     let source = MemorySource::<U8>::new(0, 1, 1, vec![]).unwrap();
@@ -716,7 +716,7 @@ fn reduce_rejects_nohalo_kernel() {
 
 #[test]
 fn pipeline_rgb_source_propagates_bands() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
     // 2x2 RGB: 4 pixels * 3 bands = 12 samples
     let source = MemorySource::<U8>::new(2, 2, 3, vec![0u8; 12]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -736,7 +736,7 @@ fn pipeline_rgb_source_propagates_bands() {
 
 #[test]
 fn pipeline_rgb_buffer_sizes_are_correct() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
     // 4x4 RGB U8: 4*4*3 = 48 samples
     let source = MemorySource::<U8>::new(4, 4, 3, vec![0u8; 48]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -758,7 +758,7 @@ fn pipeline_rgb_buffer_sizes_are_correct() {
 
 #[test]
 fn linear_transform_chain_starts_without_input_scratch_buffers() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(8, 8, 3, vec![0u8; 8 * 8 * 3]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)

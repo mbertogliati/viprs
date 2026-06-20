@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::linear::Linear;
+/// use viprs_ops_pixel::arithmetic::linear::Linear;
 ///
 /// let op = Linear::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

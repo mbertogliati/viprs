@@ -4,8 +4,8 @@
 //! remain generic over `F: BandFormat`; the registry bridges them behind an
 //! object-safe trait so callers can say `Image::<U8>::load("x.png")`.
 
-mod bridges;
-mod deepzoom;
+pub(crate) mod bridges;
+pub(crate) mod deepzoom;
 mod deferred;
 mod runtime;
 

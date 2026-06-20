@@ -7,7 +7,7 @@ use crate::image::Region;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::op::DemandHint;
+/// # use viprs_core::op::DemandHint;
 /// assert_eq!(DemandHint::OneLine.tile_height(100, 50), 1);
 /// ```
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -34,7 +34,7 @@ impl DemandHint {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::op::DemandHint;
+    /// # use viprs_core::op::DemandHint;
     /// assert_eq!(DemandHint::SmallTile.tile_width(512), 128);
     /// ```
     #[must_use]
@@ -53,7 +53,7 @@ impl DemandHint {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::op::DemandHint;
+    /// # use viprs_core::op::DemandHint;
     /// assert_eq!(DemandHint::FullImage.tile_height(100, 20), 20);
     /// ```
     #[must_use]
@@ -113,7 +113,7 @@ pub struct CoordinateDrivenSourceSpec {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::op::NodeSpec;
+/// # use viprs_core::op::NodeSpec;
 /// let spec = NodeSpec::identity(64, 32);
 /// assert_eq!(spec.output_tile_w, 64);
 /// ```
@@ -172,7 +172,7 @@ impl SourceReadPlan {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{image::Region, op::SourceReadPlan};
+    /// # use viprs_core::{image::Region, op::SourceReadPlan};
     /// let plan = SourceReadPlan::rect(Region::new(0, 0, 2, 2));
     /// assert_eq!(plan.produced_region().width, 2);
     /// ```
@@ -187,7 +187,7 @@ impl SourceReadPlan {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{image::Region, op::SourceReadPlan};
+    /// # use viprs_core::{image::Region, op::SourceReadPlan};
     /// let plan = SourceReadPlan::rect(Region::new(1, 2, 3, 4));
     /// assert_eq!(plan.produced_region(), Region::new(1, 2, 3, 4));
     /// ```
@@ -209,7 +209,7 @@ impl SourceReadPlan {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{image::Region, op::SourceReadPlan};
+    /// # use viprs_core::{image::Region, op::SourceReadPlan};
     /// let plan = SourceReadPlan::rect(Region::new(0, 0, 2, 2));
     /// assert_eq!(plan.bounding_source_region(), Region::new(0, 0, 2, 2));
     /// ```
@@ -260,7 +260,7 @@ impl NodeSpec {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::op::NodeSpec;
+    /// # use viprs_core::op::NodeSpec;
     /// let spec = NodeSpec::identity(8, 8).with_coordinate_driven_source(1, 0);
     /// assert!(spec.coordinate_driven_source.is_some());
     /// ```

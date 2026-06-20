@@ -8,7 +8,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::polar::PolarOp;
+/// use viprs_ops_pixel::arithmetic::polar::PolarOp;
 ///
 /// let op = PolarOp;
 /// // Run `op` through a compiled image pipeline.

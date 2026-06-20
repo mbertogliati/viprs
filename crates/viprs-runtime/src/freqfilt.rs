@@ -23,7 +23,7 @@ use rustfft::{FftPlanner, num_complex::Complex};
 /// # Examples
 ///
 /// ```rust
-/// use viprs::adapters::freqfilt::FFT_COMPLEX_BANDS;
+/// use viprs_runtime::freqfilt::FFT_COMPLEX_BANDS;
 ///
 /// assert_eq!(FFT_COMPLEX_BANDS, 2);
 /// ```
@@ -39,15 +39,15 @@ pub const FFT_COMPLEX_BANDS: u32 = 2;
 /// # Examples
 ///
 /// ```rust
-/// use viprs::{
-///     adapters::freqfilt::{fwfft, FFT_COMPLEX_BANDS},
+/// use viprs_runtime::{
+///     freqfilt::{fwfft, FFT_COMPLEX_BANDS},
 ///     domain::{format::F32, image::Image},
 /// };
 ///
 /// let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0])?;
 /// let spectrum = fwfft(&image)?;
 /// assert_eq!(spectrum.bands(), FFT_COMPLEX_BANDS);
-/// # Ok::<(), viprs::domain::error::ViprsError>(())
+/// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 pub fn fwfft<F>(input: &Image<F>) -> Result<Image<F64>, ViprsError>
 where
@@ -99,15 +99,15 @@ where
 /// # Examples
 ///
 /// ```rust
-/// use viprs::{
-///     adapters::freqfilt::{fwfft, invfft},
+/// use viprs_runtime::{
+///     freqfilt::{fwfft, invfft},
 ///     domain::{format::F32, image::Image},
 /// };
 ///
 /// let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0])?;
 /// let spatial = invfft(&fwfft(&image)?)?;
 /// assert_eq!(spatial.bands(), 1);
-/// # Ok::<(), viprs::domain::error::ViprsError>(())
+/// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 pub fn invfft(input: &Image<F64>) -> Result<Image<F64>, ViprsError> {
     if input.bands() != FFT_COMPLEX_BANDS {

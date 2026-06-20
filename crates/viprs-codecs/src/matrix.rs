@@ -306,7 +306,7 @@ fn sniff_matrix(header: &[u8]) -> bool {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::matrix::MatrixCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::matrix::MatrixCodec>();
 /// ```
 pub struct MatrixCodec;
 

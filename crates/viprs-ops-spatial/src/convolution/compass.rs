@@ -18,7 +18,7 @@ pub const PREWITT_COMPASS_MASK: [f32; 9] = [-1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::compass::CompassOp;
+/// use viprs_ops_spatial::convolution::compass::CompassOp;
 ///
 /// let op = CompassOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

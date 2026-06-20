@@ -38,7 +38,7 @@ impl HistNormDefaultOutput for U32 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_norm::HistNormTypedOp;
+/// use viprs_ops_colour::histogram::hist_norm::HistNormTypedOp;
 ///
 /// let op = HistNormTypedOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

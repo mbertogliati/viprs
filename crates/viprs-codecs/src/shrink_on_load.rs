@@ -14,7 +14,7 @@ use viprs_core::error::ViprsError;
 /// # Examples
 ///
 /// ```ignore
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::shrink_on_load::ShrinkOnLoadBackend>();
+/// let _ = core::mem::size_of::<viprs_codecs::shrink_on_load::ShrinkOnLoadBackend>();
 /// ```
 pub enum ShrinkOnLoadBackend {
     /// libjpeg-turbo exposes DCT-domain scaling via `scale_num/scale_denom`.
@@ -46,7 +46,7 @@ impl ShrinkOnLoadBackend {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::shrink_on_load::ShrinkOnLoadPlan>();
+/// let _ = core::mem::size_of::<viprs_codecs::shrink_on_load::ShrinkOnLoadPlan>();
 /// ```
 pub struct ShrinkOnLoadPlan {
     factor: u8,
@@ -97,7 +97,7 @@ pub const fn normalize_shrink_factor(factor: u8) -> u8 {
 /// # Examples
 ///
 /// ```rust
-/// let _ = viprs::adapters::codecs::shrink_on_load::shrink_u8_pixels_into;
+/// let _ = viprs_codecs::shrink_on_load::shrink_u8_pixels_into;
 /// ```
 pub(crate) fn shrink_u8_pixels_into(
     pixels: &[u8],
@@ -188,7 +188,7 @@ pub(crate) fn shrink_u8_pixels_into(
 /// # Examples
 ///
 /// ```rust
-/// let _ = viprs::adapters::codecs::shrink_on_load::shrink_u8_pixels;
+/// let _ = viprs_codecs::shrink_on_load::shrink_u8_pixels;
 /// ```
 pub(crate) fn shrink_u8_pixels(
     pixels: Vec<u8>,

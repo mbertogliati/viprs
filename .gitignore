@@ -38,3 +38,4 @@ bench_*.log
 .audit_perf/
 .test-artifacts/
 **/target/
+clippy_full.log

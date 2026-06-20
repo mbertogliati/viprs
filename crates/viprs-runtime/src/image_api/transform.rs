@@ -17,11 +17,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::{adapters::image_api::ImageApi, domain::ops::point::Invert};
+    /// use viprs_runtime::{image_api::ImageApi, domain::ops::point::Invert};
     ///
     /// let image = ImageApi::open("photo.jpg")?.apply(Invert)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn apply<O: PipelineOp>(self, op: O) -> Result<Self, BuildError> {
         Self::from_builder(
@@ -38,11 +38,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.invert()?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn invert(self) -> Result<Self, BuildError> {
         Self::from_builder(
@@ -59,11 +59,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.linear(1.1, 2.0)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn linear(self, scale: f64, offset: f64) -> Result<Self, BuildError> {
         Self::from_builder(
@@ -80,11 +80,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("logo.png")?.flatten()?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn flatten(self) -> Result<Self, BuildError> {
         self.flatten_with(255, 255, 255)
@@ -98,11 +98,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("logo.png")?.flatten_with(240, 240, 240)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn flatten_with(self, r: u8, g: u8, b: u8) -> Result<Self, BuildError> {
         Ok(Self {
@@ -127,11 +127,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("overlay.png")?.premultiply()?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn premultiply(self) -> Result<Self, BuildError> {
         Ok(Self {
@@ -148,11 +148,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("overlay.png")?.premultiply()?.unpremultiply()?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn unpremultiply(self) -> Result<Self, BuildError> {
         Ok(Self {
@@ -169,11 +169,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.thumbnail(400)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn thumbnail(self, width: u32) -> Result<Self, BuildError> {
         #[cfg(feature = "icc")]
@@ -200,12 +200,12 @@ impl ImageApi {
     ///
     /// ```ignore
     /// # #[cfg(feature = "icc")] {
-    /// use viprs::adapters::image_api::{ImageApi, ImageApiThumbnailOptions};
+    /// use viprs_runtime::image_api::{ImageApi, ImageApiThumbnailOptions};
     ///
     /// let options = ImageApiThumbnailOptions::default().with_auto_normalize_to_srgb(true);
     /// let image = ImageApi::open("photo.jpg")?.thumbnail_with_options(400, options)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// # }
     /// ```
     #[cfg(feature = "icc")]
@@ -235,11 +235,11 @@ impl ImageApi {
     ///
     /// ```ignore
     /// # #[cfg(feature = "icc")] {
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.normalize_to_srgb()?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// # }
     /// ```
     #[cfg(feature = "icc")]
@@ -255,11 +255,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.smartcrop(300, 300)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn smartcrop(self, width: u32, height: u32) -> Result<Self, ViprsError> {
         let resource_limits = self.resource_limits.clone();
@@ -293,11 +293,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.sharpen()?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn sharpen(self) -> Result<Self, BuildError> {
         self.sharpen_with(
@@ -318,11 +318,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?.sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn sharpen_with(
         self,

@@ -28,7 +28,7 @@ const OCTAVE_WEIGHT_OFFSET: f32 = 3.25;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::fractsurf::FractSurfOp;
+/// use viprs_ops_composite::create::fractsurf::FractSurfOp;
 ///
 /// let op = FractSurfOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

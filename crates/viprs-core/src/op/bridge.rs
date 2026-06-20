@@ -14,7 +14,7 @@ use super::{DemandHint, DynOperation, NodeSpec, Op, PixelLocalOp, SourceReadPlan
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{format::U8, image::{Region, Tile, TileMut}, op::{Op, OperationBridge}};
+/// # use viprs_core::{format::U8, image::{Region, Tile, TileMut}, op::{Op, OperationBridge}};
 /// struct Copy;
 /// impl Op for Copy {
 ///     type Input = U8;
@@ -326,7 +326,7 @@ pub trait DynViewOp: Send + Sync {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{format::U8, image::Region, op::{DemandHint, ViewBridge, ViewOp}};
+/// # use viprs_core::{format::U8, image::Region, op::{DemandHint, ViewBridge, ViewOp}};
 /// struct IdentityView;
 /// impl ViewOp for IdentityView {
 ///     type Format = U8;
@@ -350,7 +350,7 @@ impl<T: ViewOp> ViewBridge<T> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{format::U8, image::Region, op::{DemandHint, ViewBridge, ViewOp}};
+    /// # use viprs_core::{format::U8, image::Region, op::{DemandHint, ViewBridge, ViewOp}};
     /// struct IdentityView;
     /// impl ViewOp for IdentityView {
     ///     type Format = U8;

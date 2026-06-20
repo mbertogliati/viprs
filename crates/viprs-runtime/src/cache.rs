@@ -114,7 +114,7 @@ impl SharedCache {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::cache::OperationTileCache>();
+/// let _ = core::mem::size_of::<viprs_runtime::cache::OperationTileCache>();
 /// ```
 pub struct OperationTileCache {
     max_bytes: NonZeroUsize,
@@ -132,7 +132,7 @@ impl OperationTileCache {
     ///
     /// ```rust
     /// use std::num::NonZeroUsize;
-    /// use viprs::adapters::cache::OperationTileCache;
+    /// use viprs_runtime::cache::OperationTileCache;
     ///
     /// let cache = OperationTileCache::new(NonZeroUsize::new(1024).unwrap());
     /// assert_eq!(cache.max_bytes().get(), 1024);
@@ -154,7 +154,7 @@ impl OperationTileCache {
     ///
     /// ```rust
     /// use std::num::NonZeroUsize;
-    /// use viprs::adapters::cache::OperationTileCache;
+    /// use viprs_runtime::cache::OperationTileCache;
     ///
     /// let cache = OperationTileCache::new(NonZeroUsize::new(256).unwrap());
     /// assert_eq!(cache.max_bytes().get(), 256);
@@ -173,13 +173,13 @@ impl OperationTileCache {
     ///
     /// ```rust
     /// use std::num::NonZeroUsize;
-    /// use viprs::adapters::cache::OperationTileCache;
-    /// use viprs::domain::image::Region;
+    /// use viprs_runtime::cache::OperationTileCache;
+    /// use viprs_core::image::Region;
     ///
     /// let cache = OperationTileCache::new(NonZeroUsize::new(64).unwrap());
     /// let cached = cache.get(3, Region::new(0, 0, 1, 1))?;
     /// assert!(cached.is_none());
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn get(&self, op_id: usize, region: Region) -> Result<Option<Arc<[u8]>>, ViprsError> {
         let key = CacheKey::new(op_id, region);
@@ -208,13 +208,13 @@ impl OperationTileCache {
     ///
     /// ```rust
     /// use std::{num::NonZeroUsize, sync::Arc};
-    /// use viprs::adapters::cache::OperationTileCache;
-    /// use viprs::domain::image::Region;
+    /// use viprs_runtime::cache::OperationTileCache;
+    /// use viprs_core::image::Region;
     ///
     /// let cache = OperationTileCache::new(NonZeroUsize::new(64).unwrap());
     /// cache.insert(1, Region::new(0, 0, 1, 1), Arc::from([255_u8]))?;
     /// assert!(cache.get(1, Region::new(0, 0, 1, 1))?.is_some());
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn insert(&self, op_id: usize, region: Region, tile: Arc<[u8]>) -> Result<(), ViprsError> {
         let key = CacheKey::new(op_id, region);
@@ -260,14 +260,14 @@ impl OperationTileCache {
     ///
     /// ```rust
     /// use std::{num::NonZeroUsize, sync::Arc};
-    /// use viprs::adapters::cache::OperationTileCache;
-    /// use viprs::domain::image::Region;
+    /// use viprs_runtime::cache::OperationTileCache;
+    /// use viprs_core::image::Region;
     ///
     /// let cache = OperationTileCache::new(NonZeroUsize::new(64).unwrap());
     /// cache.insert(1, Region::new(0, 0, 1, 1), Arc::from([1_u8]))?;
     /// cache.clear()?;
     /// assert!(cache.get(1, Region::new(0, 0, 1, 1))?.is_none());
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn clear(&self) -> Result<(), ViprsError> {
         lock_instrumentation::record_lock_acquisition();

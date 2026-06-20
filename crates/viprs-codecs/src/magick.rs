@@ -18,7 +18,7 @@ use viprs_core::{
 };
 use viprs_ports::codec::ImageCodec;
 
-/// File extensions decoded via ImageMagick fallback when no native codec is available.
+/// File extensions decoded via `ImageMagick` fallback when no native codec is available.
 pub const MAGICK_FALLBACK_DECODE_EXTENSIONS: &[&str] = &[
     "bmp", "dib", "ico", "icns", "psd", "pcx", "tga", "eps", "ps", "xcf", "dcm",
 ];
@@ -30,7 +30,7 @@ pub const MAGICK_FALLBACK_DECODE_EXTENSIONS: &[&str] = &[
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::magick::MagickFallbackSaver>();
+/// let _ = core::mem::size_of::<viprs_codecs::magick::MagickFallbackSaver>();
 /// ```
 pub struct MagickFallbackSaver {
     format_name: &'static str,
@@ -72,7 +72,7 @@ pub const MAGICK_FALLBACK_SAVERS: &[MagickFallbackSaver] = &[
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::magick::MagickFallbackLoader>();
+/// let _ = core::mem::size_of::<viprs_codecs::magick::MagickFallbackLoader>();
 /// ```
 pub struct MagickFallbackLoader;
 

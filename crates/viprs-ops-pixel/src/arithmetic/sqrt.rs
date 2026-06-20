@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::sqrt::Sqrt;
+/// use viprs_ops_pixel::arithmetic::sqrt::Sqrt;
 ///
 /// let op = Sqrt::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

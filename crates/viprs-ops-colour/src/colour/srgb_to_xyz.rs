@@ -21,7 +21,7 @@ fn srgb_u8_to_xyz_f32(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::srgb_to_xyz::SRgbToXyz;
+/// use viprs_ops_colour::colour::srgb_to_xyz::SRgbToXyz;
 ///
 /// let op = SRgbToXyz;
 /// // Run `op` through a compiled image pipeline.

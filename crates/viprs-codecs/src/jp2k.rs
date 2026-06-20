@@ -43,7 +43,7 @@ const PROFILE_RES_SPEC: usize = 7;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::jp2k::Jp2kCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::jp2k::Jp2kCodec>();
 /// ```
 pub struct Jp2kCodec;
 

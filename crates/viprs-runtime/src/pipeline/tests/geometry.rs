@@ -3,7 +3,7 @@ use super::*;
 /// View nodes must not allocate an extra buffer.
 #[test]
 fn extract_area_view_node_does_not_add_buffer() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
     // A pipeline with a single ExtractArea should have buffer_count == 1
     // (only the source buffer; no extra output buffer since it's a view node).
     let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
@@ -23,7 +23,7 @@ fn extract_area_view_node_does_not_add_buffer() {
 /// View node followed by a transform must use the same input buffer index.
 #[test]
 fn extract_area_then_transform_buffer_layout() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
     let source = MemorySource::<U8>::new(8, 8, 1, vec![0u8; 64]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
         .extract_area(0, 0, 4, 4)
@@ -48,7 +48,7 @@ fn extract_area_then_transform_buffer_layout() {
 /// produces the correct `width`/`height` on the `CompiledPipeline`.
 #[test]
 fn extract_area_dimensions_propagated_automatically_by_compile() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
     // 16x8 source; crop to 6x3 starting at (2, 1).
     let source = MemorySource::<U8>::new(16, 8, 1, vec![0u8; 128]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -170,7 +170,7 @@ fn extract_area_then_embed_uses_requested_offset() {
 
 #[test]
 fn extract_area_rejects_crops_larger_than_current_stage() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(7, 5, 1, vec![0u8; 35]).unwrap();
     let result = PipelineBuilder::from_source(source).extract_area(0, 0, 11, 8);
@@ -190,7 +190,7 @@ fn extract_area_rejects_crops_larger_than_current_stage() {
 
 #[test]
 fn extract_area_rejects_zero_width_crops() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(7, 5, 1, vec![0u8; 35]).unwrap();
     let result = PipelineBuilder::from_source(source).extract_area(0, 0, 0, 4);
@@ -210,7 +210,7 @@ fn extract_area_rejects_zero_width_crops() {
 
 #[test]
 fn extract_area_rejects_zero_height_crops() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(7, 5, 1, vec![0u8; 35]).unwrap();
     let result = PipelineBuilder::from_source(source).extract_area(0, 0, 4, 0);
@@ -232,7 +232,7 @@ fn extract_area_rejects_zero_height_crops() {
 /// must not regress when node_spec is not overridden.
 #[test]
 fn node_spec_identity_default_matches_old_buffer_sizing() {
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::sources::memory::MemorySource;
     // 4x4 single-band U8 pipeline with one Invert op.
     let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -258,8 +258,8 @@ fn node_spec_identity_default_matches_old_buffer_sizing() {
 #[test]
 fn affine_bilinear_source_buffer_matches_required_input_region() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{kernel::InterpolationKernel, ops::resample::affine::Affine},
+        sources::memory::MemorySource,
     };
 
     let source = MemorySource::<U8>::new(512, 512, 1, vec![0u8; 512 * 512]).unwrap();
@@ -299,11 +299,11 @@ fn affine_bilinear_source_buffer_matches_required_input_region() {
 #[test]
 fn gauss_blur_chain_source_buffer_matches_backpropagated_region() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{
             op::OperationBridge,
             ops::convolution::{GaussBlurH, GaussBlurV},
         },
+        sources::memory::MemorySource,
     };
 
     let source = MemorySource::<F32>::new(64, 64, 1, vec![0.0f32; 64 * 64]).unwrap();
@@ -338,9 +338,7 @@ fn gauss_blur_chain_source_buffer_matches_backpropagated_region() {
 /// `PipelineBuilder::embed` propagates dst dimensions to the compiled pipeline.
 #[test]
 fn embed_dimensions_propagated_by_compile() {
-    use crate::{
-        adapters::sources::memory::MemorySource, domain::ops::conversion::embed::ExtendMode,
-    };
+    use crate::{domain::ops::conversion::embed::ExtendMode, sources::memory::MemorySource};
     // 4×4 source; embed into 8×8 canvas at (2, 2).
     let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
@@ -362,9 +360,7 @@ fn embed_dimensions_propagated_by_compile() {
 /// must preserve the source format and band count.
 #[test]
 fn embed_format_and_bands_preserved() {
-    use crate::{
-        adapters::sources::memory::MemorySource, domain::ops::conversion::embed::ExtendMode,
-    };
+    use crate::{domain::ops::conversion::embed::ExtendMode, sources::memory::MemorySource};
     let source = MemorySource::<U8>::new(4, 4, 3, vec![0u8; 48]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
         .embed(4, 4, 0, 0, 4, 4, ExtendMode::Black)
@@ -377,9 +373,7 @@ fn embed_format_and_bands_preserved() {
 
 #[test]
 fn embed_signed_accepts_negative_offsets() {
-    use crate::{
-        adapters::sources::memory::MemorySource, domain::ops::conversion::embed::ExtendMode,
-    };
+    use crate::{domain::ops::conversion::embed::ExtendMode, sources::memory::MemorySource};
     let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
     let pipeline = PipelineBuilder::from_source(source)
         .embed_signed(6, 6, -1, -1, 4, 4, ExtendMode::Copy)
@@ -392,9 +386,7 @@ fn embed_signed_accepts_negative_offsets() {
 
 #[test]
 fn embed_rejects_unsigned_offsets_beyond_i32_range() {
-    use crate::{
-        adapters::sources::memory::MemorySource, domain::ops::conversion::embed::ExtendMode,
-    };
+    use crate::{domain::ops::conversion::embed::ExtendMode, sources::memory::MemorySource};
 
     let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
     let result = PipelineBuilder::from_source(source).embed(
@@ -418,8 +410,8 @@ fn embed_rejects_unsigned_offsets_beyond_i32_range() {
 #[test]
 fn embed_with_gravity_centres_the_source() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::ops::conversion::embed::{ExtendMode, Gravity},
+        sources::memory::MemorySource,
     };
 
     let image = Image::<U8>::from_buffer(2, 1, 1, vec![5u8, 6]).unwrap();

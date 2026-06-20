@@ -11,7 +11,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::sum::SumOp;
+/// use viprs_ops_pixel::arithmetic::sum::SumOp;
 ///
 /// let op = SumOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

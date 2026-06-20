@@ -10,7 +10,7 @@ use viprs_core::format::{BandFormat, PointSample};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::clamp::Clamp;
+/// use viprs_ops_pixel::point::clamp::Clamp;
 ///
 /// let op = Clamp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -17,7 +17,7 @@ use super::math::{D65_X0, D65_Y0, D65_Z0};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::xyz_to_cmyk::XyzToCmyk;
+/// use viprs_ops_colour::colour::xyz_to_cmyk::XyzToCmyk;
 ///
 /// let op = XyzToCmyk { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

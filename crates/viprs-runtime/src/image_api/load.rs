@@ -34,13 +34,13 @@ use std::fs;
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::image_api::ImageApi;
+/// use viprs_runtime::image_api::ImageApi;
 ///
 /// ImageApi::open("photo.jpg")?
 ///     .invert()?
 ///     .thumbnail(400)?
 ///     .save("out.jpg")?;
-/// # Ok::<(), viprs::domain::error::ViprsError>(())
+/// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 pub struct ImageApi {
     pub(in crate::image_api) builder: PipelineBuilder,
@@ -61,14 +61,14 @@ impl std::fmt::Debug for ImageApi {
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::{
-///     adapters::image_api::ImageApi,
+/// use viprs_runtime::{
+///     image_api::ImageApi,
 ///     domain::limits::ResourceLimits,
 /// };
 ///
 /// let loader = ImageApi::with_limits(ResourceLimits::default());
 /// let _image = loader.open("photo.jpg")?;
-/// # Ok::<(), viprs::domain::error::ViprsError>(())
+/// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 #[derive(Clone, Debug)]
 pub struct ImageApiLoader {
@@ -84,7 +84,7 @@ pub struct ImageApiLoader {
 ///
 /// ```rust,no_run
 /// # #[cfg(feature = "icc")] {
-/// use viprs::adapters::image_api::ImageApiThumbnailOptions;
+/// use viprs_runtime::image_api::ImageApiThumbnailOptions;
 ///
 /// let options = ImageApiThumbnailOptions::default().with_auto_normalize_to_srgb(true);
 /// let _ = options;
@@ -107,7 +107,7 @@ impl ImageApiThumbnailOptions {
     ///
     /// ```rust
     /// # #[cfg(feature = "icc")] {
-    /// use viprs::adapters::image_api::ImageApiThumbnailOptions;
+    /// use viprs_runtime::image_api::ImageApiThumbnailOptions;
     ///
     /// let options = ImageApiThumbnailOptions::default().with_auto_normalize_to_srgb(true);
     /// assert_ne!(options, ImageApiThumbnailOptions::default());
@@ -128,8 +128,8 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::{
-    ///     adapters::image_api::ImageApi,
+    /// use viprs_runtime::{
+    ///     image_api::ImageApi,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
@@ -148,11 +148,11 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let image = ImageApi::open("photo.jpg")?;
     /// let _ = image;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ViprsError> {
         Self::open_with_options(path.as_ref(), &LoadOptions::default(), None)
@@ -167,7 +167,7 @@ impl ImageApi {
     ///
     /// ```rust
     /// use std::io::Cursor;
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let bytes = Cursor::new(vec![0_u8; 0]);
     /// let _ = ImageApi::from_reader(bytes);
@@ -186,8 +186,8 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::{
-    ///     adapters::image_api::ImageApi,
+    /// use viprs_runtime::{
+    ///     image_api::ImageApi,
     ///     domain::limits::DecodeLimits,
     /// };
     ///
@@ -213,7 +213,7 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::adapters::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImageApi;
     ///
     /// let _ = ImageApi::from_bytes(&[]);
     /// ```
@@ -534,14 +534,14 @@ impl ImageApiLoader {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::{
-    ///     adapters::image_api::ImageApi,
+    /// use viprs_runtime::{
+    ///     image_api::ImageApi,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
     /// let loader = ImageApi::with_limits(ResourceLimits::default());
     /// let _image = loader.open("photo.jpg")?;
-    /// # Ok::<(), viprs::domain::error::ViprsError>(())
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn open(&self, path: impl AsRef<Path>) -> Result<ImageApi, ViprsError> {
         ImageApi::open_with_options(
@@ -563,8 +563,8 @@ impl ImageApiLoader {
     ///
     /// ```rust
     /// use std::io::Cursor;
-    /// use viprs::{
-    ///     adapters::image_api::ImageApi,
+    /// use viprs_runtime::{
+    ///     image_api::ImageApi,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
@@ -585,8 +585,8 @@ impl ImageApiLoader {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::{
-    ///     adapters::image_api::ImageApi,
+    /// use viprs_runtime::{
+    ///     image_api::ImageApi,
     ///     domain::limits::ResourceLimits,
     /// };
     ///

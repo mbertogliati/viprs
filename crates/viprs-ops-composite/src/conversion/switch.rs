@@ -15,7 +15,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::switch::SwitchOp;
+/// use viprs_ops_composite::conversion::switch::SwitchOp;
 ///
 /// let op = SwitchOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

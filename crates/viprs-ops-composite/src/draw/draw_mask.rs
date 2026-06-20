@@ -81,7 +81,7 @@ impl DrawMaskSample for f64 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_mask::DrawMaskOp;
+/// use viprs_ops_composite::draw::draw_mask::DrawMaskOp;
 ///
 /// let op = DrawMaskOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

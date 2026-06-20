@@ -11,7 +11,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::black::BlackOp;
+/// use viprs_ops_composite::create::black::BlackOp;
 ///
 /// let op = BlackOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

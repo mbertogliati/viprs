@@ -49,7 +49,7 @@ struct FitsType {
 }
 
 impl FitsType {
-    fn from_bitpix(bitpix: c_int) -> Option<Self> {
+    const fn from_bitpix(bitpix: c_int) -> Option<Self> {
         match bitpix {
             x if x == fitsio_sys::BYTE_IMG as c_int => Some(Self {
                 bitpix: x,
@@ -80,7 +80,7 @@ impl FitsType {
         }
     }
 
-    fn from_band_format(id: BandFormatId) -> Option<Self> {
+    const fn from_band_format(id: BandFormatId) -> Option<Self> {
         match id {
             BandFormatId::U8 => Some(Self {
                 bitpix: fitsio_sys::BYTE_IMG as c_int,
@@ -123,7 +123,7 @@ struct FitsHeader {
 struct FitsFile(*mut fitsio_sys::fitsfile);
 
 impl FitsFile {
-    fn as_ptr(&self) -> *mut fitsio_sys::fitsfile {
+    const fn as_ptr(&self) -> *mut fitsio_sys::fitsfile {
         self.0
     }
 }
@@ -136,7 +136,7 @@ impl Drop for FitsFile {
         let mut status = 0;
         // SAFETY: self.0 is a valid FITS handle created by cfitsio open/create calls.
         unsafe {
-            fitsio_sys::ffclos(self.0, &mut status);
+            fitsio_sys::ffclos(self.0, &raw mut status);
         }
         self.0 = ptr::null_mut();
     }
@@ -201,15 +201,11 @@ fn to_c_int(value: usize, what: &str) -> Result<c_int, ViprsError> {
     })
 }
 
-fn to_c_long(value: u32, what: &str) -> Result<c_long, ViprsError> {
-    c_long::try_from(value).map_err(|_| {
-        ViprsError::Codec(format!(
-            "fits: {what} value {value} does not fit c_long on this platform"
-        ))
-    })
+fn to_c_long(value: u32) -> c_long {
+    value.into()
 }
 
-fn interpretation_for(bands: u32, format: BandFormatId) -> Interpretation {
+const fn interpretation_for(bands: u32, format: BandFormatId) -> Interpretation {
     match (bands, format) {
         (1, BandFormatId::U16) => Interpretation::Grey16,
         (1, _) => Interpretation::BW,
@@ -228,10 +224,10 @@ fn open_fits_for_read(path: &Path) -> Result<FitsFile, ViprsError> {
     // SAFETY: `path_c` is a valid C string and `fptr`/`status` are valid out-pointers.
     unsafe {
         fitsio_sys::ffopen(
-            &mut fptr,
+            &raw mut fptr,
             path_c.as_ptr(),
             fitsio_sys::READONLY as c_int,
-            &mut status,
+            &raw mut status,
         );
     }
     check_status("opening FITS file", status)?;
@@ -246,7 +242,7 @@ fn create_fits_for_write(path: &Path) -> Result<FitsFile, ViprsError> {
 
     // SAFETY: `path_c` is a valid C string and `fptr`/`status` are valid out-pointers.
     unsafe {
-        fitsio_sys::ffinit(&mut fptr, path_c.as_ptr(), &mut status);
+        fitsio_sys::ffinit(&raw mut fptr, path_c.as_ptr(), &raw mut status);
     }
     check_status("creating FITS file", status)?;
     Ok(FitsFile(fptr))
@@ -263,10 +259,10 @@ fn parse_hdu_header(fptr: *mut fitsio_sys::fitsfile) -> Result<FitsHeader, Viprs
         fitsio_sys::ffgipr(
             fptr,
             to_c_int(MAX_NAXIS, "maxaxis")?,
-            &mut imgtype,
-            &mut naxis,
+            &raw mut imgtype,
+            &raw mut naxis,
             naxes.as_mut_ptr(),
-            &mut status,
+            &raw mut status,
         );
     }
     check_status("reading FITS image parameters", status)?;
@@ -306,7 +302,12 @@ fn parse_hdu_header(fptr: *mut fitsio_sys::fitsfile) -> Result<FitsHeader, Viprs
     status = 0;
     // SAFETY: `fptr` is valid and output pointers are initialized.
     unsafe {
-        fitsio_sys::ffghsp(fptr, &mut key_count, &mut more_keys, &mut status);
+        fitsio_sys::ffghsp(
+            fptr,
+            &raw mut key_count,
+            &raw mut more_keys,
+            &raw mut status,
+        );
     }
     check_status("reading FITS header key count", status)?;
 
@@ -315,7 +316,7 @@ fn parse_hdu_header(fptr: *mut fitsio_sys::fitsfile) -> Result<FitsHeader, Viprs
         status = 0;
         // SAFETY: `card` has space for the 80-char record + NUL terminator.
         unsafe {
-            fitsio_sys::ffgrec(fptr, idx, card.as_mut_ptr(), &mut status);
+            fitsio_sys::ffgrec(fptr, idx, card.as_mut_ptr(), &raw mut status);
         }
         check_status("reading FITS header record", status)?;
 
@@ -355,8 +356,8 @@ fn read_planar_pixels<T: Pod + Zeroable>(
             pixel_count as i64,
             ptr::null_mut(),
             data.as_mut_ptr().cast::<c_void>(),
-            &mut any_null,
-            &mut status,
+            &raw mut any_null,
+            &raw mut status,
         );
     }
     check_status("reading FITS pixel data", status)?;
@@ -377,7 +378,7 @@ fn write_planar_pixels<T: Pod>(
             1,
             pixels.len() as i64,
             pixels.as_ptr().cast::<c_void>().cast_mut(),
-            &mut status,
+            &raw mut status,
         );
     }
     check_status("writing FITS pixel data", status)
@@ -412,7 +413,7 @@ fn write_metadata_records(
         let mut status = 0;
         // SAFETY: `card_c` is a valid NUL-terminated FITS header card string.
         unsafe {
-            fitsio_sys::ffprec(fptr, card_c.as_ptr(), &mut status);
+            fitsio_sys::ffprec(fptr, card_c.as_ptr(), &raw mut status);
         }
         check_status("writing FITS header metadata", status)?;
     }
@@ -532,7 +533,7 @@ fn sniff_fits(header: &[u8]) -> bool {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::fits::FitsCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::fits::FitsCodec>();
 /// ```
 pub struct FitsCodec;
 
@@ -542,8 +543,8 @@ impl FitsCodec {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::fits::decode_fits;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::fits::FitsCodec::decode_fits::<viprs_core::format::U8>;
     /// ```
     pub fn decode_fits<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
         let temp = TempFitsPath::new("decode")?;
@@ -621,8 +622,10 @@ impl FitsCodec {
                 bands,
                 "F64",
             )?,
-            BandFormatId::U16 | BandFormatId::U32 => {
-                unreachable!("FitsType never maps FITS BITPIX to unsigned formats")
+            other => {
+                return Err(ViprsError::Codec(format!(
+                    "fits: unsupported decoded band format {other:?}"
+                )));
             }
         };
 
@@ -692,13 +695,13 @@ impl ImageEncoder for FitsCodec {
         let fits = create_fits_for_write(temp.as_path())?;
 
         let mut naxes = [0 as c_long; 3];
-        naxes[0] = to_c_long(image.width(), "width")?;
-        naxes[1] = to_c_long(image.height(), "height")?;
+        naxes[0] = to_c_long(image.width());
+        naxes[1] = to_c_long(image.height());
 
         let naxis = if image.bands() == 1 {
             2
         } else {
-            naxes[2] = to_c_long(image.bands(), "bands")?;
+            naxes[2] = to_c_long(image.bands());
             3
         };
 
@@ -714,7 +717,7 @@ impl ImageEncoder for FitsCodec {
                 0,
                 1,
                 1,
-                &mut status,
+                &raw mut status,
             );
         }
         check_status("creating FITS image header", status)?;
@@ -771,8 +774,10 @@ impl ImageEncoder for FitsCodec {
                 bands,
                 "F64",
             )?,
-            BandFormatId::U16 | BandFormatId::U32 => {
-                unreachable!("FitsType::from_band_format rejects unsigned formats")
+            other => {
+                return Err(ViprsError::Codec(format!(
+                    "fits: unsupported encoded band format {other:?}"
+                )));
             }
         }
 

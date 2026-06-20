@@ -12,7 +12,7 @@ use super::math::lab_to_xyz_components;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::lab_to_xyz::LabToXyz;
+/// use viprs_ops_colour::colour::lab_to_xyz::LabToXyz;
 ///
 /// let op = LabToXyz;
 /// // Run `op` through a compiled image pipeline.

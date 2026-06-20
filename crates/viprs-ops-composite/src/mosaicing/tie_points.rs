@@ -29,7 +29,7 @@ pub struct TiePointMatch {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::mosaicing::tie_points::TiePointSearchOp;
+/// use viprs_ops_composite::mosaicing::tie_points::TiePointSearchOp;
 ///
 /// let op = TiePointSearchOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

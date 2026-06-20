@@ -358,7 +358,7 @@ fn encode_pixels_be<F: BandFormat>(
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::analyze::AnalyzeCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::analyze::AnalyzeCodec>();
 /// ```
 pub struct AnalyzeCodec;
 

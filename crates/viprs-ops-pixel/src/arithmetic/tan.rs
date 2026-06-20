@@ -8,7 +8,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::tan::Tan;
+/// use viprs_ops_pixel::arithmetic::tan::Tan;
 ///
 /// let op = Tan::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

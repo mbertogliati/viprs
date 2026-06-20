@@ -80,7 +80,7 @@ pub struct ResizePipelineNodes {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::resample::resize::ResizeOp;
+/// use viprs_ops_spatial::resample::resize::ResizeOp;
 ///
 /// let op = ResizeOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

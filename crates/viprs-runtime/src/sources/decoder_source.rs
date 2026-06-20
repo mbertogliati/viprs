@@ -25,7 +25,7 @@
 //!
 //! `DecoderSource<D>` is parameterised with a phantom `AccessMode` type so callers
 //! can distinguish sequential and random-access loaders at compile time. Callers use
-//! [`TileCache`](crate::adapters::sources::tile_cache::TileCache) to promote a
+//! [`TileCache`](crate::sources::tile_cache::TileCache) to promote a
 //! sequential source to random access when an operation requires arbitrary reads.
 //!
 //! ```text

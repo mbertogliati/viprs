@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_plot::HistPlotOp;
+/// use viprs_ops_colour::histogram::hist_plot::HistPlotOp;
 ///
 /// let op = HistPlotOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

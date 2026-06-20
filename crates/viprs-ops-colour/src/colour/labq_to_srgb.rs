@@ -24,7 +24,7 @@ static LABQ_TO_SRGB_TABLES: OnceLock<LabQToSRgbTables> = OnceLock::new();
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::labq_to_srgb::LabQToSRgb;
+/// use viprs_ops_colour::colour::labq_to_srgb::LabQToSRgb;
 ///
 /// let op = LabQToSRgb;
 /// // Run `op` through a compiled image pipeline.

@@ -4,13 +4,13 @@
 //! pixels into compiled pipelines.
 
 use crate::{
-    adapters::sources::memory::MemorySource,
     domain::{
         error::ViprsError,
         format::{BandFormatId, F32, F64, I16, I32, U8, U16, U32},
         image::{DemandHint, ImageMetadata, Region},
     },
     ports::source::{DynImageSource, ImageSource},
+    sources::memory::MemorySource,
 };
 use std::num::NonZeroU8;
 

@@ -32,7 +32,7 @@ macro_rules! impl_transcendental {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Sin;
+/// use viprs_ops_pixel::point::trig::Sin;
 ///
 /// let op = Sin;
 /// // Run `op` through a compiled image pipeline.
@@ -45,7 +45,7 @@ impl_transcendental!(Sin, pt_sin, f32::sin);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Cos;
+/// use viprs_ops_pixel::point::trig::Cos;
 ///
 /// let op = Cos;
 /// // Run `op` through a compiled image pipeline.
@@ -58,7 +58,7 @@ impl_transcendental!(Cos, pt_cos, f32::cos);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Tan;
+/// use viprs_ops_pixel::point::trig::Tan;
 ///
 /// let op = Tan;
 /// // Run `op` through a compiled image pipeline.
@@ -71,7 +71,7 @@ impl_transcendental!(Tan, pt_tan, f32::tan);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::ASin;
+/// use viprs_ops_pixel::point::trig::ASin;
 ///
 /// let op = ASin;
 /// // Run `op` through a compiled image pipeline.
@@ -84,7 +84,7 @@ impl_transcendental!(ASin, pt_asin, f32::asin);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::ACos;
+/// use viprs_ops_pixel::point::trig::ACos;
 ///
 /// let op = ACos;
 /// // Run `op` through a compiled image pipeline.
@@ -97,7 +97,7 @@ impl_transcendental!(ACos, pt_acos, f32::acos);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::ATan;
+/// use viprs_ops_pixel::point::trig::ATan;
 ///
 /// let op = ATan;
 /// // Run `op` through a compiled image pipeline.
@@ -110,7 +110,7 @@ impl_transcendental!(ATan, pt_atan, f32::atan);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Exp;
+/// use viprs_ops_pixel::point::trig::Exp;
 ///
 /// let op = Exp;
 /// // Run `op` through a compiled image pipeline.
@@ -123,7 +123,7 @@ impl_transcendental!(Exp, pt_exp, f32::exp);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Log;
+/// use viprs_ops_pixel::point::trig::Log;
 ///
 /// let op = Log;
 /// // Run `op` through a compiled image pipeline.
@@ -156,7 +156,7 @@ impl Concretize for Log {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Sqrt;
+/// use viprs_ops_pixel::point::trig::Sqrt;
 ///
 /// let op = Sqrt;
 /// // Run `op` through a compiled image pipeline.
@@ -169,7 +169,7 @@ impl_transcendental!(Sqrt, pt_sqrt, f32::sqrt);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Power;
+/// use viprs_ops_pixel::point::trig::Power;
 ///
 /// let op = Power::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -217,7 +217,7 @@ impl Concretize for Power {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Round;
+/// use viprs_ops_pixel::point::trig::Round;
 ///
 /// let op = Round;
 /// // Run `op` through a compiled image pipeline.
@@ -230,7 +230,7 @@ impl_transcendental!(Round, pt_round, f32::round);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Floor;
+/// use viprs_ops_pixel::point::trig::Floor;
 ///
 /// let op = Floor;
 /// // Run `op` through a compiled image pipeline.
@@ -243,7 +243,7 @@ impl_transcendental!(Floor, pt_floor, f32::floor);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Ceil;
+/// use viprs_ops_pixel::point::trig::Ceil;
 ///
 /// let op = Ceil;
 /// // Run `op` through a compiled image pipeline.
@@ -256,7 +256,7 @@ impl_transcendental!(Ceil, pt_ceil, f32::ceil);
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::trig::Sign;
+/// use viprs_ops_pixel::point::trig::Sign;
 ///
 /// let op = Sign;
 /// // Run `op` through a compiled image pipeline.

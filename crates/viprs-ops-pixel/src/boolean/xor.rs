@@ -16,7 +16,7 @@ use super::common::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::boolean::xor::Xor;
+/// use viprs_ops_pixel::boolean::xor::Xor;
 ///
 /// let op = Xor::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

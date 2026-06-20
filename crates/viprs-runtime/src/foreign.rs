@@ -12,7 +12,7 @@
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::foreign::ForeignRegistry;
+/// use viprs_runtime::foreign::ForeignRegistry;
 ///
 /// let registry = ForeignRegistry::shared();
 /// let _ = registry;
@@ -26,7 +26,7 @@ pub use crate::adapters::codecs::registry::ForeignRegistry;
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::foreign::ImageCodec;
+/// use viprs_runtime::foreign::ImageCodec;
 ///
 /// fn accepts_runtime_codec(_codec: &dyn ImageCodec) {}
 /// ```

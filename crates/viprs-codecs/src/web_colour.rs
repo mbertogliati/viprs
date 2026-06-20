@@ -23,7 +23,7 @@ use viprs_ops_colour::colour::{
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
+/// let _ = viprs_codecs::web_colour::normalize_web_output_u8;
 /// ```
 pub fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
@@ -43,7 +43,7 @@ pub fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, 
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
+/// let _ = viprs_codecs::web_colour::normalize_web_output_u16;
 /// ```
 pub fn normalize_web_output_u16(image: &Image<U16>) -> Result<Cow<'_, Image<U16>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
@@ -202,7 +202,7 @@ mod enabled {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u8;
+    /// let _ = viprs_codecs::web_colour::normalize_web_output_u8;
     /// ```
     pub(super) fn normalize_web_output_u8(
         image: &Image<U8>,
@@ -229,7 +229,7 @@ mod enabled {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::web_colour::normalize_web_output_u16;
+    /// let _ = viprs_codecs::web_colour::normalize_web_output_u16;
     /// ```
     pub(super) fn normalize_web_output_u16(
         image: &Image<U16>,

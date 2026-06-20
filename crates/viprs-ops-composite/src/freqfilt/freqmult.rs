@@ -20,7 +20,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::freqfilt::freqmult::FreqMultOp;
+/// use viprs_ops_composite::freqfilt::freqmult::FreqMultOp;
 ///
 /// let op = FreqMultOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

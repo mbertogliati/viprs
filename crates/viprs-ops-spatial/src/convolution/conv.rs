@@ -44,7 +44,7 @@ pub struct ApproximatePrecision;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::conv::ConvOp;
+/// use viprs_ops_spatial::convolution::conv::ConvOp;
 ///
 /// let op = ConvOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -43,7 +43,7 @@ pub struct HistFindPartial {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_find_facades::HistFindOp;
+/// use viprs_ops_colour::histogram::hist_find_facades::HistFindOp;
 ///
 /// let op = HistFindOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -15,7 +15,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::cmyk::CmykToRgbOp;
+/// use viprs_ops_colour::colour::cmyk::CmykToRgbOp;
 ///
 /// let op = CmykToRgbOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.
@@ -45,7 +45,7 @@ impl<F: BandFormat> Default for CmykToRgbOp<F> {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::cmyk::RgbToCmykOp;
+/// use viprs_ops_colour::colour::cmyk::RgbToCmykOp;
 ///
 /// let op = RgbToCmykOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

@@ -45,7 +45,7 @@ use crate::adapters::codecs::WebpCodec;
 use crate::ports::codec::ImageEncoder;
 
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
-use crate::adapters::sources::decoder_source::DecoderSource;
+use crate::sources::decoder_source::DecoderSource;
 
 const JPEG_HEADER: [u8; 3] = [0xFF, 0xD8, 0xFF];
 const PNG_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];

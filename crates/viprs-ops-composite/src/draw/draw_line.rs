@@ -7,7 +7,7 @@ use super::{draw_line_in_region, validate_ink};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_line::DrawLineOp;
+/// use viprs_ops_composite::draw::draw_line::DrawLineOp;
 ///
 /// let op = DrawLineOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

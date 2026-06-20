@@ -42,7 +42,7 @@ pub trait PixelLocalOp: Op {}
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{
+/// # use viprs_core::{
 /// #     format::U8,
 /// #     image::{Region, Tile, TileMut},
 /// #     op::Op,

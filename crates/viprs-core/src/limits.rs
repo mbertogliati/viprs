@@ -12,7 +12,7 @@ use crate::error::ViprsError;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::limits::DecodeLimits;
+/// # use viprs_core::limits::DecodeLimits;
 /// let limits = DecodeLimits::default_safe();
 /// assert!(limits.validate_u8_image(64, 64, 3).is_ok());
 /// ```
@@ -127,7 +127,7 @@ impl Default for DecodeLimits {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::limits::ResourceLimits;
+/// # use viprs_core::limits::ResourceLimits;
 /// let limits = ResourceLimits::new(1_000, 4_096, 2);
 /// assert_eq!(limits.max_concurrent(), 2);
 /// ```

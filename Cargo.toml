@@ -102,7 +102,7 @@ crc32fast = "1"
 # Default runtime features: rayon scheduler, mmap-backed sources, and SIMD dispatch.
 default = ["rayon", "mmap", "simd-pulp"]
 ffi = []
-lock_instrumentation = []
+lock_instrumentation = ["viprs-runtime/lock_instrumentation"]
 rayon = ["dep:rayon", "viprs-codecs/rayon", "viprs-runtime/rayon"]
 tracing = ["dep:tracing", "viprs-codecs/tracing", "viprs-runtime/tracing"]
 mmap = ["dep:memmap2", "viprs-codecs/mmap", "viprs-runtime/mmap"]

@@ -116,7 +116,7 @@ enum LevelPixels<'a> {
 }
 
 impl LevelPixels<'_> {
-    fn as_slice(&self) -> &[u8] {
+    const fn as_slice(&self) -> &[u8] {
         match self {
             Self::Borrowed(pixels) => pixels,
             Self::Owned(pixels) => pixels.as_slice(),
@@ -131,7 +131,7 @@ impl LevelPixels<'_> {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::deepzoom::DeepZoomExporter>();
+/// let _ = core::mem::size_of::<viprs_codecs::deepzoom::DeepZoomExporter>();
 /// ```
 pub struct DeepZoomExporter {
     tile_size: u32,
@@ -144,8 +144,8 @@ impl DeepZoomExporter {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::deepzoom::from_options;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::deepzoom::DeepZoomExporter::from_options;
     /// ```
     pub fn from_options(opts: &SaveOptions) -> Result<Self, ViprsError> {
         if let (Some(tile_width), Some(tile_height)) = (opts.tile_width, opts.tile_height)
@@ -177,8 +177,8 @@ impl DeepZoomExporter {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::deepzoom::export;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::deepzoom::DeepZoomExporter::export;
     /// ```
     pub fn export(&self, image: &Image<U8>, path: &Path) -> Result<(), ViprsError> {
         let target = DeepZoomTarget::from_path(path)?;
@@ -243,15 +243,15 @@ fn validate_level_input(
         })?;
     if pixels.len() != expected_len {
         return Err(ViprsError::Codec(format!(
-            "deepzoom: pixel buffer length {} does not match {width}x{height}x{bands}={expected_len}",
-            pixels.len()
+            "deepzoom: pixel buffer length {actual} does not match {width}x{height}x{bands}={expected_len}",
+            actual = pixels.len()
         )));
     }
 
     Ok(bands_usize)
 }
 
-fn pyramid_level_count(width: u32, height: u32) -> usize {
+const fn pyramid_level_count(width: u32, height: u32) -> usize {
     let mut levels = 1usize;
     let mut current_width = width;
     let mut current_height = height;
@@ -521,8 +521,7 @@ fn extract_tile(
         .and_then(|px| px.checked_mul(3))
         .ok_or_else(|| {
             ViprsError::Codec(format!(
-                "deepzoom: tile dimensions overflow {}x{}",
-                width, height
+                "deepzoom: tile dimensions overflow {width}x{height}"
             ))
         })?;
     let mut rgb = vec![0u8; rgb_len];
@@ -600,12 +599,11 @@ impl ZipStreamWriter {
     fn write_entry(&mut self, name: &str, data: &[u8]) -> Result<(), ViprsError> {
         let name_bytes = name.as_bytes();
         let name_len = u16::try_from(name_bytes.len()).map_err(|_| {
-            ViprsError::Codec(format!("deepzoom: zip entry name too long '{}'", name))
+            ViprsError::Codec(format!("deepzoom: zip entry name too long '{name}'"))
         })?;
         let data_len = u32::try_from(data.len()).map_err(|_| {
             ViprsError::Codec(format!(
-                "deepzoom: zip entry '{}' exceeds zip32 size limit",
-                name
+                "deepzoom: zip entry '{name}' exceeds zip32 size limit"
             ))
         })?;
         let crc32 = crc32_ieee(data);

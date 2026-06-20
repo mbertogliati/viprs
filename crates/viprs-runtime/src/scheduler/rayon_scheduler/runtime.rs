@@ -124,7 +124,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::new;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::new;
     /// ```
     pub const fn new(num_threads: usize) -> Result<Self, ViprsError> {
         Ok(Self {
@@ -142,7 +142,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::default_threads;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::default_threads;
     /// ```
     #[must_use]
     pub fn default_threads() -> usize {
@@ -156,7 +156,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_strip_height_tiles;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::with_strip_height_tiles;
     /// ```
     pub fn with_strip_height_tiles(mut self, strip_height_tiles: usize) -> Self {
         self.strip_height_tiles = Some(strip_height_tiles.max(1));
@@ -170,7 +170,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_l2_cache_bytes;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::with_l2_cache_bytes;
     /// ```
     pub fn with_l2_cache_bytes(mut self, target_l2_bytes: usize) -> Self {
         self.target_l2_bytes = target_l2_bytes.max(1);
@@ -184,7 +184,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_max_concurrent_pipelines;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::with_max_concurrent_pipelines;
     /// ```
     pub fn with_max_concurrent_pipelines(mut self, max_concurrent: usize) -> Self {
         self.execution_limiter = Some(Arc::new(ExecutionSemaphore::new(max_concurrent.max(1))));
@@ -198,7 +198,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::with_execution_limiter;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::with_execution_limiter;
     /// ```
     pub(crate) fn with_execution_limiter(
         mut self,
@@ -406,7 +406,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::lock_instrumentation_snapshot;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::lock_instrumentation_snapshot;
     /// ```
     #[must_use]
     pub fn lock_instrumentation_snapshot() -> LockInstrumentationSnapshot {
@@ -419,7 +419,7 @@ impl RayonScheduler {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::scheduler::rayon_scheduler::run_with_profile;
+    /// let _ = viprs_runtime::scheduler::rayon_scheduler::run_with_profile;
     /// ```
     pub fn run_with_profile(
         &self,

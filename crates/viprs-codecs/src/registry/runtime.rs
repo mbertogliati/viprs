@@ -90,7 +90,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::new;
+    /// let _ = viprs_codecs::registry::new;
     /// ```
     pub fn new() -> Self {
         Self { codecs: Vec::new() }
@@ -102,7 +102,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::register;
+    /// let _ = viprs_codecs::registry::register;
     /// ```
     pub fn register(&mut self, codec: Box<dyn ImageCodec>) {
         self.codecs.push(codec);
@@ -114,7 +114,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::detect_format;
+    /// let _ = viprs_codecs::registry::detect_format;
     /// ```
     pub fn detect_format(&self, path: &Path) -> Option<&dyn ImageCodec> {
         let extension = path.extension()?.to_str()?;
@@ -130,7 +130,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load;
+    /// let _ = viprs_codecs::registry::load;
     /// ```
     pub fn load(&self, path: &Path) -> Result<Image<U8>, ViprsError> {
         self.load_as_with_options(path, &LoadOptions::default())
@@ -142,7 +142,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_with_options;
+    /// let _ = viprs_codecs::registry::load_with_options;
     /// ```
     pub fn load_with_options(
         &self,
@@ -158,7 +158,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_as;
+    /// let _ = viprs_codecs::registry::load_as;
     /// ```
     pub fn load_as<F: BandFormat>(&self, path: &Path) -> Result<Image<F>, ViprsError> {
         self.load_as_with_options(path, &LoadOptions::default())
@@ -170,7 +170,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_as_with_options;
+    /// let _ = viprs_codecs::registry::load_as_with_options;
     /// ```
     pub fn load_as_with_options<F: BandFormat>(
         &self,
@@ -205,7 +205,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_from_memory;
+    /// let _ = viprs_codecs::registry::load_from_memory;
     /// ```
     pub fn load_from_memory(&self, src: &[u8]) -> Result<(Image<U8>, &'static str), ViprsError> {
         self.load_from_memory_as_with_options(src, &LoadOptions::default())
@@ -217,7 +217,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_from_memory_with_options;
+    /// let _ = viprs_codecs::registry::load_from_memory_with_options;
     /// ```
     pub fn load_from_memory_with_options(
         &self,
@@ -233,7 +233,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_from_memory_as;
+    /// let _ = viprs_codecs::registry::load_from_memory_as;
     /// ```
     pub fn load_from_memory_as<F: BandFormat>(
         &self,
@@ -248,7 +248,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_from_memory_as_with_options;
+    /// let _ = viprs_codecs::registry::load_from_memory_as_with_options;
     /// ```
     pub fn load_from_memory_as_with_options<F: BandFormat>(
         &self,
@@ -268,7 +268,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::save;
+    /// let _ = viprs_codecs::registry::save;
     /// ```
     pub fn save(&self, image: &Image<U8>, path: &Path) -> Result<(), ViprsError> {
         self.save_as_with_options(image, path, &SaveOptions::default())
@@ -280,7 +280,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::save_with_options;
+    /// let _ = viprs_codecs::registry::save_with_options;
     /// ```
     pub fn save_with_options(
         &self,
@@ -297,7 +297,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::save_as;
+    /// let _ = viprs_codecs::registry::save_as;
     /// ```
     pub fn save_as<F: BandFormat>(&self, image: &Image<F>, path: &Path) -> Result<(), ViprsError> {
         self.save_as_with_options(image, path, &SaveOptions::default())
@@ -309,7 +309,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::save_as_with_options;
+    /// let _ = viprs_codecs::registry::save_as_with_options;
     /// ```
     pub fn save_as_with_options<F: BandFormat>(
         &self,
@@ -454,9 +454,6 @@ impl Default for ForeignRegistry {
         registry.register(Box::new(MagickFallbackLoader));
         #[cfg(feature = "pdf-poppler")]
         registry.register(boxed_decoder(PdfPopplerDecoder, &["pdf"]));
-        #[cfg(feature = "dcraw")]
-        registry.register(boxed_extension_decoder(DcrawDecoder, DCRAW_EXTENSIONS));
-
         // Text/binary formats that need no external dependencies.
         #[cfg(feature = "csv")]
         registry.register(boxed_codec(CsvCodec, &["csv"]));
@@ -464,6 +461,8 @@ impl Default for ForeignRegistry {
         registry.register(boxed_decoder(MatCodec, &["mat"]));
         registry.register(boxed_codec(AnalyzeCodec, &["img", "hdr"]));
         registry.register(boxed_codec(RawCodec, &["raw"]));
+        #[cfg(feature = "dcraw")]
+        registry.register(boxed_extension_decoder(DcrawDecoder, DCRAW_EXTENSIONS));
         #[cfg(feature = "nifti")]
         registry.register(boxed_decoder(NiftiCodec, &["nii", "hdr"]));
         #[cfg(feature = "vips-format")]
@@ -484,7 +483,7 @@ impl ForeignRegistry {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::shared;
+    /// let _ = viprs_codecs::registry::shared;
     /// ```
     pub fn shared() -> &'static Self {
         DEFAULT_FOREIGN_REGISTRY.get_or_init(Self::default)

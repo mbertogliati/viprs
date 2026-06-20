@@ -28,7 +28,7 @@ pub enum SdfShape {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::sdf::SdfOp;
+/// use viprs_ops_composite::create::sdf::SdfOp;
 ///
 /// let op = SdfOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

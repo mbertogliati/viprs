@@ -48,7 +48,7 @@ struct SeparableGeometry {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::convasep::ConvaSepOp;
+/// use viprs_ops_spatial::convolution::convasep::ConvaSepOp;
 ///
 /// let op = ConvaSepOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

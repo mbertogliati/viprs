@@ -122,7 +122,7 @@ impl AffineTransform {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::mosaicing::match_op::MatchOp;
+/// use viprs_ops_composite::mosaicing::match_op::MatchOp;
 ///
 /// let op = MatchOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

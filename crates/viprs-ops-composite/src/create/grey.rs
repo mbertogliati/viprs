@@ -20,7 +20,7 @@ pub enum GreyAxis {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::grey::GreyOp;
+/// use viprs_ops_composite::create::grey::GreyOp;
 ///
 /// let op = GreyOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

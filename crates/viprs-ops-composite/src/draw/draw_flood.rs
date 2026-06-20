@@ -7,7 +7,7 @@ use super::{draw_flood_in_region, validate_ink};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::draw::draw_flood::DrawFloodOp;
+/// use viprs_ops_composite::draw::draw_flood::DrawFloodOp;
 ///
 /// let op = DrawFloodOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

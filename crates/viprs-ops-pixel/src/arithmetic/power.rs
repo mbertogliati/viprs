@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::power::Power;
+/// use viprs_ops_pixel::arithmetic::power::Power;
 ///
 /// let op = Power::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

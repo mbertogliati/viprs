@@ -12,7 +12,7 @@ use super::math::ab_to_hue_degrees;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::lab_to_lch::LabToLch;
+/// use viprs_ops_colour::colour::lab_to_lch::LabToLch;
 ///
 /// let op = LabToLch;
 /// // Run `op` through a compiled image pipeline.

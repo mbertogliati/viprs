@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_cum::HistCumOp;
+/// use viprs_ops_colour::histogram::hist_cum::HistCumOp;
 ///
 /// let op = HistCumOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

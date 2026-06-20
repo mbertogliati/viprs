@@ -271,7 +271,7 @@ fn decode_ascii_samples_u8(header: &ParsedPnm, src: &[u8]) -> Result<Vec<u8>, Vi
             output.push(if value == 0 { u8::MAX } else { 0 });
         }
     } else {
-        let max_value = header.max_value.unwrap_or(u32::from(u8::MAX));
+        let max_value = header.max_value.unwrap_or_else(|| u32::from(u8::MAX));
         for _ in 0..sample_count {
             let token = cursor
                 .next_token()
@@ -309,7 +309,7 @@ fn decode_ascii_samples_u16(header: &ParsedPnm, src: &[u8]) -> Result<Vec<u16>, 
             output.push(if value == 0 { u16::MAX } else { 0 });
         }
     } else {
-        let max_value = header.max_value.unwrap_or(u32::from(u16::MAX));
+        let max_value = header.max_value.unwrap_or_else(|| u32::from(u16::MAX));
         for _ in 0..sample_count {
             let token = cursor
                 .next_token()
@@ -436,7 +436,7 @@ fn decode_pnm_u8(src: &[u8]) -> Result<(ParsedPnm, Image<U8>), ViprsError> {
 
 fn decode_pnm_u16(src: &[u8]) -> Result<(ParsedPnm, Image<U16>), ViprsError> {
     let header = parse_pnm_header(src)?;
-    if !header.magic.is_bitmap() && header.max_value.unwrap_or_default() <= u32::from(u8::MAX) {
+    if !header.magic.is_bitmap() && header.max_value.unwrap_or_default() <= u8::MAX.into() {
         return Err(ViprsError::Codec(
             "pnm: decoding into U16 requires a 16-bit Netpbm source".into(),
         ));
@@ -460,7 +460,7 @@ fn decode_pnm_u16(src: &[u8]) -> Result<(ParsedPnm, Image<U16>), ViprsError> {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::pnm::PnmCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::pnm::PnmCodec>();
 /// ```
 pub struct PnmCodec {
     kind: PnmEncodeKind,
@@ -612,12 +612,17 @@ fn encode_pbm_u16(image: &Image<U16>) -> Vec<u8> {
 fn encode_pnm<F: BandFormat>(kind: PnmEncodeKind, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
     let magic = select_pnm_magic_for_image(kind, image)?;
     let mut output = Vec::new();
-    output.extend_from_slice(match magic {
+    let magic_header = match magic {
         PnmMagic::P4 => b"P4\n".as_slice(),
         PnmMagic::P5 => b"P5\n".as_slice(),
         PnmMagic::P6 => b"P6\n".as_slice(),
-        _ => unreachable!(),
-    });
+        other => {
+            return Err(ViprsError::Codec(format!(
+                "pnm: unsupported Netpbm variant {other:?} for binary encoding"
+            )));
+        }
+    };
+    output.extend_from_slice(magic_header);
     output.extend_from_slice(format!("{} {}\n", image.width(), image.height()).as_bytes());
 
     if magic != PnmMagic::P4 {

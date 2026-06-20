@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::srgb_to_rgb16::SRgbToRgb16;
+/// use viprs_ops_colour::colour::srgb_to_rgb16::SRgbToRgb16;
 ///
 /// let op = SRgbToRgb16;
 /// // Run `op` through a compiled image pipeline.

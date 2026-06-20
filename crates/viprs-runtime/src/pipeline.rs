@@ -70,7 +70,7 @@ use crate::domain::colorspace::{Cmyk, Lch, Oklab, Oklch, SRgb, ScRgb, Ucs, Xyz, 
 /// # Examples
 ///
 /// ```rust
-/// use viprs::adapters::pipeline::NodeIdx;
+/// use viprs_runtime::pipeline::NodeIdx;
 ///
 /// let node: NodeIdx = 0;
 /// assert_eq!(node, 0);
@@ -84,7 +84,7 @@ pub type NodeIdx = usize;
 /// # Examples
 ///
 /// ```rust
-/// use viprs::adapters::pipeline::BufferIdx;
+/// use viprs_runtime::pipeline::BufferIdx;
 ///
 /// let buffer: BufferIdx = 0;
 /// assert_eq!(buffer, 0);

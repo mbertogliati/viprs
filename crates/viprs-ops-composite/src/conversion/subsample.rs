@@ -22,7 +22,7 @@ fn validate_subsample_factors(xfac: u32, yfac: u32) -> Result<(), BuildError> {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::subsample::SubsampleOp;
+/// use viprs_ops_composite::conversion::subsample::SubsampleOp;
 ///
 /// let op = SubsampleOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

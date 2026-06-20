@@ -321,8 +321,8 @@ impl<A: Concretize, B: Concretize> Concretize for (A, B) {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::concretize::apply_chain_to_slice;
-/// # use viprs::domain::format::U8;
+/// # use viprs_core::concretize::apply_chain_to_slice;
+/// # use viprs_core::format::U8;
 /// let mut pixels = [1_u8, 2, 3];
 /// apply_chain_to_slice::<U8, _>(&(), &mut pixels);
 /// assert_eq!(pixels, [1, 2, 3]);
@@ -343,8 +343,8 @@ where
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::concretize::apply_chain_src_dst;
-/// # use viprs::domain::format::U8;
+/// # use viprs_core::concretize::apply_chain_src_dst;
+/// # use viprs_core::format::U8;
 /// let src = [1_u8, 2, 3];
 /// let mut dst = [0_u8; 3];
 /// apply_chain_src_dst::<U8, _>(&(), &src, &mut dst);
@@ -374,7 +374,7 @@ pub fn apply_chain_src_dst<F: BandFormat, C: Concretize>(
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::concretize::apply_chain_wide_u8;
+/// # use viprs_core::concretize::apply_chain_wide_u8;
 /// let src = [1_u8, 2, 3];
 /// let mut dst = [0_u8; 3];
 /// apply_chain_wide_u8::<f32, _>(&(), &src, &mut dst);
@@ -393,7 +393,7 @@ pub fn apply_chain_wide_u8<W: WideAccum, C: Concretize>(chain: &C, src: &[u8], d
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::concretize::apply_chain_wide_u8_inplace;
+/// # use viprs_core::concretize::apply_chain_wide_u8_inplace;
 /// let mut buf = [1_u8, 2, 3];
 /// apply_chain_wide_u8_inplace::<f32, _>(&(), &mut buf);
 /// assert_eq!(buf, [1, 2, 3]);
@@ -411,7 +411,7 @@ pub fn apply_chain_wide_u8_inplace<W: WideAccum, C: Concretize>(chain: &C, buf: 
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::concretize::apply_chain_wide_u8_auto;
+/// # use viprs_core::concretize::apply_chain_wide_u8_auto;
 /// let src = [1_u8, 2, 3];
 /// let mut dst = [0_u8; 3];
 /// apply_chain_wide_u8_auto(&(), &src, &mut dst);
@@ -436,7 +436,7 @@ pub fn apply_chain_wide_u8_auto<C: Concretize>(chain: &C, src: &[u8], dst: &mut 
 /// # Examples
 ///
 /// ```rust
-/// # use viprs::domain::concretize::Chain;
+/// # use viprs_core::concretize::Chain;
 /// let chain = Chain::new().then(());
 /// let _ = chain;
 /// ```
@@ -452,7 +452,7 @@ impl Chain<()> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::concretize::Chain;
+    /// # use viprs_core::concretize::Chain;
     /// let _chain = Chain::new();
     /// ```
     #[inline(always)]
@@ -476,7 +476,7 @@ impl<C: Concretize> Chain<C> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::concretize::Chain;
+    /// # use viprs_core::concretize::Chain;
     /// let chain = Chain::new().then(());
     /// let _ = chain;
     /// ```

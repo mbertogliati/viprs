@@ -8,7 +8,7 @@ use thiserror::Error;
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::{BooleanError, ViprsError};
+/// # use viprs_core::error::{BooleanError, ViprsError};
 /// let err: ViprsError = BooleanError::ConstLengthMismatch { len: 2, bands: 3 }.into();
 /// assert!(matches!(err, ViprsError::Boolean(_)));
 /// ```
@@ -148,7 +148,7 @@ impl From<BuildError> for ViprsError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::ExrCodecError;
+/// # use viprs_core::error::ExrCodecError;
 /// let err = ExrCodecError::NoLayers;
 /// assert_eq!(err.to_string(), "file contains no layers");
 /// ```
@@ -243,7 +243,7 @@ pub enum ExrCodecError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::OpenSlideCodecError;
+/// # use viprs_core::error::OpenSlideCodecError;
 /// let err = OpenSlideCodecError::ZeroSizedLevel { level: 0, width: 0, height: 10 };
 /// assert!(err.to_string().contains("invalid dimensions"));
 /// ```
@@ -283,7 +283,7 @@ pub enum OpenSlideCodecError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::SchedulerContractError;
+/// # use viprs_core::error::SchedulerContractError;
 /// let err = SchedulerContractError::MissingTransformState { node: 3 };
 /// assert!(err.to_string().contains("missing operation state"));
 /// ```
@@ -304,7 +304,7 @@ pub enum SchedulerContractError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::DrawError;
+/// # use viprs_core::error::DrawError;
 /// let err = DrawError::EmptyColor;
 /// assert_eq!(err.to_string(), "draw colour must contain at least one band");
 /// ```
@@ -361,7 +361,7 @@ pub enum DrawError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::CompositeError;
+/// # use viprs_core::error::CompositeError;
 /// let err = CompositeError::NonSeparableModeRequiresRgba { mode: "overlay", bands: 3 };
 /// assert!(err.to_string().contains("requires exactly 4-band RGBA input"));
 /// ```
@@ -385,7 +385,7 @@ pub enum CompositeError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::BooleanError;
+/// # use viprs_core::error::BooleanError;
 /// let err = BooleanError::ConstLengthMismatch { len: 2, bands: 3 };
 /// assert!(err.to_string().contains("must have 1 or 3 elements"));
 /// ```
@@ -409,7 +409,7 @@ pub enum BooleanError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::FreqfiltError;
+/// # use viprs_core::error::FreqfiltError;
 /// let err = FreqfiltError::FwfftBands { bands: 2 };
 /// assert!(err.to_string().contains("single-band real image"));
 /// ```
@@ -501,7 +501,7 @@ pub enum FreqfiltError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::ConvolutionError;
+/// # use viprs_core::error::ConvolutionError;
 /// let err = ConvolutionError::EmptyKernel { op: "conv" };
 /// assert!(err.to_string().contains("kernel must not be empty"));
 /// ```
@@ -585,7 +585,7 @@ pub enum ConvolutionError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::HoughError;
+/// # use viprs_core::error::HoughError;
 /// let err = HoughError::ZeroScale;
 /// assert!(err.to_string().contains("greater than zero"));
 /// ```
@@ -612,7 +612,7 @@ pub enum HoughError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::MosaicingError;
+/// # use viprs_core::error::MosaicingError;
 /// let err = MosaicingError::InvalidHypothesisCount;
 /// assert!(err.to_string().contains("at least 1"));
 /// ```
@@ -676,7 +676,7 @@ pub enum MosaicingError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::error::SourceError;
+/// # use viprs_core::error::SourceError;
 /// let err = SourceError::TileCacheMutexPoisoned { phase: "read", x: 0, y: 0, width: 1, height: 1 };
 /// assert!(err.to_string().contains("tile cache mutex poisoned"));
 /// ```
@@ -733,7 +733,7 @@ pub enum TextError {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::{error::BuildError, format::BandFormatId};
+/// # use viprs_core::{error::BuildError, format::BandFormatId};
 /// let err = BuildError::FormatMismatch {
 ///     produced: BandFormatId::U8,
 ///     expected: BandFormatId::F32,

@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_entropy::HistEntropyOp;
+/// use viprs_ops_colour::histogram::hist_entropy::HistEntropyOp;
 ///
 /// let op = HistEntropyOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

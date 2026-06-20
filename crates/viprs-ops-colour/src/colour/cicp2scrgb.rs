@@ -277,7 +277,7 @@ impl CicpLutFormat for U16 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::cicp2scrgb::CicpToScRgb;
+/// use viprs_ops_colour::colour::cicp2scrgb::CicpToScRgb;
 ///
 /// let op = CicpToScRgb::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

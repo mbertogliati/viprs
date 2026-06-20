@@ -18,7 +18,7 @@ pub enum CountLinesDirection {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::morphology::count_lines::CountLinesOp;
+/// use viprs_ops_spatial::morphology::count_lines::CountLinesOp;
 ///
 /// let op = CountLinesOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

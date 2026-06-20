@@ -16,7 +16,7 @@ pub use viprs_core::image::MetadataOverrides;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::copy::CopyOp;
+/// use viprs_ops_composite::conversion::copy::CopyOp;
 ///
 /// let op = CopyOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

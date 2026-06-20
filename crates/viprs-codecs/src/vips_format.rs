@@ -68,7 +68,7 @@ struct VipsHeader {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::vips_format::VipsCodec>();
+/// let _ = core::mem::size_of::<viprs_codecs::vips_format::VipsCodec>();
 /// ```
 pub struct VipsCodec;
 
@@ -78,8 +78,8 @@ impl VipsCodec {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::vips_format::decode_vips;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::vips_format::VipsCodec::decode_vips::<viprs_core::format::U8>;
     /// ```
     pub fn decode_vips<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
         let (header, endianness) = parse_header(src)?;
@@ -138,8 +138,8 @@ impl VipsCodec {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::vips_format::encode_vips;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::vips_format::VipsCodec::encode_vips::<viprs_core::format::U8>;
     /// ```
     pub fn encode_vips<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
         let sample_size = std::mem::size_of::<F::Sample>();
@@ -292,8 +292,7 @@ fn parse_header(src: &[u8]) -> Result<(VipsHeader, HeaderEndianness), ViprsError
     let bands_i32 = read_i32(&src[12..16], endianness);
     if width_i32 <= 0 || height_i32 <= 0 || bands_i32 <= 0 {
         return Err(ViprsError::Codec(format!(
-            "vips: invalid dimensions in header: width={}, height={}, bands={}",
-            width_i32, height_i32, bands_i32
+            "vips: invalid dimensions in header: width={width_i32}, height={height_i32}, bands={bands_i32}"
         )));
     }
 
@@ -326,7 +325,7 @@ fn pixel_count(width: u32, height: u32, bands: u32) -> Result<usize, ViprsError>
         .ok_or_else(|| ViprsError::Codec("vips: dimensions overflow usize".into()))
 }
 
-fn needs_swap(file_endian: HeaderEndianness) -> bool {
+const fn needs_swap(file_endian: HeaderEndianness) -> bool {
     matches!(
         (file_endian, native_endianness()),
         (HeaderEndianness::Little, HeaderEndianness::Big)
@@ -334,7 +333,7 @@ fn needs_swap(file_endian: HeaderEndianness) -> bool {
     )
 }
 
-fn native_endianness() -> HeaderEndianness {
+const fn native_endianness() -> HeaderEndianness {
     if cfg!(target_endian = "big") {
         HeaderEndianness::Big
     } else {
@@ -342,14 +341,14 @@ fn native_endianness() -> HeaderEndianness {
     }
 }
 
-fn magic_for_endianness(endian: HeaderEndianness) -> u32 {
+const fn magic_for_endianness(endian: HeaderEndianness) -> u32 {
     match endian {
         HeaderEndianness::Little => u32::from_le_bytes(VIPS_MAGIC_INTEL_BYTES),
         HeaderEndianness::Big => u32::from_be_bytes(VIPS_MAGIC_SPARC_BYTES),
     }
 }
 
-fn band_format_to_vips(id: BandFormatId) -> i32 {
+const fn band_format_to_vips(id: BandFormatId) -> i32 {
     match id {
         BandFormatId::U8 => VIPS_FORMAT_UCHAR,
         BandFormatId::U16 => VIPS_FORMAT_USHORT,
@@ -403,7 +402,7 @@ fn interpretation_to_vips(interp: Option<Interpretation>) -> i32 {
     }
 }
 
-fn vips_to_interpretation(value: i32) -> Option<Interpretation> {
+const fn vips_to_interpretation(value: i32) -> Option<Interpretation> {
     match value {
         VIPS_INTERPRETATION_MULTIBAND => Some(Interpretation::Multiband),
         VIPS_INTERPRETATION_B_W => Some(Interpretation::BW),
@@ -444,7 +443,7 @@ fn read_f32(src: &[u8], endian: HeaderEndianness) -> f32 {
     }
 }
 
-fn write_i16(dst: &mut [u8], value: i16, endian: HeaderEndianness) {
+const fn write_i16(dst: &mut [u8], value: i16, endian: HeaderEndianness) {
     let bytes = match endian {
         HeaderEndianness::Little => value.to_le_bytes(),
         HeaderEndianness::Big => value.to_be_bytes(),
@@ -452,7 +451,7 @@ fn write_i16(dst: &mut [u8], value: i16, endian: HeaderEndianness) {
     dst.copy_from_slice(&bytes);
 }
 
-fn write_i32(dst: &mut [u8], value: i32, endian: HeaderEndianness) {
+const fn write_i32(dst: &mut [u8], value: i32, endian: HeaderEndianness) {
     let bytes = match endian {
         HeaderEndianness::Little => value.to_le_bytes(),
         HeaderEndianness::Big => value.to_be_bytes(),
@@ -460,7 +459,7 @@ fn write_i32(dst: &mut [u8], value: i32, endian: HeaderEndianness) {
     dst.copy_from_slice(&bytes);
 }
 
-fn write_u32(dst: &mut [u8], value: u32, endian: HeaderEndianness) {
+const fn write_u32(dst: &mut [u8], value: u32, endian: HeaderEndianness) {
     let bytes = match endian {
         HeaderEndianness::Little => value.to_le_bytes(),
         HeaderEndianness::Big => value.to_be_bytes(),
@@ -468,7 +467,7 @@ fn write_u32(dst: &mut [u8], value: u32, endian: HeaderEndianness) {
     dst.copy_from_slice(&bytes);
 }
 
-fn write_f32(dst: &mut [u8], value: f32, endian: HeaderEndianness) {
+const fn write_f32(dst: &mut [u8], value: f32, endian: HeaderEndianness) {
     let bytes = match endian {
         HeaderEndianness::Little => value.to_le_bytes(),
         HeaderEndianness::Big => value.to_be_bytes(),

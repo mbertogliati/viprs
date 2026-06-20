@@ -8,7 +8,7 @@ use viprs_core::format::{BandFormat, PointSample};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::boolean::BoolAnd;
+/// use viprs_ops_pixel::point::boolean::BoolAnd;
 ///
 /// let op = BoolAnd::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -52,7 +52,7 @@ impl Concretize for BoolAnd {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::boolean::BoolOr;
+/// use viprs_ops_pixel::point::boolean::BoolOr;
 ///
 /// let op = BoolOr::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -96,7 +96,7 @@ impl Concretize for BoolOr {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::boolean::BoolXor;
+/// use viprs_ops_pixel::point::boolean::BoolXor;
 ///
 /// let op = BoolXor::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -140,7 +140,7 @@ impl Concretize for BoolXor {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::boolean::Lshift;
+/// use viprs_ops_pixel::point::boolean::Lshift;
 ///
 /// let op = Lshift::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -184,7 +184,7 @@ impl Concretize for Lshift {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::boolean::Rshift;
+/// use viprs_ops_pixel::point::boolean::Rshift;
 ///
 /// let op = Rshift::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

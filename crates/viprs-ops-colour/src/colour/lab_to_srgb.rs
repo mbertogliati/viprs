@@ -18,7 +18,7 @@ use std::arch::aarch64::{vaddq_f32, vld1q_f32, vmulq_n_f32, vst1q_f32};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::lab_to_srgb::LabToSRgb;
+/// use viprs_ops_colour::colour::lab_to_srgb::LabToSRgb;
 ///
 /// let op = LabToSRgb;
 /// // Run `op` through a compiled image pipeline.

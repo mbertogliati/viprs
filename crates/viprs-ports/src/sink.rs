@@ -16,8 +16,8 @@ use viprs_core::{error::ViprsError, image::Region};
 /// # Examples
 ///
 /// ```rust
-/// use viprs::ports::sink::ImageSink;
-/// use viprs::domain::{error::ViprsError, image::Region};
+/// use viprs_ports::sink::ImageSink;
+/// use viprs_core::{error::ViprsError, image::Region};
 ///
 /// struct CollectingSink(Vec<u8>);
 ///
@@ -41,8 +41,8 @@ pub trait ImageSink: Send {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::ports::sink::ImageSink;
-    /// # use viprs::domain::{error::ViprsError, image::Region};
+    /// # use viprs_ports::sink::ImageSink;
+    /// # use viprs_core::{error::ViprsError, image::Region};
     /// # struct CollectingSink(Vec<u8>);
     /// # impl ImageSink for CollectingSink {
     /// #     fn write_region(&mut self, _region: Region, data: &[u8]) -> Result<(), ViprsError> {
@@ -65,8 +65,8 @@ pub trait ImageSink: Send {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::ports::sink::ImageSink;
-    /// # use viprs::domain::{error::ViprsError, image::Region};
+    /// # use viprs_ports::sink::ImageSink;
+    /// # use viprs_core::{error::ViprsError, image::Region};
     /// # struct CollectingSink;
     /// # impl ImageSink for CollectingSink {
     /// #     fn write_region(&mut self, _region: Region, _data: &[u8]) -> Result<(), ViprsError> {
@@ -89,8 +89,8 @@ pub trait ImageSink: Send {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::ports::sink::ImageSink;
-    /// # use viprs::domain::{error::ViprsError, image::Region};
+    /// # use viprs_ports::sink::ImageSink;
+    /// # use viprs_core::{error::ViprsError, image::Region};
     /// # struct CollectingSink;
     /// # impl ImageSink for CollectingSink {
     /// #     fn write_region(&mut self, _region: Region, _data: &[u8]) -> Result<(), ViprsError> {
@@ -116,8 +116,8 @@ pub trait ImageSink: Send {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::ports::sink::ConcurrentSink;
-/// use viprs::domain::{error::ViprsError, image::Region};
+/// use viprs_ports::sink::ConcurrentSink;
+/// use viprs_core::{error::ViprsError, image::Region};
 ///
 /// struct SharedSink;
 ///
@@ -144,8 +144,8 @@ pub trait ConcurrentSink: Send + Sync + Any {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::ports::sink::ConcurrentSink;
-    /// # use viprs::domain::{error::ViprsError, image::Region};
+    /// # use viprs_ports::sink::ConcurrentSink;
+    /// # use viprs_core::{error::ViprsError, image::Region};
     /// # struct SharedSink;
     /// # impl ConcurrentSink for SharedSink {
     /// #     fn write_region_concurrent(&self, _region: Region, _data: &[u8]) -> Result<(), ViprsError> {
@@ -168,8 +168,8 @@ pub trait ConcurrentSink: Send + Sync + Any {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::ports::sink::ConcurrentSink;
-    /// # use viprs::domain::{error::ViprsError, image::Region};
+    /// # use viprs_ports::sink::ConcurrentSink;
+    /// # use viprs_core::{error::ViprsError, image::Region};
     /// # struct SharedSink;
     /// # impl ConcurrentSink for SharedSink {
     /// #     fn write_region_concurrent(&self, _region: Region, _data: &[u8]) -> Result<(), ViprsError> {
@@ -191,8 +191,8 @@ pub trait ConcurrentSink: Send + Sync + Any {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::ports::sink::ConcurrentSink;
-    /// # use viprs::domain::{error::ViprsError, image::Region};
+    /// # use viprs_ports::sink::ConcurrentSink;
+    /// # use viprs_core::{error::ViprsError, image::Region};
     /// # struct SharedSink;
     /// # impl ConcurrentSink for SharedSink {
     /// #     fn write_region_concurrent(&self, _region: Region, _data: &[u8]) -> Result<(), ViprsError> {

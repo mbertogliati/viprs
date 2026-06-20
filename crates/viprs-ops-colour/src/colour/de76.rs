@@ -9,7 +9,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::de76::DE76;
+/// use viprs_ops_colour::colour::de76::DE76;
 ///
 /// let op = DE76;
 /// // Run `op` through a compiled image pipeline.

@@ -10,7 +10,7 @@ use viprs_core::format::{BandFormat, PointSample};
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::point::gamma::Gamma;
+/// use viprs_ops_pixel::point::gamma::Gamma;
 ///
 /// let op = Gamma::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

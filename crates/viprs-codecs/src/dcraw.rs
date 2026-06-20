@@ -46,7 +46,7 @@ static TEMP_FILE_COUNTER: AtomicU64 = AtomicU64::new(0);
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::dcraw::DcrawDecoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::dcraw::DcrawDecoder>();
 /// ```
 pub struct DcrawDecoder;
 
@@ -65,23 +65,8 @@ struct ParsedPnmHeader {
 }
 
 impl DcrawBitDepth {
-    const fn bytes_per_sample(self, maxval: u32) -> usize {
-        match self {
-            Self::U8 => {
-                if maxval <= PNM_ASCII_MAXVAL_U8 {
-                    1
-                } else {
-                    2
-                }
-            }
-            Self::U16 => {
-                if maxval <= PNM_ASCII_MAXVAL_U8 {
-                    1
-                } else {
-                    2
-                }
-            }
-        }
+    const fn bytes_per_sample(maxval: u32) -> usize {
+        if maxval <= PNM_ASCII_MAXVAL_U8 { 1 } else { 2 }
     }
 }
 
@@ -229,7 +214,7 @@ fn decode_pnm_as_u16(stdout: &[u8]) -> Result<(u32, u32, u32, Vec<u16>), ViprsEr
     let header = parse_pnm_header(stdout)?;
     let bands = if header.magic == *b"P6" { 3 } else { 1 };
     let sample_count = sample_count(header.width, header.height, bands)?;
-    let bytes_per_sample = DcrawBitDepth::U16.bytes_per_sample(header.maxval);
+    let bytes_per_sample = DcrawBitDepth::bytes_per_sample(header.maxval);
     let expected_len = sample_count
         .checked_mul(bytes_per_sample)
         .ok_or_else(|| ViprsError::Codec("dcraw: decoded payload length overflow".into()))?;
@@ -256,7 +241,7 @@ fn decode_pnm_as_u16(stdout: &[u8]) -> Result<(u32, u32, u32, Vec<u16>), ViprsEr
     Ok((header.width, header.height, bands, samples))
 }
 
-fn orientation_from_dcraw_flip(flip: i32) -> Option<u8> {
+const fn orientation_from_dcraw_flip(flip: i32) -> Option<u8> {
     match flip {
         0 => Some(1),
         3 => Some(3),

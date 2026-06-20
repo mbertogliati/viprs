@@ -24,7 +24,7 @@ mod private {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::colorspace::ColorspaceId;
+/// # use viprs_core::colorspace::ColorspaceId;
 /// assert_eq!(ColorspaceId::SRgb.band_count(), Some(3));
 /// ```
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -113,7 +113,7 @@ impl ColorspaceId {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::colorspace::{Colorspace, SRgb};
+/// # use viprs_core::colorspace::{Colorspace, SRgb};
 /// assert_eq!(SRgb::ID, <SRgb as Colorspace>::ID);
 /// ```
 pub trait Colorspace: private::Sealed + Send + Sync + 'static {

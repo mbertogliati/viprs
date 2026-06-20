@@ -16,7 +16,7 @@ struct Gradient {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::perlin::PerlinOp;
+/// use viprs_ops_composite::create::perlin::PerlinOp;
 ///
 /// let op = PerlinOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

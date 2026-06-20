@@ -51,7 +51,7 @@ pub enum MapImExtend {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::resample::mapim::MapImOp;
+/// use viprs_ops_spatial::resample::mapim::MapImOp;
 ///
 /// let op = MapImOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -274,7 +274,7 @@ struct RowState {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::resample::quadratic::Quadratic;
+/// use viprs_ops_spatial::resample::quadratic::Quadratic;
 ///
 /// let op = Quadratic::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

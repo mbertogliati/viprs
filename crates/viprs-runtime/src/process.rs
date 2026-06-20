@@ -1,7 +1,7 @@
 //! One-call processing helper for common server workflows.
 //!
 //! ```no_run
-//! use viprs::adapters::process::{EncodeOptions, ProcessOptions, process};
+//! use viprs_runtime::process::{EncodeOptions, ProcessOptions, process};
 //!
 //! let input_bytes = vec![0xFF, 0xD8, 0xFF];
 //! let mut output = Vec::new();
@@ -216,14 +216,14 @@ pub fn process_pipeline<W, F>(
 where
     W: Write,
     F: FnOnce(
-        crate::adapters::pipeline::PipelineBuilder,
-    ) -> Result<crate::adapters::pipeline::CompiledPipeline, ViprsError>,
+        crate::pipeline::PipelineBuilder,
+    ) -> Result<crate::pipeline::CompiledPipeline, ViprsError>,
 {
-    use crate::adapters::pipeline::PipelineBuilder;
-    use crate::adapters::scheduler::rayon_scheduler::RayonScheduler;
-    use crate::adapters::sinks::memory::MemorySink;
-    use crate::adapters::sources::memory::MemorySource;
+    use crate::pipeline::PipelineBuilder;
     use crate::ports::scheduler::TileScheduler;
+    use crate::scheduler::rayon_scheduler::RayonScheduler;
+    use crate::sinks::memory::MemorySink;
+    use crate::sources::memory::MemorySource;
 
     validate_encode_options(encode_opts)?;
     check_cancelled(process_opts.cancel_token.as_ref())?;

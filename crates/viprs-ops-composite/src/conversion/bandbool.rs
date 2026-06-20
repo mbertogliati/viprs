@@ -26,7 +26,7 @@ pub enum BoolOp {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::bandbool::BandboolOp;
+/// use viprs_ops_composite::conversion::bandbool::BandboolOp;
 ///
 /// let op = BandboolOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -526,9 +526,8 @@ fn decode_hdf5_dataset(dataset: &Hdf5Dataset) -> Result<Option<DecodedMatrix>, V
     let dtype = dataset
         .dtype()
         .map_err(|err| ViprsError::Codec(format!("mat: HDF5 dtype read failed: {err}")))?;
-    let format = match hdf5_dtype_to_band_format(&dtype) {
-        Some(format) => format,
-        None => return Ok(None),
+    let Some(format) = hdf5_dtype_to_band_format(&dtype) else {
+        return Ok(None);
     };
 
     let rows = usize::try_from(shape[0]).map_err(|_| {

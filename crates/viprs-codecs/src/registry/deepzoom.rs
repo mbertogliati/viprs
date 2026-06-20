@@ -52,7 +52,7 @@ impl DeepZoomQuantize for u16 {
 #[cfg(feature = "deepzoom")]
 impl DeepZoomQuantize for i16 {
     fn quantize_to_u8(value: Self, _unit_scale: bool) -> u8 {
-        value.clamp(0, i16::from(u8::MAX)) as u8
+        value.clamp(0, Self::from(u8::MAX)) as u8
     }
 }
 
@@ -66,7 +66,7 @@ impl DeepZoomQuantize for u32 {
 #[cfg(feature = "deepzoom")]
 impl DeepZoomQuantize for i32 {
     fn quantize_to_u8(value: Self, _unit_scale: bool) -> u8 {
-        value.clamp(0, i32::from(u8::MAX)) as u8
+        value.clamp(0, Self::from(u8::MAX)) as u8
     }
 }
 
@@ -135,7 +135,7 @@ fn quantize_pixels_to_u8<T: DeepZoomQuantize + Copy>(pixels: &[T]) -> Vec<u8> {
 }
 
 #[cfg(feature = "deepzoom")]
-pub(crate) fn to_u8_image<F: BandFormat>(image: &Image<F>) -> Result<Image<U8>, ViprsError> {
+pub fn to_u8_image<F: BandFormat>(image: &Image<F>) -> Result<Image<U8>, ViprsError> {
     let quantized = match F::ID {
         BandFormatId::U8 => quantize_pixels_to_u8::<u8>(bytemuck::cast_slice(image.pixels())),
         BandFormatId::U16 => quantize_pixels_to_u8::<u16>(bytemuck::cast_slice(image.pixels())),
@@ -151,7 +151,7 @@ pub(crate) fn to_u8_image<F: BandFormat>(image: &Image<F>) -> Result<Image<U8>, 
 }
 
 #[cfg(feature = "deepzoom")]
-pub(crate) fn save_deepzoom<F: BandFormat>(
+pub fn save_deepzoom<F: BandFormat>(
     image: &Image<F>,
     path: &Path,
     opts: &SaveOptions,
@@ -199,7 +199,7 @@ impl<F: BandFormat> ImageCodecExt for Image<F> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load;
+    /// let _ = viprs_codecs::registry::load;
     /// ```
     fn load(path: impl AsRef<Path>) -> Result<Self, ViprsError> {
         ForeignRegistry::shared().load_as(path.as_ref())
@@ -211,7 +211,7 @@ impl<F: BandFormat> ImageCodecExt for Image<F> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::load_with_options;
+    /// let _ = viprs_codecs::registry::load_with_options;
     /// ```
     fn load_with_options(path: impl AsRef<Path>, opts: &LoadOptions) -> Result<Self, ViprsError> {
         ForeignRegistry::shared().load_as_with_options(path.as_ref(), opts)
@@ -223,7 +223,7 @@ impl<F: BandFormat> ImageCodecExt for Image<F> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::save;
+    /// let _ = viprs_codecs::registry::save;
     /// ```
     fn save(&self, path: impl AsRef<Path>) -> Result<(), ViprsError> {
         ForeignRegistry::shared().save_as(self, path.as_ref())
@@ -235,7 +235,7 @@ impl<F: BandFormat> ImageCodecExt for Image<F> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::codecs::registry::save_with_options;
+    /// let _ = viprs_codecs::registry::save_with_options;
     /// ```
     fn save_with_options(
         &self,

@@ -17,7 +17,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::freqfilt::phasecor::PhasecorOp;
+/// use viprs_ops_composite::freqfilt::phasecor::PhasecorOp;
 ///
 /// let op = PhasecorOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

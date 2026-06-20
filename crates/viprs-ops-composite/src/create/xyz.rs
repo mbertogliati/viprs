@@ -11,7 +11,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::xyz::XyzOp;
+/// use viprs_ops_composite::create::xyz::XyzOp;
 ///
 /// let op = XyzOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

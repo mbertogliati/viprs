@@ -170,7 +170,7 @@ pub(crate) fn apply_fft_2d_in_place<R: Fft<f32> + ?Sized, C: Fft<f32> + ?Sized>(
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::freqfilt::fwfft::FwFftOp;
+/// use viprs_ops_composite::freqfilt::fwfft::FwFftOp;
 ///
 /// let op = FwFftOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

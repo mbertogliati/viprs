@@ -28,7 +28,7 @@ use super::region_decode::decode_png_full_raster_with_png_crate;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::png::PngEncoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::png::PngEncoder>();
 /// ```
 pub struct PngEncoder {
     /// DEFLATE compression level: 0 disables compression, 1 favours throughput,

@@ -9,9 +9,9 @@ use png::ColorType;
 use png::{BitDepth, Decoder as PngDecoder, Transformations};
 #[cfg(feature = "libspng")]
 use spng::{
-    BitDepth as SpngBitDepth, ColorType as SpngColorType, ContextFlags as SpngContextFlags,
-    CrcAction as SpngCrcAction, DecodeFlags as SpngDecodeFlags, Error as SpngError,
-    Format as SpngFormat, Info as SpngInfo, raw::RawContext as SpngRawContext,
+    BitDepth as SpngBitDepth, ColorType as SpngColorType, CrcAction as SpngCrcAction,
+    DecodeFlags as SpngDecodeFlags, Format as SpngFormat, Info as SpngInfo,
+    raw::RawContext as SpngRawContext,
 };
 
 use viprs_core::error::ViprsError;
@@ -85,22 +85,20 @@ fn libspng_output_format(
     color_type: SpngColorType,
     bit_depth: SpngBitDepth,
 ) -> Result<SpngFormat, ViprsError> {
-    match (color_type, bit_depth) {
+    match bit_depth {
         // Mirror libvips: keep native PNG channel layout whenever libspng can
         // emit host-endian samples directly, and only request an expanded format
         // when the file is palette-indexed.
-        (SpngColorType::Indexed, SpngBitDepth::Eight) => Ok(SpngFormat::Rgb8),
-        (
+        SpngBitDepth::Eight => match color_type {
+            SpngColorType::Indexed => Ok(SpngFormat::Rgb8),
             SpngColorType::Grayscale
             | SpngColorType::GrayscaleAlpha
             | SpngColorType::Truecolor
-            | SpngColorType::TruecolorAlpha,
-            SpngBitDepth::Eight | SpngBitDepth::Sixteen,
-        ) => Ok(SpngFormat::Png),
-        (SpngColorType::Indexed, SpngBitDepth::Sixteen) => Ok(SpngFormat::Png),
-        (_, depth) => Err(ViprsError::Codec(format!(
-            "png: libspng does not support bit depth {:?}",
-            depth
+            | SpngColorType::TruecolorAlpha => Ok(SpngFormat::Png),
+        },
+        SpngBitDepth::Sixteen => Ok(SpngFormat::Png),
+        depth => Err(ViprsError::Codec(format!(
+            "png: libspng does not support bit depth {depth:?}"
         ))),
     }
 }
@@ -476,7 +474,7 @@ fn spng_output_bands(output_format: SpngFormat, input_color_type: SpngColorType)
 fn png_metadata_from_libspng<R: std::io::Read>(
     ctx: &SpngRawContext<R>,
     info: SpngInfo,
-) -> Result<ImageMetadata, ViprsError> {
+) -> ImageMetadata {
     let color_type = match info.color_type {
         SpngColorType::Grayscale => ColorType::Grayscale,
         SpngColorType::Truecolor => ColorType::Rgb,
@@ -511,7 +509,7 @@ fn png_metadata_from_libspng<R: std::io::Read>(
         })
     });
 
-    Ok(build_png_metadata(
+    build_png_metadata(
         color_type,
         bit_depth,
         ctx.get_srgb().is_ok(),
@@ -520,13 +518,12 @@ fn png_metadata_from_libspng<R: std::io::Read>(
         xmp,
         xres,
         yres,
-    ))
+    )
 }
 
 #[cfg(feature = "libspng")]
 fn new_libspng_context<R>() -> Result<SpngRawContext<R>, ViprsError> {
-    let mut ctx = SpngRawContext::with_flags(SpngContextFlags::IGNORE_ADLER32)
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut ctx = SpngRawContext::new().map_err(|e| ViprsError::Codec(e.to_string()))?;
     ctx.set_crc_action(SpngCrcAction::Use, SpngCrcAction::Use)
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
     Ok(ctx)
@@ -536,31 +533,10 @@ fn new_libspng_context<R>() -> Result<SpngRawContext<R>, ViprsError> {
 fn decode_libspng_rows<R>(
     ctx: &mut SpngRawContext<R>,
     output_format: SpngFormat,
-    interlaced: bool,
     output: &mut [u8],
-    height: u32,
 ) -> Result<(), ViprsError> {
-    if interlaced {
-        return ctx
-            .decode_image(output, output_format, SpngDecodeFlags::empty())
-            .map_err(|e| ViprsError::Codec(e.to_string()));
-    }
-
-    ctx.decode_image(&mut [], output_format, SpngDecodeFlags::PROGRESSIVE)
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
-
-    let row_len = output
-        .len()
-        .checked_div(height as usize)
-        .ok_or_else(|| ViprsError::Codec("png: invalid libspng row geometry".into()))?;
-    for (row_idx, row) in output.chunks_exact_mut(row_len).enumerate() {
-        match ctx.decode_row(row) {
-            Ok(()) => {}
-            Err(SpngError::Oi) if row_idx + 1 == height as usize => break,
-            Err(error) => return Err(ViprsError::Codec(error.to_string())),
-        }
-    }
-    Ok(())
+    ctx.decode_image(output, output_format, SpngDecodeFlags::empty())
+        .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 #[cfg(feature = "libspng")]
@@ -598,14 +574,8 @@ fn decode_png_with_libspng_reader<F: BandFormat, R: std::io::Read>(
         .decoded_image_size(output_format)
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut buf = vec![0; output_size];
-    decode_libspng_rows(
-        &mut ctx,
-        output_format,
-        ihdr.interlace_method != 0,
-        &mut buf,
-        height,
-    )?;
-    let metadata = png_metadata_from_libspng(&ctx, info)?;
+    decode_libspng_rows(&mut ctx, output_format, &mut buf)?;
+    let metadata = png_metadata_from_libspng(&ctx, info);
 
     let decoded_bands = spng_output_bands(output_format, color_type);
     if decoded_bands != bands {
@@ -643,76 +613,6 @@ fn decode_png_with_libspng_reader<F: BandFormat, R: std::io::Read>(
 
 #[cfg(feature = "libspng")]
 pub(super) fn decode_png_with_libspng<F: BandFormat>(src: &[u8]) -> Result<Image<F>, ViprsError> {
-    let mut ctx = new_libspng_context()?;
-    ctx.set_png_buffer(src)
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
-
-    let ihdr = ctx
-        .get_ihdr()
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
-    let color_type =
-        SpngColorType::try_from(ihdr.color_type).map_err(|e| ViprsError::Codec(e.to_string()))?;
-    let bit_depth =
-        SpngBitDepth::try_from(ihdr.bit_depth).map_err(|e| ViprsError::Codec(e.to_string()))?;
-    let info = SpngInfo {
-        width: ihdr.width,
-        height: ihdr.height,
-        color_type,
-        bit_depth,
-    };
-    let width = info.width;
-    let height = info.height;
-    let bands = color_type_to_bands(match color_type {
-        SpngColorType::Grayscale => ColorType::Grayscale,
-        SpngColorType::Truecolor => ColorType::Rgb,
-        SpngColorType::Indexed => ColorType::Indexed,
-        SpngColorType::GrayscaleAlpha => ColorType::GrayscaleAlpha,
-        SpngColorType::TruecolorAlpha => ColorType::Rgba,
-    });
-    let output_format = libspng_output_format(color_type, bit_depth)?;
-    let output_size = ctx
-        .decoded_image_size(output_format)
-        .map_err(|e| ViprsError::Codec(e.to_string()))?;
-    let mut buf = vec![0u8; output_size];
-    decode_libspng_rows(
-        &mut ctx,
-        output_format,
-        ihdr.interlace_method != 0,
-        &mut buf,
-        height,
-    )?;
-    let metadata = png_metadata_from_libspng(&ctx, info)?;
-
-    let decoded_bands = spng_output_bands(output_format, color_type);
-    if decoded_bands != bands {
-        return Err(ViprsError::Codec(format!(
-            "png: libspng decoded {decoded_bands} bands, expected {bands}"
-        )));
-    }
-
-    let samples: Vec<F::Sample> = match (F::ID, bit_depth) {
-        (BandFormatId::U8, SpngBitDepth::Eight) => {
-            bytemuck::allocation::try_cast_vec::<u8, F::Sample>(buf)
-                .map_err(|(e, _)| ViprsError::Codec(format!("png: cast error: {e:?}")))?
-        }
-        (BandFormatId::U16, SpngBitDepth::Sixteen) => {
-            let native: Vec<u16> = buf
-                .chunks_exact(2)
-                .map(|chunk| u16::from_ne_bytes([chunk[0], chunk[1]]))
-                .collect();
-            bytemuck::allocation::try_cast_vec::<u16, F::Sample>(native)
-                .map_err(|(e, _)| ViprsError::Codec(format!("png: cast error: {e:?}")))?
-        }
-        _ => {
-            return Err(ViprsError::Codec(format!(
-                "png: format/bit-depth mismatch — requested {:?} but file has {:?}",
-                F::ID,
-                bit_depth
-            )));
-        }
-    };
-
-    Image::from_buffer(width, height, bands, samples)
-        .map(|image| image.with_metadata(metadata))
-        .map_err(|e| ViprsError::Codec(e.to_string()))
+    decode_png_with_libspng_reader::<F, _>(std::io::Cursor::new(src))
+        .or_else(|_| decode_png_with_png_crate_reader(std::io::Cursor::new(src)))
 }

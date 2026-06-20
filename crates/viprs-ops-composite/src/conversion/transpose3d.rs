@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::transpose3d::Transpose3dOp;
+/// use viprs_ops_composite::conversion::transpose3d::Transpose3dOp;
 ///
 /// let op = Transpose3dOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

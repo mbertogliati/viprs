@@ -8,7 +8,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::exp::Exp;
+/// use viprs_ops_pixel::arithmetic::exp::Exp;
 ///
 /// let op = Exp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

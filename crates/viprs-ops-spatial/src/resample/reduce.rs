@@ -29,7 +29,7 @@ pub struct ReduceState<T> {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::resample::reduce::ReduceOp;
+/// use viprs_ops_spatial::resample::reduce::ReduceOp;
 ///
 /// let op = ReduceOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

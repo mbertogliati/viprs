@@ -15,7 +15,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::invertlut::InvertlutOp;
+/// use viprs_ops_composite::create::invertlut::InvertlutOp;
 ///
 /// let op = InvertlutOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

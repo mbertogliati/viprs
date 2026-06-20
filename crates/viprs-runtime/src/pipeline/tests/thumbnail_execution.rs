@@ -239,12 +239,12 @@ fn normalize_to_srgb_matches_web_encode_normalization_for_gray_alpha_sources() {
 #[test]
 fn normalize_to_srgb_is_noop_for_existing_srgb_profile() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{
             format::U8,
             image::{ImageMetadata, Interpretation},
             ops::colour::profile_load,
         },
+        sources::memory::MemorySource,
     };
 
     let mut metadata = ImageMetadata::default();
@@ -420,8 +420,8 @@ fn clearing_branch_point_cache_forces_recompute_on_next_run() {
 
 #[test]
 fn from_source_maps_interpretation_for_colourspace_builder() {
-    use crate::adapters::sources::memory::MemorySource;
     use crate::domain::{colorspace::Lab, format::U8, image::ImageMetadata};
+    use crate::sources::memory::MemorySource;
 
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::Srgb);
@@ -471,10 +471,10 @@ fn jpeg_decoder_source_preserves_interpretation_through_pipeline() {
 
 #[test]
 fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
-    use crate::adapters::sources::decoder_source::DecoderSource;
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
     use crate::domain::{codec_options::LoadOptions, format::U8, image::Image};
     use crate::ports::codec::ImageDecoder;
+    use crate::sources::decoder_source::DecoderSource;
     use std::num::NonZeroU8;
     use std::sync::{Arc, Mutex};
 
@@ -549,10 +549,10 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
 
 #[test]
 fn thumbnail_passes_loader_hint_before_first_path_decode() {
-    use crate::adapters::sources::decoder_source::DecoderSource;
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
     use crate::domain::{codec_options::LoadOptions, format::U8, image::Image};
     use crate::ports::codec::ImageDecoder;
+    use crate::sources::decoder_source::DecoderSource;
     use std::fs;
     use std::num::NonZeroU8;
     use std::path::Path;
@@ -655,10 +655,10 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
 
 #[test]
 fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
-    use crate::adapters::sources::decoder_source::DecoderSource;
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
     use crate::domain::{codec_options::LoadOptions, format::U8, image::Image};
     use crate::ports::codec::ImageDecoder;
+    use crate::sources::decoder_source::DecoderSource;
     use std::num::NonZeroU8;
 
     struct NativeHintDecoder;
@@ -807,8 +807,8 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
 #[test]
 fn large_thumbnail_avoids_full_image_hint() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{kernel::InterpolationKernel, ops::resample::thumbnail::ThumbnailTarget},
+        sources::memory::MemorySource,
     };
 
     let source = MemorySource::<U8>::new(2048, 2048, 3, vec![0u8; 2048 * 2048 * 3]).unwrap();
@@ -827,13 +827,13 @@ fn large_thumbnail_avoids_full_image_hint() {
 #[test]
 fn chained_thumbnail_uses_intermediate_dimensions() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{
             format::U8,
             image::{Image, ImageMetadata},
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
+        sources::memory::MemorySource,
     };
 
     fn patterned_rgb_u8(width: u32, height: u32) -> Image<U8> {
@@ -913,13 +913,13 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
 #[test]
 fn chained_thumbnail_single_row_matches_sequential_execution() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{
             format::U8,
             image::{Image, ImageMetadata},
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
+        sources::memory::MemorySource,
     };
 
     fn patterned_rgb_u8(width: u32, height: u32) -> Image<U8> {
@@ -1006,7 +1006,6 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
 #[test]
 fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
     use crate::{
-        adapters::sources::memory::MemorySource,
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             format::U8,
@@ -1014,6 +1013,7 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
+        sources::memory::MemorySource,
     };
 
     fn patterned_rgb_u8(width: u32, height: u32) -> Image<U8> {
@@ -1300,7 +1300,7 @@ fn compile_keeps_cache_on_branch_points() {
 
 #[test]
 fn sequential_builder_enables_thin_strip_streaming_defaults() {
-    use crate::adapters::pipeline::LineCacheConfig;
+    use crate::pipeline::LineCacheConfig;
 
     let source = ZeroSource::<U8>::new(64, 64, 1);
     let pipeline = PipelineBuilder::from_source(source)
@@ -1324,8 +1324,8 @@ fn sequential_builder_enables_thin_strip_streaming_defaults() {
 
 #[test]
 fn linecache_op_exposes_explicit_line_budget() {
-    use crate::adapters::pipeline::LineCacheConfig;
     use crate::domain::ops::conversion::LineCacheOp;
+    use crate::pipeline::LineCacheConfig;
 
     let source = ZeroSource::<U8>::new(64, 64, 1);
     let pipeline = PipelineBuilder::from_source(source)

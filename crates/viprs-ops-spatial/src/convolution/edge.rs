@@ -26,7 +26,7 @@ pub const PREWITT_EDGE_MASK: [[f64; 3]; 3] = [[-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0]
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::convolution::edge::EdgeOp;
+/// use viprs_ops_spatial::convolution::edge::EdgeOp;
 ///
 /// let op = EdgeOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

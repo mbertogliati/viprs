@@ -25,7 +25,7 @@ pub enum GaussmatPrecision {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::gaussmat::GaussmatOp;
+/// use viprs_ops_composite::create::gaussmat::GaussmatOp;
 ///
 /// let op = GaussmatOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

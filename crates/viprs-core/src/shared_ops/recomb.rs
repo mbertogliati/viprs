@@ -125,7 +125,7 @@ impl RecombSample for f64 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::recomb::RecombOp;
+/// use viprs_core::ops::arithmetic::recomb::RecombOp;
 ///
 /// let op = RecombOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

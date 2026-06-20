@@ -37,7 +37,7 @@ impl<F: BandFormat> ZeroSource<F> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::zero::new;
+    /// let _ = viprs_runtime::sources::zero::new;
     /// ```
     #[must_use]
     pub const fn new(width: u32, height: u32, bands: u32) -> Self {

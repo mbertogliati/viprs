@@ -32,7 +32,7 @@ enum ExifEndian {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::heif_support::HeifWriteMetadata>();
+/// let _ = core::mem::size_of::<viprs_codecs::heif_support::HeifWriteMetadata>();
 /// ```
 pub struct HeifWriteMetadata<'a> {
     pub exif: Option<&'a [u8]>,
@@ -47,7 +47,7 @@ pub struct HeifWriteMetadata<'a> {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::shared_libheif;
+/// let _ = viprs_codecs::heif_support::shared_libheif;
 /// ```
 pub fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsError> {
     match LIBHEIF.get_or_init(|| LibHeif::new_checked().map_err(|e| e.to_string())) {
@@ -65,7 +65,7 @@ pub fn shared_libheif(context: &str) -> Result<&'static LibHeif, ViprsError> {
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_sample_count;
+/// let _ = viprs_codecs::heif_support::checked_interleaved_sample_count;
 /// ```
 pub fn checked_interleaved_sample_count(
     width: u32,
@@ -94,7 +94,7 @@ pub fn checked_interleaved_sample_count(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_row_bytes;
+/// let _ = viprs_codecs::heif_support::checked_interleaved_row_bytes;
 /// ```
 pub fn checked_interleaved_row_bytes(
     width: u32,
@@ -123,7 +123,7 @@ pub fn checked_interleaved_row_bytes(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::checked_interleaved_byte_count;
+/// let _ = viprs_codecs::heif_support::checked_interleaved_byte_count;
 /// ```
 pub fn checked_interleaved_byte_count(
     width: u32,
@@ -395,7 +395,7 @@ fn configure_encoder_threads(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::encode_interleaved;
+/// let _ = viprs_codecs::heif_support::encode_interleaved;
 /// ```
 pub fn encode_interleaved(
     context: &str,
@@ -634,7 +634,7 @@ pub fn encode_interleaved(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::read_metadata;
+/// let _ = viprs_codecs::heif_support::read_metadata;
 /// ```
 pub fn read_metadata(context: &str, handle: &ImageHandle) -> Result<ImageMetadata, ViprsError> {
     let mut metadata = ImageMetadata::default();
@@ -789,7 +789,7 @@ fn apply_orientation_to_pixels<T: Copy>(
 /// # Examples
 ///
 /// ```ignore
-/// let _ = viprs::adapters::codecs::heif_support::normalize_decoded_image;
+/// let _ = viprs_codecs::heif_support::normalize_decoded_image;
 /// ```
 pub fn normalize_decoded_image<F: BandFormat>(
     image: Image<F>,

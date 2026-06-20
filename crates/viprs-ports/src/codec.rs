@@ -40,8 +40,8 @@ use viprs_core::image::{Image, ImageMetadata, Region};
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::image::ImageMetadata;
-/// use viprs::ports::codec::ImageMetadataProbe;
+/// use viprs_core::image::ImageMetadata;
+/// use viprs_ports::codec::ImageMetadataProbe;
 ///
 /// let probe = ImageMetadataProbe::new(640, 480, 3)
 ///     .with_metadata(ImageMetadata::default());
@@ -71,7 +71,7 @@ impl ImageMetadataProbe {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::ports::codec::ImageMetadataProbe;
+    /// use viprs_ports::codec::ImageMetadataProbe;
     ///
     /// let probe = ImageMetadataProbe::new(320, 200, 4);
     /// assert_eq!(probe.width, 320);
@@ -96,8 +96,8 @@ impl ImageMetadataProbe {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs::domain::image::ImageMetadata;
-    /// use viprs::ports::codec::ImageMetadataProbe;
+    /// use viprs_core::image::ImageMetadata;
+    /// use viprs_ports::codec::ImageMetadataProbe;
     ///
     /// let probe = ImageMetadataProbe::new(1, 1, 3)
     ///     .with_metadata(ImageMetadata::default());
@@ -129,23 +129,23 @@ impl ImageMetadataProbe {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     codec_options::LoadOptions,
 ///     error::ViprsError,
 ///     format::U8,
 ///     image::Image,
 /// };
-/// use viprs::ports::codec::ImageDecoder;
+/// use viprs_ports::codec::ImageDecoder;
 ///
 /// struct StubDecoder;
 ///
 /// impl ImageDecoder for StubDecoder {
 ///     fn format_name(&self) -> &'static str { "stub" }
 ///     fn sniff(&self, header: &[u8]) -> bool where Self: Sized { header.starts_with(b"STUB") }
-///     fn decode<F: viprs::domain::format::BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
+///     fn decode<F: viprs_core::format::BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
 ///         Err(ViprsError::Codec("stub decoder".into()))
 ///     }
-///     fn decode_with_options<F: viprs::domain::format::BandFormat>(
+///     fn decode_with_options<F: viprs_core::format::BandFormat>(
 ///         &self,
 ///         src: &[u8],
 ///         _opts: &LoadOptions,
@@ -299,23 +299,23 @@ pub trait ImageDecoder: Send + Sync {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     codec_options::LoadOptions,
 ///     error::ViprsError,
 ///     format::U8,
 ///     image::{Image, Region},
 /// };
-/// use viprs::ports::codec::{ImageDecoder, TileImageDecoder};
+/// use viprs_ports::codec::{ImageDecoder, TileImageDecoder};
 ///
 /// struct StubDecoder;
 ///
 /// impl ImageDecoder for StubDecoder {
 ///     fn format_name(&self) -> &'static str { "stub" }
 ///     fn sniff(&self, _header: &[u8]) -> bool where Self: Sized { true }
-///     fn decode<F: viprs::domain::format::BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
+///     fn decode<F: viprs_core::format::BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
 ///         Err(ViprsError::Codec("stub decoder".into()))
 ///     }
-///     fn decode_with_options<F: viprs::domain::format::BandFormat>(
+///     fn decode_with_options<F: viprs_core::format::BandFormat>(
 ///         &self,
 ///         src: &[u8],
 ///         _opts: &LoadOptions,
@@ -331,7 +331,7 @@ pub trait ImageDecoder: Send + Sync {
 /// }
 ///
 /// impl TileImageDecoder for StubDecoder {
-///     fn decode_region_into<F: viprs::domain::format::BandFormat>(
+///     fn decode_region_into<F: viprs_core::format::BandFormat>(
 ///         &self,
 ///         _src: &[u8],
 ///         _opts: &LoadOptions,
@@ -455,22 +455,22 @@ pub trait TileImageDecoder: ImageDecoder {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     codec_options::SaveOptions,
 ///     error::ViprsError,
 ///     format::U8,
 ///     image::Image,
 /// };
-/// use viprs::ports::codec::ImageEncoder;
+/// use viprs_ports::codec::ImageEncoder;
 ///
 /// struct StubEncoder;
 ///
 /// impl ImageEncoder for StubEncoder {
 ///     fn format_name(&self) -> &'static str { "stub" }
-///     fn encode<F: viprs::domain::format::BandFormat>(&self, _image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+///     fn encode<F: viprs_core::format::BandFormat>(&self, _image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
 ///         Ok(b"stub".to_vec())
 ///     }
-///     fn encode_with_options<F: viprs::domain::format::BandFormat>(
+///     fn encode_with_options<F: viprs_core::format::BandFormat>(
 ///         &self,
 ///         image: &Image<F>,
 ///         _opts: &SaveOptions,
@@ -577,13 +577,13 @@ pub trait ImageEncoder: Send + Sync {
 /// ```rust
 /// use std::any::Any;
 ///
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     codec_options::{LoadOptions, SaveOptions},
 ///     error::ViprsError,
 ///     format::{BandFormatId, U8},
 ///     image::Image,
 /// };
-/// use viprs::ports::codec::ImageCodec;
+/// use viprs_ports::codec::ImageCodec;
 ///
 /// struct StubCodec;
 ///

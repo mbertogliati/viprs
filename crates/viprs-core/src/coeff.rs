@@ -42,7 +42,7 @@
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::coeff::OptimizedCoeff;
+/// # use viprs_core::coeff::OptimizedCoeff;
 /// let coeff = OptimizedCoeff::new(2.0);
 /// assert_eq!(coeff.as_int::<i16>(), Some(2));
 /// ```

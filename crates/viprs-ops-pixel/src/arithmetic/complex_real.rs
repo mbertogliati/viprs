@@ -10,7 +10,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::complex_real::ComplexRealOp;
+/// use viprs_ops_pixel::arithmetic::complex_real::ComplexRealOp;
 ///
 /// let op = ComplexRealOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

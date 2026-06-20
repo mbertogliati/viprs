@@ -89,7 +89,7 @@ impl GammaSample for f64 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::gamma::GammaOp;
+/// use viprs_ops_composite::conversion::gamma::GammaOp;
 ///
 /// let op = GammaOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

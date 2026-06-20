@@ -20,7 +20,7 @@ pub struct NearestState {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::morphology::nearest::NearestOp;
+/// use viprs_ops_spatial::morphology::nearest::NearestOp;
 ///
 /// let op = NearestOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

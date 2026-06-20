@@ -8,7 +8,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::complex_conj::ComplexConjOp;
+/// use viprs_ops_pixel::arithmetic::complex_conj::ComplexConjOp;
 ///
 /// let op = ComplexConjOp;
 /// // Run `op` through a compiled image pipeline.

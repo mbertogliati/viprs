@@ -16,7 +16,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::divide::Divide;
+/// use viprs_ops_pixel::arithmetic::divide::Divide;
 ///
 /// let op = Divide { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

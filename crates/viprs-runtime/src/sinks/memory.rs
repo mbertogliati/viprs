@@ -4,12 +4,12 @@
 use std::cell::UnsafeCell;
 
 use crate::{
-    adapters::pipeline::CompiledPipeline,
     domain::{
         error::ViprsError,
         format::{BandFormat, BandFormatId},
         image::{Image, ImageMetadata, Region},
     },
+    pipeline::CompiledPipeline,
     ports::sink::{ConcurrentSink, ImageSink},
 };
 
@@ -308,7 +308,6 @@ impl ConcurrentSink for MemorySink {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::adapters::pipeline::PipelineBuilder;
     use crate::domain::op::{Op, OperationBridge};
     use crate::domain::{format::BandFormatId, image::Region};
     use crate::domain::{
@@ -316,6 +315,7 @@ mod tests {
         format::U8,
         image::{DemandHint, Tile, TileMut},
     };
+    use crate::pipeline::PipelineBuilder;
     use std::sync::Arc;
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -590,8 +590,8 @@ mod tests {
 
     #[test]
     fn for_pipeline_infers_bps_for_f32() {
-        use crate::adapters::sources::zero::ZeroSource;
         use crate::domain::format::F32;
+        use crate::sources::zero::ZeroSource;
 
         // Use a F32 source so that the pipeline's current_format matches F32PassThrough.
         let pipeline = PipelineBuilder::from_source(ZeroSource::<F32>::new(16, 16, 1))

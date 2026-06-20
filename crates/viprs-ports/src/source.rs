@@ -25,12 +25,12 @@ use viprs_core::{
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     error::ViprsError,
 ///     format::U8,
 ///     image::{DemandHint, Region},
 /// };
-/// use viprs::ports::source::ImageSource;
+/// use viprs_ports::source::ImageSource;
 ///
 /// struct SolidWhite;
 ///
@@ -62,8 +62,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -88,8 +88,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -114,8 +114,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -141,8 +141,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -168,8 +168,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, ImageMetadata, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, ImageMetadata, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -201,8 +201,8 @@ pub trait ImageSource: Send + Sync {
     ///
     /// ```rust
     /// # use std::num::NonZeroU8;
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -236,8 +236,8 @@ pub trait ImageSource: Send + Sync {
     ///
     /// ```rust
     /// # use std::num::NonZeroU8;
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -274,8 +274,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -305,8 +305,8 @@ pub trait ImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::ImageSource;
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::ImageSource;
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -339,8 +339,8 @@ pub trait ImageSource: Send + Sync {
 /// # Examples
 ///
 /// ```rust
-/// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-/// # use viprs::ports::source::{ImageSource, SequentialSource};
+/// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+/// # use viprs_ports::source::{ImageSource, SequentialSource};
 /// # struct SolidWhite;
 /// # impl ImageSource for SolidWhite {
 /// #     type Format = U8;
@@ -368,8 +368,8 @@ pub trait SequentialSource: ImageSource {}
 /// # Examples
 ///
 /// ```rust
-/// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-/// # use viprs::ports::source::{ImageSource, RandomAccessSource};
+/// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+/// # use viprs_ports::source::{ImageSource, RandomAccessSource};
 /// # struct SolidWhite;
 /// # impl ImageSource for SolidWhite {
 /// #     type Format = U8;
@@ -398,12 +398,12 @@ pub trait RandomAccessSource: ImageSource {}
 /// # Examples
 ///
 /// ```rust
-/// use viprs::domain::{
+/// use viprs_core::{
 ///     error::ViprsError,
 ///     format::U8,
 ///     image::{DemandHint, Region},
 /// };
-/// use viprs::ports::source::{DynImageSource, ImageSource};
+/// use viprs_ports::source::{DynImageSource, ImageSource};
 ///
 /// struct SolidWhite;
 ///
@@ -433,8 +433,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -459,8 +459,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -484,8 +484,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -509,8 +509,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::{BandFormatId, U8}, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::{BandFormatId, U8}, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -534,8 +534,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -560,8 +560,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, ImageMetadata, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, ImageMetadata, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -587,8 +587,8 @@ pub trait DynImageSource: Send + Sync {
     ///
     /// ```rust
     /// # use std::num::NonZeroU8;
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -614,8 +614,8 @@ pub trait DynImageSource: Send + Sync {
     ///
     /// ```rust
     /// # use std::num::NonZeroU8;
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -640,8 +640,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;
@@ -668,8 +668,8 @@ pub trait DynImageSource: Send + Sync {
     /// # Examples
     ///
     /// ```rust
-    /// # use viprs::domain::{error::ViprsError, format::U8, image::{DemandHint, Region}};
-    /// # use viprs::ports::source::{DynImageSource, ImageSource};
+    /// # use viprs_core::{error::ViprsError, format::U8, image::{DemandHint, Region}};
+    /// # use viprs_ports::source::{DynImageSource, ImageSource};
     /// # struct SolidWhite;
     /// # impl ImageSource for SolidWhite {
     /// #     type Format = U8;

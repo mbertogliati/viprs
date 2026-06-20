@@ -16,7 +16,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::stdif::StdifOp;
+/// use viprs_ops_colour::histogram::stdif::StdifOp;
 ///
 /// let op = StdifOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -64,7 +64,7 @@ const fn msb_index(byte_len: usize) -> usize {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::msb::MsbOp;
+/// use viprs_ops_composite::conversion::msb::MsbOp;
 ///
 /// let op = MsbOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

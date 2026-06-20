@@ -99,7 +99,7 @@ impl TextSource {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::generators::text::text;
+    /// let _ = viprs_runtime::sources::generators::text::text;
     /// ```
     pub fn text(&self) -> &str {
         &self.text
@@ -125,7 +125,7 @@ impl TextSource {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::generators::text::font_path;
+    /// let _ = viprs_runtime::sources::generators::text::font_path;
     /// ```
     pub fn font_path(&self) -> Option<&Path> {
         self.font_path.as_deref()

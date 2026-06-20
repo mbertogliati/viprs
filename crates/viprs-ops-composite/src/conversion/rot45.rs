@@ -49,7 +49,7 @@ impl Angle45 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::rot45::Rot45Op;
+/// use viprs_ops_composite::conversion::rot45::Rot45Op;
 ///
 /// let op = Rot45Op::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

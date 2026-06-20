@@ -12,7 +12,7 @@ use super::math::chroma_hue_to_ab;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::lch_to_lab::LchToLab;
+/// use viprs_ops_colour::colour::lch_to_lab::LchToLab;
 ///
 /// let op = LchToLab;
 /// // Run `op` through a compiled image pipeline.

@@ -274,9 +274,9 @@ impl<S: ImageSource> RandomAccessSource for TileCache<S> {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::adapters::sources::memory::MemorySource;
-    use crate::adapters::sources::zero::ZeroSource;
     use crate::domain::format::U8;
+    use crate::sources::memory::MemorySource;
+    use crate::sources::zero::ZeroSource;
 
     fn make_cache() -> TileCache<ZeroSource<U8>> {
         let inner = ZeroSource::<U8>::new(64, 64, 1);

@@ -8,7 +8,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::round::Round;
+/// use viprs_ops_pixel::arithmetic::round::Round;
 ///
 /// let op = Round::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -68,7 +68,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::round::Floor;
+/// use viprs_ops_pixel::arithmetic::round::Floor;
 ///
 /// let op = Floor::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -128,7 +128,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::round::Ceil;
+/// use viprs_ops_pixel::arithmetic::round::Ceil;
 ///
 /// let op = Ceil::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

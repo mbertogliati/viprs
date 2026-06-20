@@ -5,9 +5,9 @@
 
 #![cfg(feature = "openslide")]
 
-//! OpenSlide decoder for whole-slide microscopy formats (SVS, NDPI, SCN, MRXS, ...).
+//! `OpenSlide` decoder for whole-slide microscopy formats (SVS, NDPI, SCN, MRXS, ...).
 //!
-//! The upstream OpenSlide API is path-based, while [`ImageDecoder`] consumes byte
+//! The upstream `OpenSlide` API is path-based, while [`ImageDecoder`] consumes byte
 //! slices. For direct decoder usage we persist a content-addressed runtime copy
 //! under `target/openslide-runtime/` and cache the opened handle across region
 //! reads so streaming tile decodes do not rewrite the slide on every call.
@@ -34,7 +34,7 @@ const OPENSLIDE_RUNTIME_DIR: &str = "target/openslide-runtime";
 const OPENSLIDE_BANDS: u32 = 4;
 const OPENSLIDE_MAX_RGBA_ALLOCATION_BYTES: u64 = 4 * 1024 * 1024 * 1024;
 
-/// File extensions recognized as whole-slide images (decoded via OpenSlide).
+/// File extensions recognized as whole-slide images (decoded via `OpenSlide`).
 pub const OPENSLIDE_EXTENSIONS: &[&str] =
     &["svs", "vms", "vmu", "ndpi", "scn", "mrxs", "svslide", "bif"];
 
@@ -66,7 +66,7 @@ struct SelectedLevel {
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::openslide::OpenSlideDecoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::openslide::OpenSlideDecoder>();
 /// ```
 pub struct OpenSlideDecoder;
 
@@ -114,12 +114,12 @@ fn open_slide(path: &Path) -> Result<OpenSlide, ViprsError> {
 
 fn cached_slide_from_bytes(src: &[u8]) -> Result<Arc<CachedSlide>, ViprsError> {
     let key = cache_key(src);
-    if let Some(slide) = openslide_cache()
+    let cached_slide = openslide_cache()
         .read()
         .map_err(|_| ViprsError::Codec("openslide: runtime cache poisoned".into()))?
         .get(&key)
-        .cloned()
-    {
+        .cloned();
+    if let Some(slide) = cached_slide {
         return Ok(slide);
     }
 
@@ -153,10 +153,10 @@ fn cached_slide_from_bytes(src: &[u8]) -> Result<Arc<CachedSlide>, ViprsError> {
 }
 
 fn requested_downsample(root: Size, opts: &LoadOptions) -> f64 {
-    if let Some(factor) = opts.shrink_factor.map(|factor| factor.get()) {
-        if factor > 1 {
-            return f64::from(factor);
-        }
+    if let Some(factor) = opts.shrink_factor.map(std::num::NonZeroU8::get)
+        && factor > 1
+    {
+        return f64::from(factor);
     }
 
     if let Some(max_dimension) = opts.max_dimension.filter(|value| *value > 0) {
@@ -511,8 +511,8 @@ impl OpenSlideDecoder {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::openslide::supports_path;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::openslide::OpenSlideDecoder::supports_path;
     /// ```
     pub fn supports_path(path: &Path) -> bool {
         path.extension()
@@ -526,8 +526,8 @@ impl OpenSlideDecoder {
     ///
     /// # Examples
     ///
-    /// ```rust
-    /// let _ = viprs::adapters::codecs::openslide::can_open_path;
+    /// ```rust,no_run
+    /// let _ = viprs_codecs::openslide::OpenSlideDecoder::can_open_path;
     /// ```
     pub fn can_open_path(path: &Path) -> bool {
         if Self::supports_path(path) {

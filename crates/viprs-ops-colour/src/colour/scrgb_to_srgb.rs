@@ -12,7 +12,7 @@ use super::math::srgb_gamma_encode;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::scrgb_to_srgb::ScRgbToSRgb;
+/// use viprs_ops_colour::colour::scrgb_to_srgb::ScRgbToSRgb;
 ///
 /// let op = ScRgbToSRgb;
 /// // Run `op` through a compiled image pipeline.

@@ -83,7 +83,7 @@ impl ScalarStats {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::reduce_facades::AvgOp;
+/// use viprs_ops_pixel::arithmetic::reduce_facades::AvgOp;
 ///
 /// let op = AvgOp;
 /// // Run `op` through a compiled image pipeline.
@@ -141,7 +141,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::reduce_facades::DeviateOp;
+/// use viprs_ops_pixel::arithmetic::reduce_facades::DeviateOp;
 ///
 /// let op = DeviateOp;
 /// // Run `op` through a compiled image pipeline.
@@ -201,7 +201,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::reduce_facades::MinOp;
+/// use viprs_ops_pixel::arithmetic::reduce_facades::MinOp;
 ///
 /// let op = MinOp;
 /// // Run `op` through a compiled image pipeline.
@@ -294,7 +294,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::reduce_facades::MaxOp;
+/// use viprs_ops_pixel::arithmetic::reduce_facades::MaxOp;
 ///
 /// let op = MaxOp;
 /// // Run `op` through a compiled image pipeline.
@@ -546,7 +546,7 @@ const fn tie_before_max(x: u32, y: u32, current: &StatsAccumulator) -> bool {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::reduce_facades::StatsOp;
+/// use viprs_ops_pixel::arithmetic::reduce_facades::StatsOp;
 ///
 /// let op = StatsOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
@@ -623,7 +623,7 @@ where
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::arithmetic::reduce_facades::GetpointOp;
+/// use viprs_ops_pixel::arithmetic::reduce_facades::GetpointOp;
 ///
 /// let op = GetpointOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -169,7 +169,7 @@ impl<F: BandFormat> BlackSource<F> {
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     #[must_use]
     pub const fn new(width: u32, height: u32, bands: u32) -> Self {
@@ -233,7 +233,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     #[must_use]
     pub fn new(width: u32, height: u32, bands: u32) -> Self {
@@ -309,7 +309,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     #[must_use]
     pub const fn new(width: u32, height: u32) -> Self {
@@ -390,7 +390,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     #[must_use]
     pub const fn new(size: u32, bands: u32) -> Self {
@@ -471,7 +471,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     #[must_use]
     pub fn new(width: u32, height: u32, mean: f64, sigma: f64) -> Self {
@@ -488,7 +488,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::with_seed;
+    /// let _ = viprs_runtime::sources::create::with_seed;
     /// ```
     #[must_use]
     pub const fn with_seed(width: u32, height: u32, mean: f64, sigma: f64, seed: u32) -> Self {
@@ -589,7 +589,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     #[must_use]
     pub const fn new(width: u32, height: u32) -> Self {
@@ -669,7 +669,7 @@ where
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs::adapters::sources::create::new;
+    /// let _ = viprs_runtime::sources::create::new;
     /// ```
     pub fn new(width: u32, height: u32, factor: f64) -> Result<Self, ViprsError> {
         if !(0.0..=1.0).contains(&factor) {

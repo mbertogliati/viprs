@@ -12,7 +12,7 @@ use super::math::scrgb_to_xyz_components;
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::crate::colour::scrgb_to_xyz::ScRgbToXyz;
+/// use viprs_ops_colour::colour::scrgb_to_xyz::ScRgbToXyz;
 ///
 /// let op = ScRgbToXyz;
 /// // Run `op` through a compiled image pipeline.

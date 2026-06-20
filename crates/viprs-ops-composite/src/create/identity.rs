@@ -11,7 +11,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::create::identity::IdentityOp;
+/// use viprs_ops_composite::create::identity::IdentityOp;
 ///
 /// let op = IdentityOp { /* operation parameters */ };
 /// // Run `op` through a compiled image pipeline.

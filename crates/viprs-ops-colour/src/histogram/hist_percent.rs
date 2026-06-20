@@ -14,7 +14,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::hist_percent::HistPercentOp;
+/// use viprs_ops_colour::histogram::hist_percent::HistPercentOp;
 ///
 /// let op = HistPercentOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

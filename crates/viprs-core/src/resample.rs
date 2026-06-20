@@ -37,7 +37,7 @@ pub trait ResampleOp: Op {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::resample::FilterOrientation;
+/// # use viprs_core::resample::FilterOrientation;
 /// assert!(matches!(FilterOrientation::Horizontal, FilterOrientation::Horizontal));
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -55,7 +55,7 @@ pub enum FilterOrientation {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::resample::ReduceConfig;
+/// # use viprs_core::resample::ReduceConfig;
 /// let cfg = ReduceConfig { factor: 2.0, taps: 4, pad_before: 1 };
 /// assert_eq!(cfg.output_width(8), 4);
 /// ```
@@ -104,7 +104,7 @@ impl ReduceConfig {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::resample::ReduceConfig;
+    /// # use viprs_core::resample::ReduceConfig;
     /// let cfg = ReduceConfig { factor: 2.0, taps: 4, pad_before: 1 };
     /// assert!(cfg.node_spec_h(8, 4).input_tile_w >= 8);
     /// ```
@@ -126,7 +126,7 @@ impl ReduceConfig {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::resample::ReduceConfig;
+    /// # use viprs_core::resample::ReduceConfig;
     /// let cfg = ReduceConfig { factor: 2.0, taps: 4, pad_before: 1 };
     /// assert!(cfg.node_spec_v(8, 4).input_tile_h >= 4);
     /// ```
@@ -148,7 +148,7 @@ impl ReduceConfig {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{image::Region, resample::ReduceConfig};
+    /// # use viprs_core::{image::Region, resample::ReduceConfig};
     /// let cfg = ReduceConfig { factor: 2.0, taps: 4, pad_before: 1 };
     /// let input = cfg.required_input_region_h(&Region::new(0, 0, 2, 1));
     /// assert!(input.width >= 2);
@@ -177,7 +177,7 @@ impl ReduceConfig {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs::domain::{image::Region, resample::ReduceConfig};
+    /// # use viprs_core::{image::Region, resample::ReduceConfig};
     /// let cfg = ReduceConfig { factor: 2.0, taps: 4, pad_before: 1 };
     /// let input = cfg.required_input_region_v(&Region::new(0, 0, 1, 2));
     /// assert!(input.height >= 2);
@@ -220,7 +220,7 @@ impl ReduceConfig {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs::domain::resample::ResampleFormatMarker;
+/// # use viprs_core::resample::ResampleFormatMarker;
 /// let _marker = ResampleFormatMarker;
 /// ```
 #[allow(dead_code)]

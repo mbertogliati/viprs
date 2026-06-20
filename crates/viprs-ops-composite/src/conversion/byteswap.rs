@@ -66,7 +66,7 @@ impl ByteswapSample for f64 {
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::byteswap::ByteswapOp;
+/// use viprs_ops_composite::conversion::byteswap::ByteswapOp;
 ///
 /// let op = ByteswapOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

@@ -14,7 +14,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::histogram::clahe::ClaheOp;
+/// use viprs_ops_colour::histogram::clahe::ClaheOp;
 ///
 /// let op = ClaheOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

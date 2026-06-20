@@ -31,7 +31,7 @@ const SVG_MAX_RASTER_BYTES: u128 = 256_u128 * 1024 * 1024;
 /// # Examples
 ///
 /// ```rust
-/// let _ = core::mem::size_of::<viprs::adapters::codecs::svg::SvgDecoder>();
+/// let _ = core::mem::size_of::<viprs_codecs::svg::SvgDecoder>();
 /// ```
 pub struct SvgDecoder;
 
@@ -47,8 +47,10 @@ fn require_u8<F: BandFormat>() -> Result<(), ViprsError> {
 }
 
 fn parse_svg_tree(src: &[u8]) -> Result<usvg::Tree, ViprsError> {
-    let mut options = usvg::Options::default();
-    options.dpi = DEFAULT_SVG_DPI as f32;
+    let options = usvg::Options {
+        dpi: DEFAULT_SVG_DPI as f32,
+        ..usvg::Options::default()
+    };
     usvg::Tree::from_data(src, &options).map_err(|err| ViprsError::Codec(err.to_string()))
 }
 

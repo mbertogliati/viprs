@@ -12,7 +12,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::mosaicing::remosaic::RemosaicOp;
+/// use viprs_ops_composite::mosaicing::remosaic::RemosaicOp;
 ///
 /// let op = RemosaicOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.

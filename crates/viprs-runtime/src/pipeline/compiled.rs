@@ -41,7 +41,7 @@ impl CompiledOp {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledOp;
+    /// use viprs_runtime::pipeline::CompiledOp;
     ///
     /// fn bands(op: &CompiledOp) -> u32 { op.bands() }
     /// ```
@@ -61,7 +61,7 @@ impl CompiledOp {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledOp;
+    /// use viprs_runtime::pipeline::CompiledOp;
     ///
     /// fn output_format(op: &CompiledOp) { let _ = op.output_format(); }
     /// ```
@@ -81,7 +81,7 @@ impl CompiledOp {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::{adapters::pipeline::CompiledOp, domain::image::Region};
+    /// use viprs_runtime::{pipeline::CompiledOp, domain::image::Region};
     ///
     /// fn needs(op: &CompiledOp, output: Region) { let _ = op.required_input_region(&output); }
     /// ```
@@ -100,7 +100,7 @@ impl CompiledOp {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledOp;
+    /// use viprs_runtime::pipeline::CompiledOp;
     ///
     /// fn hint(op: &CompiledOp) { let _ = op.demand_hint(); }
     /// ```
@@ -120,7 +120,7 @@ impl CompiledOp {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledOp;
+    /// use viprs_runtime::pipeline::CompiledOp;
     ///
     /// fn spec(op: &CompiledOp) { let _ = op.node_spec(128, 128); }
     /// ```
@@ -140,7 +140,7 @@ impl CompiledOp {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::{adapters::pipeline::CompiledOp, domain::image::ImageMetadata};
+    /// use viprs_runtime::{pipeline::CompiledOp, domain::image::ImageMetadata};
     ///
     /// fn metadata(op: &CompiledOp, source: &ImageMetadata) { let _ = op.transform_metadata(source); }
     /// ```
@@ -161,7 +161,7 @@ impl CompiledOp {
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::pipeline::CompiledNode;
+/// use viprs_runtime::pipeline::CompiledNode;
 ///
 /// fn inspect(node: &CompiledNode) { let _ = node.output_buf(); }
 /// ```
@@ -230,7 +230,7 @@ impl CompiledNode {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledNode;
+    /// use viprs_runtime::pipeline::CompiledNode;
     ///
     /// fn inspect(node: &CompiledNode) { let _ = node.input_bufs(); }
     /// ```
@@ -247,7 +247,7 @@ impl CompiledNode {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledNode;
+    /// use viprs_runtime::pipeline::CompiledNode;
     ///
     /// fn inspect(node: &CompiledNode) { let _ = node.output_buf(); }
     /// ```
@@ -263,7 +263,7 @@ impl CompiledNode {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledNode;
+    /// use viprs_runtime::pipeline::CompiledNode;
     ///
     /// fn inspect(node: &CompiledNode) { let _ = node.input_upstreams(); }
     /// ```
@@ -280,7 +280,7 @@ impl CompiledNode {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledNode;
+    /// use viprs_runtime::pipeline::CompiledNode;
     ///
     /// fn inspect(node: &CompiledNode) { let _ = node.input_buffer_producers(); }
     /// ```
@@ -297,7 +297,7 @@ impl CompiledNode {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledNode;
+    /// use viprs_runtime::pipeline::CompiledNode;
     ///
     /// fn inspect(node: &CompiledNode) { let _ = node.op(); }
     /// ```
@@ -313,7 +313,7 @@ impl CompiledNode {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledNode;
+    /// use viprs_runtime::pipeline::CompiledNode;
     ///
     /// fn inspect(node: &CompiledNode) { let _ = node.cache_op_id(); }
     /// ```
@@ -331,7 +331,7 @@ impl CompiledNode {
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::pipeline::CompiledPipeline;
+/// use viprs_runtime::pipeline::CompiledPipeline;
 ///
 /// fn inspect(pipeline: &CompiledPipeline) { let _ = pipeline.width; }
 /// ```
@@ -387,7 +387,7 @@ impl CompiledPipeline {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::{adapters::pipeline::CompiledPipeline, adapters::scheduler::rayon_scheduler::RayonScheduler, domain::format::U8};
+    /// use viprs_runtime::{pipeline::CompiledPipeline, scheduler::rayon_scheduler::RayonScheduler, domain::format::U8};
     ///
     /// fn run(pipeline: &CompiledPipeline, scheduler: &RayonScheduler) {
     ///     let _ = pipeline.run_to_image::<U8, _>(scheduler);
@@ -423,7 +423,7 @@ impl CompiledPipeline {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::CompiledPipeline;
+    /// use viprs_runtime::pipeline::CompiledPipeline;
     ///
     /// fn clear(pipeline: &CompiledPipeline) { let _ = pipeline.clear_tile_cache(); }
     /// ```
@@ -445,7 +445,7 @@ impl CompiledPipeline {
 /// # Examples
 ///
 /// ```rust
-/// use viprs::adapters::pipeline::InputSlicePtr;
+/// use viprs_runtime::pipeline::InputSlicePtr;
 ///
 /// let ptr = InputSlicePtr(std::ptr::slice_from_raw_parts(std::ptr::null(), 0));
 /// let _ = ptr;
@@ -468,7 +468,7 @@ unsafe impl Send for InputSlicePtr {}
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs::adapters::pipeline::{CompiledPipeline, ThreadBufferPool};
+/// use viprs_runtime::pipeline::{CompiledPipeline, ThreadBufferPool};
 ///
 /// fn allocate(pipeline: &CompiledPipeline) { let _ = ThreadBufferPool::new(pipeline); }
 /// ```
@@ -502,7 +502,7 @@ pub struct ThreadBufferPool {
     /// Per-node cached output tiles materialized by the pipeline tile cache.
     pub cached_tiles: Vec<Option<Arc<[u8]>>>,
     pub(crate) sequential_line_cache:
-        Option<crate::adapters::scheduler::rayon_scheduler::SequentialLineCache>,
+        Option<crate::scheduler::rayon_scheduler::SequentialLineCache>,
 }
 
 impl ThreadBufferPool {
@@ -514,7 +514,7 @@ impl ThreadBufferPool {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs::adapters::pipeline::{CompiledPipeline, ThreadBufferPool};
+    /// use viprs_runtime::pipeline::{CompiledPipeline, ThreadBufferPool};
     ///
     /// fn allocate(pipeline: &CompiledPipeline) { let _ = ThreadBufferPool::new(pipeline); }
     /// ```
@@ -599,7 +599,7 @@ impl ThreadBufferPool {
             multi_input_refs,
             cached_tiles: vec![None; pipeline.nodes.len()],
             sequential_line_cache: pipeline.sequential_line_cache.map(|config| {
-                crate::adapters::scheduler::rayon_scheduler::SequentialLineCache::new(
+                crate::scheduler::rayon_scheduler::SequentialLineCache::new(
                     pipeline.source.width(),
                     pipeline.source.height(),
                     source_pixel_bytes,

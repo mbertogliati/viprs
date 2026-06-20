@@ -13,7 +13,7 @@ use viprs_core::{
 ///
 /// # Examples
 /// ```ignore
-/// use viprs::domain::ops::conversion::addalpha::AddAlphaOp;
+/// use viprs_ops_composite::conversion::addalpha::AddAlphaOp;
 ///
 /// let op = AddAlphaOp::new(/* operation parameters */);
 /// // Run `op` through a compiled image pipeline.
