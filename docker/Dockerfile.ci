@@ -1,4 +1,4 @@
-# CI image: viprs-perf base + Rust toolchain + clippy + rustfmt.
+# CI image: Rust toolchain + native dependencies needed by `--all-features`.
 #
 # Build:
 #   docker buildx build --platform linux/amd64 -f docker/Dockerfile.ci -t viprs-ci:amd64 --load docker/
@@ -7,26 +7,32 @@
 # Usage:
 #   docker run --rm -v $(pwd):/workspace -w /workspace viprs-ci:amd64 make check
 
-ARG BASE_IMAGE=ghcr.io/mbertogliati/viprs-perf:latest
+ARG BASE_IMAGE=rust:1.96.0-trixie
 FROM ${BASE_IMAGE}
 
 ARG RUST_VERSION=1.96.0
 
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
-      curl build-essential pkg-config cmake nasm git clang libclang-dev \
-      libspng-dev libopenslide-dev && \
+      build-essential pkg-config cmake make nasm git git-lfs clang libclang-dev \
+      ca-certificates \
+      libturbojpeg0-dev libspng-dev libpng-dev libwebp-dev libtiff-dev \
+      libheif-dev libheif-plugin-aomdec libheif-plugin-aomenc \
+      libjxl-dev libopenjp2-7-dev liblcms2-dev libopenslide-dev \
+      libvips-dev imagemagick poppler-utils && \
     rm -rf /var/lib/apt/lists/* && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-      sh -s -- -y --default-toolchain ${RUST_VERSION} -c rustfmt,clippy
+    rustup default ${RUST_VERSION} && \
+    rustup component add rustfmt clippy
 
 ENV PATH="/root/.cargo/bin:${PATH}"
-ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
-RUN pkg-config --modversion spng && \
+RUN pkg-config --modversion libturbojpeg && \
+    pkg-config --modversion spng && \
+    pkg-config --modversion libheif && \
+    pkg-config --modversion libjxl && \
+    pkg-config --modversion lcms2 && \
     pkg-config --modversion openslide
 
-# Override viprs-perf benchmark entrypoint — CI image runs arbitrary commands
 ENTRYPOINT []
 
 WORKDIR /workspace
