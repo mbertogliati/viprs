@@ -21,10 +21,51 @@ pub trait PipelineOp<State = Identity> {
     ) -> Result<PipelineBuilder<Self::NextState>, BuildError>;
 }
 
+/// Local marker trait limiting the concretize blanket impl to known point-op chain types.
+pub trait ConcretizePipelineOpAllowed {}
+
+impl ConcretizePipelineOpAllowed for () {}
+impl<A, B> ConcretizePipelineOpAllowed for (A, B)
+where
+    A: ConcretizePipelineOpAllowed,
+    B: ConcretizePipelineOpAllowed,
+{
+}
+
+impl<C> ConcretizePipelineOpAllowed for viprs_core::concretize::Chain<C> where
+    C: ConcretizePipelineOpAllowed
+{
+}
+
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Abs {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::BoolAnd {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::BoolOr {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::BoolXor {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Lshift {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Rshift {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Clamp {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Gamma {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Invert {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Linear {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::ACos {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::ASin {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::ATan {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Ceil {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Cos {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Exp {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Floor {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Log {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Power {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Round {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Sign {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Sin {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Sqrt {}
+impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Tan {}
+
 /// Point ops implementing `Concretize` are auto-fused.
 impl<C> PipelineOp<Identity> for C
 where
-    C: Concretize + Clone,
+    C: Concretize + Clone + ConcretizePipelineOpAllowed,
 {
     type NextState = Fusing<C>;
 
@@ -38,8 +79,8 @@ where
 
 impl<C, D> PipelineOp<Fusing<C>> for D
 where
-    C: Concretize + Clone,
-    D: Concretize + Clone,
+    C: Concretize + Clone + ConcretizePipelineOpAllowed,
+    D: Concretize + Clone + ConcretizePipelineOpAllowed,
 {
     type NextState = Fusing<(C, D)>;
 

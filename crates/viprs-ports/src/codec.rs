@@ -22,9 +22,9 @@
 //! backward compatibility — they delegate to the `*_with_options` variant with
 //! default options.
 
+use std::{any::Any, fs, io::Write, path::Path};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
-use std::{any::Any, fs, io::Write, path::Path};
 
 use viprs_core::format::{BandFormat, BandFormatId};
 use viprs_core::image::{Image, ImageMetadata, Region};

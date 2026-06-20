@@ -1,0 +1,19 @@
+[package]
+name = "viprs-ops-pixel"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+viprs-core = { path = "../viprs-core" }
+bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
+
+[dev-dependencies]
+proptest = "1"
+
+[features]
+_integration = []

@@ -1,0 +1,128 @@
+use viprs_core::{
+    format::F32,
+    image::{DemandHint, Region, Tile, TileMut},
+    op::{Op, PixelLocalOp},
+};
+
+/// Convert interleaved `(magnitude, angle_radians)` samples into `(re, im)`.
+///
+/// # Examples
+/// ```ignore
+/// use viprs::domain::ops::arithmetic::rect::RectOp;
+///
+/// let op = RectOp;
+/// // Run `op` through a compiled image pipeline.
+/// ```
+pub struct RectOp;
+
+impl Op for RectOp {
+    type Input = F32;
+    type Output = F32;
+    type State = ();
+
+    fn demand_hint(&self) -> DemandHint {
+        DemandHint::ThinStrip
+    }
+
+    fn required_input_region(&self, output: &Region) -> Region {
+        *output
+    }
+
+    fn start(&self) {}
+
+    #[inline]
+    fn process_region(&self, _state: &mut (), input: &Tile<F32>, output: &mut TileMut<F32>) {
+        debug_assert_eq!(input.bands % 2, 0, "RectOp: input bands must be even");
+        debug_assert_eq!(input.bands, output.bands);
+
+        let bands = input.bands as usize;
+        let pixels = input.region.pixel_count();
+        for pixel in 0..pixels {
+            let base = pixel * bands;
+            for band in (0..bands).step_by(2) {
+                let magnitude = input.data[base + band];
+                let angle = input.data[base + band + 1];
+                output.data[base + band] = magnitude * angle.cos();
+                output.data[base + band + 1] = magnitude * angle.sin();
+            }
+        }
+    }
+}
+
+impl PixelLocalOp for RectOp {}
+
+#[cfg(test)]
+mod tests {
+    use super::super::polar::PolarOp;
+    use super::*;
+    use viprs_core::image::Region;
+
+    #[test]
+    fn rect_round_trip_from_polar_axes() {
+        let op = RectOp;
+        let input_data = [1.0f32, 0.0, 1.0, std::f32::consts::FRAC_PI_2];
+        let mut output_data = [0.0f32; 4];
+        let region = Region::new(0, 0, 2, 1);
+        let input = Tile::<F32>::new(region, 2, &input_data);
+        let mut output = TileMut::<F32>::new(region, 2, &mut output_data);
+        let mut state = ();
+        op.process_region(&mut state, &input, &mut output);
+
+        assert!((output_data[0] - 1.0).abs() < 1e-6);
+        assert!(output_data[1].abs() < 1e-6);
+        assert!(output_data[2].abs() < 1e-6);
+        assert!((output_data[3] - 1.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn rect_handles_negative_angle_and_zero_magnitude() {
+        let op = RectOp;
+        let input_data = [2.0f32, std::f32::consts::PI, 0.0, -1.2];
+        let mut output_data = [0.0f32; 4];
+        let region = Region::new(0, 0, 2, 1);
+        let input = Tile::<F32>::new(region, 2, &input_data);
+        let mut output = TileMut::<F32>::new(region, 2, &mut output_data);
+        let mut state = ();
+
+        op.process_region(&mut state, &input, &mut output);
+
+        assert!((output_data[0] + 2.0).abs() < 1e-6);
+        assert!(output_data[1].abs() < 1e-6);
+        assert!(output_data[2].abs() < 1e-6);
+        assert!(output_data[3].abs() < 1e-6);
+    }
+
+    #[test]
+    fn polar_round_trip_preserves_magnitude_and_angle_for_axes() {
+        let rect = RectOp;
+        let polar = PolarOp;
+        let region = Region::new(0, 0, 2, 1);
+        let input_data = [3.0f32, 0.0, 2.0, std::f32::consts::FRAC_PI_2];
+        let mut rect_data = [0.0f32; 4];
+        let mut polar_data = [0.0f32; 4];
+        let mut state = ();
+
+        let input = Tile::<F32>::new(region, 2, &input_data);
+        let mut rect_output = TileMut::<F32>::new(region, 2, &mut rect_data);
+        rect.process_region(&mut state, &input, &mut rect_output);
+
+        let rect_tile = Tile::<F32>::new(region, 2, &rect_data);
+        let mut polar_output = TileMut::<F32>::new(region, 2, &mut polar_data);
+        polar.process_region(&mut state, &rect_tile, &mut polar_output);
+
+        assert!((polar_data[0] - input_data[0]).abs() < 1e-6);
+        assert!((polar_data[1] - input_data[1]).abs() < 1e-6);
+        assert!((polar_data[2] - input_data[2]).abs() < 1e-6);
+        assert!((polar_data[3] - input_data[3]).abs() < 1e-6);
+    }
+
+    #[test]
+    fn reports_identity_region_metadata() {
+        let op = RectOp;
+        let region = Region::new(2, 3, 4, 5);
+
+        op.start();
+        assert_eq!(op.demand_hint(), DemandHint::ThinStrip);
+        assert_eq!(op.required_input_region(&region), region);
+    }
+}

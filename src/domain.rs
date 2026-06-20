@@ -11,7 +11,7 @@ pub use viprs_core::colorspace;
 pub use viprs_core::colour;
 /// Runtime routing for dynamic colorspace-conversion graphs.
 pub mod colour_dispatcher;
-pub mod concretize;
+pub use viprs_core::concretize;
 pub use viprs_core::draw;
 pub use viprs_core::error;
 pub use viprs_core::format;

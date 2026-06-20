@@ -4,12 +4,12 @@
 //! mapped files, decoders, or generated images. The scheduler reads tiles
 //! through these traits without learning any infrastructure-specific details.
 
+use std::num::NonZeroU8;
 use viprs_core::{
     error::ViprsError,
     format::{BandFormat, BandFormatId},
     image::{DemandHint, ImageMetadata, Region},
 };
-use std::num::NonZeroU8;
 
 /// Pixel source for a pipeline input.
 ///

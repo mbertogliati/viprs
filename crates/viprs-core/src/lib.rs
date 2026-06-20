@@ -12,6 +12,7 @@ pub mod coeff;
 pub mod colorspace;
 /// Colour-conversion traits and helpers shared across colour operations.
 pub mod colour;
+pub mod concretize;
 pub mod draw;
 /// Typed error enums used across the domain and adapter layers.
 pub mod error;
@@ -27,8 +28,12 @@ pub mod reducer;
 pub mod reorder;
 /// Resampling traits, filters, and high-level resize configuration.
 pub mod resample;
+/// Shared helper types extracted from operation crates to avoid cross-crate dependencies.
+pub mod shared_ops;
 /// SIMD abstraction helpers shared by performance-sensitive operations.
 pub mod simd;
+/// SIMD dispatch macros and function-pointer selectors used by split ops crates.
+pub mod simd_util;
 /// Aggregated image statistics produced by reducers.
 pub mod stats;
 

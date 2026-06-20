@@ -3068,6 +3068,10 @@ dependencies = [
  "tracing",
  "turbojpeg",
  "viprs-core",
+ "viprs-ops-colour",
+ "viprs-ops-composite",
+ "viprs-ops-pixel",
+ "viprs-ops-spatial",
  "viprs-ports",
  "webp",
  "weezl",
@@ -3081,6 +3085,49 @@ dependencies = [
  "bytemuck",
  "proptest",
  "thiserror 2.0.18",
+]
+
+[[package]]
+name = "viprs-ops-colour"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "lcms2",
+ "proptest",
+ "viprs-core",
+ "viprs-ops-pixel",
+ "viprs-ports",
+]
+
+[[package]]
+name = "viprs-ops-composite"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "proptest",
+ "rustfft",
+ "viprs-core",
+ "viprs-ops-pixel",
+ "viprs-ops-spatial",
+]
+
+[[package]]
+name = "viprs-ops-pixel"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "proptest",
+ "viprs-core",
+]
+
+[[package]]
+name = "viprs-ops-spatial"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "proptest",
+ "pulp",
+ "viprs-core",
 ]
 
 [[package]]

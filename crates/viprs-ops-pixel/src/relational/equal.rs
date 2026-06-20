@@ -1,0 +1,214 @@
+use std::marker::PhantomData;
+
+use crate::relational::CmpSample;
+
+use viprs_core::{
+    format::{NumericBand, U8},
+    image::{DemandHint, Region, Tile, TileMut},
+    op::{Op, PixelLocalOp},
+};
+
+/// Element-wise equality comparison against a scalar.
+///
+/// Each sample is compared to `rhs`. The output is `255` if equal and `0`
+/// otherwise, matching libvips relational semantics.
+///
+/// For float formats, equality is exact bit-level comparison (no epsilon). Use
+/// this for integer formats where equality is well-defined. For float approximate
+/// equality, apply a threshold before using this op.
+pub struct Equal<F: NumericBand>
+where
+    F::Sample: CmpSample,
+{
+    rhs: F::Sample,
+    _format: PhantomData<F>,
+}
+
+impl<F: NumericBand> Equal<F>
+where
+    F::Sample: CmpSample,
+{
+    /// Creates a new `Equal`.
+    pub const fn new(rhs: F::Sample) -> Self {
+        Self {
+            rhs,
+            _format: PhantomData,
+        }
+    }
+}
+
+impl<F> Op for Equal<F>
+where
+    F: NumericBand,
+    F::Sample: CmpSample,
+{
+    type Input = F;
+    type Output = U8;
+    type State = ();
+
+    fn demand_hint(&self) -> DemandHint {
+        DemandHint::ThinStrip
+    }
+
+    fn required_input_region(&self, output: &Region) -> Region {
+        *output
+    }
+
+    fn start(&self) {}
+
+    #[inline]
+    fn process_region(&self, _state: &mut (), input: &Tile<F>, output: &mut TileMut<U8>) {
+        let rhs = self.rhs;
+        for (s, d) in input.data.iter().zip(output.data.iter_mut()) {
+            *d = if *s == rhs { u8::MAX } else { 0 };
+        }
+    }
+}
+
+/// `Equal` is pixel-local: each output sample depends only on the corresponding
+/// input sample. See `PixelLocalOp` for invariants.
+impl<F> PixelLocalOp for Equal<F>
+where
+    F: NumericBand,
+    F::Sample: CmpSample,
+{
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::relational::CmpSample;
+
+    use proptest::prelude::*;
+    use viprs_core::{
+        format::{F32, U8},
+        image::{DemandHint, Region},
+    };
+
+    fn make_region(w: u32, h: u32) -> Region {
+        Region::new(0, 0, w, h)
+    }
+
+    #[test]
+    fn equal_f32_known_values() {
+        let op = Equal::<F32>::new(5.0);
+        let r = make_region(3, 1);
+        let input_data = vec![3.0f32, 5.0, 7.0];
+        let mut output_data = vec![0u8; 3];
+        let input = Tile::<F32>::new(r, 1, &input_data);
+        let mut output = TileMut::<U8>::new(r, 1, &mut output_data);
+        let mut state = ();
+        op.process_region(&mut state, &input, &mut output);
+        assert_eq!(output_data, vec![0u8, 255, 0]);
+    }
+
+    #[test]
+    fn equal_with_no_matches_is_all_false() {
+        let op = Equal::<F32>::new(42.0);
+        let r = make_region(3, 1);
+        let input_data = vec![1.0f32, 2.0, 3.0];
+        let mut output_data = vec![99u8; 3];
+        let input = Tile::<F32>::new(r, 1, &input_data);
+        let mut output = TileMut::<U8>::new(r, 1, &mut output_data);
+        let mut state = ();
+        op.process_region(&mut state, &input, &mut output);
+        assert_eq!(output_data, vec![0u8, 0, 0]);
+    }
+
+    #[test]
+    fn equal_u8_true_is_255() {
+        let op = Equal::<U8>::new(42);
+        let r = make_region(2, 1);
+        let input_data = vec![42u8, 0];
+        let mut output_data = vec![0u8; 2];
+        let input = Tile::<U8>::new(r, 1, &input_data);
+        let mut output = TileMut::<U8>::new(r, 1, &mut output_data);
+        let mut state = ();
+        op.process_region(&mut state, &input, &mut output);
+        assert_eq!(output_data, vec![255u8, 0]);
+    }
+
+    #[test]
+    fn equal_reports_thin_strip_and_passthrough_region() {
+        let op = Equal::<F32>::new(5.0);
+        let region = make_region(4, 2);
+
+        assert_eq!(op.demand_hint(), DemandHint::ThinStrip);
+        assert_eq!(op.required_input_region(&region), region);
+
+        op.start();
+    }
+
+    #[test]
+    fn equal_multiband_processes_each_band_independently() {
+        let op = Equal::<F32>::new(5.0);
+        let region = make_region(2, 1);
+        let input_data = vec![5.0f32, 4.0, 5.0, 3.0, 5.0, 6.0];
+        let mut output_data = vec![0u8; input_data.len()];
+        let input = Tile::<F32>::new(region, 3, &input_data);
+        let mut output = TileMut::<U8>::new(region, 3, &mut output_data);
+        let mut state = ();
+
+        op.process_region(&mut state, &input, &mut output);
+
+        assert_eq!(output_data, vec![255u8, 0, 255, 0, 255, 0]);
+    }
+
+    #[test]
+    fn equal_uses_exact_float_equality() {
+        let rhs = 1.0f32;
+        let almost_equal = f32::from_bits(rhs.to_bits() + 1);
+        let op = Equal::<F32>::new(rhs);
+        let region = make_region(2, 1);
+        let input_data = vec![rhs, almost_equal];
+        let mut output_data = vec![0u8; input_data.len()];
+        let input = Tile::<F32>::new(region, 1, &input_data);
+        let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
+        let mut state = ();
+
+        op.process_region(&mut state, &input, &mut output);
+
+        assert_eq!(output_data, vec![255u8, 0]);
+    }
+
+    proptest! {
+        #[test]
+        fn equal_output_is_always_true_or_false(
+            pixels in proptest::collection::vec(0.0f32..=100.0f32, 1..=64),
+            rhs in 0.0f32..=100.0f32,
+        ) {
+            let len = pixels.len();
+            let op = Equal::<F32>::new(rhs);
+            let r = Region::new(0, 0, len as u32, 1);
+            let mut output_data = vec![0u8; len];
+            let input = Tile::<F32>::new(r, 1, &pixels);
+            let mut output = TileMut::<U8>::new(r, 1, &mut output_data);
+            let mut state = ();
+            op.process_region(&mut state, &input, &mut output);
+            for v in &output_data {
+                prop_assert!(*v == 0 || *v == 255, "output must be 0 or 255, got {}", v);
+            }
+        }
+
+        #[test]
+        fn equal_matches_exact_scalar_comparison(
+            pixels in proptest::collection::vec(-1000.0f32..=1000.0f32, 1..=64),
+            rhs in -1000.0f32..=1000.0f32,
+        ) {
+            let len = pixels.len();
+            let op = Equal::<F32>::new(rhs);
+            let region = Region::new(0, 0, len as u32, 1);
+            let mut output_data = vec![0u8; len];
+            let input = Tile::<F32>::new(region, 1, &pixels);
+            let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
+            let mut state = ();
+
+            op.process_region(&mut state, &input, &mut output);
+
+            for (sample, actual) in pixels.iter().zip(&output_data) {
+                let expected = if *sample == rhs { u8::MAX } else { 0 };
+                prop_assert_eq!(*actual, expected);
+            }
+        }
+    }
+}

@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports"]
+members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports", "crates/viprs-ops-pixel", "crates/viprs-ops-spatial", "crates/viprs-ops-colour", "crates/viprs-ops-composite"]
 resolver = "3"
 
 [workspace.package]
@@ -73,6 +73,10 @@ missing_docs = "deny"
 [dependencies]
 viprs-core = { path = "crates/viprs-core" }
 viprs-ports = { path = "crates/viprs-ports" }
+viprs-ops-pixel = { path = "crates/viprs-ops-pixel" }
+viprs-ops-spatial = { path = "crates/viprs-ops-spatial" }
+viprs-ops-colour = { path = "crates/viprs-ops-colour" }
+viprs-ops-composite = { path = "crates/viprs-ops-composite" }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
@@ -126,7 +130,7 @@ rayon = ["dep:rayon"]
 tracing = ["dep:tracing"]
 mmap = ["dep:memmap2"]
 # Optional compute/color features.
-fft = ["dep:rustfft"]
+fft = ["dep:rustfft", "viprs-ops-composite/fft"]
 # Native codec flags intentionally keep the C-backed implementations for throughput.
 # See README.md for per-OS install commands and feature-specific system dependencies.
 jpeg = ["dep:turbojpeg", "dep:jpeg-encoder", "icc"]
@@ -141,10 +145,10 @@ radiance = []
 pfm = []
 avif = ["dep:ravif", "dep:rgb", "dep:libheif-rs", "dep:libheif-sys"] # Requires libheif.
 heif = ["dep:libheif-rs", "dep:libheif-sys"] # Requires libheif.
-simd-pulp = ["dep:pulp"]
+simd-pulp = ["dep:pulp", "viprs-ops-spatial/simd-pulp"]
 svg = ["dep:resvg"]
 jxl = ["dep:jxl-oxide", "dep:jpegxl-rs"]
-icc = ["dep:lcms2"] # Requires lcms2.
+icc = ["dep:lcms2", "viprs-ops-colour/icc"] # Requires lcms2.
 fits = ["dep:fitsio-sys"]
 mat-hdf5 = ["dep:hdf5-pure-rust"]
 magick = []
