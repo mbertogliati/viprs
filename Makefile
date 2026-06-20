@@ -8,8 +8,12 @@
 #   make bench      — criterion benchmarks
 #   make bench-vs   — E2E comparison vs libvips (representative matrix)
 #   make bench-vs BENCH_ITER=10  — quick smoke test
-#   make cross CMD=clippy — run any target in opposite arch via Docker
+#   make cross-up        — start persistent x86 container (once)
+#   make cross CMD=clippy — run any target in opposite arch (instant via exec)
 #   make check-cross     — shorthand for make cross CMD=check
+#   make cross-setup     — one-time: Colima with Rosetta (FAST x86)
+#   make cross-shell     — interactive shell in cross container
+#   make cross-clean     — nuke cross environment
 
 CARGO := cargo
 RUSTFLAGS_CI := -Dwarnings
@@ -20,7 +24,7 @@ RUSTFLAGS_CI := -Dwarnings
 #   make check FEATURES="--all-features"
 FEATURES ?= --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation
 
-.PHONY: all check ci cross check-cross fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy build test test-all doc deny audit bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -86,13 +90,25 @@ xtask:
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) build --release -p xtask --features count-alloc
 
 # ─── Cross-architecture local CI (Docker) ───────────────────────────────────────
-# Verify lint/build/test in x86_64 or arm64 containers — catches arch-specific
-# issues before pushing. Uses the CI container image + rustup for Rust.
+# Persistent container with native filesystem for source code.
+# Architecture: container runs indefinitely, source is rsynced (tar pipe) on each
+# `make cross` invocation. This gives native ext4 I/O speed instead of virtiofs
+# overhead (~7x faster than bind-mount for many small files like .rs sources).
+#
+# Layout inside container:
+#   /src/          ← synced source (native ext4, fast)
+#   /src/target/   ← volume mount (persists builds across runs)
+#   /workspace/    ← bind mount from host (only used for sync source)
 #
 # Usage:
-#   make check-cross                    — run check in opposite arch (auto-detect)
-#   make check-cross ARCH=x86_64       — explicit x86_64
-#   make check-cross ARCH=arm64        — explicit arm64
+#   make cross-up                       — start persistent container (once)
+#   make cross CMD=check                — run command inside container
+#   make cross CMD=bench                — benchmarks in x86
+#   make check-cross                    — shorthand for make cross CMD=check
+#   make cross-down                     — stop container (keeps state)
+#   make cross-clean                    — nuke container + volumes (full reset)
+#   make cross-shell                    — interactive shell in container
+#   make cross-setup                    — one-time Colima setup with Rosetta
 
 CI_IMAGE := ghcr.io/mbertogliati/viprs-ci:latest
 
@@ -115,28 +131,89 @@ else
   DOCKER_PLATFORM := linux/arm64
 endif
 
-## Run any make target in the opposite architecture via Docker.
-## Usage:
-##   make cross CMD=clippy              — clippy on opposite arch
-##   make cross CMD=test                — tests on opposite arch
-##   make cross CMD=build               — build on opposite arch
-##   make cross CMD=check               — full check on opposite arch
-##   make cross CMD=clippy ARCH=arm64   — explicit arch
+CROSS_CONTAINER := viprs-cross-$(ARCH)
+CROSS_TARGET_VOL := viprs-cross-target-$(ARCH)
+CROSS_REGISTRY_VOL := viprs-cross-registry
 CMD ?= check
 
-cross:
-	@echo "══════════════════════════════════════════════════════════════"
-	@echo "  cross: running 'make $(CMD)' on $(ARCH) ($(DOCKER_PLATFORM))"
-	@echo "══════════════════════════════════════════════════════════════"
-	docker run --rm --platform $(DOCKER_PLATFORM) \
-		--entrypoint "" \
-		-v "$$(pwd):/workspace" -w /workspace \
-		$(CI_IMAGE) \
-		make $(CMD)
+## Start persistent cross-compilation container (idempotent).
+cross-up:
+	@if docker inspect $(CROSS_CONTAINER) >/dev/null 2>&1; then \
+		if [ "$$(docker inspect -f '{{.State.Running}}' $(CROSS_CONTAINER))" = "true" ]; then \
+			echo "✓ $(CROSS_CONTAINER) already running"; \
+		else \
+			echo "↻ restarting $(CROSS_CONTAINER)..."; \
+			docker start $(CROSS_CONTAINER); \
+		fi; \
+	else \
+		echo "🚀 creating $(CROSS_CONTAINER) ($(DOCKER_PLATFORM))..."; \
+		docker run -d --platform $(DOCKER_PLATFORM) \
+			--name $(CROSS_CONTAINER) \
+			--entrypoint "" \
+			-v $(CROSS_TARGET_VOL):/src/target \
+			-v $(CROSS_REGISTRY_VOL):/root/.cargo/registry \
+			-v "$$(pwd)/tests/fixtures:/src/tests/fixtures:ro" \
+			$(CI_IMAGE) \
+			sleep infinity; \
+		docker exec $(CROSS_CONTAINER) mkdir -p /src; \
+		echo "✅ $(CROSS_CONTAINER) running"; \
+	fi
+
+## Sync source into container (tar pipe — fast, excludes heavy fixtures).
+## Only code, configs, and build files are synced (~30MB vs 775MB full repo).
+## COPYFILE_DISABLE=1 prevents macOS AppleDouble (._*) resource fork files.
+cross-sync: cross-up
+	@COPYFILE_DISABLE=1 tar -cf - \
+		--exclude='target' \
+		--exclude='.git' \
+		--exclude='.libvips_repo' \
+		--exclude='.worktrees' \
+		--exclude='tests/fixtures' \
+		. 2>/dev/null | docker exec -i $(CROSS_CONTAINER) tar -xf - -C /src 2>/dev/null
+
+## Run any make target inside the persistent container.
+## Syncs source first, then executes in /src (native filesystem).
+cross: cross-sync
+	@echo "── cross: make $(CMD) [$(ARCH)] ──"
+	docker exec -w /src $(CROSS_CONTAINER) make $(CMD)
 
 ## Shorthand: make check-cross = make cross CMD=check
 check-cross: CMD = check
 check-cross: cross
+
+## Interactive shell inside the cross container (working dir: /src)
+cross-shell: cross-sync
+	docker exec -it -w /src $(CROSS_CONTAINER) bash
+
+## Stop the persistent container (keeps it for quick restart)
+cross-down:
+	@docker stop $(CROSS_CONTAINER) 2>/dev/null && echo "stopped $(CROSS_CONTAINER)" || echo "not running"
+
+## Full reset: remove container + volumes (next cross-up starts fresh)
+cross-clean:
+	docker rm -f $(CROSS_CONTAINER) 2>/dev/null || true
+	docker volume rm -f $(CROSS_TARGET_VOL) $(CROSS_REGISTRY_VOL) 2>/dev/null || true
+	@echo "cross environment destroyed"
+
+## Setup Colima with Rosetta (x86 emulation at near-native speed) + adequate resources.
+## Run once — destroys and recreates the default Colima profile.
+cross-setup:
+	@echo "══════════════════════════════════════════════════════════════"
+	@echo "  Recreating Colima with Rosetta + more resources"
+	@echo "  (this will stop the current instance)"
+	@echo "══════════════════════════════════════════════════════════════"
+	colima stop -f 2>/dev/null || true
+	colima delete -f 2>/dev/null || true
+	colima start \
+		--vm-type vz \
+		--vz-rosetta \
+		--cpu 10 \
+		--memory 16 \
+		--disk 100 \
+		--arch aarch64
+	@echo ""
+	@echo "✅ Colima ready with Rosetta + 10 CPUs + 16GB RAM"
+	@echo "   Run: make cross-up && make cross CMD=check"1
 
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 

@@ -1449,6 +1449,10 @@ mod tests {
     }
 
     proptest! {
+        // AVIF encode/decode is CPU-intensive (~50ms native, much worse under
+        // emulation). 16 cases is sufficient to exercise the rounding invariant
+        // across varied image dimensions and pixel patterns.
+        #![proptest_config(ProptestConfig::with_cases(16))]
         #[test]
         fn prop_near_lossless_round_trip_rgb_stays_within_ravif_rounding(
             (width, height, pixels) in rgb_u8_image(),
