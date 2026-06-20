@@ -48,7 +48,7 @@ impl RawEndianness {
 
 // ── Load options ──────────────────────────────────────────────────────────────
 
-/// Options passed to [`crate::ports::codec::ImageDecoder::decode_with_options`].
+/// Options passed to `ImageDecoder::decode_with_options`.
 ///
 /// All fields are `Option`; `None` means "use the codec's default".
 /// Codecs that do not support a given option must ignore it silently.
@@ -280,7 +280,7 @@ impl Default for LoadOptions {
 
 // ── Save options ──────────────────────────────────────────────────────────────
 
-/// Options passed to [`crate::ports::codec::ImageEncoder::encode_with_options`].
+/// Options passed to `ImageEncoder::encode_with_options`.
 ///
 /// All fields are `Option`; `None` means "use the codec's default".
 /// Codecs that do not support a given option must ignore it silently.

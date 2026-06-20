@@ -8,7 +8,7 @@
 //! # Dynamic registries
 //!
 //! These traits stay generic over `F: BandFormat`; the runtime
-//! [`crate::adapters::foreign::ForeignRegistry`] adapts concrete codecs behind
+//! `ForeignRegistry` adapts concrete codecs behind
 //! an object-safe bridge (`ImageCodec`) when dynamic registration is needed.
 //! The `probe` helper methods and `decode_with_options` /
 //! `encode_with_options` remain `where Self: Sized` per GUIDELINES.md § 4.
@@ -566,7 +566,7 @@ pub trait ImageEncoder: Send + Sync {
     }
 }
 
-/// Object-safe bridge used by [`crate::adapters::codecs::registry::ForeignRegistry`].
+/// Object-safe bridge used by `ForeignRegistry`.
 ///
 /// Concrete codecs stay monomorphised over `F: BandFormat`; this trait erases
 /// the format only at the runtime registry boundary where `dyn Trait` is

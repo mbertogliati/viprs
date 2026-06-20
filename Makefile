@@ -71,7 +71,7 @@ test-all:
 
 ## Documentation (deny warnings)
 doc:
-	RUSTDOCFLAGS="-Dwarnings" $(CARGO) doc --workspace --no-deps $(FEATURES)
+	RUSTDOCFLAGS="-Dwarnings" $(CARGO) doc --workspace --no-deps $(FEATURES) --exclude xtask
 
 ## License/advisory audit
 deny:
