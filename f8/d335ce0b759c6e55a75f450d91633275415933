@@ -1,0 +1,22 @@
+.github/workflows/build-oci.yml
+  s_10f4f0046081e9::t_868a6000770da5 6-16,47,65,73
+  s_10f4f0046081e9::t_c48b5dc6c70163 84-89
+docker/Dockerfile.ci
+  s_10f4f0046081e9::t_9aa28f0d48e0b4 1,10,17-22,24-25,29-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f8d335ce0b759c6e55a75f450d91633275415933",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
