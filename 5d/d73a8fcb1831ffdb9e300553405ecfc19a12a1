@@ -1,0 +1,28 @@
+docker/Dockerfile.ci
+  s_10f4f0046081e9::t_3847019582f7a9 17-18,24-27
+docker/Dockerfile
+  s_10f4f0046081e9::t_84b03bb37bc972 109
+  s_10f4f0046081e9::t_3847019582f7a9 30,132,134-135
+.github/workflows/build-oci.yml
+  s_10f4f0046081e9::t_42eb466c38d0bd 61
+.github/workflows/ci.yml
+  s_10f4f0046081e9::t_24f638fdf1d4d7 46,48,50,69,73,79-81,86,89,110,117,127,137-139,149,152,156,187,227
+Makefile
+  s_10f4f0046081e9::t_3847019582f7a9 103-105,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5dd73a8fcb1831ffdb9e300553405ecfc19a12a1",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
