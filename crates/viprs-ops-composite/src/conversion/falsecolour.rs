@@ -428,18 +428,16 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use proptest::prelude::*;
     use viprs_core::{
         format::{F32, I16, U8, U16},
         image::{Region, Tile, TileMut},
         op::DynOperation,
+    };
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
     fn run_falsecolour_u8(input_data: &[u8], input_bands: u32) -> Vec<u8> {

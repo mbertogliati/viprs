@@ -3142,6 +3142,8 @@ dependencies = [
  "viprs-core",
  "viprs-ops-pixel",
  "viprs-ops-spatial",
+ "viprs-ports",
+ "viprs-runtime",
 ]
 
 [[package]]

@@ -321,12 +321,12 @@ fn intersect_local(a: &super::OverlayClip, b: &super::OverlayClip) -> Option<sup
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
+    use crate::draw::OverlayClip;
     use proptest::prelude::*;
     use viprs_core::{
         draw::DrawOp,
         format::U8,
         image::{Region, TileMut},
-        ops::draw::OverlayClip,
     };
 
     fn expected_smudge_u8(current: u8, total: f64) -> u8 {

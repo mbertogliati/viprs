@@ -192,15 +192,13 @@ where
 #[cfg(all(test, feature = "_integration"))]
 pub(crate) mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use proptest::prelude::*;
     use viprs_core::format::U8;
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
+    };
 
     pub(crate) fn run_bandunfold_for_bandfold_roundtrip(
         factor: u32,

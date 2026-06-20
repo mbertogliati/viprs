@@ -175,10 +175,7 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::freqfilt::{
-        COMPLEX_BANDS,
-        fwfft::{Fft2dScratch, Fft2dState, FftPlan, apply_fft_2d_in_place},
-    };
+    use crate::freqfilt::{COMPLEX_BANDS, FwFftOp};
 
     use proptest::prelude::*;
     use viprs_core::{
@@ -186,7 +183,6 @@ mod tests {
         format::{F32, U8},
         image::{DemandHint, Region},
         op::{NodeSpec, Op},
-        ops::freqfilt::FwFftOp,
     };
     fn run_fwfft<F>(width: u32, height: u32, input_data: &[F::Sample]) -> Vec<f32>
     where

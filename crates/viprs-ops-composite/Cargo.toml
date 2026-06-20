@@ -17,6 +17,8 @@ rustfft = { version = "6", optional = true }
 
 [dev-dependencies]
 proptest = "1"
+viprs-ports = { path = "../viprs-ports" }
+viprs-runtime = { path = "../viprs-runtime" }
 
 [features]
 _integration = []

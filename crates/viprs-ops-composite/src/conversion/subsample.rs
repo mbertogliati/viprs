@@ -293,13 +293,6 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::{scheduler::TileScheduler, source::ImageSource},
-    };
     use proptest::prelude::*;
     use std::sync::{Arc, Mutex};
     use viprs_core::{
@@ -307,7 +300,12 @@ mod tests {
         format::{BandFormatId, U8},
         image::{DemandHint, Region, Tile, TileMut},
         op::{DynOperation, OperationBridge, SourceReadPlan},
-        ops::arithmetic::invert::Invert,
+    };
+    use viprs_ops_pixel::arithmetic::invert::Invert;
+    use viprs_ports::{scheduler::TileScheduler, source::ImageSource};
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
     fn expected_subsample(

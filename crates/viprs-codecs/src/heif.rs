@@ -764,7 +764,7 @@ mod tests {
         include_bytes!("../../../tests/fixtures/images/bench_2048x2048.heic");
     const U8_ALLOC_ENV: &str = "VIPRS_HEIF_U8_ALLOC_CHILD";
     const U8_ALLOC_CHILD_TEST: &str =
-        "adapters::codecs::heif::tests::u8_decode_peak_live_bytes_stay_near_output_buffer_child";
+        "heif::tests::u8_decode_peak_live_bytes_stay_near_output_buffer_child";
 
     fn heif_encoder_available() -> bool {
         shared_libheif("heif").is_ok_and(|lib_heif| {

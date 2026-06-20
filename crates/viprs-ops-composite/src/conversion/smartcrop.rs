@@ -697,14 +697,12 @@ mod tests {
     use std::{fs, path::Path, process::Command};
 
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use viprs_core::format::U8;
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
+    };
 
     fn write_ppm_rgb(path: &Path, width: u32, height: u32, pixels: &[u8]) {
         let mut bytes = format!("P6\n{width} {height}\n255\n").into_bytes();

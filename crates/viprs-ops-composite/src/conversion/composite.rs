@@ -628,17 +628,16 @@ impl DynOperation for CompositeOp<F32> {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::{scheduler::TileScheduler, source::DynImageSource},
-    };
+    use crate::conversion::copy::CopyOp;
     use proptest::prelude::*;
     use proptest::proptest;
     use std::{fs, path::Path, process::Command};
-    use viprs_core::{op::OperationBridge, ops::conversion::CopyOp};
+    use viprs_core::op::OperationBridge;
+    use viprs_ports::{scheduler::TileScheduler, source::DynImageSource};
+    use viprs_runtime::{
+        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
+    };
 
     fn run_composite(
         mode: BlendMode,

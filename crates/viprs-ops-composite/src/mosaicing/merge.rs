@@ -922,10 +922,8 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use proptest::strategy::ValueTree;
-    use viprs_core::{
-        format::U8,
-        ops::structural::{Join, JoinDirection},
-    };
+    use viprs_core::format::U8;
+    use viprs_ops_spatial::structural::{Join, JoinDirection};
 
     fn run_merge_h(
         op: &MergeH<U8>,

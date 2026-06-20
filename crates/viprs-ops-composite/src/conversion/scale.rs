@@ -277,19 +277,17 @@ pub type ScaleToF32Op<F> = ScaleOp<F, F32>;
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::{ReducingScheduler, TileScheduler},
-    };
     use proptest::prelude::*;
     use viprs_core::{
         format::{U8, U16},
         image::{Region, Tile, TileMut},
         op::{Op, OperationBridge},
-        reducers::stats::StatsReducer,
+        stats::ImageStats,
+    };
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
     struct PassThroughU16;
@@ -345,6 +343,29 @@ mod tests {
         bytemuck::cast_slice(bytes).to_vec()
     }
 
+    fn stats_from_u16_samples(samples: &[u16]) -> ImageStats {
+        let count = samples.len() as f64;
+        let min = f64::from(*samples.iter().min().unwrap());
+        let max = f64::from(*samples.iter().max().unwrap());
+        let mean = samples.iter().map(|&sample| f64::from(sample)).sum::<f64>() / count;
+        let variance = samples
+            .iter()
+            .map(|&sample| {
+                let delta = f64::from(sample) - mean;
+                delta * delta
+            })
+            .sum::<f64>()
+            / count;
+
+        ImageStats {
+            bands: 1,
+            min: vec![min],
+            max: vec![max],
+            mean: vec![mean],
+            stddev: vec![variance.sqrt()],
+        }
+    }
+
     fn run_reducer_driven_scale(mode: ScaleMode, pixels: Vec<u16>) -> (ImageStats, Vec<u8>) {
         let width = pixels.len() as u32;
         let source = MemorySource::<U16>::new(width, 1, 1, pixels).unwrap();
@@ -354,15 +375,10 @@ mod tests {
             .build()
             .unwrap();
         let scheduler = RayonScheduler::new(2).unwrap();
-        let stats_sink = MemorySink::for_pipeline(&input_pipeline).unwrap();
-        let stats = scheduler
-            .run_with_reducer::<U16, StatsReducer>(
-                &input_pipeline,
-                &stats_sink,
-                &StatsReducer::new(1),
-            )
-            .unwrap();
+        let mut stats_sink = MemorySink::for_pipeline(&input_pipeline).unwrap();
+        scheduler.run(&input_pipeline, &mut stats_sink).unwrap();
         let intermediate = bytes_to_u16(&stats_sink.into_buffer());
+        let stats = stats_from_u16_samples(&intermediate);
 
         let scale_source = MemorySource::<U16>::new(width, 1, 1, intermediate).unwrap();
         let scale_op: Box<dyn viprs_core::op::DynOperation> = Box::new(

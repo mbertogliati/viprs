@@ -120,6 +120,14 @@ pub mod registry;
 #[cfg(feature = "vips-format")]
 pub mod vips_format;
 
+#[cfg(all(test, feature = "_root_test_support"))]
+#[path = "../../../src/test_support.rs"]
+mod test_support;
+
+#[cfg(all(test, feature = "_root_test_support"))]
+#[global_allocator]
+static TEST_ALLOCATOR: test_support::CountingAllocator = test_support::CountingAllocator;
+
 #[cfg(feature = "bmp")]
 pub use bmp::BmpCodec;
 
