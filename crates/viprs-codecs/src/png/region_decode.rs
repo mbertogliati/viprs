@@ -16,6 +16,7 @@ use super::decode_full::decode_png_with_libspng;
 use super::decode_full::{
     decode_png_with_box_shrink_u8, decode_png_with_png_crate_reader,
     open_png_sequential_path_session, png_decoder, png_file_reader, png_reader,
+    validate_png_critical_chunk_crcs,
 };
 use super::encode::{
     MAX_PNG_DECODED_IMAGE_BYTES, encode_png_to_writer_web_ready, encode_png_web_ready,
@@ -385,6 +386,7 @@ impl ImageDecoder for PngCodec {
 
     fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
         viprs_span!(tracing::Level::INFO, "viprs.decode", format = "png");
+        validate_png_critical_chunk_crcs(src)?;
         // The pure-Rust `png` crate (fdeflate) is faster than libspng's
         // bundled static zlib for full-frame decode. Use libspng only as
         // a fallback for layouts the Rust decoder cannot handle.

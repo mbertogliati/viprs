@@ -564,10 +564,10 @@ EOF
 fi
 if [ "$bitdepth" = "16" ]; then
   printf 'P6\n2 1\n65535\n'
-  printf '\x00\x10\x00\x20\x00\x30\x00\x40\x00\x50\x00\x60'
+  printf '\000\020\000\040\000\060\000\100\000\120\000\140'
 else
   printf 'P6\n2 1\n255\n'
-  printf '\x10\x20\x30\x40\x50\x60'
+  printf '\020\040\060\100\120\140'
 fi
 "#;
         fs::write(&path, script).unwrap();

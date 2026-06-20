@@ -19,7 +19,7 @@ RUN apt-get update -qq && \
       libspng-dev libpng-dev libwebp-dev libtiff-dev \
       libheif-dev libheif-plugin-aomdec libheif-plugin-aomenc \
       libjxl-dev libopenjp2-7-dev liblcms2-dev libopenslide-dev \
-      libvips-dev imagemagick poppler-utils && \
+      libcfitsio-dev libvips-dev imagemagick poppler-utils && \
     echo "deb http://deb.debian.org/debian sid main" > /etc/apt/sources.list.d/sid.list && \
     printf "Package: *\nPin: release n=sid\nPin-Priority: 100\n" > /etc/apt/preferences.d/sid && \
     apt-get update -qq && \
@@ -36,6 +36,7 @@ RUN pkg-config --atleast-version=3.0 libturbojpeg && \
     pkg-config --modversion libheif && \
     pkg-config --modversion libjxl && \
     pkg-config --modversion lcms2 && \
+    pkg-config --modversion cfitsio && \
     pkg-config --modversion openslide
 
 ENTRYPOINT []

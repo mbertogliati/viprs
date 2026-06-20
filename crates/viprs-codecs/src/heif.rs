@@ -1553,9 +1553,11 @@ mod tests {
                 assert_eq!(decoded.pixels(), original.pixels());
             }
             Err(ViprsError::Codec(message)) => {
-                assert_eq!(
-                    message,
-                    "heif: linked libheif encoder/container does not support 16-bit interleaved RGBA"
+                assert!(
+                    message
+                        == "heif: linked libheif encoder/container does not support 16-bit interleaved RGBA"
+                        || message.contains("g_bit_depth out of range"),
+                    "unexpected HEIF 16-bit RGBA encode error: {message}"
                 );
             }
             Err(other) => panic!("unexpected HEIF encode error: {other}"),

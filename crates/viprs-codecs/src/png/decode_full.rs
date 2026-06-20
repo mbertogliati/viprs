@@ -4,6 +4,7 @@ use std::path::Path;
 
 #[cfg(feature = "libspng")]
 use super::state::PNG_XMP_KEYWORD;
+use crc32fast::Hasher;
 #[cfg(feature = "libspng")]
 use png::ColorType;
 use png::{BitDepth, Decoder as PngDecoder, Transformations};
@@ -25,6 +26,68 @@ use super::encode::MAX_PNG_DECODED_IMAGE_BYTES;
 use super::metadata::build_png_metadata;
 use super::metadata::{color_type_to_bands, png_metadata};
 use super::state::{PNG_FILE_READER_CAPACITY, PngSequentialPathSession};
+
+const PNG_SIGNATURE_LEN: usize = 8;
+const PNG_CHUNK_HEADER_LEN: usize = 8;
+const PNG_CHUNK_CRC_LEN: usize = 4;
+
+pub(super) fn validate_png_critical_chunk_crcs(src: &[u8]) -> Result<(), ViprsError> {
+    if src.len() < PNG_SIGNATURE_LEN {
+        return Err(ViprsError::Codec(
+            "png: input shorter than signature".into(),
+        ));
+    }
+
+    let mut offset = PNG_SIGNATURE_LEN;
+    while offset + PNG_CHUNK_HEADER_LEN + PNG_CHUNK_CRC_LEN <= src.len() {
+        let chunk_len = u32::from_be_bytes([
+            src[offset],
+            src[offset + 1],
+            src[offset + 2],
+            src[offset + 3],
+        ]) as usize;
+        let chunk_type_start = offset + 4;
+        let chunk_data_start = chunk_type_start + 4;
+        let chunk_data_end = chunk_data_start.checked_add(chunk_len).ok_or_else(|| {
+            ViprsError::Codec("png: chunk length overflows addressable memory".into())
+        })?;
+        let crc_end = chunk_data_end
+            .checked_add(PNG_CHUNK_CRC_LEN)
+            .ok_or_else(|| {
+                ViprsError::Codec("png: chunk CRC overflows addressable memory".into())
+            })?;
+        if crc_end > src.len() {
+            return Err(ViprsError::Codec("png: truncated chunk payload".into()));
+        }
+
+        let chunk_type = &src[chunk_type_start..chunk_data_start];
+        let is_critical = chunk_type[0].is_ascii_uppercase();
+        if is_critical {
+            let expected = u32::from_be_bytes([
+                src[chunk_data_end],
+                src[chunk_data_end + 1],
+                src[chunk_data_end + 2],
+                src[chunk_data_end + 3],
+            ]);
+            let mut hasher = Hasher::new();
+            hasher.update(&src[chunk_type_start..chunk_data_end]);
+            let actual = hasher.finalize();
+            if actual != expected {
+                let name = std::str::from_utf8(chunk_type).unwrap_or("????");
+                return Err(ViprsError::Codec(format!(
+                    "png: invalid CRC for critical chunk {name}"
+                )));
+            }
+        }
+
+        if chunk_type == b"IEND" {
+            return Ok(());
+        }
+        offset = crc_end;
+    }
+
+    Err(ViprsError::Codec("png: missing IEND chunk".into()))
+}
 
 pub(super) fn png_reader<R>(src: R) -> Result<png::Reader<R>, ViprsError>
 where
@@ -524,7 +587,7 @@ fn png_metadata_from_libspng<R: std::io::Read>(
 #[cfg(feature = "libspng")]
 fn new_libspng_context<R>() -> Result<SpngRawContext<R>, ViprsError> {
     let mut ctx = SpngRawContext::new().map_err(|e| ViprsError::Codec(e.to_string()))?;
-    ctx.set_crc_action(SpngCrcAction::Use, SpngCrcAction::Use)
+    ctx.set_crc_action(SpngCrcAction::Error, SpngCrcAction::Error)
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
     Ok(ctx)
 }
