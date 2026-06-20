@@ -1,0 +1,24 @@
+docker/Dockerfile.ci
+  s_10f4f0046081e9::t_33871ffa6c2a0d 42-45
+Makefile
+  s_10f4f0046081e9::t_33871ffa6c2a0d 34,66-68,70,73-74,76,79-80
+  s_10f4f0046081e9::t_8cfa18ea2e9c9e 26,69,71-72,75,77-78,82,86
+.github/workflows/ci.yml
+  s_10f4f0046081e9::t_33871ffa6c2a0d 55,58-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b5b5d45bf13a89ee391efda19dfafb2c47a58c5a",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
