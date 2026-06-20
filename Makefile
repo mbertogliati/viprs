@@ -100,6 +100,10 @@ xtask:
 #   make cross-shell                    — interactive shell in container
 #   make cross-setup                    — one-time Colima setup with Rosetta
 
+# Features available in the CI container (no libspng, no openslide).
+# Used by cross targets to avoid compile_error! from missing system libs.
+CROSS_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation
+
 CI_IMAGE := ghcr.io/mbertogliati/viprs-ci:latest
 
 # Auto-detect: if host is arm64, test x86_64 and vice versa
@@ -152,6 +156,8 @@ cross-up:
 ## Sync source into container (tar pipe — fast, excludes heavy fixtures).
 ## Only code, configs, and build files are synced (~30MB vs 775MB full repo).
 ## COPYFILE_DISABLE=1 prevents macOS AppleDouble (._*) resource fork files.
+## We exclude the real tests/fixtures/ dir (mounted via volume) but recreate
+## the crate-level symlinks inside the container after sync.
 cross-sync: cross-up
 	@COPYFILE_DISABLE=1 tar -cf - \
 		--exclude='target' \
@@ -160,12 +166,20 @@ cross-sync: cross-up
 		--exclude='.worktrees' \
 		--exclude='tests/fixtures' \
 		. 2>/dev/null | docker exec -i $(CROSS_CONTAINER) tar -xf - -C /src 2>/dev/null
+	@docker exec -w /src $(CROSS_CONTAINER) sh -c '\
+		for d in crates/*/; do \
+			if [ -d "$$d" ]; then \
+				mkdir -p "$${d}tests"; \
+				ln -sfn ../../../tests/fixtures "$${d}tests/fixtures"; \
+			fi; \
+		done'
 
 ## Run any make target inside the persistent container.
 ## Syncs source first, then executes in /src (native filesystem).
+## Passes CROSS_FEATURES since the container lacks libspng/openslide.
 cross: cross-sync
 	@echo "── cross: make $(CMD) [$(ARCH)] ──"
-	docker exec -w /src $(CROSS_CONTAINER) make $(CMD)
+	docker exec -w /src $(CROSS_CONTAINER) make $(CMD) FEATURES="$(CROSS_FEATURES)"
 
 ## Shorthand: make check-cross = make cross CMD=check
 check-cross: CMD = check

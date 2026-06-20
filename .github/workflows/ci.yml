@@ -45,9 +45,9 @@ jobs:
       - name: Check formatting
         run: make fmt
       - name: Clippy
-        run: make clippy FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation"
+        run: make clippy FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
       - name: Build docs (deny warnings)
-        run: make doc FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation"
+        run: make doc FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
 
   security:
     name: "Security (audit + deny)"
@@ -104,7 +104,7 @@ jobs:
         with:
           shared-key: "test-coverage"
       - name: Run coverage
-        run: make coverage FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation"
+        run: make coverage FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
       - name: Generate summary
         if: always()
         run: |
