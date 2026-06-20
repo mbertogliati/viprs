@@ -71,14 +71,14 @@ similar_names = "allow"
 missing_docs = "deny"
 
 [dependencies]
-viprs-core = { path = "crates/viprs-core" }
-viprs-ports = { path = "crates/viprs-ports" }
-viprs-ops-pixel = { path = "crates/viprs-ops-pixel" }
-viprs-ops-spatial = { path = "crates/viprs-ops-spatial" }
-viprs-ops-colour = { path = "crates/viprs-ops-colour" }
-viprs-ops-composite = { path = "crates/viprs-ops-composite" }
-viprs-codecs = { path = "crates/viprs-codecs", default-features = false }
-viprs-runtime = { path = "crates/viprs-runtime", default-features = false }
+viprs-core = { path = "crates/viprs-core", version = "0.1.0" }
+viprs-ports = { path = "crates/viprs-ports", version = "0.1.0" }
+viprs-ops-pixel = { path = "crates/viprs-ops-pixel", version = "0.1.0" }
+viprs-ops-spatial = { path = "crates/viprs-ops-spatial", version = "0.1.0" }
+viprs-ops-colour = { path = "crates/viprs-ops-colour", version = "0.1.0" }
+viprs-ops-composite = { path = "crates/viprs-ops-composite", version = "0.1.0" }
+viprs-codecs = { path = "crates/viprs-codecs", version = "0.1.0", default-features = false }
+viprs-runtime = { path = "crates/viprs-runtime", version = "0.1.0", default-features = false }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"

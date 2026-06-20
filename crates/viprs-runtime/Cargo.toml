@@ -10,13 +10,13 @@ description = "Runtime adapters and pipeline implementations for viprs"
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core" }
-viprs-ports = { path = "../viprs-ports" }
-viprs-ops-pixel = { path = "../viprs-ops-pixel" }
-viprs-ops-spatial = { path = "../viprs-ops-spatial" }
-viprs-ops-colour = { path = "../viprs-ops-colour" }
-viprs-ops-composite = { path = "../viprs-ops-composite" }
-viprs-codecs = { path = "../viprs-codecs", default-features = false }
+viprs-core = { path = "../viprs-core", version = "0.1.0" }
+viprs-ports = { path = "../viprs-ports", version = "0.1.0" }
+viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.0" }
+viprs-ops-spatial = { path = "../viprs-ops-spatial", version = "0.1.0" }
+viprs-ops-colour = { path = "../viprs-ops-colour", version = "0.1.0" }
+viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.0" }
+viprs-codecs = { path = "../viprs-codecs", version = "0.1.0", default-features = false }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
 crossbeam-channel = "0.5"

@@ -9,7 +9,7 @@ publish = false
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core" }
+viprs-core = { path = "../viprs-core", version = "0.1.0" }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 
 [dev-dependencies]

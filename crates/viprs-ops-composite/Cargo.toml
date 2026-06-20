@@ -9,16 +9,16 @@ publish = false
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core" }
-viprs-ops-pixel = { path = "../viprs-ops-pixel" }
-viprs-ops-spatial = { path = "../viprs-ops-spatial" }
+viprs-core = { path = "../viprs-core", version = "0.1.0" }
+viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.0" }
+viprs-ops-spatial = { path = "../viprs-ops-spatial", version = "0.1.0" }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 rustfft = { version = "6", optional = true }
 
 [dev-dependencies]
 proptest = "1"
-viprs-ports = { path = "../viprs-ports" }
-viprs-runtime = { path = "../viprs-runtime" }
+viprs-ports = { path = "../viprs-ports", version = "0.1.0" }
+viprs-runtime = { path = "../viprs-runtime", version = "0.1.0" }
 
 [features]
 _integration = []
