@@ -5,6 +5,7 @@ use std::{
 };
 
 use crate::{
+    ImageCodecExt,
     adapters::codecs::RawCodec,
     domain::{
         codec_options::{LoadOptions, SaveOptions},

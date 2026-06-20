@@ -13,8 +13,8 @@
 //! It is a static (monomorphized) trait: concrete implementations use it,
 //! `OperationBridge` wraps them for the dynamic pipeline.
 
-use crate::domain::image::Region;
-use crate::domain::op::{NodeSpec, Op};
+use crate::image::Region;
+use crate::op::{NodeSpec, Op};
 
 /// Refinement of [`Op`] for operations that change image dimensions.
 pub trait ResampleOp: Op {
@@ -229,7 +229,7 @@ pub struct ResampleFormatMarker;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::image::Region;
+    use crate::image::Region;
 
     fn make_config(factor: f64, taps: u32, pad_before: i64) -> ReduceConfig {
         ReduceConfig {

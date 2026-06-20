@@ -3,7 +3,7 @@
 fn image_load_and_save_use_default_foreign_registry() {
     use std::{fs, path::PathBuf};
 
-    use viprs::{Image, U8};
+    use viprs::{Image, ImageCodecExt, U8};
 
     fn test_output_path() -> PathBuf {
         let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))

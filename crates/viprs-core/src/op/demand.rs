@@ -1,4 +1,4 @@
-use crate::domain::image::Region;
+use crate::image::Region;
 
 /// Preferred output tile geometry for an operation, matching libvips demand styles.
 ///

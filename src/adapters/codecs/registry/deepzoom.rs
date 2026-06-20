@@ -173,7 +173,26 @@ pub const fn save_deepzoom<F: BandFormat>(
     })
 }
 
-impl<F: BandFormat> Image<F> {
+/// Convenience codec I/O methods for [`Image`].
+pub trait ImageCodecExt: Sized {
+    /// Load an image from disk using the shared foreign registry.
+    fn load(path: impl AsRef<Path>) -> Result<Self, ViprsError>;
+
+    /// Load an image using explicit codec options.
+    fn load_with_options(path: impl AsRef<Path>, opts: &LoadOptions) -> Result<Self, ViprsError>;
+
+    /// Save an image to disk using the shared foreign registry.
+    fn save(&self, path: impl AsRef<Path>) -> Result<(), ViprsError>;
+
+    /// Save an image using explicit codec options.
+    fn save_with_options(
+        &self,
+        path: impl AsRef<Path>,
+        opts: &SaveOptions,
+    ) -> Result<(), ViprsError>;
+}
+
+impl<F: BandFormat> ImageCodecExt for Image<F> {
     /// `load` exposes adapter behavior needed by the surrounding module.
     /// Call it when you need the concrete operation implemented here.
     ///
@@ -182,7 +201,7 @@ impl<F: BandFormat> Image<F> {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load;
     /// ```
-    pub fn load(path: impl AsRef<Path>) -> Result<Self, ViprsError> {
+    fn load(path: impl AsRef<Path>) -> Result<Self, ViprsError> {
         ForeignRegistry::shared().load_as(path.as_ref())
     }
 
@@ -194,10 +213,7 @@ impl<F: BandFormat> Image<F> {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::load_with_options;
     /// ```
-    pub fn load_with_options(
-        path: impl AsRef<Path>,
-        opts: &LoadOptions,
-    ) -> Result<Self, ViprsError> {
+    fn load_with_options(path: impl AsRef<Path>, opts: &LoadOptions) -> Result<Self, ViprsError> {
         ForeignRegistry::shared().load_as_with_options(path.as_ref(), opts)
     }
 
@@ -209,7 +225,7 @@ impl<F: BandFormat> Image<F> {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save;
     /// ```
-    pub fn save(&self, path: impl AsRef<Path>) -> Result<(), ViprsError> {
+    fn save(&self, path: impl AsRef<Path>) -> Result<(), ViprsError> {
         ForeignRegistry::shared().save_as(self, path.as_ref())
     }
 
@@ -221,7 +237,7 @@ impl<F: BandFormat> Image<F> {
     /// ```ignore
     /// let _ = viprs::adapters::codecs::registry::save_with_options;
     /// ```
-    pub fn save_with_options(
+    fn save_with_options(
         &self,
         path: impl AsRef<Path>,
         opts: &SaveOptions,

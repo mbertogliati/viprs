@@ -23,7 +23,7 @@
 //! LLVM hoists the narrowing branch out of the loop, emitting separate
 //! vectorized paths. The branch cost is zero at runtime.
 //!
-//! [`PointSample`]: crate::domain::format::PointSample
+//! [`PointSample`]: crate::format::PointSample
 
 #![allow(clippy::struct_field_names)]
 // REASON: coefficient tables use domain-standard field names that match libvips terminology.
@@ -34,7 +34,7 @@
 /// [`as_int::<T>()`](OptimizedCoeff::as_int) to narrow to any integer type
 /// (u8, i8, u16, i16, u32, i32) in a single generic method.
 ///
-/// [`PointSample`]: crate::domain::format::PointSample
+/// [`PointSample`]: crate::format::PointSample
 /// Pre-analyzed arithmetic coefficient with cached narrow representations.
 ///
 /// Point operations use this to pick fast integer or float paths once, outside the hot sample

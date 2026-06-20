@@ -3,7 +3,7 @@
 //! These utilities score valid topological orders so compiled pipelines can execute with lower
 //! intermediate tile pressure.
 
-use crate::domain::op::NodeSpec;
+use crate::op::NodeSpec;
 
 /// Stable identifier for a node inside a reordering graph.
 ///

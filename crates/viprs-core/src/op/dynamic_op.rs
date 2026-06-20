@@ -1,4 +1,4 @@
-use crate::domain::{
+use crate::{
     colorspace::ColorspaceId,
     error::{BuildError, ViprsError},
     format::BandFormatId,

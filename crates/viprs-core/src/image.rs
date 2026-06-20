@@ -4,11 +4,11 @@ mod region;
 #[cfg(test)]
 mod tests;
 
-pub use crate::domain::op::DemandHint;
+pub use crate::op::DemandHint;
 pub use core::Image;
 pub use metadata::{
     AnimationFrame, AnimationLoopCount, FrameDisposal, ImageMetadata, Interpretation,
-    MetadataOverrides, UhdrGainMap,
+    MetadataOverrides, UhdrGainMap, UhdrGainMapMetadata,
 };
-pub(crate) use region::clamp_i64_to_i32;
+pub use region::clamp_i64_to_i32;
 pub use region::{Region, Tile, TileMut};

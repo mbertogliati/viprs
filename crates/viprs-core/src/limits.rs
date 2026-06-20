@@ -3,7 +3,7 @@
 
 use std::sync::{Arc, Condvar, Mutex, MutexGuard};
 
-use crate::domain::error::ViprsError;
+use crate::error::ViprsError;
 
 /// Decode-time safety limits for untrusted image input.
 ///
@@ -272,8 +272,9 @@ impl ResourceLimits {
         Ok(())
     }
 
+    /// Borrow the shared execution limiter used by scheduler adapters.
     #[must_use]
-    pub(crate) fn execution_limiter(&self) -> Arc<ExecutionSemaphore> {
+    pub fn execution_limiter(&self) -> Arc<ExecutionSemaphore> {
         Arc::clone(&self.execution_limiter)
     }
 }
@@ -285,7 +286,8 @@ impl Default for ResourceLimits {
 }
 
 #[derive(Debug)]
-pub(crate) struct ExecutionSemaphore {
+/// Cooperative semaphore used by schedulers to cap concurrent outermost executions.
+pub struct ExecutionSemaphore {
     state: Mutex<ExecutionSemaphoreState>,
     ready: Condvar,
 }
@@ -297,7 +299,9 @@ struct ExecutionSemaphoreState {
 }
 
 impl ExecutionSemaphore {
-    pub(crate) fn new(max_concurrent: usize) -> Self {
+    /// Create a new semaphore with at least one permit.
+    #[must_use]
+    pub fn new(max_concurrent: usize) -> Self {
         Self {
             state: Mutex::new(ExecutionSemaphoreState {
                 max_concurrent: max_concurrent.max(1),
@@ -307,8 +311,9 @@ impl ExecutionSemaphore {
         }
     }
 
+    /// Acquire one execution permit, blocking until capacity becomes available.
     #[must_use]
-    pub(crate) fn acquire(&self) -> ExecutionPermit<'_> {
+    pub fn acquire(&self) -> ExecutionPermit<'_> {
         let mut state = self.lock_state();
         while state.in_flight >= state.max_concurrent {
             state = self.wait_ready(state);
@@ -348,7 +353,8 @@ impl ExecutionSemaphore {
     }
 }
 
-pub(crate) struct ExecutionPermit<'a> {
+/// RAII guard returned by [`ExecutionSemaphore::acquire`].
+pub struct ExecutionPermit<'a> {
     semaphore: &'a ExecutionSemaphore,
 }
 
@@ -366,7 +372,7 @@ fn decoded_bytes(width: u32, height: u32, bands: u32, bytes_per_sample: u32) -> 
 #[cfg(test)]
 mod tests {
     use super::{DecodeLimits, ResourceLimits};
-    use crate::domain::error::ViprsError;
+    use crate::error::ViprsError;
 
     #[test]
     fn default_safe_uses_server_defaults() {

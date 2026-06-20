@@ -1,4 +1,4 @@
-use crate::domain::{error::ViprsError, format::BandFormat};
+use crate::{error::ViprsError, format::BandFormat};
 
 use super::metadata::{AnimationFrame, AnimationLoopCount, ImageMetadata};
 

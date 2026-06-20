@@ -1,4 +1,4 @@
-use crate::domain::{
+use crate::{
     error::{BuildError, ViprsError},
     format::BandFormat,
     image::{ImageMetadata, Region, Tile, TileMut},

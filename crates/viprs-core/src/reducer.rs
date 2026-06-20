@@ -3,7 +3,7 @@
 //! Design rationale for reducers.
 //! Scratch-state APIs eliminate per-tile heap allocations.
 
-use crate::domain::{
+use crate::{
     format::BandFormat,
     image::{Region, Tile},
 };
@@ -174,7 +174,7 @@ pub trait BiSourceReducer<F: BandFormat>: Send + Sync {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::{
+    use crate::{
         format::U8,
         image::{Region, Tile},
     };

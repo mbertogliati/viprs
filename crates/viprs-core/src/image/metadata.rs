@@ -1,7 +1,4 @@
-use crate::domain::{
-    format::{BandFormat, U8},
-    ops::colour::UhdrGainMapMetadata,
-};
+use crate::format::{BandFormat, U8};
 
 use super::core::Image;
 
@@ -65,6 +62,33 @@ impl Interpretation {
             Self::Rgb16 | Self::Grey16 => 65535.0,
             Self::Scrgb => 1.0,
             _ => 255.0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+/// Metadata describing how an Ultra HDR gain map should be applied.
+pub struct UhdrGainMapMetadata {
+    /// Stores the `gamma` value for this item.
+    pub gamma: [f32; 3],
+    /// Stores the `min_content_boost` value for this item.
+    pub min_content_boost: [f32; 3],
+    /// Stores the `max_content_boost` value for this item.
+    pub max_content_boost: [f32; 3],
+    /// Stores the `offset_hdr` value for this item.
+    pub offset_hdr: [f32; 3],
+    /// Stores the `offset_sdr` value for this item.
+    pub offset_sdr: [f32; 3],
+}
+
+impl Default for UhdrGainMapMetadata {
+    fn default() -> Self {
+        Self {
+            gamma: [1.0; 3],
+            min_content_boost: [1.0; 3],
+            max_content_boost: [1.0; 3],
+            offset_hdr: [0.0; 3],
+            offset_sdr: [0.0; 3],
         }
     }
 }

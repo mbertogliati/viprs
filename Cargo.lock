@@ -3067,8 +3067,19 @@ dependencies = [
  "tiff",
  "tracing",
  "turbojpeg",
+ "viprs-core",
  "webp",
  "weezl",
+]
+
+[[package]]
+name = "viprs-core"
+version = "0.1.0"
+dependencies = [
+ "ab_glyph",
+ "bytemuck",
+ "proptest",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

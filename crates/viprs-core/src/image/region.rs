@@ -1,4 +1,4 @@
-use crate::domain::{error::ViprsError, format::BandFormat};
+use crate::{error::ViprsError, format::BandFormat};
 
 use super::core::checked_image_buffer_len;
 
@@ -26,6 +26,8 @@ pub struct Region {
     pub height: u32,
 }
 
+/// Clamp a wide signed coordinate into the `i32` range used by image regions.
+#[must_use]
 pub const fn clamp_i64_to_i32(value: i64) -> i32 {
     if value < i32::MIN as i64 {
         i32::MIN

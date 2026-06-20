@@ -228,7 +228,8 @@ impl InterpolationKernel {
     #[inline]
     #[allow(clippy::unreachable)]
     // REASON: callers route all other kernels through the 1-D separable interpolation path.
-    pub(crate) fn interpolate_2d<const N: usize>(
+    #[must_use]
+    pub fn interpolate_2d<const N: usize>(
         self,
         x_phase: f64,
         y_phase: f64,

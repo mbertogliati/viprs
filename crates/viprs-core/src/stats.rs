@@ -1,4 +1,4 @@
-use crate::domain::format::BandFormatId;
+use crate::format::BandFormatId;
 
 /// Per-band statistics computed from an image or region.
 ///

@@ -1,4 +1,4 @@
-use crate::domain::coeff::OptimizedCoeff;
+use crate::coeff::OptimizedCoeff;
 
 // ── PointSample: primitives for Concretize ops ──────────────────────────────
 //

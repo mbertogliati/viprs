@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use crate::domain::error::ViprsError;
+use crate::error::ViprsError;
 
 /// A cooperative cancellation token for pipeline execution.
 ///

@@ -1,5 +1,5 @@
 use super::*;
-use crate::domain::{
+use crate::{
     format::{BandFormatId, U8},
     image::{Region, Tile, TileMut},
 };

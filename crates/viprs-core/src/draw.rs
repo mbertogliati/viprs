@@ -3,7 +3,7 @@
 //! Draw ops skip the normal transform pipeline and instead mutate an already materialized tile
 //! directly.
 
-use crate::domain::{format::BandFormat, image::TileMut};
+use crate::{format::BandFormat, image::TileMut};
 
 /// In-place image mutation interface for libvips-style draw operations.
 ///
@@ -29,27 +29,4 @@ pub trait DrawOp<F: BandFormat>: Send + Sync {
     fn draw(&self, tile: &mut TileMut<F>);
 }
 
-#[cfg(test)]
-mod tests {
-    use super::DrawOp;
-    use crate::domain::{
-        format::U8,
-        image::{Region, TileMut},
-        ops::draw::DrawLineOp,
-    };
-
-    fn apply(op: &impl DrawOp<U8>, tile: &mut TileMut<U8>) {
-        op.draw(tile);
-    }
-
-    #[test]
-    fn draw_op_trait_accepts_line_ops() {
-        let op = DrawLineOp::<U8>::new(0, 0, 3, 0, vec![7]).unwrap();
-        let mut pixels = vec![0_u8; 4];
-        let mut tile = TileMut::new(Region::new(0, 0, 4, 1), 1, &mut pixels);
-
-        apply(&op, &mut tile);
-
-        assert_eq!(tile.data, &[7, 7, 7, 7]);
-    }
-}
+// Tests for DrawOp live in the root viprs crate where ops::draw is available.

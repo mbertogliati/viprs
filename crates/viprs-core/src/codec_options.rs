@@ -15,7 +15,7 @@
 
 use std::num::{NonZeroU8, NonZeroUsize};
 
-use crate::domain::{format::BandFormatId, image::Interpretation, limits::DecodeLimits};
+use crate::{format::BandFormatId, image::Interpretation, limits::DecodeLimits};
 
 /// Byte order for headerless RAW pixel streams.
 ///

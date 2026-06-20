@@ -7,7 +7,7 @@ use std::{
 use std::path::{Path, PathBuf};
 
 use viprs::{
-    BuildError, Image, Interpretation, PipelineBuilder, U8,
+    BuildError, Image, ImageCodecExt, Interpretation, PipelineBuilder, U8,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,

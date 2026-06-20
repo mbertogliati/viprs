@@ -3,6 +3,7 @@ use std::io::Write;
 use std::path::Path;
 use std::process::Command;
 
+use viprs::ImageCodecExt;
 use viprs::adapters::codecs::TiffCodec;
 use viprs::domain::codec_options::{LoadOptions, SaveOptions, TiffCompression};
 use viprs::domain::format::{U8, U16};

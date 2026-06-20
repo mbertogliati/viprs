@@ -1,5 +1,5 @@
 use super::*;
-use crate::domain::{error::ViprsError, format::U8};
+use crate::{error::ViprsError, format::U8};
 
 #[test]
 fn region_expand_can_produce_negative_coordinates() {
@@ -97,7 +97,7 @@ fn image_metadata_remove_orientation_scrubs_raw_ifd0_exif() {
     let mut metadata = ImageMetadata {
         orientation: Some(6),
         exif: Some(decode_hex_fixture(include_str!(
-            "../../../tests/fixtures/autorot/exif_ifd0_orientation_6.hex"
+            "../../../../tests/fixtures/autorot/exif_ifd0_orientation_6.hex"
         ))),
         ..ImageMetadata::default()
     };
@@ -108,7 +108,7 @@ fn image_metadata_remove_orientation_scrubs_raw_ifd0_exif() {
     assert_eq!(
         metadata.exif,
         Some(decode_hex_fixture(include_str!(
-            "../../../tests/fixtures/autorot/exif_ifd0_without_orientation.hex"
+            "../../../../tests/fixtures/autorot/exif_ifd0_without_orientation.hex"
         )))
     );
 }

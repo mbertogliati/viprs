@@ -4,7 +4,7 @@ use std::{
 };
 
 use viprs::{
-    BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8,
+    BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata, Interpretation, U8,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,

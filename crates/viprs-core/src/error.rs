@@ -1,4 +1,4 @@
-use crate::domain::{colorspace::ColorspaceId, format::BandFormatId, kernel::InterpolationKernel};
+use crate::{colorspace::ColorspaceId, format::BandFormatId, kernel::InterpolationKernel};
 use thiserror::Error;
 
 /// Top-level error type for viprs domain and pipeline operations.
@@ -437,9 +437,9 @@ pub enum FreqfiltError {
         /// Output bands associated with this error condition.
         output_bands: u32,
         /// Input region associated with this error condition.
-        input_region: crate::domain::image::Region,
+        input_region: crate::image::Region,
         /// Output region associated with this error condition.
-        output_region: crate::domain::image::Region,
+        output_region: crate::image::Region,
     },
     #[error(
         "invfft requires a full-image 2-band input and a full-image 1-band output, got input {input_bands} bands at {input_region:?} and output {output_bands} bands at {output_region:?}"
@@ -451,9 +451,9 @@ pub enum FreqfiltError {
         /// Output bands associated with this error condition.
         output_bands: u32,
         /// Input region associated with this error condition.
-        input_region: crate::domain::image::Region,
+        input_region: crate::image::Region,
         /// Output region associated with this error condition.
-        output_region: crate::domain::image::Region,
+        output_region: crate::image::Region,
     },
     #[error("fft dimensions overflow usize: {width}x{height}")]
     /// Returned when `DimensionsOverflow` applies.

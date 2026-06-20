@@ -6,37 +6,10 @@ use crate::domain::{
     colorspace::ColorspaceId,
     error::ViprsError,
     format::{BandFormat, BandFormatId},
-    image::{DemandHint, ImageMetadata, Interpretation, Region},
+    image::{DemandHint, ImageMetadata, Interpretation, Region, UhdrGainMapMetadata},
     op::{DynOperation, NodeSpec},
     ops::{colour::math::srgb_gamma_decode, conversion::cast::CastSample},
 };
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-/// Represents an uhdr gain map metadata.
-pub struct UhdrGainMapMetadata {
-    /// Stores the `gamma` value for this item.
-    pub gamma: [f32; 3],
-    /// Stores the `min_content_boost` value for this item.
-    pub min_content_boost: [f32; 3],
-    /// Stores the `max_content_boost` value for this item.
-    pub max_content_boost: [f32; 3],
-    /// Stores the `offset_hdr` value for this item.
-    pub offset_hdr: [f32; 3],
-    /// Stores the `offset_sdr` value for this item.
-    pub offset_sdr: [f32; 3],
-}
-
-impl Default for UhdrGainMapMetadata {
-    fn default() -> Self {
-        Self {
-            gamma: [1.0; 3],
-            min_content_boost: [1.0; 3],
-            max_content_boost: [1.0; 3],
-            offset_hdr: [0.0; 3],
-            offset_sdr: [0.0; 3],
-        }
-    }
-}
 
 /// Applies the `uhdr2scrgb` colour transform to image pixels. Use it when a pipeline needs to
 /// move between colour spaces or encoded representations.

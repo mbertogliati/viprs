@@ -15,6 +15,7 @@ mod tests;
 #[cfg(any(test, feature = "dcraw", feature = "openslide"))]
 pub(crate) use bridges::boxed_extension_decoder;
 pub(crate) use bridges::{boxed_codec, boxed_decoder};
+pub use deepzoom::ImageCodecExt;
 #[cfg(all(test, feature = "deepzoom"))]
 pub(crate) use deepzoom::to_u8_image;
 pub(crate) use deepzoom::{is_deepzoom_extension, save_deepzoom};

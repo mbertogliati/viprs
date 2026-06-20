@@ -88,6 +88,7 @@ pub mod xyz_to_yxy;
 /// Provides conversion support from `yxy` to `xyz`.
 pub mod yxy_to_xyz;
 
+pub use crate::domain::image::UhdrGainMapMetadata;
 pub use bridge::ColourConvertBridge;
 pub use bw_to_srgb::BwToSRgb;
 pub use cicp2scrgb::{
@@ -130,7 +131,7 @@ pub use srgb_to_rgb16::SRgbToRgb16;
 pub use srgb_to_scrgb::SRgbToScRgb;
 pub use srgb_to_xyz::SRgbToXyz;
 pub use ucs_to_lch::UcsToLch;
-pub use uhdr2scrgb::{UhdrGainMapMetadata, UhdrToScRgb};
+pub use uhdr2scrgb::UhdrToScRgb;
 pub use xyz_to_cmyk::XyzToCmyk;
 pub use xyz_to_lab::XyzToLab;
 pub use xyz_to_scrgb::XyzToScRgb;

@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "xtask"]
+members = [".", "xtask", "crates/viprs-core"]
 resolver = "3"
 
 [workspace.package]
@@ -30,7 +30,10 @@ exclude = [
 [lib]
 crate-type = ["rlib", "cdylib"]
 
-[lints.clippy]
+[lints]
+workspace = true
+
+[workspace.lints.clippy]
 # Safety & correctness
 unwrap_used = "deny"
 expect_used = "deny"
@@ -64,10 +67,11 @@ float_cmp = "allow"
 many_single_char_names = "allow"
 similar_names = "allow"
 
-[lints.rust]
+[workspace.lints.rust]
 missing_docs = "deny"
 
 [dependencies]
+viprs-core = { path = "crates/viprs-core" }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
