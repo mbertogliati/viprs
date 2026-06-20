@@ -1,3 +1,5 @@
+//! Optional lock instrumentation used by runtime scheduler tests and diagnostics.
+
 #[cfg(all(test, feature = "lock_instrumentation"))]
 use std::sync::{Mutex, MutexGuard};
 #[cfg(feature = "lock_instrumentation")]
@@ -8,9 +10,13 @@ use std::{
 
 #[cfg(feature = "lock_instrumentation")]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+/// Captured lock metrics for a completed runtime execution.
 pub struct LockInstrumentationSnapshot {
+    /// Number of tiles observed during the run.
     pub tile_count: u64,
+    /// Total lock acquisitions observed across all tiles.
     pub total_lock_acquisitions: u64,
+    /// Highest number of acquisitions attributed to a single tile.
     pub max_locks_per_tile: u64,
 }
 
@@ -61,6 +67,7 @@ fn finish_current_tile() {
 }
 
 #[cfg(feature = "lock_instrumentation")]
+/// Reset the accumulated lock-instrumentation counters for the next run.
 pub fn reset() {
     TILE_COUNT.store(0, Ordering::Relaxed);
     TOTAL_LOCK_ACQUISITIONS.store(0, Ordering::Relaxed);
@@ -70,6 +77,7 @@ pub fn reset() {
 }
 
 #[cfg(not(feature = "lock_instrumentation"))]
+/// Reset the accumulated lock-instrumentation counters for the next run.
 pub const fn reset() {}
 
 #[cfg(all(test, feature = "lock_instrumentation"))]
@@ -78,6 +86,7 @@ pub(crate) struct RunGuard {
 }
 
 #[cfg(not(all(test, feature = "lock_instrumentation")))]
+/// Guard object returned by [`prepare_run`] for consistent instrumentation setup.
 pub struct RunGuard;
 
 #[cfg(all(test, feature = "lock_instrumentation"))]
@@ -108,8 +117,9 @@ pub(crate) fn prepare_run() -> RunGuard {
 }
 
 #[cfg(not(all(test, feature = "lock_instrumentation")))]
-pub fn prepare_run() -> RunGuard {
-    reset();
+/// Prepare lock-instrumentation state for a new runtime execution.
+#[must_use]
+pub const fn prepare_run() -> RunGuard {
     RunGuard
 }
 
@@ -125,6 +135,7 @@ impl Drop for RunGuard {
 }
 
 #[cfg(feature = "lock_instrumentation")]
+/// Record a lock acquisition for the current tile scope.
 pub fn record_lock_acquisition() {
     TILE_LOCK_COUNT.with(|counts| {
         if let Some(current) = counts.borrow_mut().last_mut() {
@@ -134,9 +145,11 @@ pub fn record_lock_acquisition() {
 }
 
 #[cfg(not(feature = "lock_instrumentation"))]
+/// Record a lock acquisition for the current tile scope.
 pub const fn record_lock_acquisition() {}
 
 #[cfg(feature = "lock_instrumentation")]
+/// Capture the current lock-instrumentation counters.
 pub fn snapshot() -> LockInstrumentationSnapshot {
     LockInstrumentationSnapshot {
         tile_count: TILE_COUNT.load(Ordering::Relaxed),
@@ -148,18 +161,23 @@ pub fn snapshot() -> LockInstrumentationSnapshot {
 #[cfg(not(feature = "lock_instrumentation"))]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 #[allow(dead_code)]
+/// Snapshot returned when lock instrumentation is disabled.
 pub struct LockInstrumentationSnapshot;
 
 #[cfg(not(feature = "lock_instrumentation"))]
 #[allow(dead_code)]
+/// Capture the current lock-instrumentation counters.
+#[must_use]
 pub const fn snapshot() -> LockInstrumentationSnapshot {
     LockInstrumentationSnapshot
 }
 
+/// RAII scope that attributes lock acquisitions to a single tile execution.
 pub struct TileLockScope;
 
 impl TileLockScope {
     #[must_use]
+    #[allow(clippy::missing_const_for_fn)] // Body is non-const when lock_instrumentation is enabled
     pub(crate) fn new() -> Self {
         #[cfg(feature = "lock_instrumentation")]
         {

@@ -187,7 +187,7 @@ where
 }
 
 #[inline]
-pub(in crate::adapters::pipeline::builder) fn validate_reduce_kernel(
+pub(in crate::pipeline::builder) fn validate_reduce_kernel(
     op: &'static str,
     kernel: InterpolationKernel,
 ) -> Result<(), BuildError> {
@@ -211,7 +211,7 @@ pub(in crate::adapters::pipeline::builder) fn validate_reduce_kernel(
 }
 
 #[inline]
-pub(in crate::adapters::pipeline::builder) fn validate_reduce_factors(
+pub(in crate::pipeline::builder) fn validate_reduce_factors(
     h_factor: f64,
     v_factor: f64,
 ) -> Result<(), BuildError> {
@@ -235,7 +235,7 @@ pub(in crate::adapters::pipeline::builder) fn validate_reduce_factors(
 }
 
 #[inline]
-pub(in crate::adapters::pipeline::builder) fn validate_extract_area_bounds(
+pub(in crate::pipeline::builder) fn validate_extract_area_bounds(
     x: u32,
     y: u32,
     width: u32,

@@ -1,0 +1,67 @@
+[package]
+name = "viprs-runtime"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+publish = false
+description = "Runtime adapters and pipeline implementations for viprs"
+
+[lints]
+workspace = true
+
+[dependencies]
+viprs-core = { path = "../viprs-core" }
+viprs-ports = { path = "../viprs-ports" }
+viprs-ops-pixel = { path = "../viprs-ops-pixel" }
+viprs-ops-spatial = { path = "../viprs-ops-spatial" }
+viprs-ops-colour = { path = "../viprs-ops-colour" }
+viprs-ops-composite = { path = "../viprs-ops-composite" }
+viprs-codecs = { path = "../viprs-codecs", default-features = false }
+bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
+ab_glyph = "0.2"
+crossbeam-channel = "0.5"
+rayon = { version = "1", optional = true }
+tracing = { version = "0.1", optional = true }
+memmap2 = { version = "0.9", optional = true }
+rustfft = { version = "6", optional = true }
+
+[dev-dependencies]
+proptest = "1"
+
+[features]
+default = ["rayon", "mmap", "simd-pulp"]
+lock_instrumentation = []
+rayon = ["dep:rayon", "viprs-codecs/rayon"]
+tracing = ["dep:tracing", "viprs-codecs/tracing"]
+mmap = ["dep:memmap2", "viprs-codecs/mmap"]
+fft = ["dep:rustfft", "viprs-ops-composite/fft"]
+jpeg = ["viprs-codecs/jpeg", "icc"]
+bmp = ["viprs-codecs/bmp"]
+png = ["viprs-codecs/png", "icc"]
+libspng = ["png", "viprs-codecs/libspng"]
+webp = ["viprs-codecs/webp", "icc"]
+tiff = ["viprs-codecs/tiff"]
+gif = ["viprs-codecs/gif"]
+exr = ["viprs-codecs/exr"]
+radiance = ["viprs-codecs/radiance"]
+pfm = ["viprs-codecs/pfm"]
+avif = ["viprs-codecs/avif"]
+heif = ["viprs-codecs/heif"]
+simd-pulp = ["viprs-ops-spatial/simd-pulp"]
+svg = ["viprs-codecs/svg"]
+jxl = ["viprs-codecs/jxl"]
+icc = ["viprs-codecs/icc", "viprs-ops-colour/icc"]
+fits = ["viprs-codecs/fits"]
+mat-hdf5 = ["viprs-codecs/mat-hdf5"]
+magick = ["viprs-codecs/magick"]
+pdf-poppler = ["viprs-codecs/pdf-poppler"]
+jp2k = ["viprs-codecs/jp2k"]
+openslide = ["viprs-codecs/openslide"]
+uhdr = ["viprs-codecs/uhdr", "jpeg"]
+deepzoom = ["viprs-codecs/deepzoom"]
+dcraw = ["viprs-codecs/dcraw"]
+csv = ["viprs-codecs/csv"]
+vips-format = ["viprs-codecs/vips-format"]
+nifti = ["viprs-codecs/nifti"]
+pnm = ["viprs-codecs/pnm"]
+_integration = []

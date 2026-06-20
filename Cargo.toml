@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports", "crates/viprs-ops-pixel", "crates/viprs-ops-spatial", "crates/viprs-ops-colour", "crates/viprs-ops-composite", "crates/viprs-codecs"]
+members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports", "crates/viprs-ops-pixel", "crates/viprs-ops-spatial", "crates/viprs-ops-colour", "crates/viprs-ops-composite", "crates/viprs-codecs", "crates/viprs-runtime"]
 resolver = "3"
 
 [workspace.package]
@@ -78,6 +78,7 @@ viprs-ops-spatial = { path = "crates/viprs-ops-spatial" }
 viprs-ops-colour = { path = "crates/viprs-ops-colour" }
 viprs-ops-composite = { path = "crates/viprs-ops-composite" }
 viprs-codecs = { path = "crates/viprs-codecs", default-features = false }
+viprs-runtime = { path = "crates/viprs-runtime", default-features = false }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
@@ -100,42 +101,42 @@ libc = "0.2"
 default = ["rayon", "mmap", "simd-pulp"]
 ffi = []
 lock_instrumentation = []
-rayon = ["dep:rayon", "viprs-codecs/rayon"]
-tracing = ["dep:tracing", "viprs-codecs/tracing"]
-mmap = ["dep:memmap2", "viprs-codecs/mmap"]
+rayon = ["dep:rayon", "viprs-codecs/rayon", "viprs-runtime/rayon"]
+tracing = ["dep:tracing", "viprs-codecs/tracing", "viprs-runtime/tracing"]
+mmap = ["dep:memmap2", "viprs-codecs/mmap", "viprs-runtime/mmap"]
 # Optional compute/color features.
-fft = ["dep:rustfft", "viprs-ops-composite/fft"]
+fft = ["dep:rustfft", "viprs-ops-composite/fft", "viprs-runtime/fft"]
 # Native codec flags intentionally keep the C-backed implementations for throughput.
 # See README.md for per-OS install commands and feature-specific system dependencies.
-jpeg = ["viprs-codecs/jpeg", "icc"]
-bmp = ["viprs-codecs/bmp"]
-png = ["viprs-codecs/png", "icc"]
-libspng = ["png", "viprs-codecs/libspng"]
-webp = ["viprs-codecs/webp", "icc"] # C-backed libwebp path used for encode/decode.
-tiff = ["viprs-codecs/tiff"]
-gif = ["viprs-codecs/gif"]
-exr = ["viprs-codecs/exr"]
-radiance = ["viprs-codecs/radiance"]
-pfm = ["viprs-codecs/pfm"]
-avif = ["viprs-codecs/avif"] # Requires libheif.
-heif = ["viprs-codecs/heif"] # Requires libheif.
-simd-pulp = ["dep:pulp", "viprs-ops-spatial/simd-pulp"]
-svg = ["viprs-codecs/svg"]
-jxl = ["viprs-codecs/jxl"]
-icc = ["viprs-codecs/icc", "viprs-ops-colour/icc"] # Requires lcms2.
-fits = ["viprs-codecs/fits"]
-mat-hdf5 = ["viprs-codecs/mat-hdf5"]
-magick = ["viprs-codecs/magick"]
-pdf-poppler = ["viprs-codecs/pdf-poppler"]
-jp2k = ["viprs-codecs/jp2k"] # Requires OpenJPEG when using system toolchains.
-openslide = ["viprs-codecs/openslide"] # Requires OpenSlide.
-uhdr = ["viprs-codecs/uhdr", "jpeg"]
-deepzoom = ["viprs-codecs/deepzoom"]
-dcraw = ["viprs-codecs/dcraw"]
-csv = ["viprs-codecs/csv"]
-vips-format = ["viprs-codecs/vips-format"]
-nifti = ["viprs-codecs/nifti"]
-pnm = ["viprs-codecs/pnm"]
+jpeg = ["viprs-codecs/jpeg", "viprs-runtime/jpeg", "icc"]
+bmp = ["viprs-codecs/bmp", "viprs-runtime/bmp"]
+png = ["viprs-codecs/png", "viprs-runtime/png", "icc"]
+libspng = ["png", "viprs-codecs/libspng", "viprs-runtime/libspng"]
+webp = ["viprs-codecs/webp", "viprs-runtime/webp", "icc"] # C-backed libwebp path used for encode/decode.
+tiff = ["viprs-codecs/tiff", "viprs-runtime/tiff"]
+gif = ["viprs-codecs/gif", "viprs-runtime/gif"]
+exr = ["viprs-codecs/exr", "viprs-runtime/exr"]
+radiance = ["viprs-codecs/radiance", "viprs-runtime/radiance"]
+pfm = ["viprs-codecs/pfm", "viprs-runtime/pfm"]
+avif = ["viprs-codecs/avif", "viprs-runtime/avif"] # Requires libheif.
+heif = ["viprs-codecs/heif", "viprs-runtime/heif"] # Requires libheif.
+simd-pulp = ["dep:pulp", "viprs-ops-spatial/simd-pulp", "viprs-runtime/simd-pulp"]
+svg = ["viprs-codecs/svg", "viprs-runtime/svg"]
+jxl = ["viprs-codecs/jxl", "viprs-runtime/jxl"]
+icc = ["viprs-codecs/icc", "viprs-ops-colour/icc", "viprs-runtime/icc"] # Requires lcms2.
+fits = ["viprs-codecs/fits", "viprs-runtime/fits"]
+mat-hdf5 = ["viprs-codecs/mat-hdf5", "viprs-runtime/mat-hdf5"]
+magick = ["viprs-codecs/magick", "viprs-runtime/magick"]
+pdf-poppler = ["viprs-codecs/pdf-poppler", "viprs-runtime/pdf-poppler"]
+jp2k = ["viprs-codecs/jp2k", "viprs-runtime/jp2k"] # Requires OpenJPEG when using system toolchains.
+openslide = ["viprs-codecs/openslide", "viprs-runtime/openslide"] # Requires OpenSlide.
+uhdr = ["viprs-codecs/uhdr", "viprs-runtime/uhdr", "jpeg"]
+deepzoom = ["viprs-codecs/deepzoom", "viprs-runtime/deepzoom"]
+dcraw = ["viprs-codecs/dcraw", "viprs-runtime/dcraw"]
+csv = ["viprs-codecs/csv", "viprs-runtime/csv"]
+vips-format = ["viprs-codecs/vips-format", "viprs-runtime/vips-format"]
+nifti = ["viprs-codecs/nifti", "viprs-runtime/nifti"]
+pnm = ["viprs-codecs/pnm", "viprs-runtime/pnm"]
 
 [[example]]
 name = "thumbnail"

@@ -3049,6 +3049,7 @@ dependencies = [
  "viprs-ops-pixel",
  "viprs-ops-spatial",
  "viprs-ports",
+ "viprs-runtime",
 ]
 
 [[package]]
@@ -3150,6 +3151,27 @@ name = "viprs-ports"
 version = "0.1.0"
 dependencies = [
  "viprs-core",
+]
+
+[[package]]
+name = "viprs-runtime"
+version = "0.1.0"
+dependencies = [
+ "ab_glyph",
+ "bytemuck",
+ "crossbeam-channel",
+ "memmap2",
+ "proptest",
+ "rayon",
+ "rustfft",
+ "tracing",
+ "viprs-codecs",
+ "viprs-core",
+ "viprs-ops-colour",
+ "viprs-ops-composite",
+ "viprs-ops-pixel",
+ "viprs-ops-spatial",
+ "viprs-ports",
 ]
 
 [[package]]

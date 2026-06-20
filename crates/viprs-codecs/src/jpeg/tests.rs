@@ -28,8 +28,7 @@ const METRICS_FACTOR_ENV: &str = "VIPRS_JPEG_SHRINK_METRICS_FACTOR";
 const METRICS_CHILD_TEST: &str = "jpeg::tests::shrink_on_load_decode_metrics_child";
 const RSS_PREFIX: &str = "VIPRS_JPEG_ERROR_RSS";
 const RSS_CHILD_ENV: &str = "VIPRS_JPEG_ERROR_RSS_CHILD";
-const RSS_CHILD_TEST: &str =
-    "jpeg::tests::repeated_truncated_decode_errors_keep_rss_stable_child";
+const RSS_CHILD_TEST: &str = "jpeg::tests::repeated_truncated_decode_errors_keep_rss_stable_child";
 const RSS_STABILITY_THRESHOLD_KB: usize = 4 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

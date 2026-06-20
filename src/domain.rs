@@ -9,8 +9,6 @@ pub use viprs_core::codec_options;
 pub use viprs_core::coeff;
 pub use viprs_core::colorspace;
 pub use viprs_core::colour;
-/// Runtime routing for dynamic colorspace-conversion graphs.
-pub mod colour_dispatcher;
 pub use viprs_core::concretize;
 pub use viprs_core::draw;
 pub use viprs_core::error;
@@ -24,6 +22,8 @@ pub use viprs_core::reorder;
 pub use viprs_core::resample;
 pub use viprs_core::simd;
 pub use viprs_core::stats;
+/// Runtime routing for dynamic colorspace-conversion graphs.
+pub use viprs_runtime::colour_dispatcher;
 
 // Still owned by this crate directly
 pub mod ops;

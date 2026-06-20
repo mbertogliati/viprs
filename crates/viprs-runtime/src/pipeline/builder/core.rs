@@ -14,21 +14,21 @@ use super::{
 /// (`linear`, `invert`, `cast`) dispatch over the current format and hide
 /// `OperationBridge` from callers.
 pub struct PipelineBuilder<Op = Identity> {
-    pub(in crate::adapters::pipeline::builder) arena: PipelineArena,
-    pub(in crate::adapters::pipeline::builder) last_node: Option<NodeIdx>,
+    pub(in crate::pipeline::builder) arena: PipelineArena,
+    pub(in crate::pipeline::builder) last_node: Option<NodeIdx>,
     /// Format of the last operation's output (or the source's format if no ops yet).
-    pub(in crate::adapters::pipeline::builder) current_format: BandFormatId,
+    pub(in crate::pipeline::builder) current_format: BandFormatId,
     /// Band count at the current stage (matches the source until an op changes it).
-    pub(in crate::adapters::pipeline::builder) bands: u32,
+    pub(in crate::pipeline::builder) bands: u32,
     /// Colorspace of the current pipeline output. `None` means unknown (e.g., raw
     /// decoder output not yet probed). `colourspace()` requires this to be `Some`
     /// so it can select the correct `ColourConvert` implementation.
-    pub(in crate::adapters::pipeline::builder) current_colorspace: Option<ColorspaceId>,
+    pub(in crate::pipeline::builder) current_colorspace: Option<ColorspaceId>,
     /// Interpretation of the current pipeline output when known.
-    pub(in crate::adapters::pipeline::builder) current_interpretation: Option<Interpretation>,
+    pub(in crate::pipeline::builder) current_interpretation: Option<Interpretation>,
     /// Embedded ICC profile for the current pipeline stage when known.
-    pub(in crate::adapters::pipeline::builder) current_icc_profile: Option<Vec<u8>>,
-    pub(in crate::adapters::pipeline::builder) pending: Op,
+    pub(in crate::pipeline::builder) current_icc_profile: Option<Vec<u8>>,
+    pub(in crate::pipeline::builder) pending: Op,
 }
 
 impl PipelineBuilder<Identity> {
@@ -99,21 +99,18 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self
     }
 
-    pub(in crate::adapters::pipeline::builder) fn configure_sequential_streaming(
+    pub(in crate::pipeline::builder) fn configure_sequential_streaming(
         self,
         lines_ahead: usize,
     ) -> Self {
         self.configure_line_cache(lines_ahead, LineCacheAccess::Sequential, true)
     }
 
-    pub(in crate::adapters::pipeline::builder) fn configure_linecache(
-        self,
-        lines_ahead: usize,
-    ) -> Self {
+    pub(in crate::pipeline::builder) fn configure_linecache(self, lines_ahead: usize) -> Self {
         self.configure_line_cache(lines_ahead, LineCacheAccess::Random, false)
     }
 
-    pub(in crate::adapters::pipeline::builder) fn into_state<NextOp>(
+    pub(in crate::pipeline::builder) fn into_state<NextOp>(
         self,
         pending: NextOp,
     ) -> PipelineBuilder<NextOp> {
@@ -227,9 +224,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
             .saturating_mul(format_sample_size(self.current_format))
     }
 
-    pub(in crate::adapters::pipeline::builder) fn flush_pending(
-        &mut self,
-    ) -> Result<(), BuildError> {
+    pub(in crate::pipeline::builder) fn flush_pending(&mut self) -> Result<(), BuildError> {
         Op::flush(self)
     }
 
@@ -257,7 +252,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         Ok(self.into_state(Identity))
     }
 
-    pub(in crate::adapters::pipeline::builder) fn push_dyn_op(
+    pub(in crate::pipeline::builder) fn push_dyn_op(
         &mut self,
         op: Box<dyn DynOperation>,
     ) -> Result<(), BuildError> {

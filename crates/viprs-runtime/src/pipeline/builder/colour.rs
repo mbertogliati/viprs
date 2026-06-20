@@ -276,7 +276,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
 }
 
 #[inline]
-pub(in crate::adapters::pipeline::builder) const fn interpretation_to_colorspace(
+pub(in crate::pipeline::builder) const fn interpretation_to_colorspace(
     interpretation: Interpretation,
 ) -> Option<ColorspaceId> {
     match interpretation {

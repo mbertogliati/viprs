@@ -43,8 +43,8 @@ use std::fs;
 /// # Ok::<(), viprs::domain::error::ViprsError>(())
 /// ```
 pub struct ImageApi {
-    pub(in crate::adapters::image_api) builder: PipelineBuilder,
-    pub(in crate::adapters::image_api) resource_limits: Option<ResourceLimits>,
+    pub(in crate::image_api) builder: PipelineBuilder,
+    pub(in crate::image_api) resource_limits: Option<ResourceLimits>,
 }
 
 impl std::fmt::Debug for ImageApi {
@@ -93,7 +93,7 @@ pub struct ImageApiLoader {
 #[cfg(feature = "icc")]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ImageApiThumbnailOptions {
-    pub(in crate::adapters::image_api) auto_normalize_to_srgb: bool,
+    pub(in crate::image_api) auto_normalize_to_srgb: bool,
 }
 
 #[cfg(feature = "icc")]
@@ -221,7 +221,7 @@ impl ImageApi {
         Self::from_bytes_with_options(buf, None, &LoadOptions::default(), None)
     }
 
-    pub(in crate::adapters::image_api) const fn from_builder(
+    pub(in crate::image_api) const fn from_builder(
         builder: PipelineBuilder,
         resource_limits: Option<ResourceLimits>,
     ) -> Result<Self, BuildError> {
@@ -231,7 +231,7 @@ impl ImageApi {
         })
     }
 
-    pub(in crate::adapters::image_api) fn open_with_options(
+    pub(in crate::image_api) fn open_with_options(
         path: &Path,
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,
@@ -253,7 +253,7 @@ impl ImageApi {
         }
     }
 
-    pub(in crate::adapters::image_api) fn from_bytes_with_options(
+    pub(in crate::image_api) fn from_bytes_with_options(
         buf: &[u8],
         path_hint: Option<&Path>,
         opts: &LoadOptions,
@@ -275,7 +275,7 @@ impl ImageApi {
         Self::from_registry_bytes_or_path(buf, path_hint, opts, resource_limits)
     }
 
-    pub(in crate::adapters::image_api) fn build_scheduler(
+    pub(in crate::image_api) fn build_scheduler(
         resource_limits: Option<&ResourceLimits>,
     ) -> Result<RayonScheduler, ViprsError> {
         let scheduler = RayonScheduler::new(RayonScheduler::default_threads())?;
@@ -287,7 +287,7 @@ impl ImageApi {
         })
     }
 
-    pub(in crate::adapters::image_api) fn from_image_with_limits<F>(
+    pub(in crate::image_api) fn from_image_with_limits<F>(
         image: Image<F>,
         limits: Option<&DecodeLimits>,
         resource_limits: Option<ResourceLimits>,
@@ -319,7 +319,7 @@ impl ImageApi {
 
     #[allow(dead_code)]
     // REASON: this constructor is kept for future externally supplied source adapters.
-    pub(in crate::adapters::image_api) fn from_source_with_limits(
+    pub(in crate::image_api) fn from_source_with_limits(
         source: impl crate::ports::source::DynImageSource + 'static,
         bytes_per_sample: u32,
         limits: Option<&DecodeLimits>,
@@ -338,7 +338,7 @@ impl ImageApi {
         })
     }
 
-    pub(in crate::adapters::image_api) fn from_registry_bytes_or_path(
+    pub(in crate::image_api) fn from_registry_bytes_or_path(
         buf: &[u8],
         path_hint: Option<&Path>,
         opts: &LoadOptions,
@@ -366,7 +366,7 @@ impl ImageApi {
         }
     }
 
-    pub(in crate::adapters::image_api) fn from_registry_path(
+    pub(in crate::image_api) fn from_registry_path(
         path: &Path,
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,
@@ -376,7 +376,7 @@ impl ImageApi {
     }
 
     #[allow(clippy::missing_const_for_fn)] // not const when `jpeg` feature is enabled
-    pub(in crate::adapters::image_api) fn from_jpeg_bytes_with_options(
+    pub(in crate::image_api) fn from_jpeg_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,
@@ -405,7 +405,7 @@ impl ImageApi {
     }
 
     #[allow(clippy::missing_const_for_fn)] // not const when `png` feature is enabled
-    pub(in crate::adapters::image_api) fn from_png_bytes_with_options(
+    pub(in crate::image_api) fn from_png_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<&ResourceLimits>,
@@ -451,7 +451,7 @@ impl ImageApi {
     }
 
     #[cfg(feature = "jpeg")]
-    pub(in crate::adapters::image_api) fn from_jpeg_path_with_options(
+    pub(in crate::image_api) fn from_jpeg_path_with_options(
         path: &Path,
         opts: &LoadOptions,
         resource_limits: Option<ResourceLimits>,
@@ -463,7 +463,7 @@ impl ImageApi {
     }
 
     #[cfg(feature = "png")]
-    pub(in crate::adapters::image_api) fn from_png_path_with_options(
+    pub(in crate::image_api) fn from_png_path_with_options(
         path: &Path,
         opts: &LoadOptions,
         resource_limits: Option<ResourceLimits>,
@@ -486,7 +486,7 @@ impl ImageApi {
     }
 
     #[cfg(feature = "webp")]
-    pub(in crate::adapters::image_api) fn from_webp_bytes_with_options(
+    pub(in crate::image_api) fn from_webp_bytes_with_options(
         buf: &[u8],
         opts: &LoadOptions,
         resource_limits: Option<ResourceLimits>,
@@ -500,7 +500,7 @@ impl ImageApi {
     }
 
     #[cfg(feature = "webp")]
-    pub(in crate::adapters::image_api) fn from_webp_path_with_options(
+    pub(in crate::image_api) fn from_webp_path_with_options(
         path: &Path,
         opts: &LoadOptions,
         resource_limits: Option<ResourceLimits>,
@@ -509,7 +509,7 @@ impl ImageApi {
         Self::from_source_with_limits(source, 1, opts.limits.as_ref(), resource_limits)
     }
 
-    pub(in crate::adapters::image_api) fn validate_output_limits(
+    pub(in crate::image_api) fn validate_output_limits(
         resource_limits: Option<&ResourceLimits>,
         pipeline: &CompiledPipeline,
     ) -> Result<(), ViprsError> {
