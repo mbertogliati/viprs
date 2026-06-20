@@ -90,6 +90,7 @@ memmap2 = { version = "0.9", optional = true }
 rustfft = { version = "6", optional = true }
 pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
 png = { version = "0.17", optional = true }
+libheif-rs = { version = "0.20", optional = true }
 
 [dev-dependencies]
 proptest = "1"
@@ -122,7 +123,7 @@ exr = ["viprs-codecs/exr", "viprs-runtime/exr"]
 radiance = ["viprs-codecs/radiance", "viprs-runtime/radiance"]
 pfm = ["viprs-codecs/pfm", "viprs-runtime/pfm"]
 avif = ["viprs-codecs/avif", "viprs-runtime/avif"] # Requires libheif.
-heif = ["viprs-codecs/heif", "viprs-runtime/heif"] # Requires libheif.
+heif = ["viprs-codecs/heif", "viprs-runtime/heif", "dep:libheif-rs"] # Requires libheif.
 simd-pulp = ["dep:pulp", "viprs-ops-spatial/simd-pulp", "viprs-runtime/simd-pulp"]
 svg = ["viprs-codecs/svg", "viprs-runtime/svg"]
 jxl = ["viprs-codecs/jxl", "viprs-runtime/jxl"]

@@ -156,8 +156,7 @@ fn bench_png_eager_vs_streaming_tile_read(c: &mut Criterion) {
         let encoded = must(
             PngEncoder {
                 compression: 0,
-                interlace: false,
-                filter: png::Filter::NoFilter,
+                ..PngEncoder::default()
             }
             .encode(&image),
             "encode PNG benchmark image",

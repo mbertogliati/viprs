@@ -3039,6 +3039,7 @@ dependencies = [
  "dhat",
  "iai-callgrind",
  "libc",
+ "libheif-rs",
  "memmap2",
  "png 0.17.16",
  "proptest",
