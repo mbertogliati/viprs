@@ -88,6 +88,7 @@ tracing = { version = "0.1", optional = true }
 memmap2 = { version = "0.9", optional = true }
 rustfft = { version = "6", optional = true }
 pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
+png = { version = "0.17", optional = true }
 
 [dev-dependencies]
 proptest = "1"
@@ -95,6 +96,7 @@ criterion = { version = "0.5", features = ["html_reports"] }
 iai-callgrind = "0.16"
 dhat = "0.3"
 libc = "0.2"
+crc32fast = "1"
 
 [features]
 # Default runtime features: rayon scheduler, mmap-backed sources, and SIMD dispatch.
@@ -110,7 +112,7 @@ fft = ["dep:rustfft", "viprs-ops-composite/fft", "viprs-runtime/fft"]
 # See README.md for per-OS install commands and feature-specific system dependencies.
 jpeg = ["viprs-codecs/jpeg", "viprs-runtime/jpeg", "icc"]
 bmp = ["viprs-codecs/bmp", "viprs-runtime/bmp"]
-png = ["viprs-codecs/png", "viprs-runtime/png", "icc"]
+png = ["viprs-codecs/png", "viprs-runtime/png", "icc", "dep:png"]
 libspng = ["png", "viprs-codecs/libspng", "viprs-runtime/libspng"]
 webp = ["viprs-codecs/webp", "viprs-runtime/webp", "icc"] # C-backed libwebp path used for encode/decode.
 tiff = ["viprs-codecs/tiff", "viprs-runtime/tiff"]
