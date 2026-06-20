@@ -14,6 +14,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  CI_FEATURES: "--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
   # Source-built libs live in /usr/local/lib (container jobs only)
   PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
   # Common container build tools — avoids duplicating the apt-get list in every job.
@@ -43,11 +44,11 @@ jobs:
         with:
           shared-key: "lint"
       - name: Check formatting
-        run: make fmt
+        run: make fmt FEATURES="${CI_FEATURES}"
       - name: Clippy
-        run: make clippy FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
+        run: make clippy FEATURES="${CI_FEATURES}"
       - name: Build docs (deny warnings)
-        run: make doc FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
+        run: make doc FEATURES="${CI_FEATURES}"
 
   security:
     name: "Security (audit + deny)"
@@ -80,7 +81,7 @@ jobs:
         with:
           shared-key: "test-unit"
       - name: Run tests
-        run: make test FEATURES="--features default,simd-pulp"
+        run: make test FEATURES="${CI_FEATURES}"
 
   test-and-coverage:
     name: "Coverage (CI codec set, ≥86%)"
@@ -104,7 +105,7 @@ jobs:
         with:
           shared-key: "test-coverage"
       - name: Run coverage
-        run: make coverage FEATURES="--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
+        run: make coverage FEATURES="${CI_FEATURES}"
       - name: Generate summary
         if: always()
         run: |
@@ -144,14 +145,14 @@ jobs:
         run: |
           if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
             echo "▶ Baseline found — comparing against main"
-            make bench-compare FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+            make bench-compare FEATURES="${CI_FEATURES}"
           else
             echo "▶ No baseline — running smoke test (first run)"
-            make bench-ci FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+            make bench-ci FEATURES="${CI_FEATURES}"
           fi
       - name: Save baseline (main only)
         if: github.ref == 'refs/heads/main'
-        run: make bench-baseline FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+        run: make bench-baseline FEATURES="${CI_FEATURES}"
       - name: Cache baseline (main only)
         if: github.ref == 'refs/heads/main'
         uses: actions/cache/save@v4
@@ -182,7 +183,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - name: Build xtask release binary
-        run: make xtask
+        run: make xtask FEATURES="${CI_FEATURES}"
       - uses: actions/upload-artifact@v4
         with:
           name: xtask-${{ matrix.arch }}
@@ -222,7 +223,7 @@ jobs:
       - name: Verify libvips available
         run: pkg-config --modversion vips || echo "libvips not found in container"
       - name: Build libvips runner
-        run: make -C tools/bench-vs-libvips
+        run: make -C tools/bench-vs-libvips FEATURES="${CI_FEATURES}"
       - name: Run E2E benchmark suite
         env:
           XTASK_BIN: ./target/release/xtask
