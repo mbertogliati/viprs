@@ -19,7 +19,7 @@ fn build_normalize_error(err: &ViprsError) -> BuildError {
     }
 }
 
-pub(crate) fn srgb_profile_bytes() -> Result<Vec<u8>, ViprsError> {
+pub fn srgb_profile_bytes() -> Result<Vec<u8>, ViprsError> {
     profile_load("srgb")
 }
 
@@ -33,7 +33,7 @@ fn profile_matches_builtin_srgb(profile_bytes: &[u8]) -> bool {
     profile.profile_id() == srgb.profile_id()
 }
 
-pub(crate) fn needs_srgb_normalization(profile: Option<&[u8]>) -> bool {
+pub fn needs_srgb_normalization(profile: Option<&[u8]>) -> bool {
     profile.is_some_and(|profile| {
         Profile::new_icc(profile).is_ok() && !profile_matches_builtin_srgb(profile)
     })
@@ -74,7 +74,7 @@ impl NormalizeToSrgbState {
 }
 
 impl NormalizeToSrgbOp {
-    fn sample_bytes(&self) -> usize {
+    const fn sample_bytes(&self) -> usize {
         match self.input_format {
             BandFormatId::U8 => 1,
             BandFormatId::U16 => 2,
@@ -243,7 +243,7 @@ fn normalize_plan(
 
 // NOTE: ICC normalization picks the concrete operation graph only after reading
 // runtime profile metadata, so this boundary must return erased operations.
-pub(crate) fn build_normalize_to_srgb_op(
+pub fn build_normalize_to_srgb_op(
     input_format: BandFormatId,
     input_bands: u32,
     interpretation: Option<Interpretation>,

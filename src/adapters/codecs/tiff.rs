@@ -114,8 +114,9 @@ impl TiffEncoder {
 }
 
 /// Backward-compatible combined codec used by [`crate::adapters::codecs::registry::ForeignRegistry`].
-#[derive(Debug, Clone, Copy, Default)]
+///
 /// The `TiffCodec` type provides concrete adapter functionality in the `codecs` module.
+#[derive(Debug, Clone, Copy, Default)]
 /// Use this type when you need the runtime behavior implemented by this adapter.
 ///
 /// # Examples
@@ -172,21 +173,21 @@ trait PyramidSample: Copy {
 impl PyramidSample for u8 {
     fn average_box(samples: &[Self]) -> Self {
         let sum: u32 = samples.iter().copied().map(u32::from).sum();
-        (sum / u32::try_from(samples.len()).unwrap_or(1)) as u8
+        (sum / u32::try_from(samples.len()).unwrap_or(1)) as Self
     }
 }
 
 impl PyramidSample for u16 {
     fn average_box(samples: &[Self]) -> Self {
         let sum: u64 = samples.iter().copied().map(u64::from).sum();
-        (sum / u64::try_from(samples.len()).unwrap_or(1)) as u16
+        (sum / u64::try_from(samples.len()).unwrap_or(1)) as Self
     }
 }
 
 impl PyramidSample for f32 {
     fn average_box(samples: &[Self]) -> Self {
-        let sum: f32 = samples.iter().copied().sum();
-        sum / samples.len() as f32
+        let sum: Self = samples.iter().copied().sum();
+        sum / samples.len() as Self
     }
 }
 

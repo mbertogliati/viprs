@@ -95,6 +95,8 @@ fn is_load_benchmark(op: &str) -> bool {
     )
 }
 
+// REASON: Draw-line benchmark scaffolding, not yet wired into the CLI.
+#[allow(dead_code)]
 fn run_draw_line_once_u8(width: u32, height: u32, bands: u32) {
     let mut pixels = vec![0u8; width as usize * height as usize * bands as usize];
     let mut tile =
@@ -111,6 +113,8 @@ fn run_draw_line_once_u8(width: u32, height: u32, bands: u32) {
     black_box(pixels);
 }
 
+// REASON: Draw-line benchmark scaffolding, not yet wired into the CLI.
+#[allow(dead_code)]
 fn run_draw_line_once_u16(width: u32, height: u32, bands: u32) {
     let mut pixels = vec![0u16; width as usize * height as usize * bands as usize];
     let mut tile =
@@ -127,6 +131,8 @@ fn run_draw_line_once_u16(width: u32, height: u32, bands: u32) {
     black_box(pixels);
 }
 
+// REASON: Draw-line benchmark scaffolding, not yet wired into the CLI.
+#[allow(dead_code)]
 fn run_draw_line_once(format: BandFormatId, width: u32, height: u32, bands: u32) {
     match format {
         BandFormatId::U8 => run_draw_line_once_u8(width, height, bands),
@@ -138,6 +144,8 @@ fn run_draw_line_once(format: BandFormatId, width: u32, height: u32, bands: u32)
     }
 }
 
+// REASON: Draw-line benchmark scaffolding, not yet wired into the CLI.
+#[allow(dead_code)]
 fn run_viprs_draw_line_bench(input: &Path, iterations: usize, e2e: bool) -> BenchResult {
     let input_str = input.to_string_lossy().to_string();
 

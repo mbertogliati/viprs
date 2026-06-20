@@ -158,7 +158,7 @@ mod tests {
 
         #[test]
         fn more_eq_matches_scalar_comparison(
-            pixels in proptest::collection::vec((-1000.0f32..=1000.0f32), 1..=64),
+            pixels in proptest::collection::vec(-1000.0f32..=1000.0f32, 1..=64),
             rhs in -1000.0f32..=1000.0f32,
         ) {
             let len = pixels.len();

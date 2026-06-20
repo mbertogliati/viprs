@@ -86,7 +86,7 @@ fn dirs_home() -> Option<std::path::PathBuf> {
     std::env::var("HOME").ok().map(std::path::PathBuf::from)
 }
 
-fn cmyk_filenames() -> &'static [&'static str] {
+const fn cmyk_filenames() -> &'static [&'static str] {
     &[
         "GenericCMYKProfile.icc",
         "Generic CMYK Profile.icc",
@@ -94,7 +94,7 @@ fn cmyk_filenames() -> &'static [&'static str] {
     ]
 }
 
-fn p3_filenames() -> &'static [&'static str] {
+const fn p3_filenames() -> &'static [&'static str] {
     &[
         "Display P3.icc",
         "DisplayP3.icc",
@@ -153,35 +153,38 @@ pub fn profile_load(name: &str) -> Result<Vec<u8>, ViprsError> {
         }
         "cmyk" => {
             let candidates = cmyk_filenames();
-            if let Some(path) = search_system_dirs("cmyk", candidates) {
-                load_and_validate_path(&path, "cmyk")
-            } else {
-                Err(icc_error(
+            search_system_dirs("cmyk", candidates).map_or_else(
+                || {
+                    Err(icc_error(
                     "profile \"cmyk\" not found in system ICC directories; install a CMYK profile (e.g. from a colour management package) or supply an explicit path",
                 ))
-            }
+                },
+                |path| load_and_validate_path(&path, "cmyk"),
+            )
         }
         "p3" => {
             let candidates = p3_filenames();
-            if let Some(path) = search_system_dirs("p3", candidates) {
-                load_and_validate_path(&path, "p3")
-            } else {
-                Err(icc_error(
+            search_system_dirs("p3", candidates).map_or_else(
+                || {
+                    Err(icc_error(
                     "profile \"p3\" not found in system ICC directories; install a Display P3 profile (e.g. from a colour management package) or supply an explicit path",
                 ))
-            }
+                },
+                |path| load_and_validate_path(&path, "p3"),
+            )
         }
         _ if Path::new(name).is_absolute() || Path::new(name).exists() => {
             load_and_validate_path(Path::new(name), "loaded")
         }
         _ => {
-            if let Some(path) = search_system_dirs(name, &[]) {
-                load_and_validate_path(&path, name)
-            } else {
-                Err(icc_error(format!(
+            search_system_dirs(name, &[]).map_or_else(
+                || {
+                    Err(icc_error(format!(
                     "profile \"{name}\" not found: not a known alias, not a valid path, and not found in system ICC directories"
                 )))
-            }
+                },
+                |path| load_and_validate_path(&path, name),
+            )
         }
     }
 }

@@ -5,8 +5,11 @@ use turbojpeg::{Colorspace, PixelFormat, Subsamp, raw};
 use super::super::shrink_on_load::{ShrinkOnLoadBackend, ShrinkOnLoadPlan};
 use crate::domain::codec_options::JpegSubsampling;
 use crate::domain::error::ViprsError;
+#[cfg(feature = "uhdr")]
 use crate::domain::format::U8;
-use crate::domain::image::{Image, ImageMetadata, Interpretation};
+#[cfg(feature = "uhdr")]
+use crate::domain::image::Image;
+use crate::domain::image::{ImageMetadata, Interpretation};
 
 pub(super) const ICC_PROFILE_SIGNATURE: &[u8] = b"ICC_PROFILE\0";
 pub(super) const EXIF_SIGNATURE: &[u8] = b"Exif\0\0";
@@ -81,7 +84,7 @@ pub(super) fn turbojpeg_error(handle: raw::tjhandle, codec_name: &str) -> ViprsE
     ViprsError::Codec(format!("{codec_name}: {message}"))
 }
 
-fn colorspace_to_decode_shape(
+const fn colorspace_to_decode_shape(
     colorspace: Colorspace,
 ) -> (PixelFormat, u32, Option<Interpretation>) {
     match colorspace {
@@ -109,7 +112,10 @@ fn decode_shape_from_handle(
     Ok(colorspace_to_decode_shape(colorspace))
 }
 
-pub(super) fn subsampling_to_sampling_factor(subsampling: JpegSubsampling, quality: u8) -> Subsamp {
+pub(super) const fn subsampling_to_sampling_factor(
+    subsampling: JpegSubsampling,
+    quality: u8,
+) -> Subsamp {
     match subsampling {
         JpegSubsampling::Auto => {
             if quality < 90 {
@@ -195,7 +201,7 @@ pub(super) fn visit_jpeg_segments(src: &[u8], mut visitor: impl FnMut(u8, &[u8])
     }
 }
 
-fn is_sof_marker(marker: u8) -> bool {
+const fn is_sof_marker(marker: u8) -> bool {
     matches!(marker, 0xC0..=0xC3 | 0xC5..=0xC7 | 0xC9..=0xCB | 0xCD..=0xCF)
 }
 
@@ -441,7 +447,7 @@ fn read_u32(bytes: &[u8], endian: ExifEndian) -> Option<u32> {
     })
 }
 
-fn exif_field_type_size(field_type: u16) -> Option<usize> {
+const fn exif_field_type_size(field_type: u16) -> Option<usize> {
     match field_type {
         1 | 2 | 6 | 7 => Some(1),
         3 | 8 => Some(2),
@@ -459,7 +465,7 @@ fn exif_field_type_size(field_type: u16) -> Option<usize> {
 /// ```ignore
 /// let _ = viprs::adapters::codecs::jpeg::extract_exif_orientation;
 /// ```
-pub(crate) fn extract_exif_orientation(exif: &[u8]) -> Option<u8> {
+pub fn extract_exif_orientation(exif: &[u8]) -> Option<u8> {
     let tiff = exif.strip_prefix(EXIF_SIGNATURE)?;
     if tiff.len() < 8 {
         return None;
@@ -638,7 +644,7 @@ pub(super) fn shrink_factor_for_max_dimension(width: u32, height: u32, max_dimen
     8
 }
 
-pub(super) fn jpeg_shrink_on_load_plan(requested_factor: u8) -> ShrinkOnLoadPlan {
+pub(super) const fn jpeg_shrink_on_load_plan(requested_factor: u8) -> ShrinkOnLoadPlan {
     ShrinkOnLoadPlan::new(requested_factor, JPEG_SHRINK_BACKEND)
 }
 
@@ -785,7 +791,7 @@ pub(super) fn crop_strict_shrink_edges(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::jpeg::apply_exif_orientation;
 /// ```
-pub(crate) fn apply_exif_orientation(
+pub fn apply_exif_orientation(
     pixels: Vec<u8>,
     width: u32,
     height: u32,
@@ -850,6 +856,7 @@ pub(crate) fn apply_exif_orientation(
 /// ```ignore
 /// let _ = viprs::adapters::codecs::jpeg::orient_u8_image;
 /// ```
+#[cfg(feature = "uhdr")]
 pub(crate) fn orient_u8_image(
     image: &Image<U8>,
     orientation: u8,

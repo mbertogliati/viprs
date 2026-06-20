@@ -44,7 +44,7 @@ where
     ///
     /// Input is `self.input_bands` (N-band), output is always 1-band.
     #[must_use]
-    pub fn into_bridge(self) -> OperationBridge<Self> {
+    pub const fn into_bridge(self) -> OperationBridge<Self> {
         let input_bands = self.input_bands as u32;
         OperationBridge::with_dynamic_bands_pixel_local(self, input_bands, 1)
     }
@@ -479,7 +479,7 @@ unsafe fn divide_by_3_rounded_u16x8(values: uint16x8_t, reciprocal: u16) -> uint
 mod tests {
     use super::*;
     use crate::domain::{
-        format::{F64, I16, I32, U8, U16, U32},
+        format::{I16, U8},
         image::{Region, Tile, TileMut},
         op::DynOperation,
     };

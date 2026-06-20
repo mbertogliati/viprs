@@ -20,8 +20,9 @@ use super::decode_full::png_file_reader;
 use super::region_decode::decode_png_full_raster_with_png_crate;
 
 /// Configurable PNG encoder mirroring libvips' compression/interlace controls.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
 /// The `PngEncoder` type provides concrete adapter functionality in the `codecs` module.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Use this type when you need the runtime behavior implemented by this adapter.
 ///
 /// # Examples
@@ -49,7 +50,7 @@ impl Default for PngEncoder {
     }
 }
 
-/// PNG codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
+/// PNG codec: implements both [`crate::ports::codec::ImageDecoder`] and [`crate::ports::codec::ImageEncoder`].
 ///
 /// Only U8 and U16 band formats are supported. All other formats return
 /// [`ViprsError::Codec`].
@@ -96,6 +97,7 @@ impl PngCodec {
         if shared.capacity() < scratch.capacity() {
             *shared = scratch;
         }
+        drop(shared);
         Ok(())
     }
 
@@ -141,6 +143,7 @@ impl PngCodec {
             key,
             raster: Arc::clone(&raster),
         });
+        drop(cache);
         Ok(raster)
     }
 
@@ -290,10 +293,6 @@ impl PngRowDecodeProbe {
         self.row_delay_ms.store(0, Ordering::SeqCst);
     }
 
-    pub(super) fn max_active(&self) -> usize {
-        self.max_active.load(Ordering::SeqCst)
-    }
-
     pub(super) fn max_active_for(&self, codec_id: usize) -> usize {
         self.max_active_by_codec
             .lock()
@@ -301,10 +300,6 @@ impl PngRowDecodeProbe {
             .get(&codec_id)
             .copied()
             .unwrap_or(0)
-    }
-
-    pub(super) fn total_rows(&self) -> usize {
-        self.total_rows.load(Ordering::SeqCst)
     }
 
     pub(super) fn total_rows_for(&self, codec_id: usize) -> usize {
@@ -316,10 +311,6 @@ impl PngRowDecodeProbe {
             .unwrap_or(0)
     }
 
-    pub(super) fn full_raster_decodes(&self) -> usize {
-        self.full_raster_decodes.load(Ordering::SeqCst)
-    }
-
     pub(super) fn full_raster_decodes_for(&self, codec_id: usize) -> usize {
         self.full_raster_decodes_by_codec
             .lock()
@@ -327,11 +318,6 @@ impl PngRowDecodeProbe {
             .get(&codec_id)
             .copied()
             .unwrap_or(0)
-    }
-
-    pub(super) fn rows_while_sequential_session_mutex_held(&self) -> usize {
-        let target_codec = self.target_codec.load(Ordering::SeqCst);
-        self.rows_while_sequential_session_mutex_held_for(target_codec)
     }
 
     pub(super) fn rows_while_sequential_session_mutex_held_for(&self, codec_id: usize) -> usize {

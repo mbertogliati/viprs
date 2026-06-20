@@ -338,7 +338,7 @@ mod tests {
 
     #[test]
     fn metadata_and_all_numeric_invertible_types_match_contract() {
-        use crate::domain::format::{F64, I16, I32, U8, U16, U32};
+        use crate::domain::format::U8;
 
         assert_eq!(Invertible::invert(0u8), 255);
         assert_eq!(Invertible::invert(0u16), 65_535);

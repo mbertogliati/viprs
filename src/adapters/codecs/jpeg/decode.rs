@@ -223,7 +223,7 @@ impl ImageDecoder for JpegCodec {
             // the mapping is read-only, and the bytes are consumed only within
             // this function before either handle is dropped.
             let mmap = unsafe { Mmap::map(&file)? };
-            return self.decode_with_options(&mmap, opts);
+            self.decode_with_options(&mmap, opts)
         }
 
         #[cfg(not(feature = "mmap"))]

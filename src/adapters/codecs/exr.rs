@@ -264,17 +264,17 @@ fn preferred_channel_order(names: &[String]) -> Vec<usize> {
         && names.iter().any(|name| name == "G")
         && names.iter().any(|name| name == "B")
     {
-        push_named("R", &names, &mut order);
-        push_named("G", &names, &mut order);
-        push_named("B", &names, &mut order);
-        push_named("A", &names, &mut order);
+        push_named("R", names, &mut order);
+        push_named("G", names, &mut order);
+        push_named("B", names, &mut order);
+        push_named("A", names, &mut order);
     } else if names.iter().any(|name| name == "Y") || names.iter().any(|name| name == "L") {
         if names.iter().any(|name| name == "Y") {
-            push_named("Y", &names, &mut order);
+            push_named("Y", names, &mut order);
         } else {
-            push_named("L", &names, &mut order);
+            push_named("L", names, &mut order);
         }
-        push_named("A", &names, &mut order);
+        push_named("A", names, &mut order);
     }
 
     for index in 0..names.len() {
@@ -577,7 +577,7 @@ fn load_exr_metadata(src: &[u8]) -> Result<ExrMetaData, ViprsError> {
     ExrMetaData::read_from_buffered(Cursor::new(src), false).map_err(exr_error)
 }
 
-fn exr_encoding_from_header(header: &ExrHeader) -> ExrEncoding {
+const fn exr_encoding_from_header(header: &ExrHeader) -> ExrEncoding {
     ExrEncoding {
         compression: header.compression,
         line_order: header.line_order,
@@ -913,10 +913,8 @@ fn exr_layer_attributes<F: BandFormat>(
         ExrLayerAttributes::named(name.as_str())
     });
 
-    if !strip_metadata {
-        if let Some(xres) = image.metadata().xres.and_then(pixels_per_mm_to_ppi) {
-            layer_attributes.horizontal_density = Some(xres);
-        }
+    if !strip_metadata && let Some(xres) = image.metadata().xres.and_then(pixels_per_mm_to_ppi) {
+        layer_attributes.horizontal_density = Some(xres);
     }
 
     layer_attributes
@@ -927,12 +925,14 @@ fn set_exr_pixel_aspect(
     metadata: &ImageMetadata,
     strip_metadata: bool,
 ) {
-    if !strip_metadata {
-        if let (Some(xres), Some(yres)) = (metadata.xres, metadata.yres) {
-            if xres.is_finite() && yres.is_finite() && xres > 0.0 && yres > 0.0 {
-                attributes.pixel_aspect = (xres / yres) as f32;
-            }
-        }
+    if !strip_metadata
+        && let (Some(xres), Some(yres)) = (metadata.xres, metadata.yres)
+        && xres.is_finite()
+        && yres.is_finite()
+        && xres > 0.0
+        && yres > 0.0
+    {
+        attributes.pixel_aspect = (xres / yres) as f32;
     }
 }
 
@@ -960,10 +960,8 @@ fn encode_exr_single_layer_fast(
             ExrLayerAttributes::named(name.as_str())
         });
 
-        if !strip_metadata {
-            if let Some(xres) = metadata.xres.and_then(pixels_per_mm_to_ppi) {
-                layer_attributes.horizontal_density = Some(xres);
-            }
+        if !strip_metadata && let Some(xres) = metadata.xres.and_then(pixels_per_mm_to_ppi) {
+            layer_attributes.horizontal_density = Some(xres);
         }
 
         layer_attributes

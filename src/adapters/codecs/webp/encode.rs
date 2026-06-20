@@ -75,11 +75,11 @@ impl Default for WebpEncodeOptions {
 impl From<WebpEncodeOptions> for SaveOptions {
     fn from(opts: WebpEncodeOptions) -> Self {
         let opts = opts.clamped();
-        SaveOptions {
+        Self {
             quality: Some(opts.quality),
             lossless: Some(opts.lossless),
             method: Some(opts.method),
-            ..SaveOptions::default()
+            ..Self::default()
         }
     }
 }

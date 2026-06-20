@@ -236,6 +236,8 @@ pub const PDF_BENCH_FIXTURES: &[BenchFixtureSpec] = &[
         input: "tests/fixtures/images/bench_8192x8192.pdf",
     },
 ];
+// REASON: Draw-line benchmark scaffolding, not yet wired into the CLI.
+#[allow(dead_code)]
 pub const STANDARD_SIZES: &[u32] = &[512, 2048, 8192];
 pub const INPUT_DIVERSITY_SUPPORTED_OPS: &[&str] = &[
     "load",
@@ -1213,6 +1215,8 @@ pub fn regression_messages(
     failures
 }
 
+// REASON: Draw-line benchmark scaffolding, not yet wired into the CLI.
+#[allow(dead_code)]
 pub fn find_bench_fixture(size: u32) -> Option<&'static BenchFixtureSpec> {
     STANDARD_BENCH_FIXTURES
         .iter()

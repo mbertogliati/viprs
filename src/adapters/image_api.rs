@@ -12,7 +12,7 @@ use std::{
 
 use bytemuck::Pod;
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
-use std::{fs, sync::Arc};
+use std::sync::Arc;
 
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
 use crate::domain::codec_options::SaveOptions;

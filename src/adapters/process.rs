@@ -412,7 +412,7 @@ fn decode_as_u8(input: &[u8], opts: &LoadOptions) -> Result<(Image<U8>, &'static
             u8_pixels,
         )?
         .with_metadata(f32_image.metadata().clone());
-        return Ok((image, format_name));
+        Ok((image, format_name))
     }
 
     #[cfg(not(feature = "exr"))]

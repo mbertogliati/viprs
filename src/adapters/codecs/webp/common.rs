@@ -52,6 +52,8 @@ pub(super) struct CachedStaticWebpFrame {
 }
 
 #[inline]
+#[allow(clippy::missing_const_for_fn)]
+// REASON: Only const in non-test cfg; test cfg uses thread_local which isn't const.
 pub(super) fn webp_max_scratch_allocation_bytes() -> u64 {
     #[cfg(test)]
     {
@@ -67,6 +69,8 @@ pub(super) fn webp_max_scratch_allocation_bytes() -> u64 {
 }
 
 #[inline]
+#[allow(clippy::missing_const_for_fn)]
+// REASON: Only const in non-test cfg; test cfg uses thread_local which isn't const.
 pub(super) fn webp_max_total_animation_bytes() -> u64 {
     #[cfg(test)]
     {
@@ -178,58 +182,19 @@ pub(super) fn image_from_u8_pixels<F: BandFormat>(
     Image::from_buffer(width, height, bands, samples).map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
-pub(super) fn copy_clamped_region_from_u8_pixels<F: BandFormat>(
-    width: u32,
-    height: u32,
-    bands: u32,
-    pixels_u8: &[u8],
-    region: Region,
-    output: &mut [u8],
-) -> Result<(), ViprsError> {
-    require_u8::<F>()?;
-
-    let expected = region
-        .pixel_count()
-        .checked_mul(bands as usize)
-        .ok_or_else(|| ViprsError::Codec("webp: output buffer size overflow".into()))?;
-    if output.len() != expected {
-        return Err(ViprsError::Codec(format!(
-            "webp: output buffer size mismatch (got {}, expected {expected})",
-            output.len()
-        )));
-    }
-    if width == 0 || height == 0 {
-        return Ok(());
-    }
-
-    let stride = width as usize * bands as usize;
-    for row in 0..region.height as i32 {
-        let src_y = (region.y + row).clamp(0, height as i32 - 1) as usize;
-        for col in 0..region.width as i32 {
-            let src_x = (region.x + col).clamp(0, width as i32 - 1) as usize;
-            let src_start = src_y * stride + src_x * bands as usize;
-            let dst_start = (row as usize * region.width as usize + col as usize) * bands as usize;
-            output[dst_start..dst_start + bands as usize]
-                .copy_from_slice(&pixels_u8[src_start..src_start + bands as usize]);
-        }
-    }
-
-    Ok(())
-}
-
 #[inline]
-pub(super) fn webp_interpretation(bands: u32) -> Interpretation {
+pub(super) const fn webp_interpretation(bands: u32) -> Interpretation {
     match bands {
         1 | 2 => Interpretation::BW,
         _ => Interpretation::Srgb,
     }
 }
 
-pub(crate) fn webp_shrink_on_load_plan(requested_factor: u8) -> ShrinkOnLoadPlan {
+pub const fn webp_shrink_on_load_plan(requested_factor: u8) -> ShrinkOnLoadPlan {
     ShrinkOnLoadPlan::new(requested_factor, WEBP_SHRINK_BACKEND)
 }
 
-pub(crate) fn webp_anim_shrink_on_load_plan(requested_factor: u8) -> ShrinkOnLoadPlan {
+pub const fn webp_anim_shrink_on_load_plan(requested_factor: u8) -> ShrinkOnLoadPlan {
     ShrinkOnLoadPlan::new(requested_factor, WEBP_ANIM_SHRINK_BACKEND)
 }
 
@@ -485,7 +450,7 @@ pub(super) fn copy_clamped_region_from_u8_window<F: BandFormat>(
 
     Ok(())
 }
-pub(crate) fn checked_webp_scratch_allocation_len(
+pub fn checked_webp_scratch_allocation_len(
     width: u32,
     height: u32,
     bands: u32,

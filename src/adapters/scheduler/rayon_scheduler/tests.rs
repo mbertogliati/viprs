@@ -937,10 +937,7 @@ fn scheduler_limits_max_concurrent_pipeline_runs() {
 fn run_with_reducer_returns_correct_sum_and_writes_sink() {
     use crate::{
         adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
-        domain::{
-            op::{Op, OperationBridge},
-            reducer::TileReducer,
-        },
+        domain::{op::OperationBridge, reducer::TileReducer},
     };
 
     // Sums every u8 sample across all tiles.
@@ -1155,11 +1152,7 @@ fn source_cache_plus_branch_point_op_cache_stays_within_four_locks_per_output_ti
 fn run_with_reducer_rejects_format_mismatch() {
     use crate::{
         adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
-        domain::{
-            format::U16,
-            op::{Op, OperationBridge},
-            reducer::TileReducer,
-        },
+        domain::{format::U16, op::OperationBridge, reducer::TileReducer},
     };
 
     struct NoopReducer;

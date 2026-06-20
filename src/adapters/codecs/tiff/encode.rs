@@ -52,7 +52,7 @@ pub(super) fn effective_predictor_for_format(
     }
 }
 
-pub(super) fn compression_tag(compression: TiffCompression) -> u16 {
+pub(super) const fn compression_tag(compression: TiffCompression) -> u16 {
     match compression {
         TiffCompression::None => CompressionMethod::None.to_u16(),
         TiffCompression::Lzw => CompressionMethod::LZW.to_u16(),
@@ -83,11 +83,14 @@ where
         return Ok(frames.to_vec());
     }
 
-    let page_height = image.metadata().page_height.unwrap_or(image.height());
+    let page_height = image
+        .metadata()
+        .page_height
+        .unwrap_or_else(|| image.height());
     if page_height == 0 || page_height >= image.height() {
         return Ok(vec![image.clone()]);
     }
-    if image.height() % page_height != 0 {
+    if !image.height().is_multiple_of(page_height) {
         return Err(ViprsError::Codec(format!(
             "tiff: page_height {page_height} must divide image height {}",
             image.height()
@@ -288,8 +291,9 @@ where
             .map_err(|e| ViprsError::Codec(e.to_string()))?;
     }
     if let Some((page, total_pages)) = page_number {
+        let page_numbers: [u16; 2] = (page, total_pages).into();
         directory
-            .write_tag(TIFF_PAGE_NUMBER_TAG, &[page, total_pages][..])
+            .write_tag(TIFF_PAGE_NUMBER_TAG, &page_numbers[..])
             .map_err(|e| ViprsError::Codec(e.to_string()))?;
     }
     if matches!(predictor, TiffPredictor::Horizontal)
@@ -438,22 +442,18 @@ where
         let end = start + strip_height as usize * row_stride;
         let slice = &image.pixels()[start..end];
 
-        let mut encoded_storage = None;
         let encoded = if matches!(compression, TiffCompression::Jpeg) {
-            encoded_storage = Some(encode_jpeg_chunk(
+            Cow::Owned(encode_jpeg_chunk(
                 bytemuck::cast_slice(slice),
                 image.width(),
                 strip_height,
                 image.bands(),
                 quality,
-            )?);
-            encoded_storage
-                .as_deref()
-                .ok_or_else(|| ViprsError::Codec("tiff: missing JPEG strip bytes".into()))?
+            )?)
         } else if matches!(compression, TiffCompression::None)
             && matches!(predictor, TiffPredictor::None)
         {
-            bytemuck::cast_slice(slice)
+            Cow::Borrowed(bytemuck::cast_slice(slice))
         } else {
             let mut predicted = slice.to_vec();
             apply_predictor(
@@ -463,18 +463,15 @@ where
                 bands,
                 predictor,
             );
-            encoded_storage = Some(compress_bytes(
+            Cow::Owned(compress_bytes(
                 bytemuck::cast_slice(&predicted),
                 compression,
                 compression_level,
-            )?);
-            encoded_storage
-                .as_deref()
-                .ok_or_else(|| ViprsError::Codec("tiff: missing compressed strip bytes".into()))?
+            )?)
         };
 
         let offset = directory
-            .write_data(encoded)
+            .write_data(encoded.as_ref())
             .map_err(|e| ViprsError::Codec(e.to_string()))?;
         offsets.push(u32::try_from(offset).map_err(|e| ViprsError::Codec(e.to_string()))?);
         byte_counts
@@ -569,6 +566,8 @@ where
     Ok(())
 }
 
+#[allow(deprecated)]
+// REASON: tiff crate deprecation, upgrade tracked in backlog.
 pub(super) fn write_page<C, F>(
     encoder: &mut RawTiffEncoder<SharedWriteBuffer>,
     image: &Image<F>,
@@ -588,7 +587,7 @@ where
     [F::Sample]: TiffValue,
 {
     let mut directory = encoder
-        .new_directory()
+        .image_directory()
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
     write_common_tags::<_, _, C>(
         &mut directory,

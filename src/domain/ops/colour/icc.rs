@@ -5,10 +5,9 @@ use crate::domain::{
 };
 
 #[cfg(feature = "icc")]
-use crate::domain::{
-    error::BuildError, format::BandFormatId, image::Interpretation, op::DynOperation,
-};
+use crate::domain::{error::BuildError, image::Interpretation, op::DynOperation};
 
+#[cfg(not(feature = "icc"))]
 const ICC_DETAILS: &str =
     "ICC operations require the deferred CMS adapter boundary and littlecms2 dependency.";
 
@@ -91,6 +90,7 @@ impl IccImage {
     }
 }
 
+#[cfg(not(feature = "icc"))]
 const fn cms_unimplemented(feature: &'static str) -> ViprsError {
     ViprsError::Unimplemented {
         feature,

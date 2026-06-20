@@ -59,9 +59,9 @@ struct Vp8Io {
     y_stride: c_int,
     uv_stride: c_int,
     opaque: *mut c_void,
-    put: Option<unsafe extern "C" fn(*const Vp8Io) -> c_int>,
-    setup: Option<unsafe extern "C" fn(*mut Vp8Io) -> c_int>,
-    teardown: Option<unsafe extern "C" fn(*const Vp8Io)>,
+    put: Option<unsafe extern "C" fn(*const Self) -> c_int>,
+    setup: Option<unsafe extern "C" fn(*mut Self) -> c_int>,
+    teardown: Option<unsafe extern "C" fn(*const Self)>,
     fancy_upsampling: c_int,
     data_size: usize,
     data: *const u8,
@@ -155,12 +155,12 @@ impl WebpStripDecodeState {
     }
 
     #[inline]
-    fn is_rgba(&self) -> bool {
+    const fn is_rgba(&self) -> bool {
         self.bands == 4
     }
 
     #[inline]
-    unsafe fn row_ptr(&mut self, row: usize, top: bool) -> *mut u8 {
+    const unsafe fn row_ptr(&mut self, row: usize, top: bool) -> *mut u8 {
         if row >= self.decode_start && row < self.decode_end {
             let row_offset = (row - self.decode_start) * self.stride;
             // SAFETY: `row_offset` is bounded by the strip output size prepared by the caller.
@@ -207,7 +207,7 @@ impl WebpStripDecodeState {
         }
     }
 
-    fn mark_completed(&mut self, ready_end: usize) -> c_int {
+    const fn mark_completed(&mut self, ready_end: usize) -> c_int {
         if ready_end >= self.decode_end {
             self.completed = true;
             0
@@ -242,7 +242,7 @@ unsafe extern "C" fn webp_strip_setup(io: *mut Vp8Io) -> c_int {
     1
 }
 
-unsafe extern "C" fn webp_strip_teardown(_io: *const Vp8Io) {}
+const unsafe extern "C" fn webp_strip_teardown(_io: *const Vp8Io) {}
 
 unsafe fn webp_strip_write_sampled(io: &Vp8Io, state: &mut WebpStripDecodeState) -> c_int {
     let overlap_start = (io.mb_y as usize).max(state.decode_start);
@@ -563,7 +563,7 @@ fn decode_static_webp<F: BandFormat>(
     }))
 }
 
-pub(crate) fn decode_static_webp_pixels(
+pub fn decode_static_webp_pixels(
     src: &[u8],
     opts: &LoadOptions,
 ) -> Result<(u32, u32, u32, Vec<u8>), ViprsError> {
@@ -595,6 +595,8 @@ pub(crate) fn decode_static_webp_pixels(
     Ok((width, height, bands, pixels_u8))
 }
 
+// REASON: Lock must be held during pattern match to maintain consistency.
+#[allow(clippy::significant_drop_in_scrutinee)]
 fn cached_static_webp_frame(
     src: &[u8],
     opts: &LoadOptions,
@@ -630,6 +632,7 @@ fn cached_static_webp_frame(
         cache.clear();
     }
     cache.insert(cache_key, Arc::clone(&decoded));
+    drop(cache);
     Ok(decoded)
 }
 fn decode_static_webp_region_into<F: BandFormat>(

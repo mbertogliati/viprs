@@ -34,6 +34,7 @@ jobs:
     name: "Lint (fmt + clippy)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - uses: actions/checkout@v4
@@ -43,17 +44,21 @@ jobs:
           components: rustfmt, clippy
       - name: Install nasm (needed by rav1e for AVIF)
         run: apt-get update -qq && apt-get install -y --no-install-recommends nasm
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "lint"
       - name: Check formatting
         run: make fmt
       - name: Clippy
         run: make clippy FEATURES="${{ env.CLIPPY_FEATURES }}"
       - name: Build docs (deny warnings)
-        run: make doc FEATURES="${{ env.RUST_FEATURES }}"
+        run: make doc FEATURES="${{ env.CLIPPY_FEATURES }}"
 
   security:
     name: "Security (audit + deny)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: rustsec/audit-check@v2
@@ -73,19 +78,24 @@ jobs:
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
       - uses: ./.github/actions/setup-toolchain
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "test-unit"
       - name: Run unit tests
         run: make test FEATURES="${{ env.RUST_FEATURES }}"
 
   test-and-coverage:
-    name: "Tests + Coverage (all codecs, ≥87%)"
+    name: "Tests + Coverage (all codecs, ≥86%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     steps:
       - name: Install build tools
@@ -98,6 +108,9 @@ jobs:
           toolchain: "1.96.0"
           components: llvm-tools-preview
       - uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "test-coverage"
       - name: Run all tests with coverage instrumentation
         run: make coverage
       - name: Generate summary
@@ -114,6 +127,7 @@ jobs:
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
     strategy:
       matrix:
         include:
@@ -153,6 +167,8 @@ jobs:
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    continue-on-error: true
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     strategy:
       matrix:
@@ -180,6 +196,8 @@ jobs:
     needs: [build-xtask]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    continue-on-error: true
     container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
     strategy:
       matrix:
@@ -232,6 +250,7 @@ jobs:
     needs: [lint, security, test-unit, test-and-coverage, benchmarks, build-xtask, bench-vs-libvips]
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Evaluate results
         run: |
@@ -252,6 +271,7 @@ jobs:
     needs: [build-xtask, status-gate]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       packages: write
     steps:

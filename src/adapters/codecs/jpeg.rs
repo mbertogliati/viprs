@@ -21,7 +21,9 @@ mod encode;
 #[cfg(test)]
 mod tests;
 
-pub(crate) use common::{apply_exif_orientation, extract_exif_orientation, orient_u8_image};
+pub(crate) use common::apply_exif_orientation;
+#[cfg(feature = "uhdr")]
+pub(crate) use common::{extract_exif_orientation, orient_u8_image};
 
 /// JPEG codec: implements both [`crate::ports::codec::ImageDecoder`] and
 /// [`crate::ports::codec::ImageEncoder`].

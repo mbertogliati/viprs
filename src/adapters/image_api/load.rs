@@ -114,7 +114,7 @@ impl ImageApiThumbnailOptions {
     /// # }
     /// ```
     #[must_use]
-    pub fn with_auto_normalize_to_srgb(mut self, enabled: bool) -> Self {
+    pub const fn with_auto_normalize_to_srgb(mut self, enabled: bool) -> Self {
         self.auto_normalize_to_srgb = enabled;
         self
     }
@@ -389,12 +389,7 @@ impl ImageApi {
                 opts.clone(),
             )?
             .without_deferred_thumbnail_materialization();
-            return Self::from_source_with_limits(
-                source,
-                1,
-                opts.limits.as_ref(),
-                resource_limits.cloned(),
-            );
+            Self::from_source_with_limits(source, 1, opts.limits.as_ref(), resource_limits.cloned())
         }
 
         #[cfg(not(feature = "jpeg"))]
@@ -418,7 +413,7 @@ impl ImageApi {
         #[cfg(feature = "png")]
         {
             let shared = Arc::<[u8]>::from(buf);
-            return match png_bit_depth(buf) {
+            match png_bit_depth(buf) {
                 Some(16) => Self::from_source_with_limits(
                     DecoderSource::<_, U16>::streaming_shared(
                         PngCodec::default(),
@@ -440,7 +435,7 @@ impl ImageApi {
                     resource_limits.cloned(),
                 ),
                 None => Err(ViprsError::Codec("image_api: malformed PNG header".into())),
-            };
+            }
         }
 
         #[cfg(not(feature = "png"))]

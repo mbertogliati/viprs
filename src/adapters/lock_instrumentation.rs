@@ -61,7 +61,7 @@ fn finish_current_tile() {
 }
 
 #[cfg(feature = "lock_instrumentation")]
-pub(crate) fn reset() {
+pub fn reset() {
     TILE_COUNT.store(0, Ordering::Relaxed);
     TOTAL_LOCK_ACQUISITIONS.store(0, Ordering::Relaxed);
     MAX_LOCKS_PER_TILE.store(0, Ordering::Relaxed);
@@ -73,7 +73,9 @@ pub(crate) fn reset() {
 pub const fn reset() {}
 
 #[cfg(all(test, feature = "lock_instrumentation"))]
-pub(crate) struct RunGuard(Option<MutexGuard<'static, ()>>);
+pub(crate) struct RunGuard {
+    _guard: Option<MutexGuard<'static, ()>>,
+}
 
 #[cfg(not(all(test, feature = "lock_instrumentation")))]
 pub struct RunGuard;
@@ -102,7 +104,7 @@ pub(crate) fn prepare_run() -> RunGuard {
     if should_reset {
         reset();
     }
-    RunGuard(guard)
+    RunGuard { _guard: guard }
 }
 
 #[cfg(not(all(test, feature = "lock_instrumentation")))]
@@ -123,7 +125,7 @@ impl Drop for RunGuard {
 }
 
 #[cfg(feature = "lock_instrumentation")]
-pub(crate) fn record_lock_acquisition() {
+pub fn record_lock_acquisition() {
     TILE_LOCK_COUNT.with(|counts| {
         if let Some(current) = counts.borrow_mut().last_mut() {
             *current += 1;
@@ -135,7 +137,7 @@ pub(crate) fn record_lock_acquisition() {
 pub const fn record_lock_acquisition() {}
 
 #[cfg(feature = "lock_instrumentation")]
-pub(crate) fn snapshot() -> LockInstrumentationSnapshot {
+pub fn snapshot() -> LockInstrumentationSnapshot {
     LockInstrumentationSnapshot {
         tile_count: TILE_COUNT.load(Ordering::Relaxed),
         total_lock_acquisitions: TOTAL_LOCK_ACQUISITIONS.load(Ordering::Relaxed),

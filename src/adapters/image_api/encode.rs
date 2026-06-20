@@ -39,9 +39,9 @@ impl ImageApi {
                 ..SaveOptions::default()
             };
 
-            return with_output_image!(pipeline, &scheduler, |image| {
+            with_output_image!(pipeline, &scheduler, |image| {
                 codec.encode_with_options(&image, &options)
-            });
+            })
         }
 
         #[cfg(not(feature = "jpeg"))]
@@ -82,9 +82,9 @@ impl ImageApi {
                 ..SaveOptions::default()
             };
 
-            return with_output_image!(pipeline, &scheduler, |image| {
+            with_output_image!(pipeline, &scheduler, |image| {
                 codec.encode_to_writer(&image, &options, writer)
-            });
+            })
         }
 
         #[cfg(not(feature = "jpeg"))]
@@ -121,7 +121,7 @@ impl ImageApi {
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
             let codec = PngCodec::default();
 
-            return with_output_image!(pipeline, &scheduler, |image| codec.encode(&image));
+            with_output_image!(pipeline, &scheduler, |image| codec.encode(&image))
         }
 
         #[cfg(not(feature = "png"))]
@@ -158,9 +158,9 @@ impl ImageApi {
             let codec = PngCodec::default();
             let options = SaveOptions::default();
 
-            return with_output_image!(pipeline, &scheduler, |image| {
+            with_output_image!(pipeline, &scheduler, |image| {
                 codec.encode_to_writer(&image, &options, writer)
-            });
+            })
         }
 
         #[cfg(not(feature = "png"))]
@@ -200,9 +200,9 @@ impl ImageApi {
                 ..SaveOptions::default()
             };
 
-            return with_output_image!(pipeline, &scheduler, |image| {
+            with_output_image!(pipeline, &scheduler, |image| {
                 codec.encode_with_options(&image, &options)
-            });
+            })
         }
 
         #[cfg(not(feature = "webp"))]
@@ -243,9 +243,9 @@ impl ImageApi {
                 ..SaveOptions::default()
             };
 
-            return with_output_image!(pipeline, &scheduler, |image| {
+            with_output_image!(pipeline, &scheduler, |image| {
                 codec.encode_to_writer(&image, &options, writer)
-            });
+            })
         }
 
         #[cfg(not(feature = "webp"))]

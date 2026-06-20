@@ -4,7 +4,6 @@
 // REASON: median window fields deliberately match the neighborhood terminology used throughout the module.
 #![allow(unused_imports)]
 // REASON: SimdLevel is used only in aarch64-gated NEON dispatch blocks.
-
 use std::{cmp::Ordering, marker::PhantomData};
 
 use crate::domain::{
@@ -24,6 +23,8 @@ enum Median3x3Simd {
 }
 
 #[inline]
+#[allow(clippy::missing_const_for_fn)]
+// REASON: Function uses feature-gated types not const-evaluable.
 fn detect_median_3x3_simd() -> Median3x3Simd {
     #[cfg(target_arch = "aarch64")]
     if SimdLevel::detect().has_neon() {
