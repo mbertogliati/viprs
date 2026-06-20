@@ -14,8 +14,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # Source-built libs live in /usr/local/lib (container jobs only)
-  PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
   # Common container build tools — avoids duplicating the apt-get list in every job.
   CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev"
 

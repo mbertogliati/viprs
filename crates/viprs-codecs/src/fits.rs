@@ -5,7 +5,7 @@
 
 use std::ffi::{CStr, CString};
 use std::fs;
-use std::os::raw::{c_int, c_long, c_void};
+use std::os::raw::{c_char, c_int, c_long, c_void};
 use std::path::{Path, PathBuf};
 use std::ptr;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -172,7 +172,7 @@ impl Drop for TempFitsPath {
 }
 
 fn fits_error(prefix: &str, status: c_int) -> ViprsError {
-    let mut err_buf = [0i8; FITS_HEADER_CARD_LEN];
+    let mut err_buf = [c_char::default(); FITS_HEADER_CARD_LEN];
     // SAFETY: ffgerr writes a NUL-terminated status message into `err_buf`.
     unsafe {
         fitsio_sys::ffgerr(status, err_buf.as_mut_ptr());
@@ -312,7 +312,7 @@ fn parse_hdu_header(fptr: *mut fitsio_sys::fitsfile) -> Result<FitsHeader, Viprs
     check_status("reading FITS header key count", status)?;
 
     for idx in 1..=key_count {
-        let mut card = [0i8; FITS_HEADER_CARD_LEN];
+        let mut card = [c_char::default(); FITS_HEADER_CARD_LEN];
         status = 0;
         // SAFETY: `card` has space for the 80-char record + NUL terminator.
         unsafe {

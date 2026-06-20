@@ -16,17 +16,22 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
       build-essential pkg-config cmake make nasm git git-lfs clang libclang-dev \
       ca-certificates \
-      libturbojpeg0-dev libspng-dev libpng-dev libwebp-dev libtiff-dev \
+      libspng-dev libpng-dev libwebp-dev libtiff-dev \
       libheif-dev libheif-plugin-aomdec libheif-plugin-aomenc \
       libjxl-dev libopenjp2-7-dev liblcms2-dev libopenslide-dev \
       libvips-dev imagemagick poppler-utils && \
+    echo "deb http://deb.debian.org/debian sid main" > /etc/apt/sources.list.d/sid.list && \
+    printf "Package: *\nPin: release n=sid\nPin-Priority: 100\n" > /etc/apt/preferences.d/sid && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends -t sid libturbojpeg0-dev && \
     rm -rf /var/lib/apt/lists/* && \
     rustup default ${RUST_VERSION} && \
     rustup component add rustfmt clippy
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN pkg-config --modversion libturbojpeg && \
+RUN pkg-config --atleast-version=3.0 libturbojpeg && \
+    pkg-config --modversion libturbojpeg && \
     pkg-config --modversion spng && \
     pkg-config --modversion libheif && \
     pkg-config --modversion libjxl && \
