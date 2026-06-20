@@ -39,6 +39,10 @@ RUN pkg-config --atleast-version=3.0 libturbojpeg && \
     pkg-config --modversion cfitsio && \
     pkg-config --modversion openslide
 
+RUN cargo install --locked cargo-audit cargo-deny && \
+    cargo audit --version && \
+    cargo deny --version
+
 ENTRYPOINT []
 
 WORKDIR /workspace

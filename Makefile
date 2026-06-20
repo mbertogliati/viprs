@@ -23,7 +23,7 @@ RUSTFLAGS_CI := -Dwarnings
 # Override: make check FEATURES="--features jpeg,png"
 FEATURES ?= --all-features
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test doc deny audit bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test doc security deny audit require-cargo-audit require-cargo-deny bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ FEATURES ?= --all-features
 check: fmt clippy test
 
 ## Core CI validation: format + lint + compile + test + docs + audits
-ci: fmt clippy test doc deny audit
+ci: fmt clippy test doc security
 
 # ─── Individual targets ────────────────────────────────────────────────────────
 
@@ -63,12 +63,27 @@ test:
 doc:
 	RUSTDOCFLAGS="-Dwarnings" $(CARGO) doc --workspace --no-deps $(FEATURES) --exclude xtask
 
+## Security and policy checks run by CI.
+security: audit deny
+
+require-cargo-deny:
+	@command -v cargo-deny >/dev/null 2>&1 || { \
+		echo "cargo-deny is required. Install it outside Makefile before running this target."; \
+		exit 127; \
+	}
+
+require-cargo-audit:
+	@command -v cargo-audit >/dev/null 2>&1 || { \
+		echo "cargo-audit is required. Install it outside Makefile before running this target."; \
+		exit 127; \
+	}
+
 ## License/advisory audit
-deny:
+deny: require-cargo-deny
 	$(CARGO) deny check
 
 ## Security vulnerability audit
-audit:
+audit: require-cargo-audit
 	$(CARGO) audit
 
 ## Threshold: ≥86% line coverage (enforced).

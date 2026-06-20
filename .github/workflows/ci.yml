@@ -52,14 +52,11 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rustsec/audit-check@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: EmbarkStudios/cargo-deny-action@v2
-        env:
-          RUSTUP_TOOLCHAIN: stable
+      - name: Run security checks
+        run: make security
 
   # ═══ Layer 2: tests + coverage — both delegated to Makefile targets ══════════
 
