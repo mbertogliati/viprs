@@ -1,0 +1,21 @@
+docker/Dockerfile.ci
+  s_10f4f0046081e9::t_07b38f70751c79 19,23-26,33-34
+crates/viprs-codecs/src/fits.rs
+  s_10f4f0046081e9::t_0daf795aae61f9 8,175,315
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5b369e2dd50534f744bc80f551c3d438fd4b6c24",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
