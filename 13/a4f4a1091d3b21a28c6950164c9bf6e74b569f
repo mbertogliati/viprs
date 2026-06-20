@@ -1,0 +1,58 @@
+xtask/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+crates/viprs-core/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+crates/viprs-ops-pixel/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+crates/viprs-ports/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+crates/viprs-runtime/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+crates/viprs-codecs/src/dcraw.rs
+  s_10f4f0046081e9::t_5744fbc91e2213 567,570
+crates/viprs-codecs/src/png/region_decode.rs
+  s_10f4f0046081e9::t_61c932b687b321 19,389
+crates/viprs-codecs/src/heif.rs
+  s_10f4f0046081e9::t_5744fbc91e2213 1556,1559-1560
+  s_54ad9d3ea9fe10::t_3e91acef20b2ce 1557-1558
+crates/viprs-ops-colour/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+crates/viprs-codecs/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6,37
+docker/Dockerfile.ci
+  s_10f4f0046081e9::t_5744fbc91e2213 22,39
+crates/viprs-ops-composite/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 7
+crates/viprs-codecs/src/png/decode_full.rs
+  s_10f4f0046081e9::t_1f15279f87062c 590
+  s_54ad9d3ea9fe10::t_85cbbfc354530f 7,36-38,51-53,56-58
+  s_10f4f0046081e9::t_393e0246676d22 30-35,39-50,54-55,59-90
+crates/viprs-ops-spatial/Cargo.toml
+  s_10f4f0046081e9::t_95fb27ca705be8 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "13a4f4a1091d3b21a28c6950164c9bf6e74b569f",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_54ad9d3ea9fe10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
