@@ -1,0 +1,19 @@
+docker/Dockerfile
+  s_10f4f0046081e9::t_5b9e403dae1ed0 19,25-29,31,34,37,39-41,57-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "721bfba92b2463455f542e86373cf630f1f4140d",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
