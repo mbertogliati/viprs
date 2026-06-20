@@ -14,12 +14,17 @@ ARG RUST_VERSION=1.96.0
 
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
-      curl build-essential pkg-config cmake nasm git clang libclang-dev && \
+      curl build-essential pkg-config cmake nasm git clang libclang-dev \
+      libspng-dev libopenslide-dev && \
     rm -rf /var/lib/apt/lists/* && \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
       sh -s -- -y --default-toolchain ${RUST_VERSION} -c rustfmt,clippy
 
 ENV PATH="/root/.cargo/bin:${PATH}"
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
+RUN pkg-config --modversion spng && \
+    pkg-config --modversion openslide
 
 # Override viprs-perf benchmark entrypoint — CI image runs arbitrary commands
 ENTRYPOINT []

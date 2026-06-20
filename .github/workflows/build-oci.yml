@@ -58,7 +58,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+            BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/viprs-perf:${{ github.sha }}
             RUST_VERSION=${{ steps.rust-version.outputs.version }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/viprs-ci:latest

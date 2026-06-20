@@ -14,7 +14,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  CI_FEATURES: "--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation"
   # Source-built libs live in /usr/local/lib (container jobs only)
   PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
   # Common container build tools — avoids duplicating the apt-get list in every job.
@@ -44,11 +43,11 @@ jobs:
         with:
           shared-key: "lint"
       - name: Check formatting
-        run: make fmt FEATURES="${CI_FEATURES}"
+        run: make fmt
       - name: Clippy
-        run: make clippy FEATURES="${CI_FEATURES}"
+        run: make clippy
       - name: Build docs (deny warnings)
-        run: make doc FEATURES="${CI_FEATURES}"
+        run: make doc
 
   security:
     name: "Security (audit + deny)"
@@ -67,24 +66,27 @@ jobs:
   # ═══ Layer 2: tests + coverage — both delegated to Makefile targets ══════════
 
   test-unit:
-    name: "Tests (minimal features)"
+    name: "Tests (all features)"
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
-      - uses: ./.github/actions/setup-toolchain
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "test-unit"
       - name: Run tests
-        run: make test FEATURES="${CI_FEATURES}"
+        run: make test
 
   test-and-coverage:
-    name: "Coverage (CI codec set, ≥86%)"
+    name: "Coverage (all features, ≥86%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
@@ -105,13 +107,14 @@ jobs:
         with:
           shared-key: "test-coverage"
       - name: Run coverage
-        run: make coverage FEATURES="${CI_FEATURES}"
+        run: make coverage
       - name: Generate summary
         if: always()
         run: |
           echo "## Tests + Coverage" >> $GITHUB_STEP_SUMMARY
           echo "Ran: Makefile coverage target" >> $GITHUB_STEP_SUMMARY
           echo "Target: ≥86% line coverage (Makefile-enforced)" >> $GITHUB_STEP_SUMMARY
+          echo "Features: all features" >> $GITHUB_STEP_SUMMARY
 
   # ═══ Layer 3: benchmarks — run in parallel with Layer 2 ══════════════════════
 
@@ -121,6 +124,7 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 35
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
       matrix:
         include:
@@ -130,12 +134,9 @@ jobs:
             runner: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-toolchain
-      - name: Install system libs (fft, heif, webp)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            libfftw3-dev libheif-dev libwebp-dev pkg-config
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
       - name: Restore baseline from main
         uses: actions/cache/restore@v4
         with:
@@ -145,14 +146,14 @@ jobs:
         run: |
           if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
             echo "▶ Baseline found — comparing against main"
-            make bench-compare FEATURES="${CI_FEATURES}"
+            make bench-compare
           else
             echo "▶ No baseline — running smoke test (first run)"
-            make bench-ci FEATURES="${CI_FEATURES}"
+            make bench-ci
           fi
       - name: Save baseline (main only)
         if: github.ref == 'refs/heads/main'
-        run: make bench-baseline FEATURES="${CI_FEATURES}"
+        run: make bench-baseline
       - name: Cache baseline (main only)
         if: github.ref == 'refs/heads/main'
         uses: actions/cache/save@v4
@@ -183,7 +184,7 @@ jobs:
         with:
           toolchain: "1.96.0"
       - name: Build xtask release binary
-        run: make xtask FEATURES="${CI_FEATURES}"
+        run: make xtask
       - uses: actions/upload-artifact@v4
         with:
           name: xtask-${{ matrix.arch }}
@@ -223,7 +224,7 @@ jobs:
       - name: Verify libvips available
         run: pkg-config --modversion vips || echo "libvips not found in container"
       - name: Build libvips runner
-        run: make -C tools/bench-vs-libvips FEATURES="${CI_FEATURES}"
+        run: make -C tools/bench-vs-libvips
       - name: Run E2E benchmark suite
         env:
           XTASK_BIN: ./target/release/xtask

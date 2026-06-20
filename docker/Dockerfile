@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     libbrotli-dev \
     libpng-dev \
+    libspng-dev \
     libtiff-dev \
     libjpeg-dev \
     zlib1g-dev \
@@ -105,6 +106,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips42 \
     libvips-dev \
     libwebp-dev \
+    libspng-dev \
     libheif-dev \
     libopenjp2-7-dev \
     liblcms2-dev \
@@ -127,8 +129,10 @@ RUN ldconfig
 
 # Verify source-built libs are discoverable by pkg-config
 RUN pkg-config --modversion libturbojpeg && \
+    pkg-config --modversion spng && \
     pkg-config --modversion libjxl && \
-    pkg-config --modversion libheif
+    pkg-config --modversion libheif && \
+    pkg-config --modversion openslide
 
 # xtask and bench runners are expected to be built in CI using this image as the base.
 # Keep helper scripts in the image.

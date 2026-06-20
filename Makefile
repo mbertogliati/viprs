@@ -100,9 +100,9 @@ xtask:
 #   make cross-shell                    — interactive shell in container
 #   make cross-setup                    — one-time Colima setup with Rosetta
 
-# Features available in the CI container (no libspng, no openslide).
-# Used by cross targets to avoid compile_error! from missing system libs.
-CROSS_FEATURES := --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,jxl,fft,exr,icc,lock_instrumentation
+# Cross targets use the same feature coverage as CI. The CI image provides every
+# native library required by `--all-features`.
+CROSS_FEATURES := --all-features
 
 CI_IMAGE := ghcr.io/mbertogliati/viprs-ci:latest
 
@@ -176,7 +176,7 @@ cross-sync: cross-up
 
 ## Run any make target inside the persistent container.
 ## Syncs source first, then executes in /src (native filesystem).
-## Passes CROSS_FEATURES since the container lacks libspng/openslide.
+## Passes CROSS_FEATURES so cross checks match CI feature coverage.
 cross: cross-sync
 	@echo "── cross: make $(CMD) [$(ARCH)] ──"
 	docker exec -w /src $(CROSS_CONTAINER) make $(CMD) FEATURES="$(CROSS_FEATURES)"
