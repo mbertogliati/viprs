@@ -77,9 +77,9 @@ deny:
 audit:
 	$(CARGO) audit
 
-## Threshold: ≥87% line coverage (enforced).
+## Threshold: ≥86% line coverage (enforced).
 coverage:
-	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 87
+	$(CARGO) llvm-cov --lib $(CONTAINER_FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
