@@ -184,15 +184,15 @@ impl PixelLocalOp for DE00 {}
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sources::memory::MemorySource,
-    };
     use proptest::prelude::*;
     use viprs_core::{
         error::BuildError,
         image::{Region, Tile, TileMut},
         op::OperationBridge,
+    };
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sources::memory::MemorySource,
     };
 
     fn make_region(pixels: usize) -> Region {

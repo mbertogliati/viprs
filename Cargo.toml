@@ -1365,6 +1365,19 @@ harness = false
 # single codegen unit so LLVM can cross-crate inline and vectorize everything.
 # ---------------------------------------------------------------------------
 
+[profile.dev]
+# Optimized for fast incremental compilation.
+# - 256 codegen-units (default) maximizes parallelism within each crate
+# - debug=2 for full debuginfo (needed for cargo-llvm-cov and debuggers)
+# - incremental=true (default) for sub-crate-level caching
+debug = 2
+incremental = true
+
+[profile.dev.package."*"]
+# Dependencies: compile with opt-level 1 for faster test execution
+# (especially codec deps like turbojpeg-sys, png, etc.)
+opt-level = 1
+
 [profile.release]
 opt-level = 3           # maximum optimisation
 lto = "fat"             # cross-crate inlining + dead code elimination

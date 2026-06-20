@@ -190,7 +190,6 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource};
     use proptest::prelude::*;
     use viprs_core::{
         error::BuildError,
@@ -198,6 +197,7 @@ mod tests {
         image::{Region, Tile, TileMut},
         op::DynOperation,
     };
+    use viprs_runtime::{pipeline::PipelineBuilder, sources::memory::MemorySource};
 
     fn expected_subsample(
         input: &[u8],

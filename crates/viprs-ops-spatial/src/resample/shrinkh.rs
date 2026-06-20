@@ -1442,8 +1442,6 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::adapters::sources::memory::MemorySource;
-    use crate::ports::source::ImageSource;
     use proptest::prelude::*;
     use viprs_core::{
         error::BuildError,
@@ -1451,6 +1449,8 @@ mod tests {
         image::{DemandHint, Region, Tile, TileMut},
         op::DynOperation,
     };
+    use viprs_ports::source::ImageSource;
+    use viprs_runtime::sources::memory::MemorySource;
 
     fn run_shrinkh<F>(
         factor: u32,

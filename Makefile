@@ -29,7 +29,7 @@ FEATURES ?= --features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
 ## Fast local validation: format + lint + compile + unit tests
-check: fmt clippy build test
+check: fmt clippy test
 
 ## Full CI pipeline (mirrors .github/workflows/ci.yml exactly)
 ci: fmt clippy build test doc deny audit
@@ -45,14 +45,10 @@ else
 endif
 
 ## Clippy: enforce perf + unwrap/expect ban + pedantic + nursery (via Cargo.toml [lints.clippy]).
-## -Dwarnings ensures no warning passes silently.
+## -Dwarnings ensures no warning passes silently. Also compiles all lib targets.
 clippy:
-	RUSTFLAGS="-Dwarnings" $(CARGO) clippy --lib $(FEATURES) -- \
+	RUSTFLAGS="-Dwarnings" $(CARGO) clippy --workspace --lib $(FEATURES) -- \
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
-
-## Compile check (lib mandatory; xtask checked here and in container CI job)
-build:
-	RUSTFLAGS="$(RUSTFLAGS_CI)" $(CARGO) check --lib $(FEATURES)
 	$(CARGO) check -p xtask
 
 ## Unit tests only (containerless CI — no system libs)

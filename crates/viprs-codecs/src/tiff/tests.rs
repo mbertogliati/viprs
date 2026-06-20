@@ -1,8 +1,6 @@
 use super::decode::count_pages;
 use super::pyramid::{downsample_half, ifd_entry_value_pos, patch_first_ifd_offset, tiff_read_u32};
 use super::*;
-#[cfg(all(test, feature = "_integration"))]
-use crate::adapters::sources::decoder_source::DecoderSource;
 use std::fs;
 use std::num::NonZeroU8;
 use std::path::Path;
@@ -12,6 +10,8 @@ use viprs_core::image::{Image, Region};
 #[cfg(feature = "icc")]
 use viprs_ops_colour::colour::{IccTransformOptions, icc_transform, profile_load};
 use viprs_ports::source::ImageSource;
+#[cfg(all(test, feature = "_integration"))]
+use viprs_runtime::sources::decoder_source::DecoderSource;
 
 fn encode_two_page_rgb_tiff() -> Vec<u8> {
     let mut output = Vec::new();

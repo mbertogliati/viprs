@@ -350,15 +350,14 @@ fn affine_offset(scale: f64, kernel: InterpolationKernel) -> f64 {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use proptest::prelude::*;
     use viprs_core::{format::U8, kernel::InterpolationKernel};
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        domain::ops::resample::Resize as RuntimeResize, pipeline::PipelineBuilder,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
+    };
 
     fn run_resize_pipeline_with_pixels(
         width: u32,
@@ -370,7 +369,7 @@ mod tests {
     ) -> (u32, u32, Vec<u8>) {
         let source = MemorySource::<U8>::new(width, height, 1, pixels).unwrap();
         let pipeline = PipelineBuilder::from_source(source)
-            .resize(Resize::new(hscale, vscale, kernel))
+            .resize(RuntimeResize::new(hscale, vscale, kernel))
             .unwrap()
             .build()
             .unwrap();
@@ -424,10 +423,10 @@ mod tests {
         size: u32,
     ) -> (
         ResizePipelineNodes,
-        crate::adapters::scheduler::rayon_scheduler::PipelineRunProfile,
+        viprs_runtime::scheduler::rayon_scheduler::PipelineRunProfile,
     ) {
         let pixels = gradient_pixels(size, size);
-        let resize = Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3);
+        let resize = RuntimeResize::new(0.5, 0.5, InterpolationKernel::Lanczos3);
         let plan = resize.into_pipeline_nodes(size, size);
         let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
         let pipeline = PipelineBuilder::from_source(source)

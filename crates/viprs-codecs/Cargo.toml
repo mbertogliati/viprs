@@ -47,6 +47,7 @@ tracing = { version = "0.1", optional = true }
 
 [dev-dependencies]
 proptest = "1"
+viprs-runtime = { path = "../viprs-runtime" }
 
 [features]
 rayon = ["dep:rayon"]
@@ -81,3 +82,4 @@ pnm = []
 magick = []
 pdf-poppler = []
 _integration = []
+_root_test_support = []

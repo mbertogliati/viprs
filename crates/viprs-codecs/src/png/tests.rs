@@ -15,14 +15,14 @@ use super::decode_full::decode_png_with_libspng;
 use super::region_decode::clamp_region_coordinate;
 use super::state::PNG_ROW_DECODE_PROBE;
 use super::{PngCodec, PngEncoder};
-#[cfg(all(test, feature = "_integration"))]
-use crate::adapters::sources::decoder_source::DecoderSource;
 use viprs_core::codec_options::{LoadOptions, PngFilterStrategy, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{U8, U16};
 use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
 use viprs_ports::source::ImageSource;
+#[cfg(all(test, feature = "_integration"))]
+use viprs_runtime::sources::decoder_source::DecoderSource;
 
 fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
     let bands = image.bands() as usize;

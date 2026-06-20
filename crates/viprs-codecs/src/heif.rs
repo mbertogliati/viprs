@@ -773,6 +773,8 @@ mod tests {
         })
     }
 
+    #[cfg(feature = "_root_test_support")]
+    // Runs via root crate only — needs test_support global allocator.
     fn heif_u8_decode_alloc_stats() -> crate::test_support::AllocStats {
         crate::test_support::reset_alloc_stats();
         let decoded = HeifCodec.decode::<U8>(BENCH_2048_HEIF).unwrap();
@@ -1663,7 +1665,9 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "_root_test_support")]
     #[test]
+    // Runs via root crate only — needs test_support global allocator.
     fn u8_decode_peak_live_bytes_stay_near_output_buffer() {
         let decoded = HeifCodec.decode::<U8>(BENCH_2048_HEIF).unwrap();
         let output_bytes = decoded.pixels().len() as u64;
@@ -1675,7 +1679,9 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "_root_test_support")]
     #[test]
+    // Runs via root crate only — needs test_support global allocator.
     fn u8_decode_peak_live_bytes_stay_near_output_buffer_child() {
         if !crate::test_support::should_run_alloc_stats_child(U8_ALLOC_ENV) {
             return;

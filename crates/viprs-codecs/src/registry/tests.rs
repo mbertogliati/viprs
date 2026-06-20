@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::{ImageCodecExt, RawCodec};
+use crate::{RawCodec, registry::ImageCodecExt};
 use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,

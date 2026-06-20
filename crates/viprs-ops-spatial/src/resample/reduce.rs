@@ -357,19 +357,17 @@ where
 mod tests {
     use super::super::{reduceh::ReduceH, reducev::ReduceV};
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use proptest::prelude::*;
     use viprs_core::{
         error::ViprsError,
         format::U8,
         image::{Image, Region, Tile, TileMut},
         resample::ResampleOp,
+    };
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
     fn patterned_u8_image(width: u32, height: u32, bands: u32) -> Image<U8> {

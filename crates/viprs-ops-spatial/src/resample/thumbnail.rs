@@ -526,15 +526,18 @@ fn shrink_on_load_factor(common_shrink: f64) -> Option<u32> {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use proptest::prelude::*;
     use viprs_core::{error::BuildError, format::U8};
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        domain::ops::resample::{
+            Thumbnail as RuntimeThumbnail, thumbnail::ThumbnailTarget as RuntimeThumbnailTarget,
+        },
+        pipeline::PipelineBuilder,
+        scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink,
+        sources::memory::MemorySource,
+    };
 
     fn run_thumbnail_pipeline(
         input_width: u32,
@@ -565,8 +568,8 @@ mod tests {
     ) -> (u32, u32, Vec<u8>) {
         let source = MemorySource::<U8>::new(input_width, input_height, bands, pixels).unwrap();
         let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
-                ThumbnailTarget::FitBox {
+            .thumbnail(RuntimeThumbnail::new(
+                RuntimeThumbnailTarget::FitBox {
                     width: target_width,
                     height: target_height,
                 },
@@ -773,8 +776,8 @@ mod tests {
     fn force_exact_upscales_non_single_pixel_inputs() {
         let source = MemorySource::<U8>::new(32, 32, 3, vec![10; 32 * 32 * 3]).unwrap();
         let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
-                ThumbnailTarget::ForceExact {
+            .thumbnail(RuntimeThumbnail::new(
+                RuntimeThumbnailTarget::ForceExact {
                     width: 64,
                     height: 64,
                 },
@@ -797,8 +800,8 @@ mod tests {
     fn force_exact_does_not_upscale_single_pixel_input() {
         let source = MemorySource::<U8>::new(1, 1, 3, vec![10, 20, 30]).unwrap();
         let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
-                ThumbnailTarget::ForceExact {
+            .thumbnail(RuntimeThumbnail::new(
+                RuntimeThumbnailTarget::ForceExact {
                     width: 64,
                     height: 64,
                 },
@@ -833,8 +836,8 @@ mod tests {
     fn thumbnail_rejects_zero_band_images_with_typed_build_error() {
         let result =
             PipelineBuilder::from_source(MemorySource::<U8>::new(4, 4, 0, Vec::new()).unwrap())
-                .thumbnail(Thumbnail::new(
-                    ThumbnailTarget::Width(2),
+                .thumbnail(RuntimeThumbnail::new(
+                    RuntimeThumbnailTarget::Width(2),
                     InterpolationKernel::Lanczos3,
                 ));
 
@@ -912,12 +915,15 @@ mod tests {
 
     #[test]
     fn thumbnail_pipeline_over_512_runs_under_rayon_scheduler() {
-        use crate::{
-            adapters::{
-                pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-                sinks::memory::MemorySink, sources::memory::MemorySource,
+        use viprs_ports::scheduler::TileScheduler;
+        use viprs_runtime::{
+            domain::ops::resample::{
+                Thumbnail as RuntimeThumbnail, thumbnail::ThumbnailTarget as RuntimeThumbnailTarget,
             },
-            ports::scheduler::TileScheduler,
+            pipeline::PipelineBuilder,
+            scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         };
 
         let width = 1024;
@@ -925,8 +931,8 @@ mod tests {
         let pixels = vec![64u8; width * height];
         let source = MemorySource::<U8>::new(width as u32, height as u32, 1, pixels).unwrap();
         let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
-                ThumbnailTarget::Width(400),
+            .thumbnail(RuntimeThumbnail::new(
+                RuntimeThumbnailTarget::Width(400),
                 InterpolationKernel::Lanczos3,
             ))
             .unwrap()

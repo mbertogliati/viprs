@@ -551,14 +551,15 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{adapters::sources::memory::MemorySource, ports::source::ImageSource};
+    use crate::resample::shrinkh::ShrinkSample;
     use proptest::prelude::*;
     use viprs_core::{
         format::{BandFormatId, I16, U8},
         image::{DemandHint, Region, Tile, TileMut},
         op::DynOperation,
-        ops::resample::shrinkh::ShrinkSample,
     };
+    use viprs_ports::source::ImageSource;
+    use viprs_runtime::sources::memory::MemorySource;
 
     fn run_shrinkv<F>(
         factor: u32,

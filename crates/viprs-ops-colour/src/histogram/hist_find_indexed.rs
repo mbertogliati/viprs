@@ -250,19 +250,17 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::ReducingScheduler,
-    };
+    use crate::histogram::{HistFindNDimOp, HistFindOp};
     use viprs_core::{
-        crate::histogram::{HistFindNDimOp, HistFindOp},
         format::{U8, U16, U32},
         op::OperationBridge,
-        ops::arithmetic::Linear,
         reducer::TileReducer,
+    };
+    use viprs_ops_pixel::arithmetic::Linear;
+    use viprs_ports::scheduler::ReducingScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
     fn run_indexed_histogram(

@@ -264,16 +264,17 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{adapters::sources::memory::MemorySource, ports::source::ImageSource};
+    use crate::resample::reduce_simd;
     use proptest::prelude::*;
     use viprs_core::{
         format::{BandFormatId, F32, U8, U16},
         image::{Region, Tile, TileMut},
         kernel::InterpolationKernel,
         op::DynOperation,
-        ops::resample::reduce_simd,
         resample::ResampleOp,
     };
+    use viprs_ports::source::ImageSource;
+    use viprs_runtime::sources::memory::MemorySource;
 
     #[test]
     fn new_rejects_extreme_finite_factor() {

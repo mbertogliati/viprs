@@ -682,11 +682,11 @@ fn vertical_pass(
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
+    use crate::convolution::{conv2d::Conv2d, gauss_blur::gaussian_kernel_1d};
     use proptest::prelude::*;
     use viprs_core::{
         format::F32,
         image::{Region, Tile, TileMut},
-        ops::convolution::{conv2d::Conv2d, gauss_blur::gaussian_kernel_1d},
     };
 
     fn gaussian_kernel_2d(size: usize) -> Mask {

@@ -405,7 +405,6 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{adapters::sources::memory::MemorySource, ports::source::ImageSource};
     use proptest::prelude::*;
     use viprs_core::{
         error::{BuildError, ViprsError},
@@ -414,6 +413,8 @@ mod tests {
         op::DynOperation,
         resample::ResampleOp,
     };
+    use viprs_ports::source::ImageSource;
+    use viprs_runtime::sources::memory::MemorySource;
 
     fn run_shrink<F>(
         hshrink: usize,

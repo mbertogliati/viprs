@@ -33,6 +33,10 @@ pub use hist_entropy::HistEntropyOp;
 pub use hist_equal::HistEqualOp;
 pub use hist_find_facades::{HistFindOp, HistFindResult};
 pub use hist_find_indexed::{HistFindIndexedOp, HistFindIndexedResult};
+#[cfg(all(test, feature = "_integration"))]
+pub(crate) mod hist_find_ndim_compat;
+#[cfg(all(test, feature = "_integration"))]
+pub(crate) use hist_find_ndim_compat::{HistFindNDimOp, HistFindNDimResult};
 pub use hist_ismonotonic::HistIsMonotonicOp;
 pub use hist_match::HistMatchOp;
 pub use hist_norm::{HistNormOp, HistNormTypedOp, hist_norm_promoted_format};

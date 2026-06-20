@@ -993,8 +993,9 @@ fn decode_path_with_options_matches_in_memory_decode() {
     assert_eq!(from_path.metadata(), from_memory.metadata());
 }
 
-#[cfg(feature = "_integration")]
+#[cfg(all(test, feature = "_integration", feature = "_root_test_support"))]
 #[test]
+// Runs via root crate only — needs test_support global allocator.
 fn shrink_on_load_decode_metrics_child() {
     let Some(factor) = std::env::var_os(METRICS_FACTOR_ENV) else {
         return;

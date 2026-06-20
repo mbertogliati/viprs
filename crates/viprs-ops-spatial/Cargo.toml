@@ -15,6 +15,9 @@ pulp = { version = "0.22.2", optional = true, default-features = false, features
 
 [dev-dependencies]
 proptest = "1"
+viprs-runtime = { path = "../viprs-runtime" }
+viprs-ports = { path = "../viprs-ports" }
+viprs-ops-composite = { path = "../viprs-ops-composite" }
 
 [features]
 _integration = []

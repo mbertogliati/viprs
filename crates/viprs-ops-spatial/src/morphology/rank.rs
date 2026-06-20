@@ -244,12 +244,12 @@ fn histogram_select(hist: &[u32; 256], index: usize) -> u8 {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
+    use crate::morphology::{Dilate, Erode};
     use proptest::prelude::*;
     use std::cmp::Ordering;
     use viprs_core::{
         format::{F32, U8},
         image::{Tile, TileMut},
-        ops::morphology::{Dilate, Erode},
     };
 
     fn edge_extend_scanline(samples: &[u8], radius: usize) -> Vec<u8> {

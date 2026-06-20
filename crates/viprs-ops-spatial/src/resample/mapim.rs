@@ -1525,18 +1525,16 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::{
-        adapters::{
-            pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        ports::scheduler::TileScheduler,
-    };
     use proptest::prelude::*;
     use viprs_core::{
         format::{F32, U8},
         op::OperationBridge,
-        ops::conversion::CopyOp,
+    };
+    use viprs_ops_composite::conversion::CopyOp;
+    use viprs_ports::scheduler::TileScheduler;
+    use viprs_runtime::{
+        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
     fn run_mapim(

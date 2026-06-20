@@ -234,6 +234,31 @@ mod tests {
     // Allocation tests require the root crate test_support (global allocator).
     // Run via: cargo test -p viprs --lib
 
+    fn box_3x3_kernel() -> Vec<Vec<f64>> {
+        vec![
+            vec![1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0],
+            vec![1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0],
+            vec![1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0],
+        ]
+    }
+
+    fn identity_kernel() -> Vec<Vec<f64>> {
+        vec![vec![1.0]]
+    }
+
+    fn edge_extend_scanline(samples: &[f32], radius: usize) -> Vec<f32> {
+        let mut extended = Vec::with_capacity(samples.len() + 2 * radius);
+        for x in 0..(samples.len() + 2 * radius) {
+            let src_x = (x as i32 - radius as i32).clamp(0, samples.len() as i32 - 1) as usize;
+            extended.push(samples[src_x]);
+        }
+        extended
+    }
+
+    fn mirror_scanline(samples: &[f32]) -> Vec<f32> {
+        samples.iter().copied().rev().collect()
+    }
+
     /// `node_spec` must report expanded input tile and unchanged output tile.
     #[test]
     fn node_spec_input_expanded() {

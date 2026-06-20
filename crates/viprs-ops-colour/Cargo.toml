@@ -17,6 +17,7 @@ lcms2 = { version = "6.1.1", optional = true }
 
 [dev-dependencies]
 proptest = "1"
+viprs-runtime = { path = "../viprs-runtime" }
 
 [features]
 _integration = []

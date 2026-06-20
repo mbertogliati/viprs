@@ -255,7 +255,8 @@ mod enabled {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use viprs_core::{image::ImageMetadata, ops::colour::profile_load};
+    use viprs_core::image::ImageMetadata;
+    use viprs_ops_colour::colour::profile_load;
 
     #[test]
     fn rgba_gray_profile_normalization_preserves_alpha_and_promotes_to_srgb() {

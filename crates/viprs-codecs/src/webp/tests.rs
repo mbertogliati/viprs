@@ -1,8 +1,6 @@
 #![cfg(test)]
 
 use super::*;
-#[cfg(all(test, feature = "_integration"))]
-use crate::adapters::sources::decoder_source::DecoderSource;
 use crate::shrink_on_load::ShrinkOnLoadBackend;
 use libwebp_sys::{
     WEBP_MUX_ABI_VERSION, WebPChunkId, WebPData, WebPFree, WebPMuxAnimBlend, WebPMuxAnimDispose,
@@ -17,9 +15,11 @@ use viprs_core::error::ViprsError;
 use viprs_core::format::U8;
 use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
 #[cfg(all(feature = "icc", feature = "_integration"))]
-use viprs_core::ops::colour::profile_load;
+use viprs_ops_colour::colour::profile_load;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
 use viprs_ports::source::ImageSource;
+#[cfg(all(test, feature = "_integration"))]
+use viprs_runtime::sources::decoder_source::DecoderSource;
 use webp::{AnimEncoder, AnimFrame, BitstreamFeatures, WebPConfig};
 
 struct WebpScratchAllocationLimitGuard {
