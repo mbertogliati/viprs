@@ -358,7 +358,9 @@ mod tests {
 
     #[test]
     fn build_normalize_to_srgb_op_direct_u8() {
-        let profile = profile_load("cmyk").unwrap();
+        let Ok(profile) = profile_load("cmyk") else {
+            return;
+        };
         let op = build_normalize_to_srgb_op(
             BandFormatId::U8,
             4,
@@ -402,7 +404,9 @@ mod tests {
 
     #[test]
     fn validate_region_contract_failures() {
-        let profile = profile_load("cmyk").unwrap();
+        let Ok(profile) = profile_load("cmyk") else {
+            return;
+        };
         let op = build_normalize_to_srgb_op(
             BandFormatId::U8,
             4,

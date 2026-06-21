@@ -144,6 +144,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
           echo "▶ Saving Criterion baseline from PR base ${BASE_SHA}"
           git fetch --no-tags --depth=1 origin "${BASE_SHA}"
           git checkout --detach "${BASE_SHA}"
