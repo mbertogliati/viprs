@@ -333,8 +333,8 @@ pub fn build_normalize_to_srgb_op(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viprs_core::image::{Image, Region, ImageMetadata};
     use viprs_core::format::{U8, U16};
+    use viprs_core::image::{Image, ImageMetadata, Region};
 
     #[test]
     fn needs_srgb_normalization_handles_none_and_srgb() {
@@ -359,17 +359,24 @@ mod tests {
     #[test]
     fn build_normalize_to_srgb_op_direct_u8() {
         let profile = profile_load("cmyk").unwrap();
-        let op = build_normalize_to_srgb_op(BandFormatId::U8, 4, Some(Interpretation::Cmyk), Some(&profile)).unwrap().unwrap();
+        let op = build_normalize_to_srgb_op(
+            BandFormatId::U8,
+            4,
+            Some(Interpretation::Cmyk),
+            Some(&profile),
+        )
+        .unwrap()
+        .unwrap();
         assert_eq!(op.input_format(), BandFormatId::U8);
         assert_eq!(op.output_format(), BandFormatId::U8);
         assert_eq!(op.bands(), 3);
         assert!(op.validate_build_contract(4, 3).is_ok());
         assert!(op.validate_build_contract(4, 4).is_err());
-        
+
         let metadata = ImageMetadata::default();
         let new_metadata = op.transform_metadata(&metadata);
         assert_eq!(new_metadata.interpretation, Some(Interpretation::Srgb));
-        
+
         let mut state = op.dyn_start();
         let input = [0u8; 4];
         let mut output = [0u8; 3];
@@ -380,9 +387,11 @@ mod tests {
     #[test]
     fn build_normalize_to_srgb_op_split_alpha_u8() {
         let profile = profile_load("adobergb").unwrap();
-        let op = build_normalize_to_srgb_op(BandFormatId::U8, 4, None, Some(&profile)).unwrap().unwrap();
+        let op = build_normalize_to_srgb_op(BandFormatId::U8, 4, None, Some(&profile))
+            .unwrap()
+            .unwrap();
         assert_eq!(op.bands(), 4);
-        
+
         let mut state = op.dyn_start();
         let input = [0u8, 0u8, 0u8, 255u8];
         let mut output = [0u8; 4];
@@ -394,14 +403,20 @@ mod tests {
     #[test]
     fn validate_region_contract_failures() {
         let profile = profile_load("cmyk").unwrap();
-        let op = build_normalize_to_srgb_op(BandFormatId::U8, 4, Some(Interpretation::Cmyk), Some(&profile)).unwrap().unwrap();
-        
+        let op = build_normalize_to_srgb_op(
+            BandFormatId::U8,
+            4,
+            Some(Interpretation::Cmyk),
+            Some(&profile),
+        )
+        .unwrap()
+        .unwrap();
+
         let r1 = Region::new(0, 0, 1, 1);
         let r2 = Region::new(0, 0, 2, 2);
-        
+
         assert!(op.validate_region_contract(r1, 4, r2, 3).is_err());
         assert!(op.validate_region_contract(r1, 3, r1, 3).is_err());
         assert!(op.validate_region_contract(r1, 4, r1, 4).is_err());
     }
 }
-
