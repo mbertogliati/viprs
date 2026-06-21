@@ -148,6 +148,7 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           cp tools/fixtures.sh /tmp/viprs-fixtures.sh
           cp tests/fixtures/fixtures.lock /tmp/viprs-fixtures.lock
+          cp Makefile /tmp/viprs-ci.Makefile
 
           echo "▶ Saving Criterion baseline from PR base ${BASE_SHA}"
           git fetch --no-tags --depth=1 origin "${BASE_SHA}"
@@ -155,10 +156,13 @@ jobs:
             -c filter.lfs.smudge=cat \
             -c filter.lfs.process= \
             checkout --detach --force "${BASE_SHA}"
+          mkdir -p tools tests/fixtures
+          cp /tmp/viprs-fixtures.sh tools/fixtures.sh
+          cp /tmp/viprs-fixtures.lock tests/fixtures/fixtures.lock
           VIPRS_ROOT_DIR="$GITHUB_WORKSPACE" \
             VIPRS_FIXTURES_MANIFEST=/tmp/viprs-fixtures.lock \
             /tmp/viprs-fixtures.sh bench
-          make bench-baseline
+          make -f /tmp/viprs-ci.Makefile bench-baseline
 
           echo "▶ Comparing PR head ${HEAD_SHA} against base baseline"
           git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
