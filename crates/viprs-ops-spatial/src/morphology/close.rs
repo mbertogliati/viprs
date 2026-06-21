@@ -191,10 +191,6 @@ impl Op for Close {
 #[cfg(all(test, feature = "_integration"))]
 pub(crate) mod tests {
     use super::*;
-    use crate::morphology::{
-        dilate::{Dilate, DilateState},
-        erode::{Erode, ErodeState},
-    };
 
     use proptest::prelude::*;
     use viprs_core::{

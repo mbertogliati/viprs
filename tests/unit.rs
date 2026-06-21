@@ -1,4 +1,4 @@
-#![allow(missing_docs)]
+#![allow(dead_code, missing_docs, unused_imports)]
 
 #[path = "unit/arithmetic.rs"]
 mod arithmetic;

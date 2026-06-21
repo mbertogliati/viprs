@@ -426,8 +426,9 @@ mod tests {
         viprs_runtime::scheduler::rayon_scheduler::PipelineRunProfile,
     ) {
         let pixels = gradient_pixels(size, size);
+        let plan =
+            Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3).into_pipeline_nodes(size, size);
         let resize = RuntimeResize::new(0.5, 0.5, InterpolationKernel::Lanczos3);
-        let plan = resize.into_pipeline_nodes(size, size);
         let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
         let pipeline = PipelineBuilder::from_source(source)
             .resize(resize)

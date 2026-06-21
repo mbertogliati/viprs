@@ -194,10 +194,6 @@ impl Op for Open {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::morphology::{
-        dilate::{Dilate, DilateState},
-        erode::{Erode, ErodeState},
-    };
 
     use proptest::prelude::*;
     use viprs_core::{
