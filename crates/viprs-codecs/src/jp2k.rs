@@ -2323,4 +2323,482 @@ mod tests {
             vec![0, 0, 0, 0, 0, 0, 1, 11, 21, 0, 0, 0, 0, 0, 0, 4, 14, 24]
         );
     }
+
+    #[test]
+    fn format_detection_and_load_options_cover_error_edges() {
+        assert_eq!(
+            codec_format_from_bytes(&J2K_CODESTREAM_MAGIC).unwrap(),
+            sys::CODEC_FORMAT::OPJ_CODEC_J2K
+        );
+        assert_eq!(
+            codec_format_from_bytes(&JP2_RFC3745_MAGIC).unwrap(),
+            sys::CODEC_FORMAT::OPJ_CODEC_JP2
+        );
+        assert!(codec_format_from_bytes(b"not-jp2k").is_err());
+
+        assert_eq!(
+            codec_format_from_path(Path::new("image.j2k")).unwrap(),
+            sys::CODEC_FORMAT::OPJ_CODEC_J2K
+        );
+        assert_eq!(
+            codec_format_from_path(Path::new("image.JPX")).unwrap(),
+            sys::CODEC_FORMAT::OPJ_CODEC_JP2
+        );
+        assert!(codec_format_from_path(Path::new("image.png")).is_err());
+        assert!(is_jp2k_extension(Path::new("image.jpf")));
+        assert!(!is_jp2k_extension(Path::new("image.png")));
+
+        assert!(validate_load_options(&LoadOptions::default()).is_ok());
+        assert!(validate_load_options(&LoadOptions::default().with_n(-1)).is_ok());
+        assert!(validate_load_options(&LoadOptions::default().with_n(2)).is_err());
+    }
+
+    #[test]
+    fn wrapped_slice_and_encoded_buffer_callbacks_cover_boundaries() {
+        let mut slice = WrappedSlice::new(&[1, 2, 3, 4]);
+        let mut out = [0u8; 3];
+
+        assert_eq!(slice.read_into(&mut out), Some(3));
+        assert_eq!(out, [1, 2, 3]);
+        assert_eq!(slice.consume(99), 4);
+        assert_eq!(slice.read_into(&mut out), None);
+        assert_eq!(slice.seek(2), 2);
+        assert_eq!(slice.remaining(), 2);
+
+        let mut callback_out = [0u8; 2];
+        let data = Box::into_raw(Box::new(WrappedSlice::new(&[9, 8, 7]))).cast::<c_void>();
+        // SAFETY: the callback receives the Box allocation created immediately above.
+        let read =
+            unsafe { buf_read_stream_read_fn(callback_out.as_mut_ptr().cast::<c_void>(), 2, data) };
+        assert_eq!(read, 2);
+        assert_eq!(callback_out, [9, 8]);
+        // SAFETY: the same callback data is still live and owned by the test.
+        assert_eq!(unsafe { buf_read_stream_skip_fn(10, data) }, 3);
+        // SAFETY: the same callback data is still live and owned by the test.
+        assert_eq!(unsafe { buf_read_stream_seek_fn(1, data) }, 1);
+        // SAFETY: this releases the Box allocation exactly once.
+        unsafe { buf_read_stream_free_fn(data) };
+
+        assert_eq!(
+            // SAFETY: null read buffers are explicitly rejected by the callback.
+            unsafe { buf_read_stream_read_fn(ptr::null_mut(), 4, ptr::null_mut()) },
+            usize::MAX
+        );
+
+        let mut buffer = EncodedJp2Buffer::new(1);
+        assert_eq!(buffer.write_from(&[1, 2, 3]), 3);
+        assert_eq!(buffer.skip_by(2), Some(2));
+        assert_eq!(buffer.offset, 5);
+        assert!(buffer.seek_to(1));
+        assert!(!buffer.seek_to(-1));
+        assert_eq!(buffer.skip_by(-99), None);
+
+        let data = Box::into_raw(Box::new(EncodedJp2Buffer::new(1))).cast::<c_void>();
+        let input = [5u8, 6, 7];
+        // SAFETY: the callback receives valid input bytes and the Box allocation above.
+        assert_eq!(
+            unsafe {
+                encoded_jp2_buffer_write_fn(input.as_ptr().cast::<c_void>().cast_mut(), 3, data)
+            },
+            3
+        );
+        // SAFETY: null write buffers are explicitly rejected by the callback.
+        assert_eq!(
+            unsafe { encoded_jp2_buffer_write_fn(ptr::null_mut(), 3, data) },
+            0
+        );
+        // SAFETY: the same callback data is still live and owned by the test.
+        assert_eq!(unsafe { encoded_jp2_buffer_skip_fn(2, data) }, 2);
+        // SAFETY: the same callback data is still live and owned by the test.
+        assert_eq!(unsafe { encoded_jp2_buffer_seek_fn(0, data) }, 1);
+        // SAFETY: the same callback data is still live and owned by the test.
+        assert_eq!(unsafe { encoded_jp2_buffer_seek_fn(-1, data) }, 0);
+        // SAFETY: this releases the Box allocation exactly once.
+        unsafe { encoded_jp2_buffer_free_fn(data) };
+    }
+
+    #[test]
+    fn scaling_and_encode_planning_helpers_cover_boundaries() {
+        let signed8 = DecodedComponent {
+            data: &[-128, 0, 127],
+            precision: 8,
+            signed: true,
+        };
+        let unsigned12 = DecodedComponent {
+            data: &[0, 2048, 4095],
+            precision: 12,
+            signed: false,
+        };
+
+        assert_eq!(scale_to_u8(&signed8, -128), 0);
+        assert_eq!(scale_to_u8(&signed8, 0), 128);
+        assert_eq!(scale_to_u8(&unsigned12, 4095), u8::MAX);
+        assert_eq!(scale_to_u16(&signed8, -128), 0);
+        assert_eq!(scale_to_u16(&signed8, 0), 32768);
+        assert_eq!(scale_to_u16(&unsigned12, 4095), u16::MAX);
+
+        assert_eq!(
+            opj_color_space_for_bands(1),
+            sys::COLOR_SPACE::OPJ_CLRSPC_GRAY
+        );
+        assert_eq!(
+            opj_color_space_for_bands(4),
+            sys::COLOR_SPACE::OPJ_CLRSPC_CMYK
+        );
+        assert_eq!(
+            opj_color_space_for_bands(3),
+            sys::COLOR_SPACE::OPJ_CLRSPC_SRGB
+        );
+        assert_eq!(default_tile_dimension(Some(0), 100), 1);
+        assert_eq!(default_tile_dimension(Some(999), 100), 100);
+        assert_eq!(estimated_encoded_capacity(16_000, 512, true, None), 8_000);
+        assert_eq!(
+            estimated_encoded_capacity(16_000, 512, false, Some(95)),
+            5_333
+        );
+        assert_eq!(libvips_num_resolutions(32, 32), 1);
+        assert_eq!(libvips_num_resolutions(2048, 4096), 6);
+
+        let mut params = {
+            let mut params = std::mem::MaybeUninit::<sys::opj_cparameters_t>::uninit();
+            // SAFETY: OpenJPEG initializes all encoder parameter fields.
+            unsafe {
+                sys::opj_set_default_encoder_parameters(params.as_mut_ptr());
+                params.assume_init()
+            }
+        };
+        apply_lossy_profile(&mut params, 75);
+        assert_eq!(params.irreversible, 1);
+        assert_eq!(params.tcp_numlayers, 1);
+        assert_eq!(params.prcw_init[0], DEFAULT_PRECINCT_SIZE);
+        assert_eq!(params.tcp_distoratio[0], 75.0);
+    }
+
+    #[test]
+    fn pack_tile_component_data_covers_u8_u16_and_unsupported_formats() {
+        let image = Image::<U8>::from_buffer(
+            3,
+            2,
+            3,
+            vec![
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            ],
+        )
+        .unwrap();
+        let mut output = Vec::new();
+        pack_tile_component_data(&image, 3, 1, 0, 2, 2, &mut output).unwrap();
+        assert_eq!(output, vec![4, 7, 13, 16, 5, 8, 14, 17, 6, 9, 15, 18]);
+
+        let image = Image::<U16>::from_buffer(2, 2, 1, vec![1u16, 258, 515, 772]).unwrap();
+        pack_tile_component_data(&image, 1, 0, 1, 2, 1, &mut output).unwrap();
+        let expected: Vec<u8> = [515u16, 772]
+            .into_iter()
+            .flat_map(u16::to_ne_bytes)
+            .collect();
+        assert_eq!(output, expected);
+
+        let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0f32]).unwrap();
+        assert!(pack_tile_component_data(&image, 1, 0, 0, 1, 1, &mut output).is_err());
+    }
+
+    fn component(
+        data: &[i32],
+        width: u32,
+        height: u32,
+        precision: u32,
+        signed: bool,
+        alpha: bool,
+    ) -> sys::opj_image_comp_t {
+        sys::opj_image_comp_t {
+            dx: 1,
+            dy: 1,
+            w: width,
+            h: height,
+            x0: 0,
+            y0: 0,
+            prec: precision,
+            bpp: precision,
+            sgnd: u32::from(signed),
+            resno_decoded: 0,
+            factor: 0,
+            data: data.as_ptr() as *mut i32,
+            alpha: u16::from(alpha),
+        }
+    }
+
+    #[test]
+    fn raw_metadata_plan_and_tiled_copy_cover_layout_edges() {
+        let r = [1, 2, 3, 4];
+        let g = [5, 6, 7, 8];
+        let b = [9, 10, 11, 12];
+        let components = [
+            component(&r, 4096, 4096, 8, false, false),
+            component(&g, 4096, 4096, 8, false, false),
+            component(&b, 4096, 4096, 8, false, false),
+        ];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 4096,
+            y1: 4096,
+            numcomps: 3,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_SRGB,
+            comps: components.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let tccp = sys::opj_tccp_info_t {
+            compno: 0,
+            csty: 0,
+            numresolutions: 7,
+            cblkw: 0,
+            cblkh: 0,
+            cblksty: 0,
+            qmfbid: 0,
+            qntsty: 0,
+            stepsizes_mant: [0; 97],
+            stepsizes_expn: [0; 97],
+            numgbits: 0,
+            roishift: 0,
+            prcw: [0; 33],
+            prch: [0; 33],
+        };
+        let mut tile = sys::opj_tile_info_v2_t {
+            tileno: 0,
+            csty: 0,
+            prg: sys::PROG_ORDER::OPJ_LRCP,
+            numlayers: 1,
+            mct: 0,
+            tccp_info: (&tccp as *const sys::opj_tccp_info_t).cast_mut(),
+        };
+        let info = sys::opj_codestream_info_v2_t {
+            tx0: 0,
+            ty0: 0,
+            tdx: 512,
+            tdy: 512,
+            tw: 8,
+            th: 8,
+            nbcomps: 3,
+            m_default_tile_info: tile,
+            tile_info: ptr::null_mut(),
+        };
+
+        let metadata = raw_decoded_metadata(&image, 3, raw_resolution_count(&info));
+        assert_eq!(metadata.interpretation, Some(Interpretation::Srgb));
+        assert_eq!(metadata.n_pages, Some(7));
+        assert_eq!(
+            metadata
+                .extra
+                .get("jp2k.bits-per-sample")
+                .map(String::as_str),
+            Some("8")
+        );
+
+        let plan = fast_tiled_decode_plan::<U8>(&image, &info, &LoadOptions::default())
+            .unwrap()
+            .unwrap();
+        assert_eq!((plan.width, plan.height, plan.bands), (4096, 4096, 3));
+
+        let mut pixels = vec![0_u16; 4];
+        let grey = [10, 20, 30, 40];
+        let comps = [component(&grey, 2, 2, 16, false, false)];
+        let tile_image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 2,
+            y1: 2,
+            numcomps: 1,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_GRAY,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let plan = FastTiledDecodePlan {
+            width: 2,
+            height: 2,
+            bands: 1,
+            precision: 16,
+            resolution_count: 1,
+            tile_width: 2,
+            tile_height: 2,
+            tiles_across: 1,
+            tiles_down: 1,
+        };
+        copy_fast_tiled_u16::<1>(&mut pixels, &tile_image, &plan, 0, 0).unwrap();
+        assert_eq!(pixels, vec![10, 20, 30, 40]);
+
+        let single_tile_info = sys::opj_codestream_info_v2_t {
+            tw: 1,
+            th: 1,
+            ..info
+        };
+        assert!(
+            fast_tiled_decode_plan::<U8>(&image, &single_tile_info, &LoadOptions::default())
+                .unwrap()
+                .is_none()
+        );
+        let page_opts = LoadOptions::default().with_page(1);
+        assert!(
+            fast_tiled_decode_plan::<U8>(&image, &info, &page_opts)
+                .unwrap()
+                .is_none()
+        );
+        tile.tccp_info = ptr::null_mut();
+        let no_res_info = sys::opj_codestream_info_v2_t {
+            m_default_tile_info: tile,
+            ..info
+        };
+        assert_eq!(raw_resolution_count(&no_res_info), 1);
+    }
+
+    #[test]
+    fn decode_pixels_u8_covers_fast_and_scaled_component_layouts() {
+        let grey = [1, 2, 3, 4];
+        let comps = [component(&grey, 2, 2, 8, false, false)];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 2,
+            y1: 2,
+            numcomps: 1,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_GRAY,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let decoded = std::mem::ManuallyDrop::new(OpenJpegDecodedImage {
+            image: OpenJpegImage((&image as *const sys::opj_image_t).cast_mut()),
+            resolution_count: 3,
+        });
+        let (width, height, bands, pixels) = decode_pixels_u8(&decoded).unwrap();
+        assert_eq!((width, height, bands), (2, 2, 1));
+        assert_eq!(pixels, vec![1, 2, 3, 4]);
+        let metadata = decoded_metadata(&decoded, bands, false);
+        assert_eq!(metadata.interpretation, Some(Interpretation::BW));
+        assert_eq!(metadata.n_pages, Some(3));
+
+        let grey = [0, 2048, 4095, 1024];
+        let alpha = [4095, 2048, 0, 1024];
+        let comps = [
+            component(&grey, 2, 2, 12, false, false),
+            component(&alpha, 2, 2, 12, false, true),
+        ];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 2,
+            y1: 2,
+            numcomps: 2,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_GRAY,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let decoded = std::mem::ManuallyDrop::new(OpenJpegDecodedImage {
+            image: OpenJpegImage((&image as *const sys::opj_image_t).cast_mut()),
+            resolution_count: 1,
+        });
+        let (_, _, bands, pixels) = decode_pixels_u8(&decoded).unwrap();
+        assert_eq!(bands, 2);
+        assert_eq!(pixels, vec![0, 255, 128, 128, 255, 0, 64, 64]);
+
+        let signed = [-128, 0, 127];
+        let comps = [
+            component(&signed, 1, 1, 8, true, false),
+            component(&signed, 1, 1, 8, true, false),
+            component(&signed, 1, 1, 8, true, false),
+        ];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 1,
+            y1: 1,
+            numcomps: 3,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_SRGB,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let decoded = std::mem::ManuallyDrop::new(OpenJpegDecodedImage {
+            image: OpenJpegImage((&image as *const sys::opj_image_t).cast_mut()),
+            resolution_count: 1,
+        });
+        let (_, _, bands, pixels) = decode_pixels_u8(&decoded).unwrap();
+        assert_eq!(bands, 3);
+        assert_eq!(pixels, vec![0, 0, 0]);
+    }
+
+    #[test]
+    fn decode_pixels_u16_covers_fast_scaled_and_error_layouts() {
+        let r = [1, 2];
+        let g = [3, 4];
+        let b = [5, 6];
+        let a = [7, 8];
+        let comps = [
+            component(&r, 2, 1, 16, false, false),
+            component(&g, 2, 1, 16, false, false),
+            component(&b, 2, 1, 16, false, false),
+            component(&a, 2, 1, 16, false, true),
+        ];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 2,
+            y1: 1,
+            numcomps: 4,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_SRGB,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let decoded = std::mem::ManuallyDrop::new(OpenJpegDecodedImage {
+            image: OpenJpegImage((&image as *const sys::opj_image_t).cast_mut()),
+            resolution_count: 1,
+        });
+        let (width, height, bands, pixels) = decode_pixels_u16(&decoded).unwrap();
+        assert_eq!((width, height, bands), (2, 1, 4));
+        assert_eq!(pixels, vec![1, 3, 5, 7, 2, 4, 6, 8]);
+
+        let ten_bit = [0, 512, 1023];
+        let comps = [component(&ten_bit, 3, 1, 10, false, false)];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 3,
+            y1: 1,
+            numcomps: 1,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_GRAY,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let decoded = std::mem::ManuallyDrop::new(OpenJpegDecodedImage {
+            image: OpenJpegImage((&image as *const sys::opj_image_t).cast_mut()),
+            resolution_count: 1,
+        });
+        let (_, _, bands, pixels) = decode_pixels_u16(&decoded).unwrap();
+        assert_eq!(bands, 1);
+        assert_eq!(pixels, vec![0, 32799, 65535]);
+
+        let comps = [sys::opj_image_comp_t {
+            data: ptr::null_mut(),
+            ..component(&ten_bit, 3, 1, 10, false, false)
+        }];
+        let image = sys::opj_image_t {
+            x0: 0,
+            y0: 0,
+            x1: 3,
+            y1: 1,
+            numcomps: 1,
+            color_space: sys::COLOR_SPACE::OPJ_CLRSPC_GRAY,
+            comps: comps.as_ptr() as *mut sys::opj_image_comp_t,
+            icc_profile_buf: ptr::null_mut(),
+            icc_profile_len: 0,
+        };
+        let decoded = std::mem::ManuallyDrop::new(OpenJpegDecodedImage {
+            image: OpenJpegImage((&image as *const sys::opj_image_t).cast_mut()),
+            resolution_count: 1,
+        });
+        assert!(decode_pixels_u16(&decoded).is_err());
+    }
 }

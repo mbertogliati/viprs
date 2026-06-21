@@ -1,7 +1,7 @@
 use super::*;
 use proptest::prelude::*;
 use viprs_core::{
-    format::{F64, U8},
+    format::{F32, F64, U8},
     image::{Region, Tile, TileMut},
     kernel::InterpolationKernel,
     op::{NodeSpec, Op},
@@ -1244,5 +1244,78 @@ proptest! {
                 );
             }
         }
+    }
+}
+
+#[test]
+fn fast_paths_cover_u8_band_specializations_and_edges() {
+    let kernels = [
+        InterpolationKernel::Nearest,
+        InterpolationKernel::Bilinear,
+        InterpolationKernel::Bicubic,
+    ];
+    let band_counts = [1_u32, 3, 4, 5];
+
+    for kernel in kernels {
+        for bands in band_counts {
+            let input_data: Vec<u8> = (0..(6 * 6 * bands)).map(|idx| (idx % 251) as u8).collect();
+            let input = Tile::<U8>::new(Region::new(0, 0, 6, 6), bands, &input_data);
+            let mut output_data = vec![0u8; (4 * 4 * bands) as usize];
+            let mut output = TileMut::<U8>::new(Region::new(0, 0, 4, 4), bands, &mut output_data);
+            let op = Affine::<U8>::new([1.0, 0.0, 0.0, 1.0], 1.0, 1.0, kernel, 4, 4);
+            let op = if bands == 4 {
+                op.with_premultiplied(true)
+            } else {
+                op
+            };
+
+            assert!(
+                op.process_region_fast_path(&input, &mut output),
+                "kernel {kernel:?} bands {bands} must use an axis-aligned fast path"
+            );
+            assert!(
+                output.data.iter().any(|&sample| sample != 0),
+                "kernel {kernel:?} bands {bands} must write output samples"
+            );
+        }
+    }
+}
+
+#[test]
+fn alpha_sampling_covers_all_kernel_paths() {
+    let source = [
+        0.8_f32, 0.2, 0.1, 0.5, 0.3, 0.4, 0.5, 1.0, 0.1, 0.2, 0.3, 0.25, 0.9, 0.7, 0.6, 0.75, 0.2,
+        0.3, 0.4, 1.0, 0.4, 0.5, 0.6, 0.5, 0.7, 0.8, 0.9, 0.25, 0.6, 0.5, 0.4, 1.0, 0.1, 0.2, 0.3,
+        0.125, 0.4, 0.3, 0.2, 0.375, 0.5, 0.6, 0.7, 0.625, 0.8, 0.7, 0.6, 1.0, 0.2, 0.4, 0.6, 0.25,
+        0.3, 0.5, 0.7, 0.5, 0.4, 0.6, 0.8, 0.75, 0.9, 0.8, 0.7, 1.0,
+    ];
+    let input = Tile::<F32>::new(Region::new(0, 0, 4, 4), 4, &source);
+    let kernels = [
+        InterpolationKernel::Nearest,
+        InterpolationKernel::Bilinear,
+        InterpolationKernel::Bicubic,
+        InterpolationKernel::Quadratic,
+        InterpolationKernel::CatmullRom,
+        InterpolationKernel::Lanczos2,
+        InterpolationKernel::Lanczos3,
+        InterpolationKernel::Vsqbs,
+        InterpolationKernel::Nohalo,
+        InterpolationKernel::Lbb,
+    ];
+
+    for kernel in kernels {
+        let op = Affine::<F32>::new([1.0, 0.0, 0.0, 1.0], 0.0, 0.0, kernel, 1, 1);
+        let mut output = [0.0_f32; 4];
+
+        op.sample_pixel_at(&input, 1.25, 1.5, &mut output);
+
+        assert!(
+            output.iter().all(|sample| sample.is_finite()),
+            "kernel {kernel:?} must produce finite alpha-aware samples"
+        );
+        assert!(
+            (0.0..=1.0).contains(&output[3]),
+            "kernel {kernel:?} must keep alpha in normalized range"
+        );
     }
 }

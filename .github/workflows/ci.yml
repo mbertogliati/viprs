@@ -81,7 +81,7 @@ jobs:
         run: make test
 
   test-and-coverage:
-    name: "Coverage (all features, ≥86%)"
+    name: "Coverage (ops + codecs, all features, ≥90%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
         run: |
           echo "## Tests + Coverage" >> $GITHUB_STEP_SUMMARY
           echo "Ran: Makefile coverage target" >> $GITHUB_STEP_SUMMARY
-          echo "Target: ≥86% line coverage (Makefile-enforced)" >> $GITHUB_STEP_SUMMARY
+          echo "Target: ≥90% line coverage for ops/codecs (Makefile-enforced)" >> $GITHUB_STEP_SUMMARY
           echo "Features: all features" >> $GITHUB_STEP_SUMMARY
 
   # ═══ Layer 3: benchmarks — run in parallel with Layer 2 ══════════════════════
