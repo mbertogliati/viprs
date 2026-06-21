@@ -1,0 +1,19 @@
+.github/workflows/ci.yml
+  s_93a32e8877b4b9::t_a4d8b87e4f2800 75-76,109-110,253-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "07cc0592ca61b0e73bba99b89c9a25a7f8a32bb7",
+  "prompts": {},
+  "sessions": {
+    "s_93a32e8877b4b9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_117a2d90affepizoFMdKghryRt",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
