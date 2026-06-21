@@ -1,0 +1,23 @@
+crates/viprs-codecs/src/webp/static_decode.rs
+  s_93a32e8877b4b9::t_df9e582597d169 632-633
+crates/viprs-ops-colour/src/colour/icc/normalize.rs
+  s_93a32e8877b4b9::t_e517e72029ee1d 337,362-369,375,379,390-392,394,406-414,417
+crates/viprs-codecs/src/lib.rs
+  s_93a32e8877b4b9::t_73a3de4d7a0f5a 220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2af67798e8ad586ad5981bbb3b17db6433519359",
+  "prompts": {},
+  "sessions": {
+    "s_93a32e8877b4b9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_117a2d90affepizoFMdKghryRt",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
