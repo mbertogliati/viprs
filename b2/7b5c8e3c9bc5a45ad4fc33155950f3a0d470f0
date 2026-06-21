@@ -1,0 +1,41 @@
+crates/viprs-ops-spatial/src/resample/affine/tests.rs
+  s_10f4f0046081e9::t_af4da0a3cfa085 4
+  s_10f4f0046081e9::t_81edccbe5c71fc 1249-1260,1262-1264,1271-1286,1291-1321
+  s_10f4f0046081e9::t_7416fff6fe31f7 1261,1265-1270,1287-1290
+Makefile
+  s_10f4f0046081e9::t_080fad61ccadc2 25,90,92
+.github/workflows/ci.yml
+  s_10f4f0046081e9::t_9f0cf8e1e3cd39 84,111
+crates/viprs-codecs/src/pnm.rs
+  s_10f4f0046081e9::t_5b5dc1bd4f15ac 834-837,839-843,866-868,871,890-891,902,913-919,942-975
+  s_10f4f0046081e9::t_4b4e20ef84120b 757,825-833,838,844-865,869-870,872-889,892-901,903-912,920-941
+crates/viprs-codecs/src/web_colour.rs
+  s_10f4f0046081e9::t_d5177073f63483 282-331,333-361
+  s_10f4f0046081e9::t_c8a11cbfc7f551 332
+crates/viprs-ops-spatial/src/resample/mapim.rs
+  s_10f4f0046081e9::t_af4da0a3cfa085 1895-1896
+  s_10f4f0046081e9::t_81edccbe5c71fc 1812-1894,1897-1900
+crates/viprs-codecs/src/jp2k.rs
+  s_10f4f0046081e9::t_eac6375216c5d2 2630-2633,2636
+  s_10f4f0046081e9::t_d9e6757d2863d8 2703
+  s_10f4f0046081e9::t_5a2a6f8293a5e5 2326-2351,2353-2370,2373-2399,2403-2439,2452-2454,2459-2482,2486-2489,2491-2589,2594-2629,2634,2640,2646-2652
+  s_10f4f0046081e9::t_c1131b68038c2e 2352,2371-2372,2400-2402,2440-2451,2455-2458,2483-2485,2490,2590-2593,2635,2637-2639,2641-2645
+  s_10f4f0046081e9::t_ba8df9c5a1b423 2653-2674,2676-2702,2704-2803
+  s_10f4f0046081e9::t_133c9632662a82 2675
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b27b5c8e3c9bc5a45ad4fc33155950f3a0d470f0",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
