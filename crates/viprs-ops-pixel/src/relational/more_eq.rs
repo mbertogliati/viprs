@@ -73,7 +73,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::relational::CmpSample;
+    
 
     use proptest::prelude::*;
     use viprs_core::{

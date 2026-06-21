@@ -1809,6 +1809,95 @@ mod tests {
         assert!(from_tiled.downcast_ref::<MapImState>().is_some());
     }
 
+    #[test]
+    fn non_alpha_kernels_cover_scalar_sampler_dispatch() {
+        let source = [
+            10u8, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160,
+        ];
+        let source_region = Region::new(0, 0, 4, 4);
+        let index_region = Region::new(0, 0, 1, 1);
+        let index = [1.25_f32, 1.5_f32];
+        let kernels = [
+            InterpolationKernel::Nearest,
+            InterpolationKernel::Bilinear,
+            InterpolationKernel::Bicubic,
+            InterpolationKernel::Quadratic,
+            InterpolationKernel::CatmullRom,
+            InterpolationKernel::Lanczos2,
+            InterpolationKernel::Lanczos3,
+            InterpolationKernel::Vsqbs,
+            InterpolationKernel::Nohalo,
+            InterpolationKernel::Lbb,
+        ];
+
+        for kernel in kernels {
+            let op = MapImOp::<U8>::new(4, 4, 1, 1, 1, BandFormatId::F32).with_kernel(kernel);
+            let mut state = MapImState;
+            let mut output = [0u8; 1];
+
+            op.process_typed(
+                &mut state,
+                source_region,
+                &source,
+                index_region,
+                &index,
+                &mut output,
+                index_region,
+            );
+
+            assert!(
+                output[0] <= 160,
+                "kernel {kernel:?} must produce an in-range u8 sample"
+            );
+        }
+    }
+
+    #[test]
+    fn alpha_kernels_cover_unpremultiply_dispatch() {
+        let source = [
+            200u8, 100, 50, 128, 40, 80, 120, 255, 10, 20, 30, 64, 250, 200, 150, 192, 60, 90, 120,
+            255, 30, 60, 90, 128, 80, 100, 120, 64, 220, 180, 140, 255, 5, 10, 15, 32, 70, 90, 110,
+            96, 130, 150, 170, 160, 240, 220, 200, 255, 15, 25, 35, 48, 45, 55, 65, 80, 95, 105,
+            115, 144, 205, 195, 185, 224,
+        ];
+        let source_region = Region::new(0, 0, 4, 4);
+        let index_region = Region::new(0, 0, 1, 1);
+        let index = [1.25_f32, 1.5_f32];
+        let kernels = [
+            InterpolationKernel::Nearest,
+            InterpolationKernel::Bilinear,
+            InterpolationKernel::Bicubic,
+            InterpolationKernel::Quadratic,
+            InterpolationKernel::CatmullRom,
+            InterpolationKernel::Lanczos2,
+            InterpolationKernel::Lanczos3,
+            InterpolationKernel::Vsqbs,
+            InterpolationKernel::Nohalo,
+            InterpolationKernel::Lbb,
+        ];
+
+        for kernel in kernels {
+            let op = MapImOp::<U8>::new(4, 4, 4, 1, 1, BandFormatId::F32).with_kernel(kernel);
+            let mut state = MapImState;
+            let mut output = [0u8; 4];
+
+            op.process_typed(
+                &mut state,
+                source_region,
+                &source,
+                index_region,
+                &index,
+                &mut output,
+                index_region,
+            );
+
+            assert!(
+                output.iter().any(|&sample| sample != 0),
+                "kernel {kernel:?} must write alpha-aware output"
+            );
+        }
+    }
+
     proptest! {
         #[test]
         fn identity_map_preserves_pixels(pixels in prop::collection::vec(0u8..=255, 16)) {

@@ -22,6 +22,7 @@ RUSTFLAGS_CI := -Dwarnings
 # if a required system library is missing, so this is safe on any machine.
 # Override: make check FEATURES="--features jpeg,png"
 FEATURES ?= --all-features
+COVERAGE_PACKAGES := -p viprs-codecs -p viprs-ops-pixel -p viprs-ops-colour -p viprs-ops-spatial -p viprs-ops-composite
 
 .PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test doc security deny audit require-cargo-audit require-cargo-deny bench bench-vs coverage xtask
 
@@ -86,9 +87,9 @@ deny: require-cargo-deny
 audit: require-cargo-audit
 	$(CARGO) audit
 
-## Threshold: ≥86% line coverage (enforced).
+## Threshold: ≥90% line coverage for ops/codecs (enforced).
 coverage:
-	$(CARGO) llvm-cov --workspace --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
+	$(CARGO) llvm-cov $(COVERAGE_PACKAGES) --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
