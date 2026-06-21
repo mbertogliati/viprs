@@ -87,9 +87,9 @@ deny: require-cargo-deny
 audit: require-cargo-audit
 	$(CARGO) audit
 
-## Threshold: ≥90% line coverage for ops/codecs (enforced).
+## Threshold: ≥90% line coverage for ops/codecs, using all workspace tests except xtask.
 coverage:
-	$(CARGO) llvm-cov $(COVERAGE_PACKAGES) --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 90
+	$(CARGO) llvm-cov --workspace --exclude xtask $(FEATURES) --ignore-filename-regex '(benches|tests|crates/viprs-core/|crates/viprs-ports/|crates/viprs-runtime/|/viprs/src/)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
