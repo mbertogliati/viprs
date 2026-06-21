@@ -69,8 +69,17 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with:
-          lfs: true
+      - name: Fetch LFS fixtures with backoff
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if git lfs pull --include="tests/fixtures/**"; then
+              exit 0
+            fi
+            sleep_seconds=$((attempt * attempt * 10))
+            echo "LFS pull failed on attempt ${attempt}; retrying in ${sleep_seconds}s"
+            sleep "${sleep_seconds}"
+          done
+          git lfs pull --include="tests/fixtures/**"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -91,8 +100,17 @@ jobs:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4
-        with:
-          lfs: true
+      - name: Fetch LFS fixtures with backoff
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if git lfs pull --include="tests/fixtures/**"; then
+              exit 0
+            fi
+            sleep_seconds=$((attempt * attempt * 10))
+            echo "LFS pull failed on attempt ${attempt}; retrying in ${sleep_seconds}s"
+            sleep "${sleep_seconds}"
+          done
+          git lfs pull --include="tests/fixtures/**"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -223,8 +241,17 @@ jobs:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev nasm jq bc
       - uses: actions/checkout@v4
-        with:
-          lfs: true
+      - name: Fetch LFS fixtures with backoff
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if git lfs pull --include="tests/fixtures/**"; then
+              exit 0
+            fi
+            sleep_seconds=$((attempt * attempt * 10))
+            echo "LFS pull failed on attempt ${attempt}; retrying in ${sleep_seconds}s"
+            sleep "${sleep_seconds}"
+          done
+          git lfs pull --include="tests/fixtures/**"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
