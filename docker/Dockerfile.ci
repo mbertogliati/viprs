@@ -11,11 +11,14 @@ ARG BASE_IMAGE=rust:1.96.0-trixie
 FROM ${BASE_IMAGE}
 
 ARG RUST_VERSION=1.96.0
+ARG TARGETARCH
+ARG CARGO_AUDIT_VERSION=0.22.2
+ARG CARGO_DENY_VERSION=0.19.9
 
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
       build-essential pkg-config cmake make nasm git git-lfs clang libclang-dev \
-      ca-certificates \
+      ca-certificates curl \
       libspng-dev libpng-dev libwebp-dev libtiff-dev \
       libheif-dev libheif-plugin-aomdec libheif-plugin-aomenc \
       libjxl-dev libopenjp2-7-dev liblcms2-dev libopenslide-dev \
@@ -39,7 +42,18 @@ RUN pkg-config --atleast-version=3.0 libturbojpeg && \
     pkg-config --modversion cfitsio && \
     pkg-config --modversion openslide
 
-RUN cargo install --locked cargo-audit cargo-deny && \
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+      amd64) rust_arch="x86_64" ;; \
+      arm64) rust_arch="aarch64" ;; \
+      *) echo "unsupported TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    audit_pkg="cargo-audit-${rust_arch}-unknown-linux-gnu-v${CARGO_AUDIT_VERSION}"; \
+    curl -fsSL "https://github.com/rustsec/rustsec/releases/download/cargo-audit%2Fv${CARGO_AUDIT_VERSION}/${audit_pkg}.tgz" \
+      | tar -xz -C /usr/local/bin --strip-components=1 "${audit_pkg}/cargo-audit"; \
+    deny_pkg="cargo-deny-${CARGO_DENY_VERSION}-${rust_arch}-unknown-linux-musl"; \
+    curl -fsSL "https://github.com/EmbarkStudios/cargo-deny/releases/download/${CARGO_DENY_VERSION}/${deny_pkg}.tar.gz" \
+      | tar -xz -C /usr/local/bin --strip-components=1 "${deny_pkg}/cargo-deny"; \
     cargo audit --version && \
     cargo deny --version
 
