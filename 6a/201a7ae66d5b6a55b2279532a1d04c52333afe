@@ -1,0 +1,22 @@
+Makefile
+  s_93a32e8877b4b9::t_ac1efa87129246 27,278-279,297-311,315,317-320,322-324,334-337,339-341,351-354,356-358
+  s_93a32e8877b4b9::t_52d82519318e0a 312-314,321,329,338,346,355,363
+.gitignore
+  s_93a32e8877b4b9::t_7b71fab207dac8 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "6a201a7ae66d5b6a55b2279532a1d04c52333afe",
+  "prompts": {},
+  "sessions": {
+    "s_93a32e8877b4b9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_117a2d90affepizoFMdKghryRt",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
