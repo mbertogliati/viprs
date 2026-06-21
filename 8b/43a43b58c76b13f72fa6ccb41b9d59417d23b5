@@ -1,0 +1,20 @@
+docker/Dockerfile.ci
+  s_10f4f0046081e9::t_96415f01ec4125 15
+  s_10f4f0046081e9::t_b58684927c302c 14,16,21,45-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8b43a43b58c76b13f72fa6ccb41b9d59417d23b5",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
