@@ -118,7 +118,7 @@ jobs:
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 35
+    timeout-minutes: 70
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
       matrix:
@@ -133,11 +133,28 @@ jobs:
         with:
           toolchain: "1.96.0"
       - name: Restore baseline from main
+        if: github.event_name != 'pull_request'
         uses: actions/cache/restore@v4
         with:
           path: target/criterion
           key: criterion-baseline-${{ matrix.arch }}-main
-      - name: Run benchmarks
+      - name: Compare PR benchmarks against base SHA
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "▶ Saving Criterion baseline from PR base ${BASE_SHA}"
+          git fetch --no-tags --depth=1 origin "${BASE_SHA}"
+          git checkout --detach "${BASE_SHA}"
+          make bench-baseline
+
+          echo "▶ Comparing PR head ${HEAD_SHA} against base baseline"
+          git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
+          git checkout --detach "${HEAD_SHA}"
+          make bench-compare
+      - name: Run benchmarks on main
+        if: github.event_name != 'pull_request'
         run: |
           if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
             echo "▶ Baseline found — comparing against main"
