@@ -24,7 +24,7 @@ RUSTFLAGS_CI := -Dwarnings
 FEATURES ?= --all-features
 COVERAGE_PACKAGES := -p viprs-codecs -p viprs-ops-pixel -p viprs-ops-colour -p viprs-ops-spatial -p viprs-ops-composite
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny fixtures fixtures-functional fixtures-bench fixtures-clean fixtures-pack fixtures-pack-functional fixtures-pack-bench bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny fixtures fixtures-functional fixtures-bench fixtures-clean fixtures-pack fixtures-pack-functional fixtures-pack-bench bench bench-ci-full bench-baseline-full bench-compare-full bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -275,9 +275,8 @@ cross-setup:
 bench: fixtures-bench
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*'
 
-## Fast CI benchmark gate (target ≤10 min: compile all, run only 512px with minimal stats)
-## Verifies all 246 bench targets compile AND execute without panics.
-## Full statistical runs (all sizes, 100 samples) are for local dev or scheduled jobs.
+## Fast CI benchmark gate (target ≤5 min per arch): representative base/head comparison.
+## The full suite is available through bench-ci-full / bench-baseline-full / bench-compare-full.
 ##
 ## CI overrides: disable fat LTO + use 16 codegen-units + no debuginfo → ~5x faster compile.
 ## Benchmark results are still valid (same opt-level 3, same target-cpu=native).
@@ -295,32 +294,73 @@ CRITERION_BENCHES := $(shell awk 'BEGIN { in_bench = 0; name = ""; path = "" } \
 	in_bench && /^path = "/ { path = $$3; gsub(/"/, "", path); next } \
 	END { if (in_bench && path !~ /^benches\/iai\// && name != "") print name }' Cargo.toml)
 
+## Representative PR gate. Keep this intentionally small: CI runs it for base and head on both arches.
+BENCH_CI_TARGETS ?= \
+	pipeline \
+	fusion \
+	invert \
+	add \
+	sin \
+	linear \
+	gauss_blur \
+	conv \
+	resize \
+	thumbnail \
+	srgb_to_lab \
+	hist_find
+
+BENCH_CI_ARGS := --sample-size 10 --warm-up-time 0.5 --measurement-time 0.5 --nresamples 100
+BENCH_FULL_CI_ARGS := --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100
+BENCH_CI_FILTER := '/512'
+
 bench-ci: fixtures-bench
+	@set -e; \
+	for bench in $(BENCH_CI_TARGETS); do \
+		echo "▶ Running $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			$(BENCH_CI_ARGS) $(BENCH_CI_FILTER); \
+	done
+
+bench-ci-full: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Running $$bench"; \
 		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
-			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'; \
+			$(BENCH_FULL_CI_ARGS) $(BENCH_CI_FILTER); \
 	done
 
 ## Save baseline on main (CI calls this after merge to main)
 bench-baseline: fixtures-bench
 	@set -e; \
+	for bench in $(BENCH_CI_TARGETS); do \
+		echo "▶ Saving baseline for $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			$(BENCH_CI_ARGS) --save-baseline main $(BENCH_CI_FILTER); \
+	done
+
+bench-baseline-full: fixtures-bench
+	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Saving baseline for $$bench"; \
 		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
-			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-			--save-baseline main '/512'; \
+			$(BENCH_FULL_CI_ARGS) --save-baseline main $(BENCH_CI_FILTER); \
 	done
 
 ## Compare PR against main baseline — fails if any benchmark regresses >5%
 bench-compare: fixtures-bench
 	@set -e; \
+	for bench in $(BENCH_CI_TARGETS); do \
+		echo "▶ Comparing $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			$(BENCH_CI_ARGS) --baseline main $(BENCH_CI_FILTER); \
+	done
+
+bench-compare-full: fixtures-bench
+	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Comparing $$bench"; \
 		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
-			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-			--baseline main '/512'; \
+			$(BENCH_FULL_CI_ARGS) --baseline main $(BENCH_CI_FILTER); \
 	done
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
