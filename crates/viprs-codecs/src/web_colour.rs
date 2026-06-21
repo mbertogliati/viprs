@@ -279,4 +279,84 @@ mod tests {
         assert_eq!(normalized.pixels()[3], 7);
         assert_eq!(normalized.pixels()[7], 9);
     }
+
+    #[test]
+    fn normalization_borrows_when_profile_is_absent_or_already_srgb() {
+        let plain = Image::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
+        assert!(matches!(
+            normalize_web_output_u8(&plain).expect("plain image"),
+            Cow::Borrowed(_)
+        ));
+
+        let srgb = plain.with_metadata(ImageMetadata {
+            icc_profile: Some(profile_load("srgb").expect("load srgb profile")),
+            ..ImageMetadata::default()
+        });
+        assert!(matches!(
+            normalize_web_output_u8(&srgb).expect("srgb image"),
+            Cow::Borrowed(_)
+        ));
+    }
+
+    #[test]
+    fn unsupported_band_counts_are_borrowed_even_with_non_srgb_profile() {
+        let image = Image::<U8>::from_buffer(1, 1, 5, vec![1, 2, 3, 4, 5])
+            .unwrap()
+            .with_metadata(ImageMetadata {
+                icc_profile: Some(profile_load("gray").expect("load gray profile")),
+                ..ImageMetadata::default()
+            });
+
+        assert!(matches!(
+            normalize_web_output_u8(&image).expect("unsupported band count"),
+            Cow::Borrowed(_)
+        ));
+    }
+
+    #[test]
+    fn gray_u16_profile_normalization_preserves_alpha_and_promotes_to_srgb() {
+        let image = Image::<U16>::from_buffer(2, 1, 2, vec![1024, 17, 49152, 23])
+            .unwrap()
+            .with_metadata(ImageMetadata {
+                icc_profile: Some(profile_load("gray").expect("load gray profile")),
+                ..ImageMetadata::default()
+            });
+
+        let normalized = normalize_web_output_u16(&image)
+            .expect("normalize gray16+alpha")
+            .into_owned();
+
+        assert_eq!(normalized.bands(), 4);
+        assert_eq!(
+            normalized.metadata().interpretation,
+            Some(Interpretation::Srgb)
+        );
+        assert_eq!(normalized.pixels()[3], 17);
+        assert_eq!(normalized.pixels()[7], 23);
+    }
+
+    #[test]
+    fn cmyk_profiles_normalize_without_splitting_alpha() {
+        let profile = match profile_load("cmyk") {
+            Ok(profile) => profile,
+            Err(_) => return,
+        };
+        let image = Image::<U8>::from_buffer(1, 1, 4, vec![0, 0, 0, 0])
+            .unwrap()
+            .with_metadata(ImageMetadata {
+                interpretation: Some(Interpretation::Cmyk),
+                icc_profile: Some(profile),
+                ..ImageMetadata::default()
+            });
+
+        let normalized = normalize_web_output_u8(&image)
+            .expect("normalize cmyk")
+            .into_owned();
+
+        assert_eq!(normalized.bands(), 3);
+        assert_eq!(
+            normalized.metadata().interpretation,
+            Some(Interpretation::Srgb)
+        );
+    }
 }
