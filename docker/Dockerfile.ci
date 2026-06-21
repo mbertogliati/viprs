@@ -1,4 +1,4 @@
-# CI image: viprs-perf base + Rust toolchain + clippy + rustfmt.
+# CI image: Rust toolchain + native dependencies needed by `--all-features`.
 #
 # Build:
 #   docker buildx build --platform linux/amd64 -f docker/Dockerfile.ci -t viprs-ci:amd64 --load docker/
@@ -7,21 +7,56 @@
 # Usage:
 #   docker run --rm -v $(pwd):/workspace -w /workspace viprs-ci:amd64 make check
 
-ARG BASE_IMAGE=ghcr.io/mbertogliati/viprs-perf:latest
+ARG BASE_IMAGE=rust:1.96.0-trixie
 FROM ${BASE_IMAGE}
 
 ARG RUST_VERSION=1.96.0
+ARG TARGETARCH
+ARG CARGO_AUDIT_VERSION=0.22.2
+ARG CARGO_DENY_VERSION=0.19.9
 
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
-      curl build-essential pkg-config cmake nasm git clang libclang-dev && \
+      build-essential pkg-config cmake make nasm git git-lfs clang libclang-dev \
+      ca-certificates curl \
+      libspng-dev libpng-dev libwebp-dev libtiff-dev \
+      libheif-dev libheif-plugin-aomdec libheif-plugin-aomenc \
+      libjxl-dev libopenjp2-7-dev liblcms2-dev libopenslide-dev \
+      libcfitsio-dev libvips-dev imagemagick poppler-utils && \
+    echo "deb http://deb.debian.org/debian sid main" > /etc/apt/sources.list.d/sid.list && \
+    printf "Package: *\nPin: release n=sid\nPin-Priority: 100\n" > /etc/apt/preferences.d/sid && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends -t sid libturbojpeg0-dev && \
     rm -rf /var/lib/apt/lists/* && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-      sh -s -- -y --default-toolchain ${RUST_VERSION} -c rustfmt,clippy
+    rustup default ${RUST_VERSION} && \
+    rustup component add rustfmt clippy
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Override viprs-perf benchmark entrypoint — CI image runs arbitrary commands
+RUN pkg-config --atleast-version=3.0 libturbojpeg && \
+    pkg-config --modversion libturbojpeg && \
+    pkg-config --modversion spng && \
+    pkg-config --modversion libheif && \
+    pkg-config --modversion libjxl && \
+    pkg-config --modversion lcms2 && \
+    pkg-config --modversion cfitsio && \
+    pkg-config --modversion openslide
+
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+      amd64) rust_arch="x86_64" ;; \
+      arm64) rust_arch="aarch64" ;; \
+      *) echo "unsupported TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    audit_pkg="cargo-audit-${rust_arch}-unknown-linux-gnu-v${CARGO_AUDIT_VERSION}"; \
+    curl -fsSL "https://github.com/rustsec/rustsec/releases/download/cargo-audit%2Fv${CARGO_AUDIT_VERSION}/${audit_pkg}.tgz" \
+      | tar -xz -C /usr/local/bin --strip-components=1 "${audit_pkg}/cargo-audit"; \
+    deny_pkg="cargo-deny-${CARGO_DENY_VERSION}-${rust_arch}-unknown-linux-musl"; \
+    curl -fsSL "https://github.com/EmbarkStudios/cargo-deny/releases/download/${CARGO_DENY_VERSION}/${deny_pkg}.tar.gz" \
+      | tar -xz -C /usr/local/bin --strip-components=1 "${deny_pkg}/cargo-deny"; \
+    cargo audit --version && \
+    cargo deny --version
+
 ENTRYPOINT []
 
 WORKDIR /workspace

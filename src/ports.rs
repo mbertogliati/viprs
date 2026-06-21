@@ -9,7 +9,7 @@
 //! Concrete implementations live under `src/adapters/`.
 //! Domain types (`src/domain/`) are imported by ports but never the reverse.
 
-pub mod codec;
-pub mod scheduler;
-pub mod sink;
-pub mod source;
+pub use viprs_ports::codec;
+pub use viprs_ports::scheduler;
+pub use viprs_ports::sink;
+pub use viprs_ports::source;

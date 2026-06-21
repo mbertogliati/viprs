@@ -58,7 +58,7 @@ static TEST_ALLOCATOR: test_support::CountingAllocator = test_support::CountingA
 pub mod prelude {
     #[cfg(feature = "icc")]
     pub use crate::ImageApiThumbnailOptions;
-    pub use crate::{ImageApi, ImageApiLoader, ResourceLimits, ViprsError};
+    pub use crate::{ImageApi, ImageApiLoader, ImageCodecExt, ResourceLimits, ViprsError};
 }
 
 /// Explicit advanced pipeline surface for manual graph construction and execution.
@@ -88,11 +88,13 @@ pub mod ops {
 
 /// Codec namespace for advanced decode / encode control.
 pub mod codecs {
+    pub use crate::ImageCodecExt;
     pub use crate::adapters::codecs::*;
     pub use crate::domain::codec_options::{LoadOptions, RawEndianness, SaveOptions};
     pub use crate::ports::codec::{ImageDecoder, ImageEncoder};
 }
 
+pub use adapters::codecs::registry::ImageCodecExt;
 #[cfg(feature = "icc")]
 pub use adapters::image_api::ImageApiThumbnailOptions;
 pub use adapters::image_api::{ImageApi, ImageApiLoader};

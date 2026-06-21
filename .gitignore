@@ -37,3 +37,5 @@ bench_*.log
 .cargo-home*/
 .audit_perf/
 .test-artifacts/
+**/target/
+clippy_full.log

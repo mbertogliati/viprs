@@ -129,15 +129,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
-name = "autotools"
-version = "0.2.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef941527c41b0fc0dd48511a8154cd5fc7e29200a0ff8b7203c5d777dbc795cf"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "av1-grain"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -736,7 +727,6 @@ version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14929d0b6fa44a87b374a138ea2256c02c1b5beae1dbc98f62a3e132f862fed1"
 dependencies = [
- "autotools",
  "pkg-config",
 ]
 
@@ -1044,7 +1034,7 @@ dependencies = [
  "byteorder-lite",
  "moxcms",
  "num-traits",
- "png",
+ "png 0.18.1",
  "zune-core",
  "zune-jpeg",
 ]
@@ -1933,6 +1923,19 @@ dependencies = [
 
 [[package]]
 name = "png"
+version = "0.17.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82151a2fc869e011c153adc57cf2789ccb8d9906ce52c0b39a6b5697749d7526"
+dependencies = [
+ "bitflags 1.3.2",
+ "crc32fast",
+ "fdeflate",
+ "flate2",
+ "miniz_oxide",
+]
+
+[[package]]
+name = "png"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60769b8b31b2a9f263dae2776c37b1b28ae246943cf719eb6946a1db05128a61"
@@ -2766,7 +2769,7 @@ dependencies = [
  "bytemuck",
  "cfg-if",
  "log",
- "png",
+ "png 0.18.1",
  "tiny-skia-path",
 ]
 
@@ -3034,19 +3037,44 @@ dependencies = [
  "criterion",
  "crossbeam-channel",
  "dhat",
+ "iai-callgrind",
+ "libc",
+ "libheif-rs",
+ "memmap2",
+ "png 0.17.16",
+ "proptest",
+ "pulp",
+ "rayon",
+ "rustfft",
+ "thiserror 2.0.18",
+ "tracing",
+ "viprs-codecs",
+ "viprs-core",
+ "viprs-ops-colour",
+ "viprs-ops-composite",
+ "viprs-ops-pixel",
+ "viprs-ops-spatial",
+ "viprs-ports",
+ "viprs-runtime",
+]
+
+[[package]]
+name = "viprs-codecs"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "crc32fast",
  "exr",
  "fitsio-sys",
  "flate2",
  "gif 0.13.3",
  "hdf5-pure-rust",
- "iai-callgrind",
  "image",
  "jpeg-encoder",
  "jpeg2k",
  "jpegxl-rs",
  "jxl-oxide",
  "lcms2",
- "libc",
  "libheif-rs",
  "libheif-sys",
  "libwebp-sys",
@@ -3054,21 +3082,109 @@ dependencies = [
  "nifti",
  "openjpeg-sys",
  "openslide-rs",
- "png",
+ "png 0.18.1",
  "proptest",
- "pulp",
  "ravif",
  "rayon",
  "resvg",
  "rgb",
- "rustfft",
  "spng",
- "thiserror 2.0.18",
  "tiff",
  "tracing",
  "turbojpeg",
+ "viprs-core",
+ "viprs-ops-colour",
+ "viprs-ports",
+ "viprs-runtime",
  "webp",
  "weezl",
+]
+
+[[package]]
+name = "viprs-core"
+version = "0.1.0"
+dependencies = [
+ "ab_glyph",
+ "bytemuck",
+ "proptest",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "viprs-ops-colour"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "lcms2",
+ "proptest",
+ "viprs-core",
+ "viprs-ops-pixel",
+ "viprs-ports",
+ "viprs-runtime",
+]
+
+[[package]]
+name = "viprs-ops-composite"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "proptest",
+ "rustfft",
+ "viprs-core",
+ "viprs-ops-pixel",
+ "viprs-ops-spatial",
+ "viprs-ports",
+ "viprs-runtime",
+]
+
+[[package]]
+name = "viprs-ops-pixel"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "proptest",
+ "viprs-core",
+]
+
+[[package]]
+name = "viprs-ops-spatial"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "proptest",
+ "pulp",
+ "viprs-core",
+ "viprs-ops-composite",
+ "viprs-ports",
+ "viprs-runtime",
+]
+
+[[package]]
+name = "viprs-ports"
+version = "0.1.0"
+dependencies = [
+ "viprs-core",
+]
+
+[[package]]
+name = "viprs-runtime"
+version = "0.1.0"
+dependencies = [
+ "ab_glyph",
+ "bytemuck",
+ "crossbeam-channel",
+ "memmap2",
+ "proptest",
+ "rayon",
+ "rustfft",
+ "tracing",
+ "viprs-codecs",
+ "viprs-core",
+ "viprs-ops-colour",
+ "viprs-ops-composite",
+ "viprs-ops-pixel",
+ "viprs-ops-spatial",
+ "viprs-ports",
 ]
 
 [[package]]

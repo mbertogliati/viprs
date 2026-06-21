@@ -1,0 +1,14 @@
+[package]
+name = "viprs-ports"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license.workspace = true
+publish = false
+description = "Infrastructure port traits for viprs (codecs, scheduler, sinks, sources)"
+
+[lints]
+workspace = true
+
+[dependencies]
+viprs-core = { path = "../viprs-core", version = "0.1.0" }

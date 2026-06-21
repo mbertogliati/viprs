@@ -134,7 +134,7 @@ pub unsafe extern "C" fn viprs_image_free(img: *mut ViprsImage) {
 /// # fn main() {}
 /// ```
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn viprs_image_width(img: *const ViprsImage) -> u32 {
+pub const unsafe extern "C" fn viprs_image_width(img: *const ViprsImage) -> u32 {
     if img.is_null() {
         return 0;
     }
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn viprs_image_width(img: *const ViprsImage) -> u32 {
 /// # fn main() {}
 /// ```
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn viprs_image_height(img: *const ViprsImage) -> u32 {
+pub const unsafe extern "C" fn viprs_image_height(img: *const ViprsImage) -> u32 {
     if img.is_null() {
         return 0;
     }
@@ -192,7 +192,7 @@ pub unsafe extern "C" fn viprs_image_height(img: *const ViprsImage) -> u32 {
 /// # fn main() {}
 /// ```
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn viprs_image_bands(img: *const ViprsImage) -> u8 {
+pub const unsafe extern "C" fn viprs_image_bands(img: *const ViprsImage) -> u8 {
     if img.is_null() {
         return 0;
     }
@@ -223,7 +223,7 @@ pub unsafe extern "C" fn viprs_image_bands(img: *const ViprsImage) -> u8 {
 /// # fn main() {}
 /// ```
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn viprs_image_data(img: *const ViprsImage) -> *const u8 {
+pub const unsafe extern "C" fn viprs_image_data(img: *const ViprsImage) -> *const u8 {
     if img.is_null() {
         return std::ptr::null();
     }

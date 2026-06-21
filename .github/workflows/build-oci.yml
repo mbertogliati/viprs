@@ -3,7 +3,17 @@ name: Build and publish OCI image
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      image:
+        description: "Image to build"
+        required: true
+        default: "ci"
+        type: choice
+        options:
+          - ci
+          - perf
+          - all
 
 permissions:
   contents: read
@@ -34,6 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        if: github.event_name != 'workflow_dispatch' || inputs.image == 'perf' || inputs.image == 'all'
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -51,6 +62,7 @@ jobs:
         run: echo "version=$(grep '^channel' rust-toolchain.toml | cut -d'"' -f2)" >> "$GITHUB_OUTPUT"
 
       - name: Build and push CI image
+        if: github.event_name != 'workflow_dispatch' || inputs.image == 'ci' || inputs.image == 'all'
         uses: docker/build-push-action@v4
         with:
           context: docker/
@@ -58,7 +70,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+            BASE_IMAGE=rust:${{ steps.rust-version.outputs.version }}-trixie
             RUST_VERSION=${{ steps.rust-version.outputs.version }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
@@ -69,5 +81,9 @@ jobs:
       - name: Image info
         run: |
           echo "Images published:"
-          echo "  ghcr.io/${{ github.repository_owner }}/viprs-perf:latest"
-          echo "  ghcr.io/${{ github.repository_owner }}/viprs-ci:latest"
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] || [ "${{ inputs.image }}" = "perf" ] || [ "${{ inputs.image }}" = "all" ]; then
+            echo "  ghcr.io/${{ github.repository_owner }}/viprs-perf:latest"
+          fi
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] || [ "${{ inputs.image }}" = "ci" ] || [ "${{ inputs.image }}" = "all" ]; then
+            echo "  ghcr.io/${{ github.repository_owner }}/viprs-ci:latest"
+          fi

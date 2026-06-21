@@ -7,6 +7,7 @@ use std::time::Instant;
 
 use bytemuck::{Pod, cast_slice};
 use serde::Serialize;
+use viprs::ImageCodecExt;
 use viprs::adapters::codecs::{
     AvifCodec, ExrCodec, GifCodec, HeifCodec, Jp2kCodec, JpegCodec, PngCodec, TiffCodec, WebpCodec,
 };

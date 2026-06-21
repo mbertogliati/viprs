@@ -14,13 +14,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # Features for containerless CI jobs (no native C libraries needed).
-  RUST_FEATURES: "--features default,simd-pulp"
-  # Keep this in sync with Makefile CONTAINER_FEATURES so clippy checks every
-  # feature-gated module compiled in container CI.
-  CLIPPY_FEATURES: "--features default,simd-pulp,rayon,jpeg,png,webp,tiff,heif,avif,gif,jp2k,fft,exr,lock_instrumentation"
-  # Source-built libs live in /usr/local/lib (container jobs only)
-  PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
   # Common container build tools — avoids duplicating the apt-get list in every job.
   CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev"
 
@@ -35,7 +28,7 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
@@ -50,53 +43,50 @@ jobs:
       - name: Check formatting
         run: make fmt
       - name: Clippy
-        run: make clippy FEATURES="${{ env.CLIPPY_FEATURES }}"
+        run: make clippy
       - name: Build docs (deny warnings)
-        run: make doc FEATURES="${{ env.CLIPPY_FEATURES }}"
+        run: make doc
 
   security:
     name: "Security (audit + deny)"
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rustsec/audit-check@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: EmbarkStudios/cargo-deny-action@v2
-        env:
-          RUSTUP_TOOLCHAIN: stable
+      - name: Run security checks
+        run: make security
 
-  # ═══ Layer 2: tests + coverage in a single instrumented pass ═════════════════
-  # Replaces the old test-all → coverage chain (two full compilations from zero).
-  # cargo llvm-cov with --doctests runs lib + integration + doc tests in one go
-  # and produces coverage data. One compilation, one execution, two results.
+  # ═══ Layer 2: tests + coverage — both delegated to Makefile targets ══════════
 
   test-unit:
-    name: "Unit tests (no codecs)"
+    name: "Tests (all features)"
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
-      - uses: ./.github/actions/setup-toolchain
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "test-unit"
-      - name: Run unit tests
-        run: make test FEATURES="${{ env.RUST_FEATURES }}"
+      - name: Run tests
+        run: make test
 
   test-and-coverage:
-    name: "Tests + Coverage (all codecs, ≥86%)"
+    name: "Coverage (all features, ≥86%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
@@ -111,14 +101,15 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "test-coverage"
-      - name: Run all tests with coverage instrumentation
+      - name: Run coverage
         run: make coverage
       - name: Generate summary
         if: always()
         run: |
           echo "## Tests + Coverage" >> $GITHUB_STEP_SUMMARY
-          echo "Ran: unit + integration + doc tests (all codecs)" >> $GITHUB_STEP_SUMMARY
-          echo "Target: ≥90% line coverage on \`ops/\` and \`codecs/\`" >> $GITHUB_STEP_SUMMARY
+          echo "Ran: Makefile coverage target" >> $GITHUB_STEP_SUMMARY
+          echo "Target: ≥86% line coverage (Makefile-enforced)" >> $GITHUB_STEP_SUMMARY
+          echo "Features: all features" >> $GITHUB_STEP_SUMMARY
 
   # ═══ Layer 3: benchmarks — run in parallel with Layer 2 ══════════════════════
 
@@ -128,6 +119,7 @@ jobs:
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 35
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
       matrix:
         include:
@@ -137,24 +129,26 @@ jobs:
             runner: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-toolchain
-      - name: Install system libs (fft, heif, webp)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            libfftw3-dev libheif-dev libwebp-dev pkg-config
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.96.0"
       - name: Restore baseline from main
         uses: actions/cache/restore@v4
         with:
           path: target/criterion
           key: criterion-baseline-${{ matrix.arch }}-main
       - name: Run benchmarks
-        env:
-          BENCH_FEATURES: "--features default,simd-pulp,fft,heif,webp,tiff,png"
-        run: ./.github/scripts/bench.sh
+        run: |
+          if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
+            echo "▶ Baseline found — comparing against main"
+            make bench-compare
+          else
+            echo "▶ No baseline — running smoke test (first run)"
+            make bench-ci
+          fi
       - name: Save baseline (main only)
         if: github.ref == 'refs/heads/main'
-        run: make bench-baseline FEATURES="--features default,simd-pulp,fft,heif,webp,tiff,png"
+        run: make bench-baseline
       - name: Cache baseline (main only)
         if: github.ref == 'refs/heads/main'
         uses: actions/cache/save@v4
@@ -169,7 +163,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 15
     continue-on-error: true
-    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
       matrix:
         include:
@@ -198,7 +192,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     continue-on-error: true
-    container: ghcr.io/${{ github.repository_owner }}/viprs-perf:latest
+    container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
       matrix:
         include:

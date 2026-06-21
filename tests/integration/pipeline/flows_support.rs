@@ -1,7 +1,8 @@
 pub(crate) use proptest::prelude::*;
 use std::path::{Path, PathBuf};
 pub(crate) use viprs::{
-    BandFormatId, BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8,
+    BandFormatId, BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata,
+    Interpretation, U8,
     adapters::{
         pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
