@@ -1,4 +1,5 @@
 #![cfg(test)]
+#![allow(dead_code)]
 
 //! Test-only helpers for tracking allocations and running isolated measurement subprocesses.
 
