@@ -174,7 +174,7 @@ jobs:
           key: criterion-baseline-${{ matrix.arch }}-main
 
   build-xtask:
-    name: "Build benchmark tooling (${{ matrix.arch }})"
+    name: "Build libvips comparison tooling (${{ matrix.arch }})"
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
