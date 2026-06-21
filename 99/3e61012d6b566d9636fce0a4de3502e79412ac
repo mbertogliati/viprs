@@ -1,0 +1,23 @@
+docs/pr60-benchmark-audit.md
+  s_10f4f0046081e9::t_49b29ecd87270f 1-60,65-69
+  s_10f4f0046081e9::t_fb85eabccd6d32 61-64,70-81
+.github/workflows/ci.yml
+  s_10f4f0046081e9::t_c68a8b26c72fa9 121
+  s_10f4f0046081e9::t_3a22c702e5e486 136,141-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "993e61012d6b566d9636fce0a4de3502e79412ac",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
