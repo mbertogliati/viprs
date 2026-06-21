@@ -63,7 +63,7 @@ jobs:
   # ═══ Layer 2: tests + coverage — both delegated to Makefile targets ══════════
 
   test-unit:
-    name: "Tests (all features)"
+    name: "Tests (xtask)"
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
@@ -77,8 +77,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "test-unit"
-      - name: Run tests
-        run: make test
+      - name: Run xtask tests
+        run: make test-xtask
 
   test-and-coverage:
     name: "Coverage (ops + codecs, all features, ≥90%)"
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
-      steps:
+    steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4

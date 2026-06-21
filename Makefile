@@ -24,7 +24,7 @@ RUSTFLAGS_CI := -Dwarnings
 FEATURES ?= --all-features
 COVERAGE_PACKAGES := -p viprs-codecs -p viprs-ops-pixel -p viprs-ops-colour -p viprs-ops-spatial -p viprs-ops-composite
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test doc security deny audit require-cargo-audit require-cargo-deny bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -59,6 +59,12 @@ test:
 	# must not overlap with unrelated allocations from other xtask tests.
 	$(CARGO) test -p xtask --tests -- --test-threads=1
 	$(CARGO) test --workspace --doc $(FEATURES)
+
+## xtask tests only. Coverage runs the library workspace tests separately.
+test-xtask:
+	# xtask installs a process-global counting allocator, so exact-counter tests
+	# must not overlap with unrelated allocations from other xtask tests.
+	$(CARGO) test -p xtask --tests -- --test-threads=1
 
 ## Documentation (deny warnings)
 doc:
