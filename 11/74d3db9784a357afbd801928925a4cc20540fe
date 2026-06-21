@@ -1,0 +1,33 @@
+tests/unit.rs
+  s_10f4f0046081e9::t_d8d6351b5231fb 1
+tests/integration.rs
+  s_10f4f0046081e9::t_d8d6351b5231fb 1
+src/test_support.rs
+  s_10f4f0046081e9::t_d8d6351b5231fb 2
+crates/viprs-ops-spatial/Cargo.toml
+  s_10f4f0046081e9::t_d8d6351b5231fb 25
+Cargo.toml
+  s_10f4f0046081e9::t_d8d6351b5231fb 107-110
+xtask/src/bench.rs
+  s_10f4f0046081e9::t_d8d6351b5231fb 496
+crates/viprs-ops-colour/src/histogram.rs
+  s_10f4f0046081e9::t_d8d6351b5231fb 39
+crates/viprs-ops-spatial/src/resample/resize.rs
+  s_10f4f0046081e9::t_ecb1d9ff7efe67 429-430
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1174d3db9784a357afbd801928925a4cc20540fe",
+  "prompts": {},
+  "sessions": {
+    "s_10f4f0046081e9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ee671-3066-73c2-a849-83df85f07559",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
