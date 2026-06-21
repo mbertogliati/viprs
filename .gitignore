@@ -17,6 +17,8 @@ tools/bench-vs-libvips/libvips-web-runner
 /tmp/
 *.proptest-regressions
 proptest-regressions/
+tests/fixtures/images/
+tests/fixtures/.fixtures-*.manifest-sha256
 
 # Coverage and audit reports
 *.coverage_report*

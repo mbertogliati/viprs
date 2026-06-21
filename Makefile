@@ -24,7 +24,7 @@ RUSTFLAGS_CI := -Dwarnings
 FEATURES ?= --all-features
 COVERAGE_PACKAGES := -p viprs-codecs -p viprs-ops-pixel -p viprs-ops-colour -p viprs-ops-spatial -p viprs-ops-composite
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny fixtures fixtures-functional fixtures-bench fixtures-clean bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -51,8 +51,23 @@ clippy:
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
 	$(CARGO) check -p xtask
 
+## Download or refresh functional fixtures if the manifest changed.
+fixtures: fixtures-functional
+
+## Fixtures required by local tests and coverage.
+fixtures-functional:
+	./tools/fixtures.sh functional
+
+## Large fixtures required only by benchmarks and viprs/libvips comparisons.
+fixtures-bench: fixtures-functional
+	./tools/fixtures.sh bench
+
+## Remove downloaded fixture archives and manifest markers. Extracted files stay in place.
+fixtures-clean:
+	rm -rf .artifacts/fixtures tests/fixtures/.fixtures-*.manifest-sha256
+
 ## All tests: unit + integration + doctests
-test:
+test: fixtures-functional
 	$(CARGO) test --workspace --lib $(FEATURES)
 	$(CARGO) test --workspace --tests --exclude xtask $(FEATURES)
 	# xtask installs a process-global counting allocator, so exact-counter tests
@@ -61,7 +76,7 @@ test:
 	$(CARGO) test --workspace --doc $(FEATURES)
 
 ## xtask tests only. Coverage runs the library workspace tests separately.
-test-xtask:
+test-xtask: fixtures-bench
 	# xtask installs a process-global counting allocator, so exact-counter tests
 	# must not overlap with unrelated allocations from other xtask tests.
 	$(CARGO) test -p xtask --tests -- --test-threads=1
@@ -94,7 +109,7 @@ audit: require-cargo-audit
 	$(CARGO) audit
 
 ## Threshold: ≥90% line coverage for ops/codecs, using all workspace tests except xtask.
-coverage:
+coverage: fixtures-functional
 	$(CARGO) llvm-cov --workspace --exclude xtask $(FEATURES) --ignore-filename-regex '(benches|tests|crates/viprs-core/|crates/viprs-ports/|crates/viprs-runtime/|/viprs/src/)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
@@ -244,7 +259,7 @@ cross-setup:
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 
 ## Criterion micro-benchmarks — full suite (native CPU for fair comparison)
-bench:
+bench: fixtures-bench
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*'
 
 ## Fast CI benchmark gate (target ≤10 min: compile all, run only 512px with minimal stats)
@@ -267,7 +282,7 @@ CRITERION_BENCHES := $(shell awk 'BEGIN { in_bench = 0; name = ""; path = "" } \
 	in_bench && /^path = "/ { path = $$3; gsub(/"/, "", path); next } \
 	END { if (in_bench && path !~ /^benches\/iai\// && name != "") print name }' Cargo.toml)
 
-bench-ci:
+bench-ci: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Running $$bench"; \
@@ -276,7 +291,7 @@ bench-ci:
 	done
 
 ## Save baseline on main (CI calls this after merge to main)
-bench-baseline:
+bench-baseline: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Saving baseline for $$bench"; \
@@ -286,7 +301,7 @@ bench-baseline:
 	done
 
 ## Compare PR against main baseline — fails if any benchmark regresses >5%
-bench-compare:
+bench-compare: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Comparing $$bench"; \
@@ -307,7 +322,7 @@ BENCH_IMG_512  := tests/fixtures/images/bench_512x512.jpg
 BENCH_IMG_2048 := tests/fixtures/images/bench_2048x2048.jpg
 BENCH_IMG_8192 := tests/fixtures/images/bench_8192x8192.jpg
 
-bench-vs:
+bench-vs: fixtures-bench
 	@echo "══════════════════════════════════════════════════════════════════════"
 	@echo "  bench-vs: viprs/libvips ratio (target ≤1.00 = viprs wins)"
 	@echo "  iterations=$(BENCH_ITER) — increase for tighter confidence"

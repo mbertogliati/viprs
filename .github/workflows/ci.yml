@@ -15,7 +15,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   # Common container build tools — avoids duplicating the apt-get list in every job.
-  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev"
+  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev curl xz-utils"
 
 permissions:
   contents: read
@@ -68,9 +68,9 @@ jobs:
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     timeout-minutes: 20
     steps:
+      - name: Install fixture tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends curl xz-utils
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -91,8 +91,6 @@ jobs:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -128,6 +126,8 @@ jobs:
           - arch: x86_64
             runner: ubuntu-latest
     steps:
+      - name: Install fixture tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends curl xz-utils
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -145,15 +145,20 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          cp tools/fixtures.sh /tmp/viprs-fixtures.sh
+          cp tests/fixtures/fixtures.lock /tmp/viprs-fixtures.lock
 
           echo "▶ Saving Criterion baseline from PR base ${BASE_SHA}"
           git fetch --no-tags --depth=1 origin "${BASE_SHA}"
-          git checkout --detach "${BASE_SHA}"
+          git checkout --detach --force "${BASE_SHA}"
+          VIPRS_ROOT_DIR="$GITHUB_WORKSPACE" \
+            VIPRS_FIXTURES_MANIFEST=/tmp/viprs-fixtures.lock \
+            /tmp/viprs-fixtures.sh bench
           make bench-baseline
 
           echo "▶ Comparing PR head ${HEAD_SHA} against base baseline"
           git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
-          git checkout --detach "${HEAD_SHA}"
+          git checkout --detach --force "${HEAD_SHA}"
           make bench-compare
       - name: Run benchmarks on main
         if: github.event_name != 'pull_request'
@@ -221,10 +226,8 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev nasm jq bc
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev nasm jq bc curl xz-utils
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
