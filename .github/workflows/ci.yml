@@ -69,8 +69,6 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -91,8 +89,6 @@ jobs:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
