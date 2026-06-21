@@ -14,7 +14,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  # Common container build tools — avoids duplicating the apt-get list in every job.
+  # Common container build tools shared by CI jobs.
   CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev"
 
 permissions:
