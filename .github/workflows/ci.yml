@@ -29,8 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
-    steps:
+      steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -85,10 +87,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
-    steps:
+      steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
