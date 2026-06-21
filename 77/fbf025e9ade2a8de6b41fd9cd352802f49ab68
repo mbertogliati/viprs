@@ -1,0 +1,28 @@
+Makefile
+  s_93a32e8877b4b9::t_5ab88f3e413f7d 27,71-79
+  s_93a32e8877b4b9::t_f96386324952a0 124-125
+  s_93a32e8877b4b9::t_607d339b6c4a37 69-70
+tools/package-fixtures.sh
+  s_93a32e8877b4b9::t_607d339b6c4a37 1-6,8-12,15,30-32,46-58,88-93
+  s_93a32e8877b4b9::t_5ab88f3e413f7d 7,13-14,16-29,33-45,59-87
+.github/workflows/ci.yml
+  s_93a32e8877b4b9::t_f96386324952a0 154-155,165-166,252-253
+  s_93a32e8877b4b9::t_346dbb1d2d1d07 122,156-157,167-168
+  s_93a32e8877b4b9::t_e1e693e67a4ad2 18,236
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "77fbf025e9ade2a8de6b41fd9cd352802f49ab68",
+  "prompts": {},
+  "sessions": {
+    "s_93a32e8877b4b9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_117a2d90affepizoFMdKghryRt",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
