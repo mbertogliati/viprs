@@ -73,16 +73,17 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           pwd
-          git -c safe.directory="${{ github.workspace }}" rev-parse --show-toplevel
+          git config --global --add safe.directory "${{ github.workspace }}"
+          git rev-parse --show-toplevel
           for attempt in 1 2 3 4 5; do
-            if git -c safe.directory="${{ github.workspace }}" lfs pull --include="tests/fixtures/**"; then
+            if git lfs pull --include="tests/fixtures/**"; then
               exit 0
             fi
             sleep_seconds=$((attempt * attempt * 10))
             echo "LFS pull failed on attempt ${attempt}; retrying in ${sleep_seconds}s"
             sleep "${sleep_seconds}"
           done
-          git -c safe.directory="${{ github.workspace }}" lfs pull --include="tests/fixtures/**"
+          git lfs pull --include="tests/fixtures/**"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -107,16 +108,17 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           pwd
-          git -c safe.directory="${{ github.workspace }}" rev-parse --show-toplevel
+          git config --global --add safe.directory "${{ github.workspace }}"
+          git rev-parse --show-toplevel
           for attempt in 1 2 3 4 5; do
-            if git -c safe.directory="${{ github.workspace }}" lfs pull --include="tests/fixtures/**"; then
+            if git lfs pull --include="tests/fixtures/**"; then
               exit 0
             fi
             sleep_seconds=$((attempt * attempt * 10))
             echo "LFS pull failed on attempt ${attempt}; retrying in ${sleep_seconds}s"
             sleep "${sleep_seconds}"
           done
-          git -c safe.directory="${{ github.workspace }}" lfs pull --include="tests/fixtures/**"
+          git lfs pull --include="tests/fixtures/**"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -251,16 +253,17 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           pwd
-          git -c safe.directory="${{ github.workspace }}" rev-parse --show-toplevel
+          git config --global --add safe.directory "${{ github.workspace }}"
+          git rev-parse --show-toplevel
           for attempt in 1 2 3 4 5; do
-            if git -c safe.directory="${{ github.workspace }}" lfs pull --include="tests/fixtures/**"; then
+            if git lfs pull --include="tests/fixtures/**"; then
               exit 0
             fi
             sleep_seconds=$((attempt * attempt * 10))
             echo "LFS pull failed on attempt ${attempt}; retrying in ${sleep_seconds}s"
             sleep "${sleep_seconds}"
           done
-          git -c safe.directory="${{ github.workspace }}" lfs pull --include="tests/fixtures/**"
+          git lfs pull --include="tests/fixtures/**"
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
