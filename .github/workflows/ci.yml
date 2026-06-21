@@ -72,6 +72,8 @@ jobs:
       - name: Fetch LFS fixtures with backoff
         working-directory: ${{ github.workspace }}
         run: |
+          pwd
+          git rev-parse --show-toplevel
           for attempt in 1 2 3 4 5; do
             if git lfs pull --include="tests/fixtures/**"; then
               exit 0
@@ -104,6 +106,8 @@ jobs:
       - name: Fetch LFS fixtures with backoff
         working-directory: ${{ github.workspace }}
         run: |
+          pwd
+          git rev-parse --show-toplevel
           for attempt in 1 2 3 4 5; do
             if git lfs pull --include="tests/fixtures/**"; then
               exit 0
@@ -246,6 +250,8 @@ jobs:
       - name: Fetch LFS fixtures with backoff
         working-directory: ${{ github.workspace }}
         run: |
+          pwd
+          git rev-parse --show-toplevel
           for attempt in 1 2 3 4 5; do
             if git lfs pull --include="tests/fixtures/**"; then
               exit 0
