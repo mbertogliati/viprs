@@ -24,7 +24,7 @@ RUSTFLAGS_CI := -Dwarnings
 FEATURES ?= --all-features
 COVERAGE_PACKAGES := -p viprs-codecs -p viprs-ops-pixel -p viprs-ops-colour -p viprs-ops-spatial -p viprs-ops-composite
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny fixtures fixtures-functional fixtures-bench fixtures-clean bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny fixtures fixtures-functional fixtures-bench fixtures-clean fixtures-pack fixtures-pack-functional fixtures-pack-bench bench bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -65,6 +65,18 @@ fixtures-bench: fixtures-functional
 ## Remove downloaded fixture archives and manifest markers. Extracted files stay in place.
 fixtures-clean:
 	rm -rf .artifacts/fixtures tests/fixtures/.fixtures-*.manifest-sha256
+
+## Build release fixture archives without macOS xattrs. Does not publish assets.
+fixtures-pack:
+	./tools/package-fixtures.sh all
+
+## Build only the functional fixture archive without macOS xattrs.
+fixtures-pack-functional:
+	./tools/package-fixtures.sh functional
+
+## Build only the benchmark fixture archive without macOS xattrs.
+fixtures-pack-bench:
+	./tools/package-fixtures.sh bench
 
 ## All tests: unit + integration + doctests
 test: fixtures-functional
@@ -109,7 +121,8 @@ audit: require-cargo-audit
 	$(CARGO) audit
 
 ## Threshold: ≥90% line coverage for ops/codecs, using all workspace tests except xtask.
-coverage: fixtures-functional
+## Some codec tests embed benchmark fixtures at compile time with include_bytes!.
+coverage: fixtures-bench
 	$(CARGO) llvm-cov --workspace --exclude xtask $(FEATURES) --ignore-filename-regex '(benches|tests|crates/viprs-core/|crates/viprs-ports/|crates/viprs-runtime/|/viprs/src/)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)

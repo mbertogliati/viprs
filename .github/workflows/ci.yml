@@ -15,7 +15,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   # Common container build tools — avoids duplicating the apt-get list in every job.
-  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev curl xz-utils"
+  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git libclang-dev curl xz-utils"
 
 permissions:
   contents: read
@@ -119,6 +119,7 @@ jobs:
     timeout-minutes: 70
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - arch: arm64
@@ -150,7 +151,10 @@ jobs:
 
           echo "▶ Saving Criterion baseline from PR base ${BASE_SHA}"
           git fetch --no-tags --depth=1 origin "${BASE_SHA}"
-          git checkout --detach --force "${BASE_SHA}"
+          GIT_LFS_SKIP_SMUDGE=1 git -c filter.lfs.required=false \
+            -c filter.lfs.smudge=cat \
+            -c filter.lfs.process= \
+            checkout --detach --force "${BASE_SHA}"
           VIPRS_ROOT_DIR="$GITHUB_WORKSPACE" \
             VIPRS_FIXTURES_MANIFEST=/tmp/viprs-fixtures.lock \
             /tmp/viprs-fixtures.sh bench
@@ -158,7 +162,10 @@ jobs:
 
           echo "▶ Comparing PR head ${HEAD_SHA} against base baseline"
           git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
-          git checkout --detach --force "${HEAD_SHA}"
+          GIT_LFS_SKIP_SMUDGE=1 git -c filter.lfs.required=false \
+            -c filter.lfs.smudge=cat \
+            -c filter.lfs.process= \
+            checkout --detach --force "${HEAD_SHA}"
           make bench-compare
       - name: Run benchmarks on main
         if: github.event_name != 'pull_request'
@@ -226,7 +233,7 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev nasm jq bc curl xz-utils
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git libvips-dev nasm jq bc curl xz-utils
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -242,6 +249,8 @@ jobs:
         run: pkg-config --modversion vips || echo "libvips not found in container"
       - name: Build libvips runner
         run: make -C tools/bench-vs-libvips
+      - name: Restore benchmark fixtures
+        run: make fixtures-bench
       - name: Run E2E benchmark suite
         env:
           XTASK_BIN: ./target/release/xtask
