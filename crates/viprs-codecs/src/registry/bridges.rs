@@ -274,7 +274,11 @@ where
     Box::new(DecoderBridge::new(codec, file_extensions, false))
 }
 
-#[cfg(any(test, feature = "dcraw", feature = "openslide"))]
+#[cfg(any(
+    all(test, feature = "_integration"),
+    feature = "dcraw",
+    feature = "openslide"
+))]
 pub fn boxed_extension_decoder<C>(
     codec: C,
     file_extensions: &'static [&'static str],

@@ -12,7 +12,11 @@ mod runtime;
 #[cfg(all(test, feature = "_integration"))]
 mod tests;
 
-#[cfg(any(test, feature = "dcraw", feature = "openslide"))]
+#[cfg(any(
+    all(test, feature = "_integration"),
+    feature = "dcraw",
+    feature = "openslide"
+))]
 pub(crate) use bridges::boxed_extension_decoder;
 pub(crate) use bridges::{boxed_codec, boxed_decoder};
 pub use deepzoom::ImageCodecExt;

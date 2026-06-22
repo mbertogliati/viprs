@@ -7,6 +7,14 @@
 
 /// Checks that a system library is discoverable via pkg-config.
 /// Panics with a user-friendly message if not found.
+#[cfg(any(
+    feature = "jpeg",
+    feature = "libspng",
+    feature = "heif",
+    feature = "jxl",
+    feature = "icc",
+    feature = "openslide"
+))]
 fn require_system_lib(pkg_name: &str, feature: &str, install_hint: &str) {
     let result = std::process::Command::new("pkg-config")
         .args(["--exists", pkg_name])
