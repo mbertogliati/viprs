@@ -22,8 +22,9 @@ RUSTFLAGS_CI := -Dwarnings
 # if a required system library is missing, so this is safe on any machine.
 # Override: make check FEATURES="--features jpeg,png"
 FEATURES ?= --all-features
+COVERAGE_PACKAGES := -p viprs-codecs -p viprs-ops-pixel -p viprs-ops-colour -p viprs-ops-spatial -p viprs-ops-composite
 
-.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test doc security deny audit require-cargo-audit require-cargo-deny bench bench-vs coverage xtask
+.PHONY: all check ci cross cross-up cross-down cross-clean cross-setup cross-shell check-cross fmt clippy test test-xtask doc security deny audit require-cargo-audit require-cargo-deny fixtures fixtures-functional fixtures-bench fixtures-clean fixtures-pack fixtures-pack-functional fixtures-pack-bench bench bench-ci-full bench-baseline-full bench-compare-full bench-vs coverage xtask
 
 # ─── Developer targets ─────────────────────────────────────────────────────────
 
@@ -50,14 +51,47 @@ clippy:
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
 	$(CARGO) check -p xtask
 
+## Download or refresh functional fixtures if the manifest changed.
+fixtures: fixtures-functional
+
+## Fixtures required by local tests and coverage.
+fixtures-functional:
+	./tools/fixtures.sh functional
+
+## Large fixtures required only by benchmarks and viprs/libvips comparisons.
+fixtures-bench: fixtures-functional
+	./tools/fixtures.sh bench
+
+## Remove downloaded fixture archives and manifest markers. Extracted files stay in place.
+fixtures-clean:
+	rm -rf .artifacts/fixtures tests/fixtures/.fixtures-*.manifest-sha256
+
+## Build release fixture archives without macOS xattrs. Does not publish assets.
+fixtures-pack:
+	./tools/package-fixtures.sh all
+
+## Build only the functional fixture archive without macOS xattrs.
+fixtures-pack-functional:
+	./tools/package-fixtures.sh functional
+
+## Build only the benchmark fixture archive without macOS xattrs.
+fixtures-pack-bench:
+	./tools/package-fixtures.sh bench
+
 ## All tests: unit + integration + doctests
-test:
+test: fixtures-functional
 	$(CARGO) test --workspace --lib $(FEATURES)
 	$(CARGO) test --workspace --tests --exclude xtask $(FEATURES)
 	# xtask installs a process-global counting allocator, so exact-counter tests
 	# must not overlap with unrelated allocations from other xtask tests.
 	$(CARGO) test -p xtask --tests -- --test-threads=1
 	$(CARGO) test --workspace --doc $(FEATURES)
+
+## xtask tests only. Coverage runs the library workspace tests separately.
+test-xtask: fixtures-bench
+	# xtask installs a process-global counting allocator, so exact-counter tests
+	# must not overlap with unrelated allocations from other xtask tests.
+	$(CARGO) test -p xtask --tests -- --test-threads=1
 
 ## Documentation (deny warnings)
 doc:
@@ -86,9 +120,10 @@ deny: require-cargo-deny
 audit: require-cargo-audit
 	$(CARGO) audit
 
-## Threshold: ≥86% line coverage (enforced).
-coverage:
-	$(CARGO) llvm-cov --workspace --lib $(FEATURES) --ignore-filename-regex '(benches|tests)' --fail-under-lines 86
+## Threshold: ≥90% line coverage for ops/codecs, using all workspace tests except xtask.
+## Some codec tests embed benchmark fixtures at compile time with include_bytes!.
+coverage: fixtures-bench
+	$(CARGO) llvm-cov --workspace --exclude xtask $(FEATURES) --ignore-filename-regex '(benches|tests|crates/viprs-core/|crates/viprs-ports/|crates/viprs-runtime/|/viprs/src/)' --fail-under-lines 90
 
 ## Build xtask release (for benchmark runner — native CPU for fair comparison)
 xtask:
@@ -237,12 +272,11 @@ cross-setup:
 # ─── Benchmarks ────────────────────────────────────────────────────────────────
 
 ## Criterion micro-benchmarks — full suite (native CPU for fair comparison)
-bench:
+bench: fixtures-bench
 	RUSTFLAGS="-Ctarget-cpu=native" $(CARGO) bench $(FEATURES) --bench '*'
 
-## Fast CI benchmark gate (target ≤10 min: compile all, run only 512px with minimal stats)
-## Verifies all 246 bench targets compile AND execute without panics.
-## Full statistical runs (all sizes, 100 samples) are for local dev or scheduled jobs.
+## Fast CI benchmark gate (target ≤5 min per arch): representative base/head comparison.
+## The full suite is available through bench-ci-full / bench-baseline-full / bench-compare-full.
 ##
 ## CI overrides: disable fat LTO + use 16 codegen-units + no debuginfo → ~5x faster compile.
 ## Benchmark results are still valid (same opt-level 3, same target-cpu=native).
@@ -260,32 +294,73 @@ CRITERION_BENCHES := $(shell awk 'BEGIN { in_bench = 0; name = ""; path = "" } \
 	in_bench && /^path = "/ { path = $$3; gsub(/"/, "", path); next } \
 	END { if (in_bench && path !~ /^benches\/iai\// && name != "") print name }' Cargo.toml)
 
-bench-ci:
+## Representative PR gate. Keep this intentionally small: CI runs it for base and head on both arches.
+BENCH_CI_TARGETS ?= \
+	pipeline \
+	fusion \
+	invert \
+	add \
+	sin \
+	linear \
+	gauss_blur \
+	conv \
+	resize \
+	thumbnail \
+	srgb_to_lab \
+	hist_find
+
+BENCH_CI_ARGS := --sample-size 10 --warm-up-time 0.5 --measurement-time 0.5 --nresamples 100
+BENCH_FULL_CI_ARGS := --sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100
+BENCH_CI_FILTER := '/512'
+
+bench-ci: fixtures-bench
+	@set -e; \
+	for bench in $(BENCH_CI_TARGETS); do \
+		echo "▶ Running $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			$(BENCH_CI_ARGS) $(BENCH_CI_FILTER); \
+	done
+
+bench-ci-full: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Running $$bench"; \
 		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
-			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 '/512'; \
+			$(BENCH_FULL_CI_ARGS) $(BENCH_CI_FILTER); \
 	done
 
 ## Save baseline on main (CI calls this after merge to main)
-bench-baseline:
+bench-baseline: fixtures-bench
+	@set -e; \
+	for bench in $(BENCH_CI_TARGETS); do \
+		echo "▶ Saving baseline for $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			$(BENCH_CI_ARGS) --save-baseline main $(BENCH_CI_FILTER); \
+	done
+
+bench-baseline-full: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Saving baseline for $$bench"; \
 		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
-			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-			--save-baseline main '/512'; \
+			$(BENCH_FULL_CI_ARGS) --save-baseline main $(BENCH_CI_FILTER); \
 	done
 
 ## Compare PR against main baseline — fails if any benchmark regresses >5%
-bench-compare:
+bench-compare: fixtures-bench
+	@set -e; \
+	for bench in $(BENCH_CI_TARGETS); do \
+		echo "▶ Comparing $$bench"; \
+		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
+			$(BENCH_CI_ARGS) --baseline main $(BENCH_CI_FILTER); \
+	done
+
+bench-compare-full: fixtures-bench
 	@set -e; \
 	for bench in $(CRITERION_BENCHES); do \
 		echo "▶ Comparing $$bench"; \
 		$(BENCH_CI_ENV) $(CARGO) bench $(FEATURES) --bench "$$bench" -- \
-			--sample-size 10 --warm-up-time 1 --measurement-time 1 --nresamples 100 \
-			--baseline main '/512'; \
+			$(BENCH_FULL_CI_ARGS) --baseline main $(BENCH_CI_FILTER); \
 	done
 
 ## E2E comparison vs libvips (requires xtask + libvips installed).
@@ -300,7 +375,7 @@ BENCH_IMG_512  := tests/fixtures/images/bench_512x512.jpg
 BENCH_IMG_2048 := tests/fixtures/images/bench_2048x2048.jpg
 BENCH_IMG_8192 := tests/fixtures/images/bench_8192x8192.jpg
 
-bench-vs:
+bench-vs: fixtures-bench
 	@echo "══════════════════════════════════════════════════════════════════════"
 	@echo "  bench-vs: viprs/libvips ratio (target ≤1.00 = viprs wins)"
 	@echo "  iterations=$(BENCH_ITER) — increase for tighter confidence"

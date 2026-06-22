@@ -493,6 +493,7 @@ mod tests {
         assert!(!parsed.e2e);
     }
 
+    #[test]
     fn scenario_set_supports_composite_shrink() {
         assert!(scenario_set_supports_op("shrink"));
     }

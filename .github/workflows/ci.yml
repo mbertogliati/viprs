@@ -15,7 +15,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   # Common container build tools — avoids duplicating the apt-get list in every job.
-  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git git-lfs libclang-dev"
+  CONTAINER_BUILD_DEPS: "build-essential pkg-config cmake make nasm git libclang-dev curl xz-utils"
 
 permissions:
   contents: read
@@ -61,27 +61,27 @@ jobs:
   # ═══ Layer 2: tests + coverage — both delegated to Makefile targets ══════════
 
   test-unit:
-    name: "Tests (all features)"
+    name: "Tests (xtask)"
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     timeout-minutes: 20
     steps:
+      - name: Install fixture tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends curl xz-utils
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "test-unit"
-      - name: Run tests
-        run: make test
+      - name: Run xtask tests
+        run: make test-xtask
 
   test-and-coverage:
-    name: "Coverage (all features, ≥86%)"
+    name: "Coverage (ops + codecs, all features, ≥90%)"
     needs: [lint, test-unit]
     if: "!github.event.pull_request.draft"
     runs-on: ubuntu-latest
@@ -91,8 +91,6 @@ jobs:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -108,7 +106,7 @@ jobs:
         run: |
           echo "## Tests + Coverage" >> $GITHUB_STEP_SUMMARY
           echo "Ran: Makefile coverage target" >> $GITHUB_STEP_SUMMARY
-          echo "Target: ≥86% line coverage (Makefile-enforced)" >> $GITHUB_STEP_SUMMARY
+          echo "Target: ≥90% line coverage for ops/codecs (Makefile-enforced)" >> $GITHUB_STEP_SUMMARY
           echo "Features: all features" >> $GITHUB_STEP_SUMMARY
 
   # ═══ Layer 3: benchmarks — run in parallel with Layer 2 ══════════════════════
@@ -118,9 +116,10 @@ jobs:
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 35
+    timeout-minutes: 70
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - arch: arm64
@@ -128,16 +127,52 @@ jobs:
           - arch: x86_64
             runner: ubuntu-latest
     steps:
+      - name: Install fixture tools
+        run: apt-get update -qq && apt-get install -y --no-install-recommends curl xz-utils
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
       - name: Restore baseline from main
+        if: github.event_name != 'pull_request'
         uses: actions/cache/restore@v4
         with:
           path: target/criterion
           key: criterion-baseline-${{ matrix.arch }}-main
-      - name: Run benchmarks
+      - name: Compare PR benchmarks against base SHA
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          cp tools/fixtures.sh /tmp/viprs-fixtures.sh
+          cp tests/fixtures/fixtures.lock /tmp/viprs-fixtures.lock
+          cp Makefile /tmp/viprs-ci.Makefile
+
+          echo "▶ Saving Criterion baseline from PR base ${BASE_SHA}"
+          git fetch --no-tags --depth=1 origin "${BASE_SHA}"
+          GIT_LFS_SKIP_SMUDGE=1 git -c filter.lfs.required=false \
+            -c filter.lfs.smudge=cat \
+            -c filter.lfs.process= \
+            checkout --detach --force "${BASE_SHA}"
+          mkdir -p tools tests/fixtures
+          cp /tmp/viprs-fixtures.sh tools/fixtures.sh
+          cp /tmp/viprs-fixtures.lock tests/fixtures/fixtures.lock
+          VIPRS_ROOT_DIR="$GITHUB_WORKSPACE" \
+            VIPRS_FIXTURES_MANIFEST=/tmp/viprs-fixtures.lock \
+            /tmp/viprs-fixtures.sh bench
+          make -f /tmp/viprs-ci.Makefile bench-baseline
+
+          echo "▶ Comparing PR head ${HEAD_SHA} against base baseline"
+          git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
+          GIT_LFS_SKIP_SMUDGE=1 git -c filter.lfs.required=false \
+            -c filter.lfs.smudge=cat \
+            -c filter.lfs.process= \
+            checkout --detach --force "${HEAD_SHA}"
+          make bench-compare
+      - name: Run benchmarks on main
+        if: github.event_name != 'pull_request'
         run: |
           if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
             echo "▶ Baseline found — comparing against main"
@@ -157,7 +192,7 @@ jobs:
           key: criterion-baseline-${{ matrix.arch }}-main
 
   build-xtask:
-    name: "Build benchmark tooling (${{ matrix.arch }})"
+    name: "Build libvips comparison tooling (${{ matrix.arch }})"
     needs: [lint]
     if: "!github.event.pull_request.draft"
     runs-on: ${{ matrix.runner }}
@@ -202,10 +237,8 @@ jobs:
             runner: ubuntu-latest
     steps:
       - name: Install build tools
-        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git-lfs libvips-dev nasm jq bc
+        run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git libvips-dev nasm jq bc curl xz-utils
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -220,6 +253,8 @@ jobs:
         run: pkg-config --modversion vips || echo "libvips not found in container"
       - name: Build libvips runner
         run: make -C tools/bench-vs-libvips
+      - name: Restore benchmark fixtures
+        run: make fixtures-bench
       - name: Run E2E benchmark suite
         env:
           XTASK_BIN: ./target/release/xtask

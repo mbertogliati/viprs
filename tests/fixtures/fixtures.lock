@@ -1,0 +1,20 @@
+# Versioned fixture manifest. Update this file whenever release assets change.
+# Local setup compares this file's sha256 against tests/fixtures/.fixtures-*.manifest-sha256.
+
+version = "fixtures-v1"
+
+[[assets]]
+name = "functional"
+filename = "viprs-fixtures-functional-v1.tar.xz"
+url = "https://github.com/mbertogliati/viprs/releases/download/fixtures-v1/viprs-fixtures-functional-v1.tar.xz"
+sha256 = "0217e28ac7847f6e94749248127a094aa4ef4d0e636f6ad86df49cc8350c2010"
+size_bytes = "2848256"
+required_paths = "tests/fixtures/images/sample.jpg|tests/fixtures/images/sample.png|tests/fixtures/images/sample.webp|tests/fixtures/images/rgba.png"
+
+[[assets]]
+name = "bench"
+filename = "viprs-fixtures-bench-v1.tar.xz"
+url = "https://github.com/mbertogliati/viprs/releases/download/fixtures-v1/viprs-fixtures-bench-v1.tar.xz"
+sha256 = "5e8aaf132bcad26719905bfb9e74c5ff30c2fd160e816d414086e808b8750783"
+size_bytes = "625781124"
+required_paths = "tests/fixtures/images/bench_512x512.jpg|tests/fixtures/images/bench_2048x2048.jpg|tests/fixtures/images/bench_8192x8192.jpg"

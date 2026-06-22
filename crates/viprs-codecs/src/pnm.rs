@@ -754,7 +754,7 @@ impl ImageEncoder for PnmCodec {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viprs_core::format::{U8, U16};
+    use viprs_core::format::{F32, U8, U16};
 
     #[test]
     fn pnm_decodes_all_p1_to_p6_variants() {
@@ -820,6 +820,159 @@ mod tests {
         assert!(encoded_gray16.starts_with(b"P5\n"));
         let decoded_gray16 = pnm.decode::<U16>(&encoded_gray16).unwrap();
         assert_eq!(decoded_gray16.pixels(), gray16.pixels());
+    }
+
+    #[test]
+    fn pnm_header_probe_sniff_and_comments_cover_metadata_paths() {
+        let codec = PnmCodec::pnm();
+        assert!(codec.sniff(b"P6\n1 1\n255\n"));
+        assert!(!codec.sniff(b"PX\n"));
+
+        let src = b"P6\n# width follows\n2 # inline comment\n1\n255\n\x01\x02\x03\x04\x05\x06";
+        assert_eq!(codec.probe(src).unwrap(), (2, 1, 3));
+        let decoded = codec.decode::<U8>(src).unwrap();
+        assert_eq!(
+            decoded.metadata().interpretation,
+            Some(Interpretation::Srgb)
+        );
+
+        let gray16 = codec.decode::<U16>(b"P5\n1 1\n65535\n\x12\x34").unwrap();
+        assert_eq!(
+            gray16.metadata().interpretation,
+            Some(Interpretation::Grey16)
+        );
+        assert_eq!(gray16.pixels(), &[0x1234]);
+
+        let rgb16 = codec
+            .decode::<U16>(b"P6\n1 1\n65535\n\x00\x01\x00\x02\x00\x03")
+            .unwrap();
+        assert_eq!(rgb16.metadata().interpretation, Some(Interpretation::Rgb16));
+        assert_eq!(rgb16.pixels(), &[1, 2, 3]);
+    }
+
+    #[test]
+    fn pnm_decode_u16_bitmap_and_ascii_paths() {
+        let codec = PnmCodec::pnm();
+
+        let ascii_bitmap = codec.decode::<U16>(b"P1\n4 1\n0 1 0 1\n").unwrap();
+        assert_eq!(ascii_bitmap.pixels(), &[u16::MAX, 0, u16::MAX, 0]);
+
+        let binary_bitmap = codec.decode::<U16>(b"P4\n9 1\n\x55\x00").unwrap();
+        assert_eq!(
+            binary_bitmap.pixels(),
+            &[u16::MAX, 0, u16::MAX, 0, u16::MAX, 0, u16::MAX, 0, u16::MAX]
+        );
+
+        let ascii_gray = codec
+            .decode::<U16>(b"P2\n3 1\n65535\n0 32768 65535\n")
+            .unwrap();
+        assert_eq!(ascii_gray.pixels(), &[0, 32768, u16::MAX]);
+
+        let ascii_rgb = codec.decode::<U16>(b"P3\n1 1\n65535\n1 2 65535\n").unwrap();
+        assert_eq!(ascii_rgb.pixels(), &[1, 2, u16::MAX]);
+    }
+
+    #[test]
+    fn pnm_decode_rejects_header_and_raster_errors() {
+        let codec = PnmCodec::pnm();
+        let bad_inputs: &[&[u8]] = &[
+            b"",
+            b"P9\n1 1\n",
+            b"P5\nx 1\n255\n",
+            b"P5\n1 y\n255\n",
+            b"P5\n0 1\n255\n",
+            b"P5\n1 1\n0\n",
+            b"P5\n1 1\n65536\n",
+            b"P5\n1 1\n255",
+            b"P5\n1 1\n255\n",
+            b"P6\n1 1\n255\n\x01\x02",
+            b"P2\n1 1\n255\n256\n",
+            b"P2\n1 1\n65535\n256\n",
+            b"P2\n1 1\n10\n11\n",
+            b"P2\n1 1\n255\n",
+            b"P1\n1 1\n",
+            b"P1\n1 1\nnot-a-bit\n",
+        ];
+
+        for input in bad_inputs {
+            assert!(codec.decode::<U8>(input).is_err(), "{input:?}");
+        }
+
+        assert!(codec.decode::<U16>(b"P5\n1 1\n255\n\x00").is_err());
+        assert!(codec.decode::<U16>(b"P2\n1 1\n10\n11\n").is_err());
+        assert!(codec.decode::<F32>(b"P5\n1 1\n255\n\x00").is_err());
+    }
+
+    #[test]
+    fn pnm_encode_selects_variants_and_rejects_invalid_requests() {
+        let pbm = PnmCodec::pbm();
+        let pgm = PnmCodec::pgm();
+        let ppm = PnmCodec::ppm();
+        let pnm = PnmCodec::pnm();
+
+        let bitmap16 = Image::<U16>::from_buffer(
+            9,
+            1,
+            1,
+            vec![0, u16::MAX, 0, u16::MAX, 0, u16::MAX, 0, u16::MAX, 0],
+        )
+        .unwrap();
+        let encoded = pbm.encode(&bitmap16).unwrap();
+        assert!(encoded.starts_with(b"P4\n9 1\n"));
+        assert_eq!(&encoded[7..], &[0xaa, 0x80]);
+
+        let gray = Image::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
+        assert!(pgm.encode(&gray).unwrap().starts_with(b"P5\n"));
+        assert!(pnm.encode(&gray).unwrap().starts_with(b"P5\n"));
+
+        let bitmap = Image::<U8>::from_buffer(2, 1, 1, vec![0, u8::MAX]).unwrap();
+        assert!(pnm.encode(&bitmap).unwrap().starts_with(b"P4\n"));
+
+        let rgb = Image::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
+        assert!(ppm.encode(&rgb).unwrap().starts_with(b"P6\n"));
+
+        let two_band = Image::<U8>::from_buffer(1, 1, 2, vec![1, 2]).unwrap();
+        assert!(pbm.encode(&rgb).is_err());
+        assert!(pgm.encode(&rgb).is_err());
+        assert!(ppm.encode(&gray).is_err());
+        assert!(pnm.encode(&two_band).is_err());
+
+        let float_gray = Image::<F32>::from_buffer(1, 1, 1, vec![1.0]).unwrap();
+        assert!(pgm.encode(&float_gray).is_err());
+    }
+
+    #[test]
+    fn pnm_binary_comments_format_names_and_private_bitmap_helpers_are_covered() {
+        let codec = PnmCodec::pnm();
+        assert_eq!(ImageDecoder::format_name(&codec), "pnm");
+        assert_eq!(ImageEncoder::format_name(&codec), "pnm");
+
+        let decoded = codec
+            .decode::<U8>(b"P5\n1 1\n255\n# raster comment\n*")
+            .unwrap();
+        assert_eq!(decoded.pixels(), &[42]);
+
+        let rgb16 = Image::<U16>::from_buffer(1, 1, 3, vec![1, 258, u16::MAX]).unwrap();
+        let encoded = codec.encode(&rgb16).unwrap();
+        assert!(encoded.starts_with(b"P6\n1 1\n65535\n"));
+        assert_eq!(&encoded[13..], &[0, 1, 1, 2, 255, 255]);
+
+        let full_byte_u8 =
+            Image::<U8>::from_buffer(8, 1, 1, vec![0, 255, 0, 255, 0, 255, 0, 255]).unwrap();
+        assert_eq!(encode_pbm_u8(&full_byte_u8), vec![0b1010_1010]);
+
+        let full_byte_u16 = Image::<U16>::from_buffer(
+            8,
+            1,
+            1,
+            vec![0, u16::MAX, 0, u16::MAX, 0, u16::MAX, 0, u16::MAX],
+        )
+        .unwrap();
+        assert_eq!(encode_pbm_u16(&full_byte_u16), vec![0b1010_1010]);
+        assert!(is_binary_bitmap(&full_byte_u16));
+
+        let float_gray = Image::<F32>::from_buffer(1, 1, 1, vec![0.0]).unwrap();
+        assert!(!is_binary_bitmap(&float_gray));
     }
 
     #[test]

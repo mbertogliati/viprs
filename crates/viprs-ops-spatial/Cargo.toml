@@ -22,4 +22,5 @@ viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.0" }
 
 [features]
 _integration = []
+lock_instrumentation = []
 simd-pulp = ["dep:pulp"]

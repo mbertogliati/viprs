@@ -613,8 +613,6 @@ fn cached_static_webp_frame(
         return Ok(frame);
     }
 
-    #[cfg(test)]
-    WEBP_STATIC_REGION_FRAME_DECODES.fetch_add(1, Ordering::Relaxed);
     let (width, height, bands, pixels) = decode_static_webp_pixels(src, opts)?;
     let decoded = Arc::new(CachedStaticWebpFrame {
         width,
@@ -631,6 +629,8 @@ fn cached_static_webp_frame(
     if cache.len() >= WEBP_STATIC_REGION_CACHE_CAPACITY {
         cache.clear();
     }
+    #[cfg(test)]
+    WEBP_STATIC_REGION_FRAME_DECODES.fetch_add(1, Ordering::Relaxed);
     cache.insert(cache_key, Arc::clone(&decoded));
     drop(cache);
     Ok(decoded)
