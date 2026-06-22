@@ -45,9 +45,9 @@ else
 endif
 
 ## Clippy: enforce perf + unwrap/expect ban + pedantic + nursery (via Cargo.toml [lints.clippy]).
-## -Dwarnings ensures no warning passes silently. Also compiles all lib targets.
+## -Dwarnings ensures no warning passes silently. xtask is excluded (tooling, not library).
 clippy:
-	RUSTFLAGS="-Dwarnings" $(CARGO) clippy --workspace --lib $(FEATURES) -- \
+	RUSTFLAGS="-Dwarnings" $(CARGO) clippy --workspace --exclude xtask --lib $(FEATURES) -- \
 		-D clippy::perf -D clippy::unwrap_used -D clippy::expect_used
 	$(CARGO) check -p xtask
 
