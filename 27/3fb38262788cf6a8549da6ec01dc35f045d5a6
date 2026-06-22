@@ -1,0 +1,39 @@
+xtask/src/profile/samply.rs
+  s_0f53b455b62ec0::t_53642c8515f408 266-267,309-311,316-320,331-345,355-364
+  s_0f53b455b62ec0::t_2a1157a9d03685 440
+  s_0f53b455b62ec0::t_03fece1772fd85 778,784-787
+  s_0f53b455b62ec0::t_5377a30db239b9 424,426
+  s_0f53b455b62ec0::t_a197696f7df6ef 198-199
+  s_0f53b455b62ec0::t_2648a0d7acb543 301-308,312-315,321-330,346-354,365-368,525-526
+  s_0f53b455b62ec0::t_11a2fdf7a1a4a4 779-783,788-800
+  s_0f53b455b62ec0::t_62d0641faa9b4d 427
+  s_0f53b455b62ec0::t_cfa94390fea6fd 435,438-439,441-442
+  s_0f53b455b62ec0::t_0c01f93e401b95 637,640-642,669,671
+  s_0f53b455b62ec0::t_44c582faf7331a 425,436-437
+tools/bench-vs-libvips/libvips_runner.c
+  s_cb63fee015b2dc::t_24ccf2687a580a 2027
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "273fb38262788cf6a8549da6ec01dc35f045d5a6",
+  "prompts": {},
+  "sessions": {
+    "s_0f53b455b62ec0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10fe85282ffeBFBQm0s9x77iRm",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cb63fee015b2dc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_11004c3a9ffev9WIaIdySzPk0n",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
