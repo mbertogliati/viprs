@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use super::helpers::{DEFAULT_ITERATIONS, DEFAULT_VIPRS_CACHE_BYTES};
+use super::helpers::{DEFAULT_ITERATIONS, DEFAULT_VIPRS_CACHE_BYTES, is_workflow_like_op};
 
 pub struct BenchArgs {
     pub input: String,
@@ -28,10 +28,6 @@ pub struct BenchArgs {
     pub profile_only: bool,
     /// When true, expand the operation into the canonical parameter matrix.
     pub parameter_matrix: bool,
-}
-
-fn workflow_like_output_format_flag(op: &str) -> bool {
-    matches!(op, "workflow" | "perceptual_enhance" | "perceptual-enhance")
 }
 
 fn normalize_operation_alias(op: &str) -> &str {
@@ -367,14 +363,14 @@ pub fn parse_args(args: &[String]) -> BenchArgs {
         } else if args[i] == "--matrix" {
             parameter_matrix = true;
             i += 1;
-        } else if workflow_like_output_format_flag(&op) && args[i] == "--output-format" {
+        } else if is_workflow_like_op(&op) && args[i] == "--output-format" {
             let Some(format) = args.get(i + 1) else {
                 eprintln!("--output-format requires a format value");
                 std::process::exit(1);
             };
             workflow_output_format = Some(format.clone());
             i += 2;
-        } else if workflow_like_output_format_flag(&op) && args[i].starts_with("--output-format=") {
+        } else if is_workflow_like_op(&op) && args[i].starts_with("--output-format=") {
             let format = args[i]
                 .split_once('=')
                 .map(|(_, value)| value)

@@ -265,6 +265,11 @@ pub const INPUT_DIVERSITY_SUPPORTED_OPS: &[&str] = &[
     "ceil",
     "freqfilt",
 ];
+
+pub fn is_workflow_like_op(op: &str) -> bool {
+    matches!(op, "workflow" | "perceptual_enhance" | "perceptual-enhance")
+}
+
 pub const COMPUTE_BASELINE_SCENARIOS: &[ScenarioSpec] = &[
     ScenarioSpec {
         key: "gray-u8-512",

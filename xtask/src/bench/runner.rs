@@ -30,10 +30,10 @@ use viprs::ports::scheduler::{ReducingScheduler, TileScheduler};
 use super::helpers::{
     INPUT_DIVERSITY_SUPPORTED_OPS, WARMUP_ITERATIONS, append_trend, bench_fixtures_for_op,
     bench_result_percentiles, build_summary_row, encode_tiff_with_input, getrusage, git_sha,
-    iso_timestamp, libvips_backend_label, load_bench_image, load_bench_image_with_options,
-    load_tiff_save_input, parse_save_tiff_compression, percentile, scenario_display_label,
-    scenario_set, scenario_set_display_label, scenario_set_supports_op, scenario_slug,
-    viprs_backend_label, workflow_op_args_for_scenario,
+    is_workflow_like_op, iso_timestamp, libvips_backend_label, load_bench_image,
+    load_bench_image_with_options, load_tiff_save_input, parse_save_tiff_compression, percentile,
+    scenario_display_label, scenario_set, scenario_set_display_label, scenario_set_supports_op,
+    scenario_slug, viprs_backend_label, workflow_op_args_for_scenario,
 };
 use super::pipeline::{
     build_viprs_composite_pipeline, build_viprs_composite_pipeline_from_preloaded,
@@ -794,7 +794,7 @@ pub fn run_viprs_profile_only(
         return;
     }
 
-    if op == "workflow" || op == "perceptual_enhance" || op == "perceptual-enhance" {
+    if is_workflow_like_op(op) {
         let scheduler = RayonScheduler::new(threads).expect("scheduler creation");
         let source = preload_bench_source(input);
 
@@ -1936,13 +1936,12 @@ pub fn run_single(
     // Normalize perceptual_enhance op_args: both viprs and libvips must receive the same
     // target format. Viprs defaults to "webp" internally; ensure the C runner gets it too.
     let normalized_args: Vec<String>;
-    let op_args =
-        if (op == "perceptual_enhance" || op == "perceptual-enhance") && op_args.is_empty() {
-            normalized_args = vec!["webp".to_string()];
-            normalized_args.as_slice()
-        } else {
-            op_args
-        };
+    let op_args = if is_workflow_like_op(op) && op != "workflow" && op_args.is_empty() {
+        normalized_args = vec!["webp".to_string()];
+        normalized_args.as_slice()
+    } else {
+        op_args
+    };
 
     if !quiet {
         println!("Input: {}", input_path.display());
@@ -1990,12 +1989,13 @@ pub fn run_single(
     if !quiet {
         println!("--- {} ---", viprs_backend_label());
     }
-    let viprs_result =
-        if op == "workflow" || op == "perceptual_enhance" || op == "perceptual-enhance" {
-            run_viprs_workflow_bench(input_path, op, op_args, iterations, threads)
-        } else {
-            run_viprs_bench(input_path, op, op_args, iterations, threads, e2e)
-        };
+    let viprs_result = if !e2e {
+        run_viprs_bench(input_path, op, op_args, iterations, threads, false)
+    } else if is_workflow_like_op(op) {
+        run_viprs_workflow_bench(input_path, op, op_args, iterations, threads)
+    } else {
+        run_viprs_bench(input_path, op, op_args, iterations, threads, true)
+    };
     let mut viprs_sorted = viprs_result.wall_ns.clone();
     viprs_sorted.sort_unstable();
     let vp50 = percentile(&viprs_sorted, 0.50);
