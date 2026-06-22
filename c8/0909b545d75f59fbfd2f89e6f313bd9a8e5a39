@@ -1,0 +1,49 @@
+xtask/src/profile/samply.rs
+  s_0f53b455b62ec0::t_53642c8515f408 266-267,309-311,316-320,331-345,355-364
+  s_0f53b455b62ec0::t_2a1157a9d03685 440
+  s_0f53b455b62ec0::t_03fece1772fd85 778,784-787
+  s_0f53b455b62ec0::t_5377a30db239b9 424,426
+  s_0f53b455b62ec0::t_a197696f7df6ef 198-199
+  s_0f53b455b62ec0::t_2648a0d7acb543 301-308,312-315,321-330,346-354,365-368,525-526
+  s_0f53b455b62ec0::t_11a2fdf7a1a4a4 779-783,788-800
+  s_0f53b455b62ec0::t_62d0641faa9b4d 427
+  s_0f53b455b62ec0::t_cfa94390fea6fd 435,438-439,441-442
+  s_0f53b455b62ec0::t_0c01f93e401b95 637,640-642,669,671
+  s_0f53b455b62ec0::t_44c582faf7331a 425,436-437
+xtask/src/bench/runner.rs
+  s_cb63fee015b2dc::t_00116a79e47947 795-801,812-818,1845,1848-1852,1871-1876,2024
+  s_cb63fee015b2dc::t_bd40982f44c857 1855,1859-1863
+  s_cb63fee015b2dc::t_cdbe5887e843a8 780
+tools/bench-vs-libvips/libvips_runner.c
+  s_cb63fee015b2dc::t_9487a563ecdf4d 2009-2010,2013
+  s_cb63fee015b2dc::t_49b896f549460f 2732-2733,2736
+  s_cb63fee015b2dc::t_24ccf2687a580a 1954,1984,1986,1994,1997-2002,2005-2006,2036,2044,2047-2048,2050-2054
+xtask/src/bench/pipeline.rs
+  s_cb63fee015b2dc::t_f73a0e86bcc527 6
+  s_cb63fee015b2dc::t_fbcfe2ae244d08 33,2145-2147,2155-2156,2159
+  s_cb63fee015b2dc::t_4d1da4d6b9fee2 2157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "c80909b545d75f59fbfd2f89e6f313bd9a8e5a39",
+  "prompts": {},
+  "sessions": {
+    "s_0f53b455b62ec0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_10fe85282ffeBFBQm0s9x77iRm",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cb63fee015b2dc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_11004c3a9ffev9WIaIdySzPk0n",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
