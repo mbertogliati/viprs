@@ -195,8 +195,8 @@ fn print_ai_summary(label: &str, path: &Path) {
             eprintln!("    samply load {}", path.display());
         }
         Ok(entries) => {
-            println!("--- {label} top functions (self-time) ---");
-            println!("  #  self%  function");
+            println!("--- {label} top functions (actionable samples) ---");
+            println!("  #  samples%  function");
             for (index, entry) in entries.iter().enumerate() {
                 println!("{:>3}  {:>5.1}%  {}", index + 1, entry.percent, entry.name);
             }
@@ -263,53 +263,10 @@ fn extract_top_functions(
                 continue;
             }
 
-            let Some(frame_index) = thread
-                .stack_table
-                .frame
-                .get(stack_index)
-                .and_then(|value| *value)
+            let Some(function_name) =
+                first_actionable_stack_frame(stack_index, thread, strings, &profile.libs, resolver)
             else {
                 continue;
-            };
-            let Some(func_index) = thread
-                .frame_table
-                .func
-                .get(frame_index)
-                .and_then(|value| *value)
-            else {
-                continue;
-            };
-            let Some(name_index) = thread
-                .func_table
-                .name
-                .get(func_index)
-                .and_then(|value| *value)
-            else {
-                continue;
-            };
-            let Some(raw_name) = strings.get(name_index).map(|name| name.trim()) else {
-                continue;
-            };
-            if raw_name.is_empty() {
-                continue;
-            }
-
-            // Resolve hex addresses via the .syms.json sidecar when available.
-            let function_name = if is_hex_address(raw_name) {
-                resolver
-                    .and_then(|r| {
-                        resolve_hex_name(
-                            raw_name,
-                            func_index,
-                            &thread.func_table,
-                            &thread.resource_table,
-                            &profile.libs,
-                            r,
-                        )
-                    })
-                    .unwrap_or_else(|| raw_name.to_owned())
-            } else {
-                raw_name.to_owned()
             };
 
             *function_weights.entry(function_name).or_insert(0.0) += weight;
@@ -339,6 +296,75 @@ fn extract_top_functions(
     });
     entries.truncate(AI_SUMMARY_LIMIT);
     entries
+}
+
+fn first_actionable_stack_frame(
+    mut stack_index: usize,
+    thread: &SamplyThread,
+    strings: &[String],
+    libs: &[SamplyLib],
+    resolver: Option<&SymbolResolver>,
+) -> Option<String> {
+    loop {
+        if let Some(function_name) =
+            function_name_for_stack_frame(stack_index, thread, strings, libs, resolver)
+            && should_include_function(&function_name, MIN_SELF_PERCENT)
+        {
+            return Some(function_name);
+        }
+
+        stack_index = thread
+            .stack_table
+            .prefix
+            .get(stack_index)
+            .and_then(|value| *value)?;
+    }
+}
+
+fn function_name_for_stack_frame(
+    stack_index: usize,
+    thread: &SamplyThread,
+    strings: &[String],
+    libs: &[SamplyLib],
+    resolver: Option<&SymbolResolver>,
+) -> Option<String> {
+    let frame_index = thread
+        .stack_table
+        .frame
+        .get(stack_index)
+        .and_then(|value| *value)?;
+    let func_index = thread
+        .frame_table
+        .func
+        .get(frame_index)
+        .and_then(|value| *value)?;
+    let name_index = thread
+        .func_table
+        .name
+        .get(func_index)
+        .and_then(|value| *value)?;
+    let raw_name = strings.get(name_index)?.trim();
+    if raw_name.is_empty() {
+        return None;
+    }
+
+    // Homebrew libvips/libwebp often lack source-level debug info, but their
+    // dynamic symbol tables are still enough to turn sampled RVAs into useful
+    // shared-library function names via samply's sidecar.
+    if is_hex_address(raw_name) {
+        resolver.and_then(|r| {
+            resolve_hex_name(
+                raw_name,
+                func_index,
+                &thread.func_table,
+                &thread.resource_table,
+                libs,
+                r,
+            )
+        })
+    } else {
+        Some(raw_name.to_owned())
+    }
 }
 
 /// Resolves a hex-address function name to a real symbol name using the syms sidecar.
@@ -395,6 +421,10 @@ fn is_system_function(function_name: &str) -> bool {
         "_pthread",
         "clone",
         "dyld",
+        "g_cond_",
+        "g_async_queue_",
+        "g_mutex_",
+        "g_thread_proxy",
         "libc_",
         "libdyld",
         "libsystem_",
@@ -402,6 +432,14 @@ fn is_system_function(function_name: &str) -> bool {
         "pthread_",
         "start",
         "thread_start",
+        "vips_sink_disc",
+        "vips__semaphore_",
+        "vips__worker_lock",
+        "vips_thread_main_loop",
+        "vips_threadpool_run",
+        "vips_thread_run",
+        "vips_threadset_work",
+        "wbuffer_write_thread",
     ];
 
     PREFIXES
@@ -484,6 +522,8 @@ struct SampleTable {
 struct StackTable {
     #[serde(default)]
     frame: Vec<Option<usize>>,
+    #[serde(default)]
+    prefix: Vec<Option<usize>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -594,12 +634,12 @@ mod tests {
         // Thread 1: stacks [0,1,1,2], weights [3,2,2,1]
         //   name 0 "viprs::hot"                     w=3
         //   name 1 "core::ptr::copy_nonoverlapping"  w=2+2=4
-        //   name 2 "tin" (3 chars, filtered)         w=1 — still in total
+        //   name 2 "tin" (3 chars, filtered)         w=1 — not actionable
         // Thread 2: stacks [0], weights [2]
         //   name 1 "core::ptr::copy_nonoverlapping"  w=2
-        // total_weight = 10
-        // "core::ptr::copy_nonoverlapping" = 6/10 = 60%
-        // "viprs::hot"                     = 3/10 = 30%
+        // actionable_weight = 9
+        // "core::ptr::copy_nonoverlapping" = 6/9 = 66.7%
+        // "viprs::hot"                     = 3/9 = 33.3%
         let profile: SamplyProfile = serde_json::from_str(
             r#"{
                 "threads": [
@@ -626,9 +666,9 @@ mod tests {
 
         assert_eq!(entries.len(), 2);
         assert_eq!(entries[0].name, "core::ptr::copy_nonoverlapping");
-        assert!((entries[0].percent - 60.0).abs() < 0.001);
+        assert!((entries[0].percent - 66.666).abs() < 0.001);
         assert_eq!(entries[1].name, "viprs::hot");
-        assert!((entries[1].percent - 30.0).abs() < 0.001);
+        assert!((entries[1].percent - 33.333).abs() < 0.001);
     }
 
     #[test]
@@ -732,6 +772,30 @@ mod tests {
 
         assert_eq!(entries.len(), 1, "resolved symbol must appear in output");
         assert_eq!(entries[0].name, "viprs::pixel_path");
+    }
+
+    #[test]
+    fn falls_back_to_first_actionable_caller_when_leaf_is_wait_frame() {
+        let profile: SamplyProfile = serde_json::from_str(
+            r#"{
+                "threads": [
+                    {
+                        "samples": { "stack": [0, 0], "weight": [5, 5] },
+                        "stackTable": { "frame": [0, 1, 2], "prefix": [1, 2, null] },
+                        "frameTable": { "func": [0, 1, 2] },
+                        "funcTable": { "name": [0, 1, 2] },
+                        "stringArray": ["__psynch_cvwait", "g_cond_wait", "VP8EncTokenLoop"]
+                    }
+                ]
+            }"#,
+        )
+        .expect("profile should deserialize");
+
+        let entries = extract_top_functions(&profile, None);
+
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].name, "VP8EncTokenLoop");
+        assert!((entries[0].percent - 100.0).abs() < 0.001);
     }
 
     #[test]
