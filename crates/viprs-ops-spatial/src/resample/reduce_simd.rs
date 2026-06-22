@@ -123,7 +123,7 @@ pub fn reduce_v_scalar<T: ReduceSample>(
     }
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_u8(
     filter: &ReduceKernel,
@@ -154,7 +154,7 @@ pub fn reduce_h_u8(
     );
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_u8_planned(
     filter: &ReduceKernel,
@@ -210,7 +210,7 @@ pub fn reduce_h_u8_planned(
     );
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_u16(
     filter: &ReduceKernel,
@@ -237,7 +237,7 @@ pub fn reduce_h_u16(
     reduce_h_scalar(filter, input_region, input, bands, output_region, output);
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_f32(
     filter: &ReduceKernel,
@@ -264,7 +264,7 @@ pub fn reduce_h_f32(
     reduce_h_scalar(filter, input_region, input, bands, output_region, output);
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_v_u8(
     filter: &ReduceKernel,
@@ -311,7 +311,7 @@ pub fn reduce_v_u8(
     );
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_v_u16(
     filter: &ReduceKernel,
@@ -338,7 +338,7 @@ pub fn reduce_v_u16(
     reduce_v_scalar(filter, input_region, input, bands, output_region, output);
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_v_f32(
     filter: &ReduceKernel,
