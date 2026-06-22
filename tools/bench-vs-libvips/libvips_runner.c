@@ -92,6 +92,25 @@ static VipsImage *new_input_image(const struct input_blob *input_blob) {
     return image;
 }
 
+/* Discard callback for vips_sink_disc: accepts every region and returns success. */
+static int discard_tile_callback(VipsRegion *region, VipsRect *area, void *a) {
+    (void)region;
+    (void)area;
+    (void)a;
+    return 0;
+}
+
+/*
+ * Force full evaluation of `out` using a discard sink (no output buffer).
+ * This is the correct no-E2E evaluation sink: it forces all tiles to be
+ * computed (fulfilling demand) without allocating a copy of the full image.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int vips_sink_discard(VipsImage *out) {
+    return vips_sink_disc(out, discard_tile_callback, NULL);
+}
+
 static int run_thumbnail(const struct input_blob *input_blob, int width) {
     VipsImage *in = new_input_image(input_blob);
     if (!in) return -1;
@@ -101,11 +120,10 @@ static int run_thumbnail(const struct input_blob *input_blob, int width) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    /* Force pixel computation by writing to memory (no disk I/O) */
-    void *buf = vips_image_write_to_memory(out, NULL);
+    /* Force pixel computation without allocating a full output buffer. */
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_composite_e2e(const char *input, VipsBlendMode mode) {
@@ -132,10 +150,9 @@ static int run_resize(const struct input_blob *input_blob, double scale) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_zoom(const struct input_blob *input_blob, int xfac, int yfac) {
@@ -147,10 +164,9 @@ static int run_zoom(const struct input_blob *input_blob, int xfac, int yfac) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static VipsBlendMode parse_composite_mode_arg(const char *arg) {
@@ -172,10 +188,9 @@ static int run_composite(const struct input_blob *input_blob, VipsBlendMode mode
     g_object_unref(base);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_affine(const struct input_blob *input_blob,
@@ -191,10 +206,9 @@ static int run_affine(const struct input_blob *input_blob,
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_similarity(const struct input_blob *input_blob,
@@ -207,10 +221,9 @@ static int run_similarity(const struct input_blob *input_blob,
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_mapim(const struct input_blob *input_blob, const float *index_buf) {
@@ -234,10 +247,9 @@ static int run_mapim(const struct input_blob *input_blob, const float *index_buf
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_shrinkh(const struct input_blob *input_blob, int factor) {
@@ -249,10 +261,9 @@ static int run_shrinkh(const struct input_blob *input_blob, int factor) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_shrinkv(const struct input_blob *input_blob, int factor) {
@@ -264,10 +275,9 @@ static int run_shrinkv(const struct input_blob *input_blob, int factor) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_shrink(const struct input_blob *input_blob, int hfactor, int vfactor) {
@@ -279,10 +289,9 @@ static int run_shrink(const struct input_blob *input_blob, int hfactor, int vfac
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_linear(const struct input_blob *input_blob, double scale, double offset) {
@@ -294,10 +303,9 @@ static int run_linear(const struct input_blob *input_blob, double scale, double 
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_add(const struct input_blob *input_blob) {
@@ -333,10 +341,9 @@ static int run_and(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_equal(const struct input_blob *input_blob) {
@@ -348,10 +355,9 @@ static int run_equal(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_histogram(const struct input_blob *input_blob) {
@@ -363,10 +369,9 @@ static int run_histogram(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_recomb(const struct input_blob *input_blob) {
@@ -394,10 +399,9 @@ static int run_recomb(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_grey(int width, int height) {
@@ -405,10 +409,9 @@ static int run_grey(int width, int height) {
     int ret = vips_grey(&out, width, height, NULL);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_draw_line(int width, int height, int bands) {
@@ -433,10 +436,9 @@ static int run_draw_line(int width, int height, int bands) {
         return -1;
     }
 
-    void *buf = vips_image_write_to_memory(image, NULL);
+    int sink_ret = vips_sink_discard(image);
     g_object_unref(image);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_draw_rect(int width, int height, int bands) {
@@ -468,10 +470,9 @@ static int run_draw_rect(int width, int height, int bands) {
         return -1;
     }
 
-    void *buf = vips_image_write_to_memory(image, NULL);
+    int sink_ret = vips_sink_discard(image);
     g_object_unref(image);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_draw_circle(int width, int height, int bands) {
@@ -497,10 +498,9 @@ static int run_draw_circle(int width, int height, int bands) {
         return -1;
     }
 
-    void *buf = vips_image_write_to_memory(image, NULL);
+    int sink_ret = vips_sink_discard(image);
     g_object_unref(image);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_freqfilt(const struct input_blob *input_blob) {
@@ -524,10 +524,9 @@ static int run_freqfilt(const struct input_blob *input_blob) {
     g_object_unref(fft);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_gauss_blur(const struct input_blob *input_blob, double sigma) {
@@ -539,10 +538,9 @@ static int run_gauss_blur(const struct input_blob *input_blob, double sigma) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_colourspace_chain_image(VipsImage *in,
@@ -678,10 +676,9 @@ static int run_cast(const struct input_blob *input_blob, VipsBandFormat target) 
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static VipsDirection parse_flip_direction_arg(const char *arg) {
@@ -703,10 +700,9 @@ static int run_flip(const struct input_blob *input_blob, VipsDirection direction
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_gamma(const struct input_blob *input_blob, double exponent) {
@@ -718,10 +714,9 @@ static int run_gamma(const struct input_blob *input_blob, double exponent) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_invert_invert(const struct input_blob *input_blob) {
@@ -738,10 +733,9 @@ static int run_invert_invert(const struct input_blob *input_blob) {
     g_object_unref(tmp);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_invert_invert_e2e(const char *input) {
@@ -798,10 +792,9 @@ static int run_morphology(const struct input_blob *input_blob,
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_open(const struct input_blob *input_blob, int kernel_size) {
@@ -828,10 +821,9 @@ static int run_open(const struct input_blob *input_blob, int kernel_size) {
     g_object_unref(eroded);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_close(const struct input_blob *input_blob, int kernel_size) {
@@ -858,10 +850,9 @@ static int run_close(const struct input_blob *input_blob, int kernel_size) {
     g_object_unref(dilated);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_sharpen(const struct input_blob *input_blob, double sigma, double strength) {
@@ -880,10 +871,9 @@ static int run_sharpen(const struct input_blob *input_blob, double sigma, double
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_unsharp_mask(const struct input_blob *input_blob, double sigma, double strength) {
@@ -919,10 +909,9 @@ static int run_unsharp_mask(const struct input_blob *input_blob, double sigma, d
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_thumbnail_sharpen(const struct input_blob *input_blob) {
@@ -946,10 +935,9 @@ static int run_thumbnail_sharpen(const struct input_blob *input_blob) {
     g_object_unref(thumb);
     if (ret != 0 || !sharp) return -1;
 
-    void *buf = vips_image_write_to_memory(sharp, NULL);
+    int sink_ret = vips_sink_discard(sharp);
     g_object_unref(sharp);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_thumbnail_gauss_blur(const struct input_blob *input_blob) {
@@ -966,10 +954,9 @@ static int run_thumbnail_gauss_blur(const struct input_blob *input_blob) {
     g_object_unref(thumb);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_thumbnail_linear(const struct input_blob *input_blob) {
@@ -986,10 +973,9 @@ static int run_thumbnail_linear(const struct input_blob *input_blob) {
     g_object_unref(thumb);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_thumbnail_colourspace_cast(const struct input_blob *input_blob) {
@@ -1011,10 +997,9 @@ static int run_thumbnail_colourspace_cast(const struct input_blob *input_blob) {
     g_object_unref(lab);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_resize_colourspace(const struct input_blob *input_blob) {
@@ -1031,10 +1016,9 @@ static int run_resize_colourspace(const struct input_blob *input_blob) {
     g_object_unref(resized);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_embed(const struct input_blob *input_blob) {
@@ -1053,10 +1037,9 @@ static int run_embed(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_extract_area(const struct input_blob *input_blob) {
@@ -1074,10 +1057,9 @@ static int run_extract_area(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_embed_extract(const struct input_blob *input_blob) {
@@ -1099,10 +1081,9 @@ static int run_embed_extract(const struct input_blob *input_blob) {
     g_object_unref(embedded);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_three_op_chain(const struct input_blob *input_blob) {
@@ -1131,10 +1112,9 @@ static int run_three_op_chain(const struct input_blob *input_blob) {
     g_object_unref(sharp);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static VipsImage *new_conv_mask_image(const double *coeff,
@@ -1172,10 +1152,9 @@ static int run_conv(const struct input_blob *input_blob,
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_sobel(const struct input_blob *input_blob) {
@@ -1187,10 +1166,9 @@ static int run_sobel(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_prewitt(const struct input_blob *input_blob) {
@@ -1203,10 +1181,9 @@ static int run_prewitt(const struct input_blob *input_blob) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 #else
     (void)input_blob;
     fprintf(stderr, "vips_prewitt requires libvips >= 8.16\n");
@@ -1223,10 +1200,9 @@ static int run_median_blur(const struct input_blob *input_blob, int size) {
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
 
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_load(const char *input) {
@@ -1959,6 +1935,7 @@ static int run_three_op_chain_e2e(const char *input) {
 static int run_perceptual_enhance(const struct input_blob *input_blob,
                                   int width,
                                   const char *target_format) {
+    (void)target_format;
     VipsImage *in = new_input_image(input_blob);
     if (!in) return -1;
 
@@ -2006,16 +1983,9 @@ static int run_perceptual_enhance(const struct input_blob *input_blob,
     g_object_unref(sharp);
     if (ret != 0 || !gammad) return -1;
 
-    void *buf = NULL;
-    size_t len = 0;
-    ret = vips_image_write_to_buffer(gammad, target_format, &buf, &len, NULL);
+    ret = vips_sink_discard(gammad);
     g_object_unref(gammad);
-    if (ret != 0 || !buf || len == 0) {
-        if (buf) g_free(buf);
-        return -1;
-    }
-    g_free(buf);
-    return 0;
+    return ret;
 }
 
 static int run_perceptual_enhance_e2e(const char *input,
@@ -2242,10 +2212,9 @@ static int run_abs(const struct input_blob *input_blob) {
     int ret = vips_abs(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_abs_e2e(const char *input) {
@@ -2268,10 +2237,9 @@ static int run_sign(const struct input_blob *input_blob) {
     int ret = vips_sign(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_sign_e2e(const char *input) {
@@ -2294,10 +2262,9 @@ static int run_round(const struct input_blob *input_blob) {
     int ret = vips_rint(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_round_e2e(const char *input) {
@@ -2320,10 +2287,9 @@ static int run_floor_op(const struct input_blob *input_blob) {
     int ret = vips_floor(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_floor_e2e(const char *input) {
@@ -2346,10 +2312,9 @@ static int run_ceil_op(const struct input_blob *input_blob) {
     int ret = vips_ceil(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_ceil_e2e(const char *input) {
@@ -2372,10 +2337,9 @@ static int run_bandmean(const struct input_blob *input_blob) {
     int ret = vips_bandmean(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int run_bandmean_e2e(const char *input) {
@@ -2923,10 +2887,9 @@ static int op_invert(const char *input, void *ctx) {
     int ret = vips_invert(in, &out, NULL);
     g_object_unref(in);
     if (ret != 0 || !out) return -1;
-    void *buf = vips_image_write_to_memory(out, NULL);
+    int sink_ret = vips_sink_discard(out);
     g_object_unref(out);
-    g_free(buf);
-    return buf ? 0 : -1;
+    return sink_ret;
 }
 
 static int op_abs(const char *input, void *ctx) {

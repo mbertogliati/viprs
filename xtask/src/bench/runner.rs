@@ -12,7 +12,7 @@ use viprs::adapters::codecs::{
     AvifCodec, ExrCodec, GifCodec, HeifCodec, Jp2kCodec, JpegCodec, PngCodec, TiffCodec, WebpCodec,
 };
 use viprs::adapters::scheduler::rayon_scheduler::RayonScheduler;
-use viprs::adapters::sinks::memory::MemorySink;
+use viprs::adapters::sinks::{discard::DiscardSink, memory::MemorySink};
 use viprs::domain::codec_options::{LoadOptions, SaveOptions};
 use viprs::domain::draw::DrawOp;
 use viprs::domain::format::{BandFormat, BandFormatId, F32, U8, U16};
@@ -275,33 +275,55 @@ fn run_histogram_once(
     scheduler: &RayonScheduler,
     pipeline: &viprs::adapters::pipeline::CompiledPipeline,
     image: &BenchImage,
+    e2e: bool,
 ) {
     match image {
         BenchImage::U8(image) => {
-            let sink = MemorySink::for_pipeline(pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
             let reducer = HistFindOp::for_format(image.bands(), None, u8::MAX as u32);
-            let hist = scheduler
-                .run_with_reducer::<U8, HistFindOp>(pipeline, &sink, &reducer)
-                .expect("histogram run");
+            let hist = if e2e {
+                let sink = MemorySink::for_pipeline(pipeline)
+                    .expect("MemorySink allocation failed: dimensions too large for bench input");
+                scheduler
+                    .run_with_reducer::<U8, HistFindOp>(pipeline, &sink, &reducer)
+                    .expect("histogram run")
+            } else {
+                let sink = DiscardSink::new();
+                scheduler
+                    .run_with_reducer::<U8, HistFindOp>(pipeline, &sink, &reducer)
+                    .expect("histogram run")
+            };
             black_box(hist);
         }
         BenchImage::U16(image) => {
-            let sink = MemorySink::for_pipeline(pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
             let reducer = HistFindOp::for_format(image.bands(), None, u16::MAX as u32);
-            let hist = scheduler
-                .run_with_reducer::<U16, HistFindOp>(pipeline, &sink, &reducer)
-                .expect("histogram run");
+            let hist = if e2e {
+                let sink = MemorySink::for_pipeline(pipeline)
+                    .expect("MemorySink allocation failed: dimensions too large for bench input");
+                scheduler
+                    .run_with_reducer::<U16, HistFindOp>(pipeline, &sink, &reducer)
+                    .expect("histogram run")
+            } else {
+                let sink = DiscardSink::new();
+                scheduler
+                    .run_with_reducer::<U16, HistFindOp>(pipeline, &sink, &reducer)
+                    .expect("histogram run")
+            };
             black_box(hist);
         }
         BenchImage::F32(image) => {
-            let sink = MemorySink::for_pipeline(pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
             let reducer = HistFindOp::for_format(image.bands(), None, u8::MAX as u32);
-            let hist = scheduler
-                .run_with_reducer::<F32, HistFindOp>(pipeline, &sink, &reducer)
-                .expect("histogram run");
+            let hist = if e2e {
+                let sink = MemorySink::for_pipeline(pipeline)
+                    .expect("MemorySink allocation failed: dimensions too large for bench input");
+                scheduler
+                    .run_with_reducer::<F32, HistFindOp>(pipeline, &sink, &reducer)
+                    .expect("histogram run")
+            } else {
+                let sink = DiscardSink::new();
+                scheduler
+                    .run_with_reducer::<F32, HistFindOp>(pipeline, &sink, &reducer)
+                    .expect("histogram run")
+            };
             black_box(hist);
         }
     }
@@ -320,7 +342,7 @@ fn run_viprs_histogram_bench(
         for _ in 0..WARMUP_ITERATIONS {
             let image = load_bench_image(input);
             let pipeline = build_viprs_e2e_pipeline(input, "histogram", &[]);
-            run_histogram_once(&scheduler, &pipeline, &image);
+            run_histogram_once(&scheduler, &pipeline, &image, true);
         }
 
         let ru_before = getrusage();
@@ -329,7 +351,7 @@ fn run_viprs_histogram_bench(
             let start = Instant::now();
             let image = load_bench_image(input);
             let pipeline = build_viprs_e2e_pipeline(input, "histogram", &[]);
-            run_histogram_once(&scheduler, &pipeline, &image);
+            run_histogram_once(&scheduler, &pipeline, &image, true);
             wall_ns.push(start.elapsed().as_nanos() as u64);
         }
         let ru_after = getrusage();
@@ -352,7 +374,7 @@ fn run_viprs_histogram_bench(
     let preloaded_image = load_bench_image(input);
     for _ in 0..WARMUP_ITERATIONS {
         let pipeline = build_viprs_pipeline_from_preloaded(&source, "histogram", &[]);
-        run_histogram_once(&scheduler, &pipeline, &preloaded_image);
+        run_histogram_once(&scheduler, &pipeline, &preloaded_image, false);
     }
 
     let ru_before = getrusage();
@@ -360,7 +382,7 @@ fn run_viprs_histogram_bench(
     for _ in 0..iterations {
         let start = Instant::now();
         let pipeline = build_viprs_pipeline_from_preloaded(&source, "histogram", &[]);
-        run_histogram_once(&scheduler, &pipeline, &preloaded_image);
+        run_histogram_once(&scheduler, &pipeline, &preloaded_image, false);
         wall_ns.push(start.elapsed().as_nanos() as u64);
     }
     let ru_after = getrusage();
@@ -759,53 +781,34 @@ pub fn run_viprs_profile_only(
         let source = preload_bench_source(input);
         for _ in 0..WARMUP_ITERATIONS {
             let pipeline = build_viprs_composite_pipeline_from_preloaded(&source, mode);
-            let mut sink = MemorySink::for_pipeline(&pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
+            let mut sink = DiscardSink::new();
             scheduler
                 .run(&pipeline, &mut sink)
                 .expect("composite warmup");
-            black_box(sink);
         }
         for _ in 0..iterations {
             let pipeline = build_viprs_composite_pipeline_from_preloaded(&source, mode);
-            let mut sink = MemorySink::for_pipeline(&pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
+            let mut sink = DiscardSink::new();
             scheduler.run(&pipeline, &mut sink).expect("composite run");
-            black_box(sink);
         }
         return;
     }
 
     if op == "workflow" || op == "perceptual_enhance" || op == "perceptual-enhance" {
-        let target_format = op_args.first().map(String::as_str).unwrap_or("webp");
         let scheduler = RayonScheduler::new(threads).expect("scheduler creation");
         let source = preload_bench_source(input);
 
         for _ in 0..WARMUP_ITERATIONS {
             let pipeline = build_viprs_pipeline_from_preloaded(&source, op, op_args);
-            let width = pipeline.width;
-            let height = pipeline.height;
-            let bands = pipeline.output_bands;
-            let format = pipeline.output_format;
-            let mut sink = MemorySink::for_pipeline(&pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
+            let mut sink = DiscardSink::new();
             scheduler
                 .run(&pipeline, &mut sink)
                 .expect("workflow warmup");
-            let encoded = encode_sink_to_format(sink, width, height, bands, format, target_format);
-            black_box(encoded);
         }
         for _ in 0..iterations {
             let pipeline = build_viprs_pipeline_from_preloaded(&source, op, op_args);
-            let width = pipeline.width;
-            let height = pipeline.height;
-            let bands = pipeline.output_bands;
-            let format = pipeline.output_format;
-            let mut sink = MemorySink::for_pipeline(&pipeline)
-                .expect("MemorySink allocation failed: dimensions too large for bench input");
+            let mut sink = DiscardSink::new();
             scheduler.run(&pipeline, &mut sink).expect("workflow run");
-            let encoded = encode_sink_to_format(sink, width, height, bands, format, target_format);
-            black_box(encoded);
         }
         return;
     }
@@ -834,17 +837,13 @@ pub fn run_viprs_profile_only(
     let source = preload_bench_source(input);
     for _ in 0..WARMUP_ITERATIONS {
         let pipeline = build_viprs_pipeline_from_preloaded(&source, op, op_args);
-        let mut sink = MemorySink::for_pipeline(&pipeline)
-            .expect("MemorySink allocation failed: dimensions too large for bench input");
+        let mut sink = DiscardSink::new();
         scheduler.run(&pipeline, &mut sink).expect("warmup");
-        black_box(sink);
     }
     for _ in 0..iterations {
         let pipeline = build_viprs_pipeline_from_preloaded(&source, op, op_args);
-        let mut sink = MemorySink::for_pipeline(&pipeline)
-            .expect("MemorySink allocation failed: dimensions too large for bench input");
+        let mut sink = DiscardSink::new();
         scheduler.run(&pipeline, &mut sink).expect("run");
-        black_box(sink);
     }
 }
 
@@ -1444,8 +1443,7 @@ pub fn run_viprs_bench(
     let source = preload_bench_source(input);
     for _ in 0..WARMUP_ITERATIONS {
         let pipeline = build_viprs_pipeline_from_preloaded(&source, op, op_args);
-        let mut sink = MemorySink::for_pipeline(&pipeline)
-            .expect("MemorySink allocation failed: dimensions too large for bench input");
+        let mut sink = DiscardSink::new();
         scheduler.run(&pipeline, &mut sink).expect("warmup");
     }
 
@@ -1457,8 +1455,7 @@ pub fn run_viprs_bench(
     for _ in 0..iterations {
         let start = Instant::now();
         let pipeline = build_viprs_pipeline_from_preloaded(&source, op, op_args);
-        let mut sink = MemorySink::for_pipeline(&pipeline)
-            .expect("MemorySink allocation failed: dimensions too large for bench input");
+        let mut sink = DiscardSink::new();
         scheduler.run(&pipeline, &mut sink).expect("run");
         wall_ns.push(start.elapsed().as_nanos() as u64);
     }
@@ -1548,8 +1545,7 @@ fn run_viprs_composite_bench(
 
     for _ in 0..WARMUP_ITERATIONS {
         let pipeline = build_viprs_composite_pipeline_from_preloaded(&source, mode);
-        let mut sink = MemorySink::for_pipeline(&pipeline)
-            .expect("MemorySink allocation failed: dimensions too large for bench input");
+        let mut sink = DiscardSink::new();
         scheduler
             .run(&pipeline, &mut sink)
             .expect("composite warmup");
@@ -1560,8 +1556,7 @@ fn run_viprs_composite_bench(
     for _ in 0..iterations {
         let start = Instant::now();
         let pipeline = build_viprs_composite_pipeline_from_preloaded(&source, mode);
-        let mut sink = MemorySink::for_pipeline(&pipeline)
-            .expect("MemorySink allocation failed: dimensions too large for bench input");
+        let mut sink = DiscardSink::new();
         scheduler.run(&pipeline, &mut sink).expect("composite run");
         wall_ns.push(start.elapsed().as_nanos() as u64);
     }

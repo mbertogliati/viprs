@@ -69,6 +69,7 @@ pub mod pipeline {
         PipelineBuilder, PipelineOp, ThreadBufferPool,
     };
     pub use crate::adapters::scheduler::rayon_scheduler::RayonScheduler;
+    pub use crate::adapters::sinks::discard::DiscardSink;
     pub use crate::adapters::sinks::memory::MemorySink;
     pub use crate::adapters::sources::{memory::MemorySource, zero::ZeroSource};
     pub use crate::domain::error::BuildError;
