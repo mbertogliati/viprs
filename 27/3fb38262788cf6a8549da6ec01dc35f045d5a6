@@ -10,6 +10,7 @@ xtask/src/profile/samply.rs
   s_0f53b455b62ec0::t_cfa94390fea6fd 435,438-439,441-442
   s_0f53b455b62ec0::t_0c01f93e401b95 637,640-642,669,671
   s_0f53b455b62ec0::t_44c582faf7331a 425,436-437
+  s_cb63fee015b2dc::t_9513ce323d2af6 369,777
 tools/bench-vs-libvips/libvips_runner.c
   s_cb63fee015b2dc::t_24ccf2687a580a 2027
 ---
