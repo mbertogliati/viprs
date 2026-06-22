@@ -426,8 +426,8 @@ mod tests {
         let mut output_data = [0.0f32; 3];
         let input = Tile::<U8>::new(region, 1, &input_data);
         let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
         assert!((output_data[0] - 0.0).abs() < 1e-6);
         assert!((output_data[1] - 128.0 / 255.0).abs() < 1e-4);
         assert!((output_data[2] - 1.0).abs() < 1e-6);
@@ -453,7 +453,7 @@ mod tests {
         assert_eq!(cast.required_input_region(&region), region);
     }
 
-    /// Ported from libvips test_conversion.py::test_cast.
+    /// Ported from libvips `test_conversion.py::test_cast`.
     ///
     /// libvips test: "casting negative pixels to an unsigned format should clip to zero".
     /// In viprs, the f32 → u8 cast already clamps to [0,1] before scaling:
@@ -466,14 +466,14 @@ mod tests {
         let mut output_data = [255u8; 3];
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data[0], 0, "cast(-1.0f32 → u8) must clip to 0");
         assert_eq!(output_data[1], 0, "cast(-0.5f32 → u8) must clip to 0");
         assert_eq!(output_data[2], 0, "cast(-0.001f32 → u8) must clip to 0");
     }
 
-    /// Ported from libvips test_conversion.py::test_cast.
+    /// Ported from libvips `test_conversion.py::test_cast`.
     ///
     /// libvips test: "casting very positive pixels to a signed format should clip to max".
     /// f32 values > 1.0 clip to 255u8, and 1.0 maps to 255u8.
@@ -485,8 +485,8 @@ mod tests {
         let mut output_data = [0u8; 3];
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data[0], 255, "cast(1.0f32 → u8) must be 255");
         assert_eq!(output_data[1], 255, "cast(1.5f32 → u8) must clip to 255");
         assert_eq!(output_data[2], 255, "cast(100.0f32 → u8) must clip to 255");
@@ -502,8 +502,8 @@ mod tests {
         let mut output_data = [0.0f32; 17];
         let input = Tile::<U8>::new(region, 1, &input_data);
         let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
 
         let expected = scalar_u8_to_f32(&input_data);
         assert_eq!(output_data.len(), expected.len());
@@ -520,8 +520,8 @@ mod tests {
         let mut output_data = [0u8; 9];
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
 
         assert_eq!(output_data, [0, 0, 0, 64, 128, 255, 255, 255, 255]);
     }
@@ -536,8 +536,8 @@ mod tests {
         let mut output_data = [0u8; 13];
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
 
         assert_eq!(output_data, scalar_f32_to_u8(&input_data).as_slice());
     }
@@ -565,7 +565,7 @@ mod tests {
         assert_eq!(output, expected.as_slice());
     }
 
-    /// Ported from libvips test_conversion.py::test_cast.
+    /// Ported from libvips `test_conversion.py::test_cast`.
     ///
     /// libvips test: u8 0 → u16 0, u8 255 → u16 65535.
     /// In libvips cast, u8 is scaled to u16 by multiplying by 257 (= 65535/255).
@@ -577,8 +577,8 @@ mod tests {
         let mut output_data = [0u16; 3];
         let input = Tile::<U8>::new(region, 1, &input_data);
         let mut output = TileMut::<U16>::new(region, 1, &mut output_data);
-        let mut state = cast.start();
-        cast.process_region(&mut state, &input, &mut output);
+        cast.start();
+        cast.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data[0], 0, "u8(0) → u16 must be 0");
         assert_eq!(output_data[1], 257, "u8(1) → u16 must be 257");
         assert_eq!(output_data[2], 65535, "u8(255) → u16 must be 65535");
@@ -592,8 +592,8 @@ mod tests {
             let mut output_data = vec![0u8; samples.len()];
             let input = Tile::<U8>::new(region, 1, &samples);
             let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-            let mut state = cast.start();
-            cast.process_region(&mut state, &input, &mut output);
+            cast.start();
+            cast.process_region(&mut (), &input, &mut output);
             prop_assert_eq!(output_data, samples);
         }
     }

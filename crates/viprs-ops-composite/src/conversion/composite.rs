@@ -687,7 +687,7 @@ mod tests {
         let base = vec![0.2, 0.4, 0.6, 0.5];
         let overlay = vec![0.8, 0.2, 0.4, 0.5];
         let output = run_composite(BlendMode::Over, false, 4, &base, &overlay, 1, 1);
-        let alpha = 0.5 + 0.5 * (1.0 - 0.5);
+        let alpha = 0.5f32.mul_add(1.0 - 0.5, 0.5);
         assert!((output[3] - alpha).abs() < 1e-6);
         assert!((output[0] - 0.6).abs() < 1e-6);
         assert!((output[1] - 0.266_666_68).abs() < 1e-6);
@@ -1003,8 +1003,7 @@ mod tests {
         for (actual, expected) in actual.iter().zip(expected.iter()) {
             assert!(
                 (*actual as i16 - *expected as i16).abs() <= 1,
-                "mode {:?} channel mismatch: actual={actual}, expected={expected}",
-                mode
+                "mode {mode:?} channel mismatch: actual={actual}, expected={expected}"
             );
         }
 

@@ -748,7 +748,7 @@ fn pipeline_rgb_buffer_sizes_are_correct() {
     let tile_h = pipeline
         .demand_hint
         .tile_height(pipeline.width, pipeline.height) as usize;
-    let expected = tile_w * tile_h * 3 * 1; // bands=3, bps=1 (U8)
+    let expected = tile_w * tile_h * 3; // bands=3, bps=1 (U8)
     for &size in &pipeline.buffer_sizes {
         if size > 0 {
             assert_eq!(size, expected, "buffer size must account for 3 bands");

@@ -332,7 +332,7 @@ mod tests {
         }
     }
 
-    /// Call dyn_process_region_multi with two pre-built byte slices.
+    /// Call `dyn_process_region_multi` with two pre-built byte slices.
     fn run_multi(op: &AddImages, a: &[u8], b: &[u8], output: &mut [u8]) {
         let input_pixels = a.len() / sample_size(op.input_format());
         let output_pixels = output.len() / sample_size(op.output_format());
@@ -600,7 +600,7 @@ mod tests {
         assert_eq!(op.node_spec(64, 32), NodeSpec::identity(64, 32));
     }
 
-    /// Ported from libvips test_arithmetic.py::test_avg.
+    /// Ported from libvips `test_arithmetic.py::test_avg`.
     ///
     /// libvips test:
     ///   `im = pyvips.Image.black(50, 100)`
@@ -626,7 +626,7 @@ mod tests {
         );
     }
 
-    /// Ported from libvips test_arithmetic.py::test_avg.
+    /// Ported from libvips `test_arithmetic.py::test_avg`.
     ///
     /// libvips test: same as above but for the F32 format — float addition of
     /// 0.0 + 100.0 gives 100.0 (IEEE 754, no saturation).
@@ -641,7 +641,7 @@ mod tests {
         }
     }
 
-    /// Ported from libvips test_arithmetic.py::test_sub (two-image addition parity).
+    /// Ported from libvips `test_arithmetic.py::test_sub` (two-image addition parity).
     #[test]
     fn add_images_u8_is_commutative() {
         let op = AddImages::new(1, BandFormatId::U8);

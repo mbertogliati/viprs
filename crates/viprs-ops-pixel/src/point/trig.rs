@@ -320,7 +320,7 @@ mod tests {
         let original = pixels.clone();
         apply_chain_to_slice::<F32, _>(&chain, &mut pixels);
         for (a, b) in pixels.iter().zip(original.iter()) {
-            assert!((a - b).abs() < 1e-5, "exp(log({})) != {}, got {}", b, b, a);
+            assert!((a - b).abs() < 1e-5, "exp(log({b})) != {b}, got {a}");
         }
     }
 

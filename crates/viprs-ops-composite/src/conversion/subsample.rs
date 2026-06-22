@@ -347,9 +347,9 @@ mod tests {
         let input = Tile::<U8>::new(input_region, bands, input_data);
         let mut output_data = vec![0u8; output_region.pixel_count() * bands as usize];
         let mut output = TileMut::<U8>::new(output_region, bands, &mut output_data);
-        let mut state = op.start();
+        op.start();
         assert_eq!(input.region.width, input_width);
-        op.process_region(&mut state, &input, &mut output);
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 

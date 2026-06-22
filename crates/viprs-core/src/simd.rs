@@ -134,7 +134,7 @@ mod tests {
         assert!(!SimdLevel::Avx512F.has_neon());
     }
 
-    /// On aarch64, detect() must return Neon (NEON is mandatory on all aarch64 CPUs).
+    /// On aarch64, `detect()` must return Neon (NEON is mandatory on all aarch64 CPUs).
     #[cfg(target_arch = "aarch64")]
     #[test]
     fn detect_returns_neon_on_aarch64() {

@@ -200,7 +200,7 @@ pub(crate) mod tests {
         sinks::memory::MemorySink, sources::memory::MemorySource,
     };
 
-    pub(crate) fn run_bandunfold_for_bandfold_roundtrip(
+    pub fn run_bandunfold_for_bandfold_roundtrip(
         factor: u32,
         input_width: u32,
         height: u32,

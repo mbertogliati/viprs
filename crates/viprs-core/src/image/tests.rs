@@ -239,9 +239,7 @@ mod metadata_strip_tests {
             n_pages: None,
             animation_loop_count: None,
             uhdr_gainmap: None,
-            extra: [("key".to_string(), "val".to_string())]
-                .into_iter()
-                .collect(),
+            extra: std::iter::once(("key".to_string(), "val".to_string())).collect(),
         }
     }
 

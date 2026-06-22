@@ -54,10 +54,10 @@ fn bench_reorder(c: &mut Criterion) {
                     black_box(&edges),
                     black_box(&stable),
                 )
-            })
+            });
         });
         group.bench_function(BenchmarkId::new("reordered_schedule", depth), |b| {
-            b.iter(|| reorder_dag(black_box(&nodes), black_box(&edges)))
+            b.iter(|| reorder_dag(black_box(&nodes), black_box(&edges)));
         });
     }
 

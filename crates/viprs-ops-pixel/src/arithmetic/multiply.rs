@@ -252,7 +252,7 @@ mod tests {
 
             let mut rhs_mul_lhs = vec![0u8; len];
             {
-                let op = Multiply::<U8>::new(left.clone());
+                let op = Multiply::<U8>::new(left);
                 let input = Tile::<U8>::new(region, 1, &right);
                 let mut output = TileMut::<U8>::new(region, 1, &mut rhs_mul_lhs);
                 let mut state = ();

@@ -35,7 +35,7 @@ impl Op for PassThrough {
     fn start(&self) {}
 
     #[inline]
-    fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+    fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
         output.data.copy_from_slice(input.data);
     }
 }
@@ -60,10 +60,11 @@ impl Op for PanicOnceOp {
     fn start(&self) {}
 
     #[inline]
-    fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
-        if !self.triggered.swap(true, Ordering::SeqCst) {
-            panic!("synthetic rayon panic");
-        }
+    fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        assert!(
+            self.triggered.swap(true, Ordering::SeqCst),
+            "synthetic rayon panic"
+        );
         output.data.copy_from_slice(input.data);
     }
 }
@@ -88,7 +89,7 @@ impl Op for TypedPanicOnceOp {
     fn start(&self) {}
 
     #[inline]
-    fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+    fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
         if !self.triggered.swap(true, Ordering::SeqCst) {
             std::panic::panic_any(ViprsError::Codec("synthetic typed panic".into()));
         }
@@ -117,7 +118,7 @@ impl Op for BlockingOp {
     fn start(&self) {}
 
     #[inline]
-    fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+    fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
         let active = self.current.fetch_add(1, Ordering::SeqCst) + 1;
         let _ = self
             .max_seen
@@ -321,7 +322,7 @@ fn make_pipeline(width: u32, height: u32, hint: DemandHint) -> CompiledPipeline 
         }
         fn start(&self) {}
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -1401,7 +1402,7 @@ fn execute_tile_returns_error_when_later_transform_state_is_missing() {
         fn start(&self) {}
 
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -1479,7 +1480,7 @@ fn run_with_reducer_supports_bisource_reducer_side_input() {
         fn start(&self) {}
 
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -1589,7 +1590,7 @@ fn run_with_reducer_uses_accumulate_into_scratch_api() {
         }
         fn start(&self) {}
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -1647,13 +1648,13 @@ fn run_with_reducer_uses_accumulate_into_scratch_api() {
     );
 }
 
-/// Diamond DAG: Source → NodeA (Noop) ─────────┐
-///                      └─→ NodeB (LinearScale) ─┤
-///                                               └─→ NodeC (MergeAdd) → Sink
+/// Diamond DAG: Source → `NodeA` (Noop) ─────────┐
+///                      └─→ `NodeB` (`LinearScale`) ─┤
+///                                               └─→ `NodeC` (`MergeAdd`) → Sink
 ///
 /// `MergeAdd` sums the two input slices sample-by-sample, saturating at 255 (U8).
-/// The source has pixel values 10. NodeA passes through (10). NodeB doubles (20).
-/// MergeAdd: 10 + 20 = 30. Expected sink: all 30.
+/// The source has pixel values 10. `NodeA` passes through (10). `NodeB` doubles (20).
+/// `MergeAdd`: 10 + 20 = 30. Expected sink: all 30.
 ///
 /// This test exercises `execute_tile`'s multi-input path for the first time.
 #[test]
@@ -1685,7 +1686,7 @@ fn diamond_dag_merge_add_produces_correct_output() {
         }
         fn start(&self) {}
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -1704,7 +1705,7 @@ fn diamond_dag_merge_add_produces_correct_output() {
         }
         fn start(&self) {}
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             for (o, &i) in output.data.iter_mut().zip(input.data.iter()) {
                 *o = i.saturating_mul(2);
             }
@@ -2001,7 +2002,7 @@ fn execute_tile_propagates_distinct_regions_per_input_slot() {
 
         fn start(&self) {}
 
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -2025,7 +2026,7 @@ fn execute_tile_propagates_distinct_regions_per_input_slot() {
 
         fn start(&self) {}
 
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             self.seen_regions.lock().unwrap().push(input.region);
             output.data.copy_from_slice(input.data);
         }
@@ -2213,7 +2214,7 @@ fn execute_tile_materializes_coordinate_dependency_before_root_source_slot() {
 
         fn start(&self) {}
 
-        fn process_region(&self, _: &mut (), _input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), _input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.fill(5);
         }
     }

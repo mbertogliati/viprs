@@ -265,7 +265,7 @@ mod tests {
         }
     }
 
-    /// Ported from libvips test_arithmetic.py via the `linear` operation.
+    /// Ported from libvips `test_arithmetic.py` via the `linear` operation.
     ///
     /// libvips uses `vips_linear` for `im * [1,2,3] + [2,3,4]` in test setup.
     /// This test verifies the per-channel linear transform: `output = input * scale + offset`.
@@ -299,11 +299,11 @@ mod tests {
         );
     }
 
-    /// Ported from libvips test_arithmetic.py.
+    /// Ported from libvips `test_arithmetic.py`.
     ///
     /// libvips test: `(image + 100).deviate() ≈ 0` when the image is constant.
     /// A constant image has zero variance regardless of scale or offset.
-    /// Here we verify: linear(constant_tile, scale=5, offset=7) → constant output.
+    /// Here we verify: `linear(constant_tile`, scale=5, offset=7) → constant output.
     #[test]
     fn linear_constant_input_stays_constant() {
         let op = Linear::<F32>::new(5.0, 7.0).unwrap();
@@ -520,7 +520,7 @@ mod tests {
         fn linear_u16_matches_clipped_float_reference(
             pixels in proptest::collection::vec(any::<u16>(), 1..=64),
             scale in -8.0f64..8.0,
-            offset in -131072.0f64..131072.0,
+            offset in -131_072.0_f64..131_072.0,
         ) {
             let output = run_linear_u16(scale, offset, &pixels);
             let expected: Vec<u16> = pixels

@@ -196,7 +196,7 @@ impl SequentialLineCache {
     }
 
     #[cfg(test)]
-    pub(super) fn max_cached_lines(&self) -> usize {
+    pub(super) const fn max_cached_lines(&self) -> usize {
         self.max_cached_lines
     }
 }

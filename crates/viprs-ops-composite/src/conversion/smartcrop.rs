@@ -771,7 +771,7 @@ mod tests {
             .lines()
             .find_map(|line| line.strip_prefix(field))
             .and_then(|value| value.parse::<i32>().ok())
-            .map(|value| value.unsigned_abs())
+            .map(i32::unsigned_abs)
             .expect("expected offset field in vipsheader output")
     }
 

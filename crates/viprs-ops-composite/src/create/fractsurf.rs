@@ -369,8 +369,8 @@ mod tests {
 
                 for x in 0..width {
                     let sample = signal[row_offset + x];
-                    sum_re += sample * phase_re;
-                    sum_im += sample * phase_im;
+                    sum_re = sample.mul_add(phase_re, sum_re);
+                    sum_im = sample.mul_add(phase_im, sum_im);
 
                     let next_re = phase_re * step_re - phase_im * step_im;
                     let next_im = phase_re * step_im + phase_im * step_re;
@@ -428,8 +428,8 @@ mod tests {
 
                 for y in 0..height {
                     let (row_re, row_im) = rows[y * width + kx];
-                    sum_re += row_re * phase_re - row_im * phase_im;
-                    sum_im += row_re * phase_im + row_im * phase_re;
+                    sum_re += row_im.mul_add(-phase_im, row_re * phase_re);
+                    sum_im += row_im.mul_add(phase_re, row_re * phase_im);
 
                     let next_re = phase_re * step_re - phase_im * step_im;
                     let next_im = phase_re * step_im + phase_im * step_re;
@@ -459,7 +459,7 @@ mod tests {
         let sum_y = points.iter().map(|(_, y)| *y).sum::<f64>();
         let sum_xx = points.iter().map(|(x, _)| x * x).sum::<f64>();
         let sum_xy = points.iter().map(|(x, y)| x * y).sum::<f64>();
-        let slope = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+        let slope = sum_x.mul_add(-sum_y, count * sum_xy) / sum_x.mul_add(-sum_x, count * sum_xx);
 
         -(slope + 2.0) / 2.0
     }
@@ -600,7 +600,7 @@ mod tests {
 
     #[test]
     fn hurst_estimator_skips_zero_power_bins() {
-        let estimated_hurst = estimate_hurst_exponent(&vec![0.0; 16], 4, 4);
+        let estimated_hurst = estimate_hurst_exponent(&[0.0; 16], 4, 4);
 
         assert!(estimated_hurst.is_nan());
     }

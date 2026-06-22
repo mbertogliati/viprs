@@ -126,7 +126,7 @@ mod tests {
         }
     }
 
-    /// Ported from libvips test_arithmetic.py::test_cos.
+    /// Ported from libvips `test_arithmetic.py::test_cos`.
     ///
     /// libvips test: `my_cos(x) = math.cos(math.radians(x))` applied per-pixel.
     /// Key reference values: cos(60°) = 0.5, cos(45°) ≈ √2/2, cos(180°) = -1.

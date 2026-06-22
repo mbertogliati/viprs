@@ -232,8 +232,8 @@ mod tests {
         let input = Tile::<U8>::new(region, 1, input_data);
         let mut output_data = vec![0u8; input_data.len()];
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 
@@ -269,8 +269,8 @@ mod tests {
         let input = Tile::<U16>::new(region, 1, &input_data);
         let mut output_data = [1u16; 2];
         let mut output = TileMut::<U16>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data, input_data);
     }
 
@@ -282,8 +282,8 @@ mod tests {
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output_data = [0.0f32; 2];
         let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert!((output_data[0] - 0.5).abs() < 1e-6);
         assert!((output_data[1] - 1.0).abs() < 1e-6);
     }
@@ -296,8 +296,8 @@ mod tests {
         let input = Tile::<U16>::new(region, 1, &input_data);
         let mut output_data = [0u16; 1];
         let mut output = TileMut::<U16>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data, [12_417u16]);
     }
 
@@ -309,8 +309,8 @@ mod tests {
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output_data = [0.0f32; 1];
         let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert!((output_data[0] - 0.189_464_57).abs() < 1e-6);
     }
 

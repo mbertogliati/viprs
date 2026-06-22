@@ -240,8 +240,8 @@ mod tests {
         let op = BandboolOp::<U8>::new(operation, input_bands);
         let input = Tile::<U8>::new(region, input_bands as u32, input_data);
         let mut output = TileMut::<U8>::new(region, 1, output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
     }
 
     fn run_bandbool_f32(
@@ -255,8 +255,8 @@ mod tests {
         let op = BandboolOp::<F32>::new(operation, input_bands);
         let input = Tile::<F32>::new(region, input_bands as u32, input_data);
         let mut output = TileMut::<I32>::new(region, 1, output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
     }
 
     #[test]

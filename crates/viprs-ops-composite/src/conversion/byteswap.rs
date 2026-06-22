@@ -146,8 +146,8 @@ mod tests {
         let input = Tile::<U16>::new(region, 1, input_data);
         let mut output_data = vec![0u16; input_data.len()];
         let mut output = TileMut::<U16>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 
@@ -167,8 +167,8 @@ mod tests {
         let input = Tile::<U8>::new(region, 1, &input_data);
         let mut output_data = [0u8; 2];
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data, input_data);
     }
 
@@ -181,8 +181,8 @@ mod tests {
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output_data = [0.0f32; 1];
         let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert_eq!(output_data[0].to_bits(), 0x7856_3412);
     }
 
@@ -197,8 +197,8 @@ mod tests {
         let input = Tile::new(region, 2, &input_data);
         let mut output_data = [0u32; 4];
         let mut output = TileMut::new(region, 2, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert_eq!(
             output_data,
             [0x0403_0201, 0x4433_2211, 0xddcc_bbaa, 0x0df0_ad0b]

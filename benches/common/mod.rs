@@ -7,7 +7,7 @@ use viprs::domain::{
 
 pub const STANDARD_SIZES: [u32; 3] = [512, 2048, 8192];
 
-pub fn tile_region(hint: DemandHint, size: u32) -> Region {
+pub const fn tile_region(hint: DemandHint, size: u32) -> Region {
     Region::new(0, 0, hint.tile_width(size), hint.tile_height(size, size))
 }
 

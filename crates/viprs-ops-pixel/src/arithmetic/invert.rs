@@ -303,7 +303,7 @@ mod tests {
         assert_eq!(output_data[1], 0u8, "invert(255) must be 0");
     }
 
-    /// Ported from libvips test_arithmetic.py::test_invert.
+    /// Ported from libvips `test_arithmetic.py::test_invert`.
     ///
     /// libvips test: `~x & 0xff` for uchar format, applied per-pixel.
     /// libvips only tests invert on uchar (`fmt=[pyvips.BandFormat.UCHAR]`)
@@ -332,7 +332,7 @@ mod tests {
         assert_eq!(output_data[5], 55, "band 2 px 1");
     }
 
-    /// Ported from libvips test_arithmetic.py::test_invert.
+    /// Ported from libvips `test_arithmetic.py::test_invert`.
     ///
     /// libvips test: for u16 format, invert(x) = 65535 - x.
     /// Boundary: invert(0) = 65535, invert(65535) = 0.

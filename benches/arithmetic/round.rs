@@ -1,7 +1,7 @@
 #![allow(missing_docs)]
 /// Benchmark: Round<F32>, Floor<F32>, Ceil<F32> — element-wise rounding operations.
 ///
-/// Measures the full pipeline path: MemorySource → Op → MemorySink via RayonScheduler.
+/// Measures the full pipeline path: `MemorySource` → Op → `MemorySink` via `RayonScheduler`.
 /// Pixels are 0.5f32 to exercise the rounding boundary for all three variants.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::domain::ops::arithmetic::round::{Ceil, Floor, Round};

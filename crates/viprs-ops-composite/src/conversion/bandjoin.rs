@@ -317,14 +317,14 @@ mod tests {
         {
             let input = Tile::<U8>::new(region, 4, &rgba);
             let mut out = TileMut::<U8>::new(region, 1, &mut r_data);
-            let mut state = split_r.start();
-            split_r.process_region(&mut state, &input, &mut out);
+            split_r.start();
+            split_r.process_region(&mut (), &input, &mut out);
         }
         {
             let input = Tile::<U8>::new(region, 4, &rgba);
             let mut out = TileMut::<U8>::new(region, 1, &mut g_data);
-            let mut state = split_g.start();
-            split_g.process_region(&mut state, &input, &mut out);
+            split_g.start();
+            split_g.process_region(&mut (), &input, &mut out);
         }
 
         assert_eq!(r_data, [10, 11, 12], "R channel mismatch");
@@ -342,8 +342,8 @@ mod tests {
         {
             let input = Tile::<U8>::new(region, 4, &rgba);
             let mut out = TileMut::<U8>::new(region, 2, &mut expected);
-            let mut state = extract.start();
-            extract.process_region(&mut state, &input, &mut out);
+            extract.start();
+            extract.process_region(&mut (), &input, &mut out);
         }
 
         assert_eq!(

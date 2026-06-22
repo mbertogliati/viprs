@@ -13,7 +13,7 @@ static PEAK_LIVE_BYTES: AtomicU64 = AtomicU64::new(0);
 static LIVE_BYTES: AtomicU64 = AtomicU64::new(0);
 const ALLOC_STATS_PREFIX: &str = "VIPRS_ALLOC_STATS";
 
-pub(crate) struct CountingAllocator;
+pub struct CountingAllocator;
 
 // SAFETY: Delegates every allocation primitive to `System`. The extra atomic
 // bookkeeping does not affect the allocator contract and uses relaxed ordering
@@ -56,13 +56,13 @@ unsafe impl GlobalAlloc for CountingAllocator {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct AllocStats {
+pub struct AllocStats {
     pub(crate) alloc_count: u64,
     pub(crate) alloc_bytes: u64,
     pub(crate) peak_live_bytes: u64,
 }
 
-pub(crate) fn reset_alloc_stats() {
+pub fn reset_alloc_stats() {
     ALLOC_COUNT.store(0, Ordering::Relaxed);
     ALLOC_BYTES.store(0, Ordering::Relaxed);
     PEAK_LIVE_BYTES.store(0, Ordering::Relaxed);
@@ -70,7 +70,7 @@ pub(crate) fn reset_alloc_stats() {
 }
 
 #[must_use]
-pub(crate) fn alloc_stats() -> AllocStats {
+pub fn alloc_stats() -> AllocStats {
     AllocStats {
         alloc_count: ALLOC_COUNT.load(Ordering::Relaxed),
         alloc_bytes: ALLOC_BYTES.load(Ordering::Relaxed),
@@ -78,18 +78,18 @@ pub(crate) fn alloc_stats() -> AllocStats {
     }
 }
 
-pub(crate) fn should_run_alloc_stats_child(env_var: &str) -> bool {
+pub fn should_run_alloc_stats_child(env_var: &str) -> bool {
     std::env::var_os(env_var).is_some()
 }
 
-pub(crate) fn emit_alloc_stats(stats: AllocStats) {
+pub fn emit_alloc_stats(stats: AllocStats) {
     println!(
         "{ALLOC_STATS_PREFIX} alloc_count={} alloc_bytes={} peak_live_bytes={}",
         stats.alloc_count, stats.alloc_bytes, stats.peak_live_bytes
     );
 }
 
-pub(crate) fn run_alloc_stats_child(test_name: &str, env_var: &str) -> AllocStats {
+pub fn run_alloc_stats_child(test_name: &str, env_var: &str) -> AllocStats {
     let output = Command::new(std::env::current_exe().unwrap())
         .env(env_var, "1")
         .arg("--exact")

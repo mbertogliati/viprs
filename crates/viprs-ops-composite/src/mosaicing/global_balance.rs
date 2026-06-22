@@ -455,7 +455,7 @@ mod tests {
         let balanced_left = solution.gains[0] * 10.0;
         let balanced_right = solution.gains[1] * 20.0;
         assert!((balanced_left - balanced_right).abs() < 1e-6);
-        assert!((solution.gains[0] * solution.gains[1] - 1.0).abs() < 1e-6);
+        assert!(solution.gains[0].mul_add(solution.gains[1], -1.0).abs() < 1e-6);
     }
 
     #[test]
@@ -577,7 +577,12 @@ mod tests {
 
         let solution = <GlobalBalanceReducer as TileReducer<U8>>::finalize(&reducer, combined);
 
-        assert!((solution.gains[0] * 4.0 - solution.gains[1] * 9.0).abs() < 1e-6);
+        assert!(
+            solution.gains[1]
+                .mul_add(-9.0, solution.gains[0] * 4.0)
+                .abs()
+                < 1e-6
+        );
     }
 
     proptest! {

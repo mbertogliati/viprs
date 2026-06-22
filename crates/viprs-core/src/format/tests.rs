@@ -3,8 +3,10 @@ use super::*;
 #[test]
 fn band_format_id_is_copy() {
     let id = BandFormatId::U8;
-    let _id2 = id;
-    let _id3 = id;
+    let id2 = id;
+    let id3 = id;
+    assert_eq!(id, id2);
+    assert_eq!(id, id3);
 }
 
 #[test]

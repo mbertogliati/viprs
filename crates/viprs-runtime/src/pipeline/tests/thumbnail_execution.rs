@@ -117,7 +117,7 @@ fn run_to_image_propagates_source_metadata() {
         fn start(&self) {}
 
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -303,7 +303,7 @@ fn branch_point_cache_reuses_upstream_tile_within_and_across_runs() {
         fn start(&self) -> Self::State {}
 
         #[inline]
-        fn process_region(&self, _: &mut Self::State, input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut Self::State, input: &Tile<U8>, output: &mut TileMut<U8>) {
             self.calls.fetch_add(1, Ordering::SeqCst);
             output.data.copy_from_slice(input.data);
         }
@@ -380,7 +380,7 @@ fn clearing_branch_point_cache_forces_recompute_on_next_run() {
         fn start(&self) -> Self::State {}
 
         #[inline]
-        fn process_region(&self, _: &mut Self::State, input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut Self::State, input: &Tile<U8>, output: &mut TileMut<U8>) {
             self.calls.fetch_add(1, Ordering::SeqCst);
             output.data.copy_from_slice(input.data);
         }
