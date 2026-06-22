@@ -7,26 +7,31 @@ use viprs::domain::{
 
 pub const STANDARD_SIZES: [u32; 3] = [512, 2048, 8192];
 
+#[allow(dead_code)]
 pub const fn tile_region(hint: DemandHint, size: u32) -> Region {
     Region::new(0, 0, hint.tile_width(size), hint.tile_height(size, size))
 }
 
+#[allow(dead_code)]
 pub fn sample_count(region: Region, bands: u32) -> usize {
     region.pixel_count() * bands as usize
 }
 
+#[allow(dead_code)]
 pub fn direct_tile_regions<O: Op>(op: &O, size: u32) -> (Region, Region) {
     let output = tile_region(op.demand_hint(), size);
     let input = op.required_input_region(&output);
     (input, output)
 }
 
+#[allow(dead_code)]
 pub fn full_image_regions<O: Op>(op: &O, size: u32) -> (Region, Region) {
     let output = Region::new(0, 0, size, size);
     let input = op.required_input_region(&output);
     (input, output)
 }
 
+#[allow(dead_code)]
 pub fn colour_convert_tile_regions<C, FromCs, ToCs>(converter: &C, size: u32) -> (Region, Region)
 where
     C: viprs::domain::colour::ColourConvert<FromCs, ToCs>,
@@ -38,6 +43,7 @@ where
     (input, output)
 }
 
+#[allow(dead_code)]
 pub fn bench_direct_op_with_regions<O, In, Out, MakeOp, MakeRegions, MakeInput>(
     c: &mut Criterion,
     group_name: &str,
@@ -78,6 +84,7 @@ pub fn bench_direct_op_with_regions<O, In, Out, MakeOp, MakeRegions, MakeInput>(
     group.finish();
 }
 
+#[allow(dead_code)]
 pub fn bench_colour_convert_with_regions<
     C,
     FromCs,
