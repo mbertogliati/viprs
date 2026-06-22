@@ -407,4 +407,59 @@ Before pushing any change that touches CI (workflows, Makefile targets, test fil
 3. **One push = one green CI run.** If CI fails after your push, your methodology was wrong. Fix the methodology, not just the symptom.
 
 Rationale: each failed CI run wastes 10-15 minutes of compute, blocks other PRs, and erodes trust in the pipeline. Trial-and-error pushing is not engineering — it's guessing.
+
+---
+
+## Reproducing warnings/errors locally across architectures
+
+The workspace has `warnings = "deny"` in `[workspace.lints.rust]`, so **any warning is a
+compile error**. Warnings can hide behind feature flags and architecture-specific `#[cfg]`
+blocks. You MUST check all combinations before pushing.
+
+### Quick reference: what to run
+
+```bash
+# ── 1. Library lint (ARM/local) ──
+make fmt && make clippy          # this is the minimum gate
+
+# ── 2. Test compilation with -Dwarnings (catches dead_code in test modules) ──
+RUSTFLAGS="-Dwarnings" cargo test --workspace --exclude xtask --lib --all-features --no-run
+
+# ── 3. Benchmark compilation ──
+cargo bench --no-run
+
+# ── 4. Cross-architecture (x86_64 via Docker) ──
+make cross-sync
+# Clippy (lib):
+docker exec -w /src viprs-cross-x86_64 bash -c \
+  'RUSTFLAGS="-Dwarnings" cargo clippy --workspace --exclude xtask --lib --features "jpeg,png,webp,gif,tiff,avif,fft,tracing,icc,heif,jxl,openslide,dcraw" -- -D clippy::perf -D clippy::unwrap_used -D clippy::expect_used'
+
+# Test compilation (catches arch-specific dead code):
+docker exec -w /src viprs-cross-x86_64 bash -c \
+  'RUSTFLAGS="-Dwarnings" cargo test --workspace --exclude xtask --lib --features "jpeg,png,webp,gif,tiff,avif,fft,tracing,icc,heif,jxl,openslide,dcraw,_integration,lock_instrumentation,simd-pulp,mmap,rayon" --no-run'
+
+# xtask build (what CI's `make xtask` does on x86):
+docker exec -w /src viprs-cross-x86_64 bash -c \
+  'RUSTFLAGS="-Ctarget-cpu=native" cargo build --release -p xtask --features count-alloc'
+```
+
+### Why warnings hide per-architecture
+
+Many functions in `viprs-ops-spatial` dispatch to NEON (aarch64) or AVX2 (x86_64+avx2)
+implementations. Test helpers that validate scalar-vs-SIMD parity are gated with:
+
+```rust
+#[cfg(any(target_arch = "aarch64", all(target_arch = "x86_64", target_feature = "avx2")))]
+```
+
+On CI's `ubuntu-latest` (x86_64 **without** AVX2 by default), these blocks don't compile,
+leaving their helper functions as dead code → error under `deny(warnings)`.
+
+Similarly, constants/functions used only by `_root_test_support`-gated tests appear dead
+when compiled without that feature.
+
+### Key principle
+
+**If a function is only called from a `#[cfg(...)]` block, the function itself must carry
+the same `#[cfg(...)]` attribute.** Otherwise it's dead code on the excluded architectures.
 - Third-party secrets: scoped to the corresponding environment (dev/staging/prod), not the global repo.
