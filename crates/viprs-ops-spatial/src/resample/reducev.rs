@@ -264,10 +264,19 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
+    #[cfg(any(
+        target_arch = "aarch64",
+        all(target_arch = "x86_64", target_feature = "avx2")
+    ))]
     use crate::resample::reduce_simd;
     use proptest::prelude::*;
+    #[cfg(any(
+        target_arch = "aarch64",
+        all(target_arch = "x86_64", target_feature = "avx2")
+    ))]
+    use viprs_core::format::U16;
     use viprs_core::{
-        format::{BandFormatId, F32, U8, U16},
+        format::{BandFormatId, F32, U8},
         image::{Region, Tile, TileMut},
         kernel::InterpolationKernel,
         op::DynOperation,
@@ -326,6 +335,10 @@ mod tests {
         output_data
     }
 
+    #[cfg(any(
+        target_arch = "aarch64",
+        all(target_arch = "x86_64", target_feature = "avx2")
+    ))]
     fn run_reduce_v_u16(input_data: &[u16], factor: f64, kernel: InterpolationKernel) -> Vec<u16> {
         let source =
             MemorySource::<U16>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
@@ -346,6 +359,10 @@ mod tests {
         output_data
     }
 
+    #[cfg(any(
+        target_arch = "aarch64",
+        all(target_arch = "x86_64", target_feature = "avx2")
+    ))]
     fn run_reduce_v_u8_scalar(
         input_data: &[u8],
         factor: f64,
@@ -374,6 +391,10 @@ mod tests {
         output_data
     }
 
+    #[cfg(any(
+        target_arch = "aarch64",
+        all(target_arch = "x86_64", target_feature = "avx2")
+    ))]
     fn run_reduce_v_u16_scalar(
         input_data: &[u16],
         factor: f64,
@@ -402,6 +423,10 @@ mod tests {
         output_data
     }
 
+    #[cfg(any(
+        target_arch = "aarch64",
+        all(target_arch = "x86_64", target_feature = "avx2")
+    ))]
     fn run_reduce_v_f32_scalar(
         input_data: &[f32],
         factor: f64,
