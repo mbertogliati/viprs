@@ -20,6 +20,7 @@ jobs:
         id: release
         with:
           release-type: rust
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
 
   publish:
     name: Publish to crates.io
