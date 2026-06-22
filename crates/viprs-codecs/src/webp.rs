@@ -46,10 +46,14 @@ pub use encode::WebpEncodeOptions;
 
 #[cfg(test)]
 pub(crate) use common::{
-    checked_webp_scratch_allocation_len, reset_webp_static_region_frame_decode_count,
-    set_test_webp_max_scratch_allocation_bytes, set_test_webp_max_total_animation_bytes,
-    test_webp_max_scratch_allocation_bytes_override, test_webp_max_total_animation_bytes_override,
-    webp_anim_shrink_on_load_plan, webp_shrink_on_load_plan, webp_static_region_frame_decode_count,
+    checked_webp_scratch_allocation_len, set_test_webp_max_scratch_allocation_bytes,
+    set_test_webp_max_total_animation_bytes, test_webp_max_scratch_allocation_bytes_override,
+    test_webp_max_total_animation_bytes_override, webp_anim_shrink_on_load_plan,
+    webp_shrink_on_load_plan,
+};
+#[cfg(all(test, feature = "_integration"))]
+pub(crate) use common::{
+    reset_webp_static_region_frame_decode_count, webp_static_region_frame_decode_count,
 };
 #[cfg(test)]
 pub(crate) use static_decode::decode_static_webp_pixels;

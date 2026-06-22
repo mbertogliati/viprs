@@ -131,10 +131,12 @@ impl Op for BlockingOp {
     }
 }
 
+#[cfg(feature = "lock_instrumentation")]
 struct SerialOnlySink {
     inner: MemorySink,
 }
 
+#[cfg(feature = "lock_instrumentation")]
 impl SerialOnlySink {
     fn new(pipeline: &CompiledPipeline) -> Self {
         Self {
@@ -143,6 +145,7 @@ impl SerialOnlySink {
     }
 }
 
+#[cfg(feature = "lock_instrumentation")]
 impl ImageSink for SerialOnlySink {
     fn write_region(&mut self, region: Region, data: &[u8]) -> Result<(), ViprsError> {
         self.inner.write_region(region, data)
@@ -153,6 +156,7 @@ impl ImageSink for SerialOnlySink {
     }
 }
 
+#[cfg(feature = "lock_instrumentation")]
 fn make_profile_pipeline(width: u32, height: u32) -> CompiledPipeline {
     let pixels: Vec<u8> = (0..width as usize * height as usize)
         .map(|value| (value % (u8::MAX as usize + 1)) as u8)

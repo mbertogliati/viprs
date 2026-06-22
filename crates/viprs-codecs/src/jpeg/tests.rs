@@ -7,6 +7,7 @@ use super::{JpegCodec, apply_exif_orientation};
 use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
+#[cfg(feature = "_integration")]
 use std::process::Command;
 
 use viprs_core::codec_options::{JpegSubsampling, LoadOptions, SaveOptions};
@@ -23,14 +24,22 @@ const BENCH_8192_JPEG: &[u8] =
 const BENCH_2048_JPEG: &[u8] =
     include_bytes!("../../../../tests/fixtures/images/bench_2048x2048.jpg");
 const BENCH_8192_JPEG_RGB_CRC32: u32 = 0x9FDD_3181;
+#[cfg(feature = "_integration")]
 const METRICS_PREFIX: &str = "VIPRS_JPEG_SHRINK_METRICS";
+#[cfg(feature = "_integration")]
 const METRICS_FACTOR_ENV: &str = "VIPRS_JPEG_SHRINK_METRICS_FACTOR";
+#[cfg(feature = "_integration")]
 const METRICS_CHILD_TEST: &str = "jpeg::tests::shrink_on_load_decode_metrics_child";
+#[cfg(feature = "_integration")]
 const RSS_PREFIX: &str = "VIPRS_JPEG_ERROR_RSS";
+#[cfg(feature = "_integration")]
 const RSS_CHILD_ENV: &str = "VIPRS_JPEG_ERROR_RSS_CHILD";
+#[cfg(feature = "_integration")]
 const RSS_CHILD_TEST: &str = "jpeg::tests::repeated_truncated_decode_errors_keep_rss_stable_child";
+#[cfg(feature = "_integration")]
 const RSS_STABILITY_THRESHOLD_KB: usize = 4 * 1024;
 
+#[cfg(all(test, feature = "_integration", feature = "_root_test_support"))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct DecodeMetrics {
     factor: u8,
@@ -42,6 +51,7 @@ struct DecodeMetrics {
     peak_live_bytes: u64,
 }
 
+#[cfg(feature = "_integration")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct RssMetrics {
     warm_rss_kb: usize,
@@ -49,6 +59,7 @@ struct RssMetrics {
     delta_kb: usize,
 }
 
+#[cfg(all(test, feature = "_integration", feature = "_root_test_support"))]
 fn run_decode_metrics_child(factor: u8) -> DecodeMetrics {
     let output = Command::new(std::env::current_exe().unwrap())
         .env(METRICS_FACTOR_ENV, factor.to_string())
@@ -78,6 +89,7 @@ fn run_decode_metrics_child(factor: u8) -> DecodeMetrics {
     parse_metrics_line(metrics_line.trim())
 }
 
+#[cfg(all(test, feature = "_integration", feature = "_root_test_support"))]
 fn parse_metrics_line(line: &str) -> DecodeMetrics {
     let mut metrics = DecodeMetrics {
         factor: 0,
@@ -108,6 +120,7 @@ fn parse_metrics_line(line: &str) -> DecodeMetrics {
     metrics
 }
 
+#[cfg(feature = "_integration")]
 fn run_rss_child() -> RssMetrics {
     let output = Command::new(std::env::current_exe().unwrap())
         .env(RSS_CHILD_ENV, "1")
@@ -137,6 +150,7 @@ fn run_rss_child() -> RssMetrics {
     parse_rss_metrics_line(metrics_line.trim())
 }
 
+#[cfg(feature = "_integration")]
 fn parse_rss_metrics_line(line: &str) -> RssMetrics {
     let mut metrics = RssMetrics {
         warm_rss_kb: 0,
@@ -159,6 +173,7 @@ fn parse_rss_metrics_line(line: &str) -> RssMetrics {
     metrics
 }
 
+#[cfg(feature = "_integration")]
 fn current_rss_kb() -> usize {
     let output = Command::new("ps")
         .args(["-o", "rss=", "-p", &std::process::id().to_string()])
@@ -933,7 +948,7 @@ fn decode_with_shrink_factor_two_uses_native_reduced_idct_pixels_and_dimensions(
     assert_eq!(pixel(7, 3), [114, 165, 169]);
 }
 
-#[cfg(feature = "_integration")]
+#[cfg(all(test, feature = "_integration", feature = "_root_test_support"))]
 #[test]
 fn decode_with_shrink_factor_eight_uses_less_peak_memory_than_full_decode() {
     let full_decode = run_decode_metrics_child(0);
@@ -953,7 +968,7 @@ fn decode_with_shrink_factor_eight_uses_less_peak_memory_than_full_decode() {
     // vs one large buffer for full decode). What matters is total bytes and peak.
 }
 
-#[cfg(feature = "_integration")]
+#[cfg(all(test, feature = "_integration", feature = "_root_test_support"))]
 #[test]
 fn decode_with_shrink_factor_eight_still_materializes_full_shrunk_frame() {
     let shrunk_decode = run_decode_metrics_child(8);
@@ -1130,6 +1145,7 @@ fn repeated_truncated_decode_errors_keep_rss_stable() {
     );
 }
 
+#[cfg(feature = "_integration")]
 #[test]
 fn repeated_truncated_decode_errors_keep_rss_stable_child() {
     if std::env::var_os(RSS_CHILD_ENV).is_none() {

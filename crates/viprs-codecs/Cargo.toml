@@ -54,6 +54,7 @@ viprs-runtime = { path = "../viprs-runtime", version = "0.1.0" }
 rayon = ["dep:rayon"]
 mmap = ["dep:memmap2"]
 tracing = ["dep:tracing"]
+fft = []
 jpeg = ["dep:turbojpeg", "dep:jpeg-encoder", "icc"]
 bmp = ["dep:image"]
 png = ["dep:png", "dep:flate2", "dep:crc32fast", "icc"]
