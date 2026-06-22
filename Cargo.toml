@@ -69,6 +69,7 @@ many_single_char_names = "allow"
 similar_names = "allow"
 
 [workspace.lints.rust]
+warnings = "deny"
 missing_docs = "deny"
 
 [dependencies]

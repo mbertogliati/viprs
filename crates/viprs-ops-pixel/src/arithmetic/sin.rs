@@ -126,7 +126,7 @@ mod tests {
         }
     }
 
-    /// Ported from libvips test_arithmetic.py::test_sin.
+    /// Ported from libvips `test_arithmetic.py::test_sin`.
     ///
     /// libvips test: `my_sin(x) = math.sin(math.radians(x))` applied per-pixel.
     /// Key reference values: sin(30°) = 0.5, sin(45°) ≈ √2/2, sin(270°) = -1.
@@ -164,7 +164,7 @@ mod tests {
         assert!(output_data[3].abs() < 1e-6, "sin(360°)={}", output_data[3]);
     }
 
-    /// Ported from libvips test_arithmetic.py::test_sin + test_cos.
+    /// Ported from libvips `test_arithmetic.py::test_sin` + `test_cos`.
     ///
     /// Pythagorean identity: sin²(x) + cos²(x) = 1 for all x (in degrees).
     /// This exercises the degrees-to-radians conversion in both ops.

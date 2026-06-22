@@ -620,7 +620,7 @@ mod tests {
         let result = process(
             &encoded,
             &mut output,
-            |image| Ok(image),
+            Ok,
             &EncodeOptions::Png { compression: 6 },
             &ProcessOptions::default(),
         )
@@ -645,7 +645,7 @@ mod tests {
         let err = process(
             b"not-an-image",
             &mut Vec::new(),
-            |image| Ok(image),
+            Ok,
             &EncodeOptions::Png { compression: 0 },
             &options,
         )

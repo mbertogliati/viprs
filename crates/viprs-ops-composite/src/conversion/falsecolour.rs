@@ -448,8 +448,8 @@ mod tests {
         let mut output_data = vec![0u8; pixel_count * FALSECOLOUR_OUTPUT_BANDS];
         let mut output =
             TileMut::<U8>::new(region, FALSECOLOUR_OUTPUT_BANDS as u32, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 
@@ -512,8 +512,8 @@ mod tests {
         let input = Tile::<F32>::new(region, 1, &input_data);
         let mut output_data = vec![0u8; 6];
         let mut output = TileMut::<U8>::new(region, 3, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         assert_eq!(&output_data[0..3], &FALSECOLOUR_PET_LUT[0]);
         assert_eq!(&output_data[3..6], &FALSECOLOUR_PET_LUT[255]);
     }

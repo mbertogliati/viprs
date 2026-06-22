@@ -229,7 +229,7 @@ fn extract_area_rejects_zero_height_crops() {
 }
 
 /// `NodeSpec::identity` is the default for all pixel-local ops — buffer sizes
-/// must not regress when node_spec is not overridden.
+/// must not regress when `node_spec` is not overridden.
 #[test]
 fn node_spec_identity_default_matches_old_buffer_sizing() {
     use crate::sources::memory::MemorySource;
@@ -244,7 +244,7 @@ fn node_spec_identity_default_matches_old_buffer_sizing() {
     let tile_h = pipeline
         .demand_hint
         .tile_height(pipeline.width, pipeline.height) as usize;
-    let expected = tile_w * tile_h * 1 * 1; // bands=1, bps=1 (U8)
+    let expected = tile_w * tile_h; // bands=1, bps=1 (U8)
     for &size in &pipeline.buffer_sizes {
         if size > 0 {
             assert_eq!(

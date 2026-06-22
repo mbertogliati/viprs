@@ -330,7 +330,7 @@ mod tests {
     };
 
     fn expected_smudge_u8(current: u8, total: f64) -> u8 {
-        ((16.0 * f64::from(current) + total) / 25.0) as u8
+        (16.0f64.mul_add(f64::from(current), total) / 25.0) as u8
     }
 
     #[test]

@@ -497,8 +497,8 @@ mod tests {
         let op = BandMean::<U8>::new(input_bands);
         let input = Tile::<U8>::new(region, input_bands as u32, input_data);
         let mut output = TileMut::<U8>::new(region, 1, output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
     }
 
     fn run_bandmean_i16(
@@ -511,8 +511,8 @@ mod tests {
         let op = BandMean::<I16>::new(input_bands);
         let input = Tile::<I16>::new(region, input_bands as u32, input_data);
         let mut output = TileMut::<I16>::new(region, 1, output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
     }
 
     fn expected_u8_bandmean(input: &[u8], bands: usize) -> Vec<u8> {

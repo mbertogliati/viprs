@@ -885,9 +885,7 @@ fn bench_wide_loop(c: &mut Criterion) {
 /// The core op (resize) is simulated as a memcpy-equivalent workload to isolate
 /// the cost of the extra buffer read+write cycle.
 fn bench_core_post(c: &mut Criterion) {
-    use viprs::domain::concretize::{
-        Concretize, Width, apply_chain_wide_u8, apply_chain_wide_u8_inplace,
-    };
+    use viprs::domain::concretize::{apply_chain_wide_u8, apply_chain_wide_u8_inplace};
 
     // Simulate 2048² → 1024² resize (0.5× on each axis)
     let core_output_size = 1024usize * 1024; // resize output pixels

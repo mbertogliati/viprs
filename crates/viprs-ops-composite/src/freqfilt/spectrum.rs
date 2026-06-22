@@ -235,15 +235,7 @@ mod tests {
         let output = run_spectrum(width, height, &input);
 
         assert_eq!(output.len(), width * height);
-        assert_eq!(
-            output,
-            vec![
-                25.0f32,
-                (8.0f32 * 8.0 + (-15.0f32) * (-15.0)).sqrt(),
-                13.0,
-                5.0,
-            ]
-        );
+        assert_eq!(output, vec![25.0f32, 8.0f32.hypot(-15.0f32), 13.0, 5.0,]);
     }
 
     #[cfg(feature = "fft")]

@@ -235,7 +235,7 @@ mod tests {
             let region = Region::new(0, 0, pixels.len() as u32, 1);
             let input_data: Vec<u16> = pixels
                 .iter()
-                .flat_map(|&(left, right)| [left, right])
+                .flat_map(|t| <[u16; 2]>::from(*t))
                 .collect();
             let expected: Vec<u16> = pixels
                 .iter()

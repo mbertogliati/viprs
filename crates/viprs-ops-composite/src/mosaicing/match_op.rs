@@ -560,7 +560,7 @@ mod tests {
             tx in 10.0f64..30.0,
             ty in 12.0f64..28.0,
         ) {
-            prop_assume!((a * d - b * c).abs() > 0.1);
+            prop_assume!(b.mul_add(-c, a * d).abs() > 0.1);
             let expected = AffineTransform::new([a, b, c, d], tx, ty);
             let reference_region = Region::new(0, 0, 128, 128);
             let secondary_region = Region::new(0, 0, 128, 128);

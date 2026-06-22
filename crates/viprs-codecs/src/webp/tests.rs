@@ -17,6 +17,7 @@ use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
 #[cfg(all(feature = "icc", feature = "_integration"))]
 use viprs_ops_colour::colour::profile_load;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
+#[cfg(all(test, feature = "_integration"))]
 use viprs_ports::source::ImageSource;
 #[cfg(all(test, feature = "_integration"))]
 use viprs_runtime::sources::decoder_source::DecoderSource;

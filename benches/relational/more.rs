@@ -1,7 +1,7 @@
 #![allow(missing_docs)]
 /// Benchmark: More<F32> — element-wise strictly-greater-than comparison against a scalar.
 ///
-/// Measures the full pipeline path: MemorySource → More → MemorySink via RayonScheduler.
+/// Measures the full pipeline path: `MemorySource` → More → `MemorySink` via `RayonScheduler`.
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::domain::ops::relational::More;
 use viprs::{

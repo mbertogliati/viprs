@@ -338,7 +338,7 @@ mod tests {
         }
         fn start(&self) {}
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+        fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
             output.data.copy_from_slice(input.data);
         }
     }
@@ -356,7 +356,7 @@ mod tests {
         }
         fn start(&self) {}
         #[inline]
-        fn process_region(&self, _: &mut (), input: &Tile<F32>, output: &mut TileMut<F32>) {
+        fn process_region(&self, (): &mut (), input: &Tile<F32>, output: &mut TileMut<F32>) {
             output.data.copy_from_slice(input.data);
         }
     }

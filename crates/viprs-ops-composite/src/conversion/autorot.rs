@@ -334,8 +334,8 @@ mod tests {
         let input = Tile::<U8>::new(input_region, 1, input_data);
         let mut output_data = vec![0u8; output_region.pixel_count()];
         let mut output = TileMut::<U8>::new(output_region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 

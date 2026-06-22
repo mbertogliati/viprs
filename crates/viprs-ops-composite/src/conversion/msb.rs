@@ -148,8 +148,8 @@ mod tests {
         let input = Tile::<F>::new(region, bands, input_data);
         let mut output_data = vec![0u8; input_data.len()];
         let mut output = TileMut::<U8>::new(region, bands, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 

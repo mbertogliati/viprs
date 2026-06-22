@@ -499,11 +499,11 @@ mod tests {
         let tile = Tile::<U8>::new(region, 1, &data);
 
         let partial = <HoughLineReducer as TileReducer<U8>>::reduce_tile(&reducer, &tile, &region);
-        let diagonal = (8.0_f64.powi(2) + 8.0_f64.powi(2)).sqrt();
+        let diagonal = 8.0_f64.hypot(8.0_f64);
         let rho_x = (4.0 / diagonal + 1.0) * (64.0 / 2.0);
         let rho_y = (2.0 / diagonal + 1.0) * (64.0 / 2.0);
 
-        assert_eq!(partial[0 + rho_x as usize * 180], 1);
+        assert_eq!(partial[rho_x as usize * 180], 1);
         assert_eq!(partial[90 + rho_y as usize * 180], 1);
         assert_eq!(partial.iter().sum::<u32>(), 180);
     }

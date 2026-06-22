@@ -109,7 +109,7 @@ mod tests {
         Region::new(0, 0, w, h)
     }
 
-    /// Run ExtractBands directly through Op::process_region (no bridge).
+    /// Run `ExtractBands` directly through `Op::process_region` (no bridge).
     fn run_extract(
         start: usize,
         count: usize,
@@ -122,8 +122,8 @@ mod tests {
         let op = ExtractBands::<U8>::new(start, count, input_bands);
         let input = Tile::<U8>::new(region, input_bands as u32, input_data);
         let mut output = TileMut::<U8>::new(region, count as u32, output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
     }
 
     #[test]

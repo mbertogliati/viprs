@@ -123,7 +123,7 @@ pub fn reduce_v_scalar<T: ReduceSample>(
     }
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_u8(
     filter: &ReduceKernel,
@@ -154,7 +154,7 @@ pub fn reduce_h_u8(
     );
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_u8_planned(
     filter: &ReduceKernel,
@@ -210,7 +210,7 @@ pub fn reduce_h_u8_planned(
     );
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_u16(
     filter: &ReduceKernel,
@@ -237,7 +237,7 @@ pub fn reduce_h_u16(
     reduce_h_scalar(filter, input_region, input, bands, output_region, output);
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_h_f32(
     filter: &ReduceKernel,
@@ -264,7 +264,7 @@ pub fn reduce_h_f32(
     reduce_h_scalar(filter, input_region, input, bands, output_region, output);
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_v_u8(
     filter: &ReduceKernel,
@@ -311,7 +311,7 @@ pub fn reduce_v_u8(
     );
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_v_u16(
     filter: &ReduceKernel,
@@ -338,7 +338,7 @@ pub fn reduce_v_u16(
     reduce_v_scalar(filter, input_region, input, bands, output_region, output);
 }
 
-#[allow(unreachable_code)]
+#[allow(unreachable_code, unused_variables)]
 #[inline]
 pub fn reduce_v_f32(
     filter: &ReduceKernel,
@@ -2936,12 +2936,14 @@ mod horizontal_multiband_tests {
         filter.bind_input_len(width);
         let input_region = Region::new(0, 0, width, height);
         let output_region = Region::new(0, 0, filter.config().output_width(width), height);
+        #[cfg(target_arch = "aarch64")]
         let starts: Vec<i64> = (0..output_region.width as usize)
             .map(|x_out| {
                 let source_x = filter.source_position(output_region.x as f64 + x_out as f64);
                 filter.plan_i16(source_x).0
             })
             .collect();
+        #[cfg(target_arch = "aarch64")]
         let phases: Vec<u8> = (0..output_region.width as usize)
             .map(|x_out| {
                 let source_x = filter.source_position(output_region.x as f64 + x_out as f64);

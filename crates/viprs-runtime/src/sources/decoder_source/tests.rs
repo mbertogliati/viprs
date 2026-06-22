@@ -539,16 +539,15 @@ impl ImageDecoder for Fixed4x4Decoder {
         // Production codecs would branch on `F::ID` instead.
         let sample_data = if std::mem::size_of::<F::Sample>() == 1 {
             // SAFETY: F::Sample is 1 byte (U8), and u8 has no invalid bit patterns.
-            let ptr = data.as_ptr() as *const F::Sample;
+            let ptr = data.as_ptr().cast::<F::Sample>();
             let len = data.len();
             std::mem::forget(data);
             // SAFETY: ownership of the forgotten `Vec<u8>` allocation is transferred into a layout-identical `Vec<F::Sample>`.
-            unsafe { Vec::from_raw_parts(ptr as *mut F::Sample, len, len) }
+            unsafe { Vec::from_raw_parts(ptr.cast_mut(), len, len) }
         } else {
             return Err(ViprsError::Codec("Fixed4x4Decoder only supports U8".into()));
         };
-        Image::from_buffer(4, 4, 1, sample_data)
-            .map_err(|e| ViprsError::Codec(e.to_string().into()))
+        Image::from_buffer(4, 4, 1, sample_data).map_err(|e| ViprsError::Codec(e.to_string()))
     }
     fn probe(&self, _: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
         Ok((4, 4, 1))

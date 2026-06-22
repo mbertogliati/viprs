@@ -271,7 +271,7 @@ mod tests {
 
             let mut rhs_plus_lhs = vec![0u8; len];
             {
-                let op = Add::<U8>::new(left.clone());
+                let op = Add::<U8>::new(left);
                 let input = Tile::<U8>::new(region, 1, &right);
                 let mut output = TileMut::<U8>::new(region, 1, &mut rhs_plus_lhs);
                 let mut state = ();

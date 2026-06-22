@@ -336,7 +336,7 @@ mod tests {
             let output = run_phasecor(&samples, &samples);
 
             for pair in output.chunks_exact(COMPLEX_BANDS as usize) {
-                let magnitude = (pair[0] * pair[0] + pair[1] * pair[1]).sqrt();
+                let magnitude = pair[0].hypot(pair[1]);
                 prop_assert!((1.0 - magnitude).abs() <= 1e-5);
                 prop_assert!(pair[1].abs() <= 1e-5);
             }

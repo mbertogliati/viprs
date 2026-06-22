@@ -36,7 +36,7 @@ impl Op for PassThrough {
         *r
     }
     fn start(&self) {}
-    fn process_region(&self, _: &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
+    fn process_region(&self, (): &mut (), input: &Tile<U8>, output: &mut TileMut<U8>) {
         output.data.copy_from_slice(input.data);
     }
 }
@@ -54,7 +54,7 @@ impl Op for F32PassThrough {
         *r
     }
     fn start(&self) {}
-    fn process_region(&self, _: &mut (), input: &Tile<F32>, output: &mut TileMut<F32>) {
+    fn process_region(&self, (): &mut (), input: &Tile<F32>, output: &mut TileMut<F32>) {
         output.data.copy_from_slice(input.data);
     }
 }

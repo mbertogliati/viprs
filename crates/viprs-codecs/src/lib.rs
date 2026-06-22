@@ -217,4 +217,5 @@ macro_rules! viprs_span {
     };
 }
 
+#[allow(unused_imports)]
 pub(crate) use viprs_span;

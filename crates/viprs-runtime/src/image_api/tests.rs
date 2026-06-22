@@ -948,8 +948,7 @@ fn truncate_jpeg_scan_data(encoded: &[u8]) -> Vec<u8> {
         if encoded[index] == 0xFF && encoded[index + 1] == 0xDA {
             let scan_header_len = encoded
                 .get(index + 2..index + 4)
-                .map(|bytes| u16::from_be_bytes([bytes[0], bytes[1]]) as usize)
-                .unwrap_or(0);
+                .map_or(0, |bytes| u16::from_be_bytes([bytes[0], bytes[1]]) as usize);
             let cutoff = index + 2 + scan_header_len + 8;
             if cutoff < encoded.len() {
                 return encoded[..cutoff].to_vec();

@@ -556,7 +556,7 @@ mod tests {
 
         let combined = <HistFindNDimReducer as TileReducer<F32>>::combine(
             &reducer,
-            accumulated.clone(),
+            accumulated,
             reducer.reduce_tile(&tile, &region),
         );
         let finalized = <HistFindNDimReducer as TileReducer<F32>>::finalize(&reducer, combined);

@@ -188,7 +188,7 @@ mod tests {
             op.process_region(&mut state, &input, &mut output);
 
             for (sample, actual) in pixels.iter().zip(&output_data) {
-                let expected = if *sample != rhs { u8::MAX } else { 0 };
+                let expected = if *sample == rhs { 0 } else { u8::MAX };
                 prop_assert_eq!(*actual, expected);
             }
         }

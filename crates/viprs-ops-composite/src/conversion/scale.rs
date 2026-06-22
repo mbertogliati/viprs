@@ -321,8 +321,8 @@ mod tests {
         let input = Tile::<F>::new(region, 1, input_data);
         let mut output_data = vec![0u8; input_data.len()];
         let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 
@@ -334,8 +334,8 @@ mod tests {
         let input = Tile::<F>::new(region, 1, input_data);
         let mut output_data = vec![0.0f32; input_data.len()];
         let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
-        let mut state = op.start();
-        op.process_region(&mut state, &input, &mut output);
+        op.start();
+        op.process_region(&mut (), &input, &mut output);
         output_data
     }
 
@@ -453,10 +453,9 @@ mod tests {
     fn reducer_driven_log_pipeline_matches_libvips_default_curve() {
         let (stats, output) = run_reducer_driven_scale(ScaleMode::log_default(), vec![0, 15, 255]);
 
-        let expected_mid = (((1.0 + 15.0_f64.powf(DEFAULT_LOG_EXPONENT)).log10()
-            / (1.0 + 255.0_f64.powf(DEFAULT_LOG_EXPONENT)).log10())
-            * 255.0
-            + 0.5)
+        let expected_mid = (1.0 + 15.0_f64.powf(DEFAULT_LOG_EXPONENT))
+            .log(1.0 + 255.0_f64.powf(DEFAULT_LOG_EXPONENT))
+            .mul_add(255.0, 0.5)
             .floor() as u8;
 
         assert_eq!(stats.min, vec![0.0]);

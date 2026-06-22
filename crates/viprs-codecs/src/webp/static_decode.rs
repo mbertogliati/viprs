@@ -1,4 +1,4 @@
-#[cfg(test)]
+#[cfg(all(test, feature = "_integration"))]
 use std::sync::atomic::Ordering;
 use std::{
     ffi::{c_int, c_void},
@@ -16,7 +16,7 @@ use super::animated::{
     WebpDemux, decode_animated_webp, decode_animated_webp_region_into,
     webp_animation_shrink_factor, webp_scaled_animation_dimension,
 };
-#[cfg(test)]
+#[cfg(all(test, feature = "_integration"))]
 use super::common::WEBP_STATIC_REGION_FRAME_DECODES;
 use super::common::{
     CachedStaticWebpFrame, WEBP_ICC_CHUNK_FOURCC, WEBP_INCREMENTAL_CHUNK_SIZE, WEBP_MODE_LAST,
@@ -629,7 +629,7 @@ fn cached_static_webp_frame(
     if cache.len() >= WEBP_STATIC_REGION_CACHE_CAPACITY {
         cache.clear();
     }
-    #[cfg(test)]
+    #[cfg(all(test, feature = "_integration"))]
     WEBP_STATIC_REGION_FRAME_DECODES.fetch_add(1, Ordering::Relaxed);
     cache.insert(cache_key, Arc::clone(&decoded));
     drop(cache);

@@ -109,9 +109,9 @@ mod tests {
             let input = Tile::<U8>::new(region, bands, &samples);
             let mut output_samples = vec![0u8; samples.len()];
             let mut output = TileMut::<U8>::new(region, bands, &mut output_samples);
-            let mut state = op.start();
+            op.start();
 
-            op.process_region(&mut state, &input, &mut output);
+            op.process_region(&mut (), &input, &mut output);
 
             prop_assert_eq!(output_samples, samples);
         }
@@ -124,9 +124,9 @@ mod tests {
             let input = Tile::<U8>::new(region, bands, &input_samples);
             let mut output_samples = vec![0u8; bands as usize];
             let mut output = TileMut::<U8>::new(region, bands, &mut output_samples);
-            let mut state = op.start();
+            op.start();
 
-            op.process_region(&mut state, &input, &mut output);
+            op.process_region(&mut (), &input, &mut output);
 
             prop_assert_eq!(output_samples, input_samples);
         }

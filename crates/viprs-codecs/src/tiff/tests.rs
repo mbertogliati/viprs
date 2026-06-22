@@ -1,14 +1,17 @@
 use super::decode::count_pages;
 use super::pyramid::{downsample_half, ifd_entry_value_pos, patch_first_ifd_offset, tiff_read_u32};
 use super::*;
+#[cfg(all(test, feature = "_integration"))]
 use std::fs;
 use std::num::NonZeroU8;
+#[cfg(all(test, feature = "_integration"))]
 use std::path::Path;
 use viprs_core::codec_options::{LoadOptions, SaveOptions, TiffCompression, TiffPredictor};
 use viprs_core::format::{F32, U8, U16};
 use viprs_core::image::{Image, Region};
 #[cfg(feature = "icc")]
 use viprs_ops_colour::colour::{IccTransformOptions, icc_transform, profile_load};
+#[cfg(all(test, feature = "_integration"))]
 use viprs_ports::source::ImageSource;
 #[cfg(all(test, feature = "_integration"))]
 use viprs_runtime::sources::decoder_source::DecoderSource;

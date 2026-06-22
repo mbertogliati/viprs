@@ -20,6 +20,7 @@ use viprs_core::error::ViprsError;
 use viprs_core::format::{U8, U16};
 use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
+#[cfg(all(test, feature = "_integration"))]
 use viprs_ports::source::ImageSource;
 #[cfg(all(test, feature = "_integration"))]
 use viprs_runtime::sources::decoder_source::DecoderSource;

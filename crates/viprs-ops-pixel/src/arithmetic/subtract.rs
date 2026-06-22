@@ -224,9 +224,8 @@ mod tests {
             let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
             let mut state = ();
             op.process_region(&mut state, &input, &mut output);
-            for sample in &output_data {
-                prop_assert!(*sample <= u8::MAX);
-            }
+            // Verify output is populated (operation didn't panic).
+            prop_assert_eq!(output_data.len(), len);
         }
     }
 }

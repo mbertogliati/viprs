@@ -1,7 +1,7 @@
 use libwebp_sys::{VP8StatusCode, WEBP_CSP_MODE, WebPDecode, WebPDecoderConfig, WebPRGBABuffer};
 #[cfg(test)]
 use std::cell::Cell;
-#[cfg(test)]
+#[cfg(all(test, feature = "_integration"))]
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::{
     collections::{HashMap, hash_map::DefaultHasher},
@@ -31,7 +31,7 @@ thread_local! {
     static WEBP_MAX_SCRATCH_ALLOCATION_BYTES_OVERRIDE: Cell<Option<u64>> = const { Cell::new(None) };
     static WEBP_MAX_TOTAL_ANIMATION_BYTES_OVERRIDE: Cell<Option<u64>> = const { Cell::new(None) };
 }
-#[cfg(test)]
+#[cfg(all(test, feature = "_integration"))]
 pub(super) static WEBP_STATIC_REGION_FRAME_DECODES: AtomicUsize = AtomicUsize::new(0);
 
 type StaticWebpRegionCache = HashMap<StaticWebpRegionCacheKey, Arc<CachedStaticWebpFrame>>;
@@ -103,12 +103,12 @@ pub(super) fn webp_static_region_cache_key(
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "_integration"))]
 pub(crate) fn reset_webp_static_region_frame_decode_count() {
     WEBP_STATIC_REGION_FRAME_DECODES.store(0, Ordering::Relaxed);
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "_integration"))]
 pub(crate) fn webp_static_region_frame_decode_count() -> usize {
     WEBP_STATIC_REGION_FRAME_DECODES.load(Ordering::Relaxed)
 }

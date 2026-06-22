@@ -333,8 +333,7 @@ pub fn build_normalize_to_srgb_op(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viprs_core::format::{U8, U16};
-    use viprs_core::image::{Image, ImageMetadata, Region};
+    use viprs_core::image::{ImageMetadata, Region};
 
     #[test]
     fn needs_srgb_normalization_handles_none_and_srgb() {
