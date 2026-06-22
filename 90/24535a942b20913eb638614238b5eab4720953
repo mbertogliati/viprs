@@ -1,0 +1,25 @@
+xtask/src/bench/args.rs
+  s_cb63fee015b2dc::t_02cd363139b24a 3,366,373
+xtask/src/bench/helpers.rs
+  s_cb63fee015b2dc::t_02cd363139b24a 268-272
+xtask/src/bench/runner.rs
+  s_cb63fee015b2dc::t_02cd363139b24a 34-36,797
+  s_cb63fee015b2dc::t_8a1fbe57ea7dd6 1992-1998
+  s_cb63fee015b2dc::t_0290b1bc360d2f 33,1939-1944
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "9024535a942b20913eb638614238b5eab4720953",
+  "prompts": {},
+  "sessions": {
+    "s_cb63fee015b2dc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_11004c3a9ffev9WIaIdySzPk0n",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
