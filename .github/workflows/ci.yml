@@ -144,6 +144,9 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          # Scope native CPU tuning to benchmark execution only so cached
+          # proc-macros stay portable across CI architectures.
+          RUSTFLAGS: "-C target-cpu=native"
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           cp tools/fixtures.sh /tmp/viprs-fixtures.sh
@@ -173,6 +176,10 @@ jobs:
           make bench-compare
       - name: Run benchmarks on main
         if: github.event_name != 'pull_request'
+        env:
+          # Scope native CPU tuning to benchmark execution only so cached
+          # proc-macros stay portable across CI architectures.
+          RUSTFLAGS: "-C target-cpu=native"
         run: |
           if find target/criterion -path '*/main/estimates.json' -print -quit 2>/dev/null | grep -q .; then
             echo "▶ Baseline found — comparing against main"
@@ -183,6 +190,10 @@ jobs:
           fi
       - name: Save baseline (main only)
         if: github.ref == 'refs/heads/main'
+        env:
+          # Scope native CPU tuning to benchmark execution only so cached
+          # proc-macros stay portable across CI architectures.
+          RUSTFLAGS: "-C target-cpu=native"
         run: make bench-baseline
       - name: Cache baseline (main only)
         if: github.ref == 'refs/heads/main'
@@ -258,12 +269,18 @@ jobs:
       - name: Run E2E benchmark suite
         env:
           XTASK_BIN: ./target/release/xtask
+          # Scope native CPU tuning to runtime benchmark steps only so cached
+          # proc-macros stay portable across CI architectures.
+          RUSTFLAGS: "-C target-cpu=native"
         run: ./.github/scripts/bench-vs-libvips.sh
       - name: Check ratios (fail on >1.05)
         run: ./.github/scripts/check-ratios.sh
       - name: Web-service workload simulation
         env:
           XTASK_BIN: ./target/release/xtask
+          # Scope native CPU tuning to runtime benchmark steps only so cached
+          # proc-macros stay portable across CI architectures.
+          RUSTFLAGS: "-C target-cpu=native"
         run: ./.github/scripts/web-bench.sh
       - name: Upload results
         if: always()
