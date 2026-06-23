@@ -13,9 +13,7 @@ XTASK="${XTASK_BIN:-cargo xtask}"
 mkdir -p /tmp/bench-results
 
 # Core ops tested with JPEG (U8) fixtures.
-OPS="load invert add multiply and equal linear colourspace resize zoom shrink shrinkh shrinkv gauss_blur abs sign"
-# TODO: Re-enable bandmean once the xtask runner handles single-band reduction outputs
-# without panicking in src/domain/image/region.rs on JPEG-backed inputs.
+OPS="load invert bandmean add multiply and equal linear colourspace resize zoom shrink shrinkh shrinkv gauss_blur abs sign"
 
 # Float-only ops tested with EXR (F32) fixtures.
 FLOAT_OPS="round floor ceil"

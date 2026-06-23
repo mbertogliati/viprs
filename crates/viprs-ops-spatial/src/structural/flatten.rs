@@ -887,7 +887,7 @@ mod tests {
             bg_b in any::<u8>(),
         ) {
             if !std::arch::is_x86_feature_detected!("avx2") {
-                return;
+                return Ok(());
             }
 
             let usable_len = pixels.len() - (pixels.len() % 4);
