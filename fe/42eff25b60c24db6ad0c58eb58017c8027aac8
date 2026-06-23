@@ -1,0 +1,21 @@
+.github/workflows/release.yml
+  s_891ab6a2f4d479::t_ccca824a5d62c7 35-36,58-59,77-78,100-101,119-120,138-139,157-158
+.github/scripts/prepare-publish-manifest.rb
+  s_891ab6a2f4d479::t_64e1c0dd9f8bea 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "fe42eff25b60c24db6ad0c58eb58017c8027aac8",
+  "prompts": {},
+  "sessions": {
+    "s_891ab6a2f4d479": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef67f-02d3-7592-b95b-a868317a2788",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
