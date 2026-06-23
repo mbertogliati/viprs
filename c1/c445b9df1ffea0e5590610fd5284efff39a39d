@@ -1,0 +1,39 @@
+crates/viprs-codecs/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,13-15,50
+crates/viprs-runtime/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,13-19
+crates/viprs-ops-pixel/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,12
+crates/viprs-ops-colour/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,12-14,20
+crates/viprs-ops-spatial/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,12,18-20
+Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 11,75
+xtask/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,14
+crates/viprs-ports/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,13
+.release-please-manifest.json
+  s_0c2bca4c39f53c::t_fdbca54c19872f 2
+crates/viprs-core/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3
+crates/viprs-ops-composite/Cargo.toml
+  s_0c2bca4c39f53c::t_199fcdd0c2a346 3,12-14,20-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "c1c445b9df1ffea0e5590610fd5284efff39a39d",
+  "prompts": {},
+  "sessions": {
+    "s_0c2bca4c39f53c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef4a9-57b2-7793-b090-b3a993deffc9",
+        "model": "gpt-5.5"
+      },
+      "human_author": null
+    }
+  }
+}
