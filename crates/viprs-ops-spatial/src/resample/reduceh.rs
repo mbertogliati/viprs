@@ -267,14 +267,14 @@ mod tests {
     use super::*;
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     use crate::resample::reduce_simd;
     use crate::resample::shrinkh::ShrinkH;
     use proptest::prelude::*;
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     use viprs_core::format::U16;
     use viprs_core::{
@@ -339,7 +339,7 @@ mod tests {
 
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     fn run_reduce_h_u16(input_data: &[u16], factor: f64, kernel: InterpolationKernel) -> Vec<u16> {
         let source =
@@ -363,7 +363,7 @@ mod tests {
 
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     fn run_reduce_h_u8_scalar(
         input_data: &[u8],
@@ -395,7 +395,7 @@ mod tests {
 
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     fn run_reduce_h_u16_scalar(
         input_data: &[u16],
@@ -427,7 +427,7 @@ mod tests {
 
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     fn run_reduce_h_f32_scalar(
         input_data: &[f32],
@@ -835,7 +835,7 @@ mod tests {
 
     #[cfg(any(
         target_arch = "aarch64",
-        all(target_arch = "x86_64", target_feature = "avx2")
+        any(target_arch = "x86", target_arch = "x86_64")
     ))]
     proptest! {
         #[test]
