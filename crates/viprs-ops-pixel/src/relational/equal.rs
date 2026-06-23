@@ -1,12 +1,83 @@
 use std::marker::PhantomData;
 
 use crate::relational::CmpSample;
+#[cfg(target_arch = "aarch64")]
+use std::arch::aarch64::{vceqq_u8, vld1q_u8, vst1q_u8};
 
 use viprs_core::{
     format::{NumericBand, U8},
     image::{DemandHint, Region, Tile, TileMut},
     op::{Op, PixelLocalOp},
 };
+
+#[inline]
+fn process_equal_region<S: CmpSample + bytemuck::Pod>(input: &[S], rhs: S, output: &mut [u8]) {
+    if std::mem::size_of::<S>() == std::mem::size_of::<u8>()
+        && let Ok(src) = bytemuck::try_cast_slice::<S, u8>(input)
+    {
+        let rhs_byte = bytemuck::bytes_of(&rhs)[0];
+        eq_mask_bulk_u8(src, rhs_byte, output);
+        return;
+    }
+
+    for (sample, dst) in input.iter().zip(output.iter_mut()) {
+        *dst = if *sample == rhs { u8::MAX } else { 0 };
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+#[inline]
+fn eq_mask_bulk_u8(input: &[u8], rhs: u8, output: &mut [u8]) {
+    let len = input.len().min(output.len());
+    let chunks = len / 64;
+    let remainder = len % 64;
+
+    // SAFETY: AArch64 guarantees NEON support. The loop only loads and stores
+    // complete 16-byte chunks inside the slice bounds; the scalar tail covers the rest.
+    unsafe {
+        let rhs_vec = std::arch::aarch64::vdupq_n_u8(rhs);
+        let src = input.as_ptr();
+        let dst = output.as_mut_ptr();
+
+        for chunk in 0..chunks {
+            let base = chunk * 64;
+            let v0 = vld1q_u8(src.add(base));
+            let v1 = vld1q_u8(src.add(base + 16));
+            let v2 = vld1q_u8(src.add(base + 32));
+            let v3 = vld1q_u8(src.add(base + 48));
+
+            vst1q_u8(dst.add(base), vceqq_u8(v0, rhs_vec));
+            vst1q_u8(dst.add(base + 16), vceqq_u8(v1, rhs_vec));
+            vst1q_u8(dst.add(base + 32), vceqq_u8(v2, rhs_vec));
+            vst1q_u8(dst.add(base + 48), vceqq_u8(v3, rhs_vec));
+        }
+
+        let tail_start = chunks * 64;
+        let tail_chunks = remainder / 16;
+        for chunk in 0..tail_chunks {
+            let offset = tail_start + chunk * 16;
+            let values = vld1q_u8(src.add(offset));
+            vst1q_u8(dst.add(offset), vceqq_u8(values, rhs_vec));
+        }
+
+        let scalar_start = tail_start + tail_chunks * 16;
+        for index in scalar_start..len {
+            *output.get_unchecked_mut(index) = if *input.get_unchecked(index) == rhs {
+                u8::MAX
+            } else {
+                0
+            };
+        }
+    }
+}
+
+#[cfg(not(target_arch = "aarch64"))]
+#[inline]
+fn eq_mask_bulk_u8(input: &[u8], rhs: u8, output: &mut [u8]) {
+    for (sample, dst) in input.iter().zip(output.iter_mut()) {
+        *dst = if *sample == rhs { u8::MAX } else { 0 };
+    }
+}
 
 /// Element-wise equality comparison against a scalar.
 ///
@@ -58,10 +129,7 @@ where
 
     #[inline]
     fn process_region(&self, _state: &mut (), input: &Tile<F>, output: &mut TileMut<U8>) {
-        let rhs = self.rhs;
-        for (s, d) in input.data.iter().zip(output.data.iter_mut()) {
-            *d = if *s == rhs { u8::MAX } else { 0 };
-        }
+        process_equal_region(input.data, self.rhs, output.data);
     }
 }
 
@@ -151,6 +219,28 @@ mod tests {
         op.process_region(&mut state, &input, &mut output);
 
         assert_eq!(output_data, vec![255u8, 0, 255, 0, 255, 0]);
+    }
+
+    #[test]
+    fn equal_large_u8_rows_cover_bulk_dispatch_and_scalar_tail() {
+        let op = Equal::<U8>::new(9);
+        let len = 64 + 11;
+        let region = make_region(len as u32, 1);
+        let input_data = (0..len)
+            .map(|index| if index % 3 == 0 { 9 } else { index as u8 })
+            .collect::<Vec<_>>();
+        let mut output_data = vec![0u8; len];
+        let input = Tile::<U8>::new(region, 1, &input_data);
+        let mut output = TileMut::<U8>::new(region, 1, &mut output_data);
+        let mut state = ();
+
+        op.process_region(&mut state, &input, &mut output);
+
+        let expected = input_data
+            .iter()
+            .map(|sample| if *sample == 9 { u8::MAX } else { 0 })
+            .collect::<Vec<_>>();
+        assert_eq!(output_data, expected);
     }
 
     #[test]

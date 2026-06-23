@@ -1,5 +1,6 @@
 use std::marker::PhantomData;
 
+use crate::arithmetic::rhs_broadcast::{RhsLayout, detect_rhs_layout};
 use viprs_core::{
     error::BooleanError,
     format::BandFormat,
@@ -9,7 +10,7 @@ use viprs_core::{
 
 use super::common::{
     BooleanOperand, BooleanOutput, BooleanOutputSample, BooleanResultSample, cast_rhs_constants,
-    cast_rhs_vec, process_boolean_region,
+    cast_rhs_vec,
 };
 
 /// Bitwise AND of each pixel sample with a pre-cast rhs buffer.
@@ -63,7 +64,7 @@ where
     type State = ();
 
     fn demand_hint(&self) -> DemandHint {
-        DemandHint::Any
+        DemandHint::ThinStrip
     }
 
     fn required_input_region(&self, output: &Region) -> Region {
@@ -83,12 +84,61 @@ where
         input: &Tile<L>,
         output: &mut TileMut<BooleanOutput<L, R>>,
     ) {
-        process_boolean_region::<L, R>(
-            input,
-            &self.rhs,
-            output,
-            super::common::BooleanResultSample::bool_and,
+        let src = input.data;
+        let dst = &mut output.data;
+        let bands = input.bands as usize;
+        let layout = detect_rhs_layout(self.rhs.len(), src.len(), bands);
+        let src_len = src.len();
+        let dst_len = dst.len();
+
+        debug_assert!(
+            layout.is_some(),
+            "Boolean ops require full-tile, scalar, per-band, or single-band-image rhs layout"
         );
+        debug_assert_eq!(
+            src_len, dst_len,
+            "Boolean ops require matching input and output sample counts"
+        );
+
+        match layout {
+            Some(RhsLayout::Direct) => {
+                for index in 0..src.len() {
+                    dst[index] =
+                        <L as BooleanOperand<R>>::cast_left(src[index]).bool_and(self.rhs[index]);
+                }
+            }
+            Some(RhsLayout::Scalar) => {
+                let rhs_sample = self.rhs[0];
+                for index in 0..src.len() {
+                    dst[index] =
+                        <L as BooleanOperand<R>>::cast_left(src[index]).bool_and(rhs_sample);
+                }
+            }
+            Some(RhsLayout::PerBand) => {
+                for (src_chunk, dst_chunk) in
+                    src.chunks_exact(bands).zip(dst.chunks_exact_mut(bands))
+                {
+                    for band in 0..bands {
+                        dst_chunk[band] = <L as BooleanOperand<R>>::cast_left(src_chunk[band])
+                            .bool_and(self.rhs[band]);
+                    }
+                }
+            }
+            Some(RhsLayout::SingleBandImage) => {
+                for (rhs_sample, (src_chunk, dst_chunk)) in self
+                    .rhs
+                    .iter()
+                    .copied()
+                    .zip(src.chunks_exact(bands).zip(dst.chunks_exact_mut(bands)))
+                {
+                    for sample in 0..bands {
+                        dst_chunk[sample] = <L as BooleanOperand<R>>::cast_left(src_chunk[sample])
+                            .bool_and(rhs_sample);
+                    }
+                }
+            }
+            None => {}
+        }
     }
 }
 
@@ -132,7 +182,7 @@ mod tests {
     fn and_metadata_matches_identity_geometry() {
         let op = And::<U8>::new(0x0F);
         let region = Region::new(0, 0, 4, 2);
-        assert_eq!(op.demand_hint(), viprs_core::image::DemandHint::Any);
+        assert_eq!(op.demand_hint(), viprs_core::image::DemandHint::ThinStrip);
         assert_eq!(op.required_input_region(&region), region);
         assert_eq!(op.node_spec(4, 2), viprs_core::op::NodeSpec::identity(4, 2));
     }
