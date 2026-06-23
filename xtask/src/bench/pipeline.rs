@@ -2396,6 +2396,21 @@ mod tests {
     }
 
     #[test]
+    fn build_viprs_e2e_pipeline_runs_jpeg_bandmean_with_single_band_output() {
+        let input = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../tests/fixtures/images/bench_512x512.jpg");
+        let pipeline = build_viprs_e2e_pipeline(&input, "bandmean", &[]);
+        let sink = MemorySink::for_pipeline(&pipeline).expect("memory sink");
+
+        assert_eq!(pipeline.output_bands, 1);
+
+        RayonScheduler::new(4)
+            .expect("scheduler")
+            .run_concurrent(&pipeline, &sink)
+            .expect("jpeg bandmean benchmark pipeline should complete");
+    }
+
+    #[test]
     fn split_jpeg_thumbnail_shrink_preserves_native_8x_and_tracks_residual_2x() {
         assert_eq!(split_jpeg_thumbnail_shrink_factor(8), (8, 1));
         assert_eq!(split_jpeg_thumbnail_shrink_factor(16), (8, 2));
