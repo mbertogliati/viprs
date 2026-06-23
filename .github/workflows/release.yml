@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,10 +22,10 @@ jobs:
         with:
           release-type: rust
 
-  publish:
-    name: Publish to crates.io
+  publish-core:
+    name: Publish viprs-core
     needs: [release-please]
-    if: needs.release-please.outputs.release_created == 'true'
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: crates-io
     steps:
@@ -35,50 +36,95 @@ jobs:
         run: cargo publish -p viprs-core
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-core
+      - name: Wait for crates.io index
         run: sleep 30
-      - name: Publish viprs-ports
-        run: cargo publish -p viprs-ports
+
+  publish-foundation:
+    name: Publish ${{ matrix.crate }}
+    needs: [release-please, publish-core]
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    strategy:
+      fail-fast: false
+      matrix:
+        crate: [viprs-ports, viprs-ops-pixel, viprs-ops-spatial]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Publish ${{ matrix.crate }}
+        run: cargo publish -p "${{ matrix.crate }}"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-ports
+      - name: Wait for crates.io index
         run: sleep 30
-      - name: Publish viprs-ops-pixel
-        run: cargo publish -p viprs-ops-pixel
+
+  publish-ops:
+    name: Publish ${{ matrix.crate }}
+    needs: [release-please, publish-foundation]
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    strategy:
+      fail-fast: false
+      matrix:
+        crate: [viprs-ops-colour, viprs-ops-composite]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Publish ${{ matrix.crate }}
+        run: cargo publish -p "${{ matrix.crate }}"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-ops-pixel
+      - name: Wait for crates.io index
         run: sleep 30
-      - name: Publish viprs-ops-spatial
-        run: cargo publish -p viprs-ops-spatial
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-ops-spatial
-        run: sleep 30
-      - name: Publish viprs-ops-colour
-        run: cargo publish -p viprs-ops-colour
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-ops-colour
-        run: sleep 30
-      - name: Publish viprs-ops-composite
-        run: cargo publish -p viprs-ops-composite
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-ops-composite
-        run: sleep 30
+
+  publish-codecs:
+    name: Publish viprs-codecs
+    needs: [release-please, publish-ops]
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Publish viprs-codecs
         run: cargo publish -p viprs-codecs
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-codecs
+      - name: Wait for crates.io index
         run: sleep 30
+
+  publish-runtime:
+    name: Publish viprs-runtime
+    needs: [release-please, publish-codecs]
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Publish viprs-runtime
         run: cargo publish -p viprs-runtime
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      - name: Wait for crates.io index after viprs-runtime
+      - name: Wait for crates.io index
         run: sleep 30
+
+  publish:
+    name: Publish viprs
+    needs: [release-please, publish-runtime]
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Publish viprs
         run: cargo publish -p viprs
         env:

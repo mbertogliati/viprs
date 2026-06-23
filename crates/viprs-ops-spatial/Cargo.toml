@@ -4,6 +4,9 @@ version = "0.1.1"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
+repository.workspace = true
+description = "Spatial, convolution, morphology, and resampling operations for viprs"
+include = ["Cargo.toml", "src/**"]
 
 [lints]
 workspace = true
@@ -17,7 +20,6 @@ pulp = { version = "0.22.2", optional = true, default-features = false, features
 proptest = "1"
 viprs-runtime = { path = "../viprs-runtime", version = "0.1.1" }
 viprs-ports = { path = "../viprs-ports", version = "0.1.1" }
-viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.1" }
 
 [features]
 _integration = []
