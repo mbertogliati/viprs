@@ -5,6 +5,7 @@ resolver = "3"
 [workspace.package]
 rust-version = "1.92"
 license = "MIT"
+repository = "https://github.com/mbertogliati/viprs"
 
 [package]
 name = "viprs"
@@ -13,7 +14,7 @@ edition = "2024"
 rust-version.workspace = true
 description = "Native Rust reimplementation of libvips focused on demand-driven, horizontally-threaded image processing."
 license = "MIT"
-repository = "https://github.com/mbertogliati/viprs"
+repository.workspace = true
 readme = "README.md"
 autobenches = false
 keywords = ["image-processing", "vips", "jpeg", "thumbnail", "pipeline"]

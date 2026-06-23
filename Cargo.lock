@@ -3154,7 +3154,6 @@ dependencies = [
  "proptest",
  "pulp",
  "viprs-core",
- "viprs-ops-composite",
  "viprs-ports",
  "viprs-runtime",
 ]

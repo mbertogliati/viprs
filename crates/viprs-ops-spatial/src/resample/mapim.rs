@@ -1528,14 +1528,39 @@ mod tests {
     use proptest::prelude::*;
     use viprs_core::{
         format::{F32, U8},
-        op::OperationBridge,
+        image::{Tile, TileMut},
+        op::{Op, OperationBridge, PixelLocalOp},
     };
-    use viprs_ops_composite::conversion::CopyOp;
     use viprs_ports::scheduler::TileScheduler;
     use viprs_runtime::{
         pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     };
+
+    struct IdentityF32;
+
+    impl PixelLocalOp for IdentityF32 {}
+
+    impl Op for IdentityF32 {
+        type Input = F32;
+        type Output = F32;
+        type State = ();
+
+        fn required_input_region(&self, output: &Region) -> Region {
+            *output
+        }
+
+        fn start(&self) -> Self::State {}
+
+        fn process_region(
+            &self,
+            _state: &mut Self::State,
+            input: &Tile<Self::Input>,
+            output: &mut TileMut<Self::Output>,
+        ) {
+            output.data.copy_from_slice(input.data);
+        }
+    }
 
     fn run_mapim(
         op: &MapImOp<U8>,
@@ -2390,10 +2415,7 @@ mod tests {
         let source = MemorySource::<F32>::new(2, 2, 2, source_pixels.clone()).unwrap();
 
         let mut arena = PipelineArena::with_source(Box::new(source));
-        let upstream = arena.add_node(Box::new(OperationBridge::new_pixel_local(
-            CopyOp::<F32>::default(),
-            2,
-        )));
+        let upstream = arena.add_node(Box::new(OperationBridge::new_pixel_local(IdentityF32, 2)));
         let node = arena.add_node(Box::new(
             MapImOp::<F32>::new(2, 2, 2, 2, 2, BandFormatId::F32).with_premultiplied(true),
         ));
