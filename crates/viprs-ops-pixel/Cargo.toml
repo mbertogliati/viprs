@@ -1,6 +1,6 @@
 [package]
 name = "viprs-ops-pixel"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -9,7 +9,7 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core", version = "0.1.0" }
+viprs-core = { path = "../viprs-core", version = "0.1.1" }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 
 [dev-dependencies]
