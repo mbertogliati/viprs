@@ -1,6 +1,6 @@
 [package]
 name = "viprs-runtime"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -12,13 +12,13 @@ include = ["Cargo.toml", "src/**"]
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core", version = "0.1.1" }
-viprs-ports = { path = "../viprs-ports", version = "0.1.1" }
-viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.1" }
-viprs-ops-spatial = { path = "../viprs-ops-spatial", version = "0.1.1" }
-viprs-ops-colour = { path = "../viprs-ops-colour", version = "0.1.1" }
-viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.1" }
-viprs-codecs = { path = "../viprs-codecs", version = "0.1.1", default-features = false }
+viprs-core = { path = "../viprs-core", version = "0.1.2" }
+viprs-ports = { path = "../viprs-ports", version = "0.1.2" }
+viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.2" }
+viprs-ops-spatial = { path = "../viprs-ops-spatial", version = "0.1.2" }
+viprs-ops-colour = { path = "../viprs-ops-colour", version = "0.1.2" }
+viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.2" }
+viprs-codecs = { path = "../viprs-codecs", version = "0.1.2", default-features = false }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
 crossbeam-channel = "0.5"
