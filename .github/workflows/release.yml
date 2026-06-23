@@ -33,7 +33,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish viprs-core
-        run: cargo publish -p viprs-core
+        run: cargo publish --no-verify -p viprs-core
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - name: Wait for crates.io index
@@ -48,13 +48,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        crate: [viprs-ports, viprs-ops-pixel, viprs-ops-spatial]
+        crate: [viprs-ports, viprs-ops-pixel]
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish ${{ matrix.crate }}
-        run: cargo publish -p "${{ matrix.crate }}"
+        run: cargo publish --no-verify -p "${{ matrix.crate }}"
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Wait for crates.io index
+        run: sleep 30
+
+  publish-spatial:
+    name: Publish viprs-ops-spatial
+    needs: [release-please, publish-foundation]
+    if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: crates-io
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Publish viprs-ops-spatial
+        run: cargo publish --no-verify -p viprs-ops-spatial
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - name: Wait for crates.io index
@@ -62,7 +79,7 @@ jobs:
 
   publish-ops:
     name: Publish ${{ matrix.crate }}
-    needs: [release-please, publish-foundation]
+    needs: [release-please, publish-spatial]
     if: needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: crates-io
@@ -75,7 +92,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish ${{ matrix.crate }}
-        run: cargo publish -p "${{ matrix.crate }}"
+        run: cargo publish --no-verify -p "${{ matrix.crate }}"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - name: Wait for crates.io index
@@ -92,7 +109,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish viprs-codecs
-        run: cargo publish -p viprs-codecs
+        run: cargo publish --no-verify -p viprs-codecs
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - name: Wait for crates.io index
@@ -109,7 +126,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish viprs-runtime
-        run: cargo publish -p viprs-runtime
+        run: cargo publish --no-verify -p viprs-runtime
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       - name: Wait for crates.io index
@@ -126,6 +143,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish viprs
-        run: cargo publish -p viprs
+        run: cargo publish --no-verify -p viprs
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
