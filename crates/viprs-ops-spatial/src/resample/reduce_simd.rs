@@ -9,7 +9,6 @@ use super::{
     reduce_common::{ReduceKernel, clamp_axis},
     sample_conv::ReduceSample,
 };
-
 #[cfg(target_arch = "aarch64")]
 use std::arch::aarch64::{
     int32x4_t, int64x2_t, vaddq_f64, vaddq_s32, vaddq_s64, vaddvq_f64, vaddvq_s32, vaddvq_s64,
@@ -21,7 +20,9 @@ use std::arch::aarch64::{
     vqmovn_s64, vqmovun_s16, vqmovun_s32, vreinterpret_s32_u32, vreinterpretq_s16_u16, vshrq_n_s32,
     vshrq_n_s64, vst1_u8, vst1_u16, vst1q_f64,
 };
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(target_arch = "x86")]
+use std::arch::x86::*;
+#[cfg(target_arch = "x86_64")]
 use std::arch::x86_64::*;
 
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
@@ -197,9 +198,9 @@ pub fn reduce_h_u8_planned(
             );
         };
     }
-    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
-    {
-        // SAFETY: the helper is only compiled when AVX2 is enabled for the current target.
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
         unsafe {
             return reduce_h_u8_avx2(
                 filter,
@@ -242,9 +243,9 @@ pub fn reduce_h_u16(
             return reduce_h_u16_neon(filter, input_region, input, bands, output_region, output);
         };
     }
-    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
-    {
-        // SAFETY: the helper is only compiled when AVX2 is enabled for the current target.
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
         unsafe {
             return reduce_h_u16_avx2(filter, input_region, input, bands, output_region, output);
         };
@@ -269,9 +270,9 @@ pub fn reduce_h_f32(
             return reduce_h_f32_neon(filter, input_region, input, bands, output_region, output);
         };
     }
-    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
-    {
-        // SAFETY: the helper is only compiled when AVX2 is enabled for the current target.
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
         unsafe {
             return reduce_h_f32_avx2(filter, input_region, input, bands, output_region, output);
         };
@@ -307,9 +308,9 @@ pub fn reduce_v_u8(
             );
         };
     }
-    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
-    {
-        // SAFETY: the helper is only compiled when AVX2 is enabled for the current target.
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
         unsafe {
             return reduce_v_u8_avx2(filter, input_region, input, bands, output_region, output);
         };
@@ -343,9 +344,9 @@ pub fn reduce_v_u16(
             return reduce_v_u16_neon(filter, input_region, input, bands, output_region, output);
         };
     }
-    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
-    {
-        // SAFETY: the helper is only compiled when AVX2 is enabled for the current target.
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
         unsafe {
             return reduce_v_u16_avx2(filter, input_region, input, bands, output_region, output);
         };
@@ -370,9 +371,9 @@ pub fn reduce_v_f32(
             return reduce_v_f32_neon(filter, input_region, input, bands, output_region, output);
         };
     }
-    #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
-    {
-        // SAFETY: the helper is only compiled when AVX2 is enabled for the current target.
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
         unsafe {
             return reduce_v_f32_avx2(filter, input_region, input, bands, output_region, output);
         };
@@ -2409,7 +2410,7 @@ unsafe fn reduce_v_f32_neon(
     }
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide row-major `input`/`output` buffers plus `starts`/`phases` entries for every output column.
@@ -2489,7 +2490,7 @@ fn reduce_h_u8_scalar_planned(
     }
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available; the helper gathers every sample through clamped indices within `row` before vectorizing the multiply-add.
@@ -2532,7 +2533,7 @@ unsafe fn reduce_h_u8_avx2_pixel(
     <u8 as ReduceSample>::from_fixed_i64(acc)
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide row-major `input`/`output` buffers that cover the requested regions.
@@ -2566,7 +2567,7 @@ unsafe fn reduce_h_u16_avx2(
     }
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available; the helper gathers every sample through clamped indices within `row` before vectorizing the multiply-add.
@@ -2609,7 +2610,7 @@ unsafe fn reduce_h_u16_avx2_pixel(
     <u16 as ReduceSample>::from_fixed_i64(acc)
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide row-major `input`/`output` buffers that cover the requested regions.
@@ -2643,7 +2644,7 @@ unsafe fn reduce_h_f32_avx2(
     }
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available; the helper gathers every sample through clamped indices within `row` before vectorizing the multiply-add.
@@ -2688,7 +2689,7 @@ unsafe fn reduce_h_f32_avx2_pixel(
     acc as f32
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide buffers that cover the full input and output regions so each row-offset vector load stays valid.
@@ -2753,7 +2754,7 @@ unsafe fn reduce_v_u8_avx2(
     }
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide buffers that cover the full input and output regions so each row-offset vector load stays valid.
@@ -2818,7 +2819,7 @@ unsafe fn reduce_v_u16_avx2(
     }
 }
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[target_feature(enable = "avx2")]
 #[inline]
 // SAFETY: caller must dispatch only when AVX2 is available and provide buffers that cover the full input and output regions so each row-offset vector load stays valid.

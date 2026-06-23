@@ -34,6 +34,10 @@ use std::arch::aarch64::{
     vqmovn_u32, vreinterpretq_s16_u16, vreinterpretq_u32_s32, vshrn_n_u64, vst1_u8, vst1q_s32,
     vst3_u8, vst4_u8,
 };
+#[cfg(target_arch = "x86")]
+use std::arch::x86::*;
+#[cfg(target_arch = "x86_64")]
+use std::arch::x86_64::*;
 
 use viprs_core::{
     format::{BandFormat, F32, F64, I16, I32, U8, U16, U32},
@@ -306,6 +310,13 @@ impl GaussProcessFormat for U8 {
                 return process_horizontal_u8_neon(integer_kernel, input, output);
             }
         }
+        #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+        if is_x86_feature_detected!("avx2") {
+            // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
+            unsafe {
+                return process_horizontal_u8_avx2(integer_kernel, input, output);
+            }
+        }
         process_horizontal_u8_scalar(integer_kernel, input, output);
     }
 
@@ -322,6 +333,13 @@ impl GaussProcessFormat for U8 {
             // SAFETY: aarch64 guarantees NEON and the helper only reads from the halo-extended tile.
             unsafe {
                 return process_vertical_u8_neon(integer_kernel, input, output);
+            }
+        }
+        #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+        if is_x86_feature_detected!("avx2") {
+            // SAFETY: runtime dispatch confirms AVX2 support before calling the specialized kernel.
+            unsafe {
+                return process_vertical_u8_avx2(integer_kernel, input, output);
             }
         }
         process_vertical_u8_scalar(integer_kernel, input, output);
@@ -490,6 +508,588 @@ fn process_vertical_u8_scalar(
                 }
                 let out_idx = (oy * out_w + x) * bands + band;
                 output.data[out_idx] = clip_u8_fixed(sum, scale, kernel.rounding);
+            }
+        }
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and guarantee `ptr` points to at least eight readable bytes.
+unsafe fn load_u8x8_i32x8(ptr: *const u8) -> __m256i {
+    // SAFETY: `ptr` points to eight readable bytes and `_mm_loadl_epi64` reads exactly those bytes.
+    let bytes = unsafe { _mm_loadl_epi64(ptr.cast()) };
+    _mm256_cvtepu8_epi32(bytes)
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and `output` must have space for eight samples.
+unsafe fn store_eight_u8_avx2(acc: __m256i, output: &mut [u8], scale: i64, rounding: i64) {
+    let mut lanes = [0i32; 8];
+    // SAFETY: `lanes` has exact storage for one AVX2 register.
+    unsafe { _mm256_storeu_si256(lanes.as_mut_ptr().cast(), acc) };
+    for (dst, lane) in output.iter_mut().zip(lanes) {
+        *dst = clip_u8_fixed(i64::from(lane), scale, rounding);
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and `output` must have space for 24 interleaved RGB bytes.
+unsafe fn store_eight_rgb_u8_avx2(
+    acc_r: __m256i,
+    acc_g: __m256i,
+    acc_b: __m256i,
+    output: &mut [u8],
+    scale: i64,
+    rounding: i64,
+) {
+    let mut r = [0i32; 8];
+    let mut g = [0i32; 8];
+    let mut b = [0i32; 8];
+    // SAFETY: each stack array has exact storage for one AVX2 register.
+    unsafe {
+        _mm256_storeu_si256(r.as_mut_ptr().cast(), acc_r);
+        _mm256_storeu_si256(g.as_mut_ptr().cast(), acc_g);
+        _mm256_storeu_si256(b.as_mut_ptr().cast(), acc_b);
+    }
+    for lane in 0..8 {
+        let out = &mut output[lane * 3..lane * 3 + 3];
+        out[0] = clip_u8_fixed(i64::from(r[lane]), scale, rounding);
+        out[1] = clip_u8_fixed(i64::from(g[lane]), scale, rounding);
+        out[2] = clip_u8_fixed(i64::from(b[lane]), scale, rounding);
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and `output` must have space for 32 interleaved RGBA bytes.
+unsafe fn store_eight_rgba_u8_avx2(
+    acc_r: __m256i,
+    acc_g: __m256i,
+    acc_b: __m256i,
+    acc_a: __m256i,
+    output: &mut [u8],
+    scale: i64,
+    rounding: i64,
+) {
+    let mut r = [0i32; 8];
+    let mut g = [0i32; 8];
+    let mut b = [0i32; 8];
+    let mut a = [0i32; 8];
+    // SAFETY: each stack array has exact storage for one AVX2 register.
+    unsafe {
+        _mm256_storeu_si256(r.as_mut_ptr().cast(), acc_r);
+        _mm256_storeu_si256(g.as_mut_ptr().cast(), acc_g);
+        _mm256_storeu_si256(b.as_mut_ptr().cast(), acc_b);
+        _mm256_storeu_si256(a.as_mut_ptr().cast(), acc_a);
+    }
+    for lane in 0..8 {
+        let out = &mut output[lane * 4..lane * 4 + 4];
+        out[0] = clip_u8_fixed(i64::from(r[lane]), scale, rounding);
+        out[1] = clip_u8_fixed(i64::from(g[lane]), scale, rounding);
+        out[2] = clip_u8_fixed(i64::from(b[lane]), scale, rounding);
+        out[3] = clip_u8_fixed(i64::from(a[lane]), scale, rounding);
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and provide a halo-extended row with at least `out_w + coeffs.len() - 1` readable samples.
+unsafe fn gauss_blur_h_u8_avx2_row_1(
+    coeffs: &[i16],
+    scale: i64,
+    rounding: i64,
+    input_row: &[u8],
+    output_row: &mut [u8],
+    out_w: usize,
+) {
+    let mut x = 0usize;
+    while x + 8 <= out_w {
+        let mut acc = _mm256_setzero_si256();
+        for (tap, &coeff) in coeffs.iter().enumerate() {
+            let weight = _mm256_set1_epi32(i32::from(coeff));
+            // SAFETY: the halo guarantees that `input_row[x + tap..x + tap + 8]` is readable.
+            let samples = unsafe { load_u8x8_i32x8(input_row.as_ptr().add(x + tap)) };
+            acc = _mm256_add_epi32(acc, _mm256_mullo_epi32(samples, weight));
+        }
+        // SAFETY: `output_row[x..x + 8]` holds exactly eight outputs.
+        unsafe { store_eight_u8_avx2(acc, &mut output_row[x..x + 8], scale, rounding) };
+        x += 8;
+    }
+    for ox in x..out_w {
+        let mut sum = 0i64;
+        for (tap, &weight) in coeffs.iter().enumerate() {
+            sum += i64::from(weight) * i64::from(input_row[ox + tap]);
+        }
+        output_row[ox] = clip_u8_fixed(sum, scale, rounding);
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and provide halo-extended RGB rows so every 8-pixel chunk is readable and writable.
+unsafe fn gauss_blur_h_u8_avx2_row_3(
+    coeffs: &[i16],
+    scale: i64,
+    rounding: i64,
+    input_row: &[u8],
+    output_row: &mut [u8],
+    out_w: usize,
+) {
+    let mut x = 0usize;
+    while x + 8 <= out_w {
+        let mut acc_r = _mm256_setzero_si256();
+        let mut acc_g = _mm256_setzero_si256();
+        let mut acc_b = _mm256_setzero_si256();
+        for (tap, &coeff) in coeffs.iter().enumerate() {
+            let base = (x + tap) * 3;
+            let mut red = [0u8; 8];
+            let mut green = [0u8; 8];
+            let mut blue = [0u8; 8];
+            for lane in 0..8 {
+                let src = base + lane * 3;
+                red[lane] = input_row[src];
+                green[lane] = input_row[src + 1];
+                blue[lane] = input_row[src + 2];
+            }
+            let weight = _mm256_set1_epi32(i32::from(coeff));
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let r = unsafe { load_u8x8_i32x8(red.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let g = unsafe { load_u8x8_i32x8(green.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let b = unsafe { load_u8x8_i32x8(blue.as_ptr()) };
+            acc_r = _mm256_add_epi32(acc_r, _mm256_mullo_epi32(r, weight));
+            acc_g = _mm256_add_epi32(acc_g, _mm256_mullo_epi32(g, weight));
+            acc_b = _mm256_add_epi32(acc_b, _mm256_mullo_epi32(b, weight));
+        }
+        // SAFETY: `output_row[x * 3..(x + 8) * 3]` holds eight interleaved RGB pixels.
+        unsafe {
+            store_eight_rgb_u8_avx2(
+                acc_r,
+                acc_g,
+                acc_b,
+                &mut output_row[x * 3..(x + 8) * 3],
+                scale,
+                rounding,
+            )
+        };
+        x += 8;
+    }
+    for ox in x..out_w {
+        let out_pixel = &mut output_row[ox * 3..(ox + 1) * 3];
+        for channel in 0..3 {
+            let mut sum = 0i64;
+            for (tap, &weight) in coeffs.iter().enumerate() {
+                sum += i64::from(weight) * i64::from(input_row[(ox + tap) * 3 + channel]);
+            }
+            out_pixel[channel] = clip_u8_fixed(sum, scale, rounding);
+        }
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and provide halo-extended RGBA rows so every 8-pixel chunk is readable and writable.
+unsafe fn gauss_blur_h_u8_avx2_row_4(
+    coeffs: &[i16],
+    scale: i64,
+    rounding: i64,
+    input_row: &[u8],
+    output_row: &mut [u8],
+    out_w: usize,
+) {
+    let mut x = 0usize;
+    while x + 8 <= out_w {
+        let mut acc_r = _mm256_setzero_si256();
+        let mut acc_g = _mm256_setzero_si256();
+        let mut acc_b = _mm256_setzero_si256();
+        let mut acc_a = _mm256_setzero_si256();
+        for (tap, &coeff) in coeffs.iter().enumerate() {
+            let base = (x + tap) * 4;
+            let mut red = [0u8; 8];
+            let mut green = [0u8; 8];
+            let mut blue = [0u8; 8];
+            let mut alpha = [0u8; 8];
+            for lane in 0..8 {
+                let src = base + lane * 4;
+                red[lane] = input_row[src];
+                green[lane] = input_row[src + 1];
+                blue[lane] = input_row[src + 2];
+                alpha[lane] = input_row[src + 3];
+            }
+            let weight = _mm256_set1_epi32(i32::from(coeff));
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let r = unsafe { load_u8x8_i32x8(red.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let g = unsafe { load_u8x8_i32x8(green.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let b = unsafe { load_u8x8_i32x8(blue.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let a = unsafe { load_u8x8_i32x8(alpha.as_ptr()) };
+            acc_r = _mm256_add_epi32(acc_r, _mm256_mullo_epi32(r, weight));
+            acc_g = _mm256_add_epi32(acc_g, _mm256_mullo_epi32(g, weight));
+            acc_b = _mm256_add_epi32(acc_b, _mm256_mullo_epi32(b, weight));
+            acc_a = _mm256_add_epi32(acc_a, _mm256_mullo_epi32(a, weight));
+        }
+        // SAFETY: `output_row[x * 4..(x + 8) * 4]` holds eight interleaved RGBA pixels.
+        unsafe {
+            store_eight_rgba_u8_avx2(
+                acc_r,
+                acc_g,
+                acc_b,
+                acc_a,
+                &mut output_row[x * 4..(x + 8) * 4],
+                scale,
+                rounding,
+            )
+        };
+        x += 8;
+    }
+    for ox in x..out_w {
+        let out_pixel = &mut output_row[ox * 4..(ox + 1) * 4];
+        for channel in 0..4 {
+            let mut sum = 0i64;
+            for (tap, &weight) in coeffs.iter().enumerate() {
+                sum += i64::from(weight) * i64::from(input_row[(ox + tap) * 4 + channel]);
+            }
+            out_pixel[channel] = clip_u8_fixed(sum, scale, rounding);
+        }
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and ensure the tile contains every tapped source row for `y`.
+unsafe fn gauss_blur_v_u8_avx2_row_1(
+    coeffs: &[i16],
+    scale: i64,
+    rounding: i64,
+    input: &Tile<U8>,
+    output_row: &mut [u8],
+    y: usize,
+) {
+    let out_w = output_row.len();
+    let in_w = input.region.width as usize;
+    let mut x = 0usize;
+    while x + 8 <= out_w {
+        let mut acc = _mm256_setzero_si256();
+        for (tap, &coeff) in coeffs.iter().enumerate() {
+            let row_start = (y + tap) * in_w + x;
+            let weight = _mm256_set1_epi32(i32::from(coeff));
+            // SAFETY: the tile contains the halo rows and each chunk reads eight in-bounds bytes.
+            let samples = unsafe { load_u8x8_i32x8(input.data.as_ptr().add(row_start)) };
+            acc = _mm256_add_epi32(acc, _mm256_mullo_epi32(samples, weight));
+        }
+        // SAFETY: `output_row[x..x + 8]` holds exactly eight outputs.
+        unsafe { store_eight_u8_avx2(acc, &mut output_row[x..x + 8], scale, rounding) };
+        x += 8;
+    }
+    for column in x..out_w {
+        let mut sum = 0i64;
+        for (tap, &weight) in coeffs.iter().enumerate() {
+            let idx = (y + tap) * in_w + column;
+            sum += i64::from(weight) * i64::from(input.data[idx]);
+        }
+        output_row[column] = clip_u8_fixed(sum, scale, rounding);
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and ensure the tile contains every tapped RGB source row for `y`.
+unsafe fn gauss_blur_v_u8_avx2_row_3(
+    coeffs: &[i16],
+    scale: i64,
+    rounding: i64,
+    input: &Tile<U8>,
+    output_row: &mut [u8],
+    y: usize,
+) {
+    let out_w = output_row.len() / 3;
+    let in_w = input.region.width as usize;
+    let bands = 3usize;
+    let mut x = 0usize;
+    while x + 8 <= out_w {
+        let mut acc_r = _mm256_setzero_si256();
+        let mut acc_g = _mm256_setzero_si256();
+        let mut acc_b = _mm256_setzero_si256();
+        for (tap, &coeff) in coeffs.iter().enumerate() {
+            let base = ((y + tap) * in_w + x) * bands;
+            let mut red = [0u8; 8];
+            let mut green = [0u8; 8];
+            let mut blue = [0u8; 8];
+            for lane in 0..8 {
+                let src = base + lane * bands;
+                red[lane] = input.data[src];
+                green[lane] = input.data[src + 1];
+                blue[lane] = input.data[src + 2];
+            }
+            let weight = _mm256_set1_epi32(i32::from(coeff));
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let r = unsafe { load_u8x8_i32x8(red.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let g = unsafe { load_u8x8_i32x8(green.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let b = unsafe { load_u8x8_i32x8(blue.as_ptr()) };
+            acc_r = _mm256_add_epi32(acc_r, _mm256_mullo_epi32(r, weight));
+            acc_g = _mm256_add_epi32(acc_g, _mm256_mullo_epi32(g, weight));
+            acc_b = _mm256_add_epi32(acc_b, _mm256_mullo_epi32(b, weight));
+        }
+        // SAFETY: `output_row[x * 3..(x + 8) * 3]` holds eight interleaved RGB pixels.
+        unsafe {
+            store_eight_rgb_u8_avx2(
+                acc_r,
+                acc_g,
+                acc_b,
+                &mut output_row[x * 3..(x + 8) * 3],
+                scale,
+                rounding,
+            )
+        };
+        x += 8;
+    }
+    for column in x..out_w {
+        let out_pixel = &mut output_row[column * 3..(column + 1) * 3];
+        for channel in 0..3 {
+            let mut sum = 0i64;
+            for (tap, &weight) in coeffs.iter().enumerate() {
+                let idx = ((y + tap) * in_w + column) * bands + channel;
+                sum += i64::from(weight) * i64::from(input.data[idx]);
+            }
+            out_pixel[channel] = clip_u8_fixed(sum, scale, rounding);
+        }
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and ensure the tile contains every tapped RGBA source row for `y`.
+unsafe fn gauss_blur_v_u8_avx2_row_4(
+    coeffs: &[i16],
+    scale: i64,
+    rounding: i64,
+    input: &Tile<U8>,
+    output_row: &mut [u8],
+    y: usize,
+) {
+    let out_w = output_row.len() / 4;
+    let in_w = input.region.width as usize;
+    let bands = 4usize;
+    let mut x = 0usize;
+    while x + 8 <= out_w {
+        let mut acc_r = _mm256_setzero_si256();
+        let mut acc_g = _mm256_setzero_si256();
+        let mut acc_b = _mm256_setzero_si256();
+        let mut acc_a = _mm256_setzero_si256();
+        for (tap, &coeff) in coeffs.iter().enumerate() {
+            let base = ((y + tap) * in_w + x) * bands;
+            let mut red = [0u8; 8];
+            let mut green = [0u8; 8];
+            let mut blue = [0u8; 8];
+            let mut alpha = [0u8; 8];
+            for lane in 0..8 {
+                let src = base + lane * bands;
+                red[lane] = input.data[src];
+                green[lane] = input.data[src + 1];
+                blue[lane] = input.data[src + 2];
+                alpha[lane] = input.data[src + 3];
+            }
+            let weight = _mm256_set1_epi32(i32::from(coeff));
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let r = unsafe { load_u8x8_i32x8(red.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let g = unsafe { load_u8x8_i32x8(green.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let b = unsafe { load_u8x8_i32x8(blue.as_ptr()) };
+            // SAFETY: the temporary arrays hold exactly eight bytes each.
+            let a = unsafe { load_u8x8_i32x8(alpha.as_ptr()) };
+            acc_r = _mm256_add_epi32(acc_r, _mm256_mullo_epi32(r, weight));
+            acc_g = _mm256_add_epi32(acc_g, _mm256_mullo_epi32(g, weight));
+            acc_b = _mm256_add_epi32(acc_b, _mm256_mullo_epi32(b, weight));
+            acc_a = _mm256_add_epi32(acc_a, _mm256_mullo_epi32(a, weight));
+        }
+        // SAFETY: `output_row[x * 4..(x + 8) * 4]` holds eight interleaved RGBA pixels.
+        unsafe {
+            store_eight_rgba_u8_avx2(
+                acc_r,
+                acc_g,
+                acc_b,
+                acc_a,
+                &mut output_row[x * 4..(x + 8) * 4],
+                scale,
+                rounding,
+            )
+        };
+        x += 8;
+    }
+    for column in x..out_w {
+        let out_pixel = &mut output_row[column * 4..(column + 1) * 4];
+        for channel in 0..4 {
+            let mut sum = 0i64;
+            for (tap, &weight) in coeffs.iter().enumerate() {
+                let idx = ((y + tap) * in_w + column) * bands + channel;
+                sum += i64::from(weight) * i64::from(input.data[idx]);
+            }
+            out_pixel[channel] = clip_u8_fixed(sum, scale, rounding);
+        }
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and provide tiles whose row slices already include the convolution halo required by the selected kernel.
+unsafe fn process_horizontal_u8_avx2(
+    kernel: &IntegerKernel1d,
+    input: &Tile<U8>,
+    output: &mut TileMut<U8>,
+) {
+    let out_w = output.region.width as usize;
+    let out_h = output.region.height as usize;
+    let in_w = input.region.width as usize;
+    let bands = input.bands as usize;
+    if !matches!(bands, 1 | 3 | 4) {
+        process_horizontal_u8_scalar(kernel, input, output);
+        return;
+    }
+    let in_stride = in_w * bands;
+    let out_stride = out_w * bands;
+    let scale = i64::from(kernel.scale);
+
+    for y in 0..out_h {
+        let input_row = &input.data[y * in_stride..(y + 1) * in_stride];
+        let output_row = &mut output.data[y * out_stride..(y + 1) * out_stride];
+        match bands {
+            1 => {
+                // SAFETY: the helper only reads within the halo-extended row and writes the matching output row.
+                unsafe {
+                    gauss_blur_h_u8_avx2_row_1(
+                        &kernel.coeffs,
+                        scale,
+                        kernel.rounding,
+                        input_row,
+                        output_row,
+                        out_w,
+                    )
+                };
+            }
+            3 => {
+                // SAFETY: the helper only reads and writes complete RGB pixel batches within the current row.
+                unsafe {
+                    gauss_blur_h_u8_avx2_row_3(
+                        &kernel.coeffs,
+                        scale,
+                        kernel.rounding,
+                        input_row,
+                        output_row,
+                        out_w,
+                    )
+                };
+            }
+            4 => {
+                // SAFETY: the helper only reads and writes complete RGBA pixel batches within the current row.
+                unsafe {
+                    gauss_blur_h_u8_avx2_row_4(
+                        &kernel.coeffs,
+                        scale,
+                        kernel.rounding,
+                        input_row,
+                        output_row,
+                        out_w,
+                    )
+                };
+            }
+            _ => {
+                debug_assert!(
+                    false,
+                    "GaussBlurH AVX2 path only specializes 1-, 3-, and 4-band tiles"
+                );
+                return;
+            }
+        }
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must dispatch only when AVX2 is available and provide tiles containing every tapped source row for each output row.
+unsafe fn process_vertical_u8_avx2(
+    kernel: &IntegerKernel1d,
+    input: &Tile<U8>,
+    output: &mut TileMut<U8>,
+) {
+    let out_w = output.region.width as usize;
+    let out_h = output.region.height as usize;
+    let bands = input.bands as usize;
+    if !matches!(bands, 1 | 3 | 4) {
+        process_vertical_u8_scalar(kernel, input, output);
+        return;
+    }
+    let out_stride = out_w * bands;
+    let scale = i64::from(kernel.scale);
+
+    for y in 0..out_h {
+        let output_row = &mut output.data[y * out_stride..(y + 1) * out_stride];
+        match bands {
+            1 => {
+                // SAFETY: the helper reads valid rows `y..y + kernel.len()` and writes one output row.
+                unsafe {
+                    gauss_blur_v_u8_avx2_row_1(
+                        &kernel.coeffs,
+                        scale,
+                        kernel.rounding,
+                        input,
+                        output_row,
+                        y,
+                    )
+                };
+            }
+            3 => {
+                // SAFETY: the helper reads valid RGB rows `y..y + kernel.len()` and writes one output row.
+                unsafe {
+                    gauss_blur_v_u8_avx2_row_3(
+                        &kernel.coeffs,
+                        scale,
+                        kernel.rounding,
+                        input,
+                        output_row,
+                        y,
+                    )
+                };
+            }
+            4 => {
+                // SAFETY: the helper reads valid RGBA rows `y..y + kernel.len()` and writes one output row.
+                unsafe {
+                    gauss_blur_v_u8_avx2_row_4(
+                        &kernel.coeffs,
+                        scale,
+                        kernel.rounding,
+                        input,
+                        output_row,
+                        y,
+                    )
+                };
+            }
+            _ => {
+                debug_assert!(
+                    false,
+                    "GaussBlurV AVX2 path only specializes 1-, 3-, and 4-band tiles"
+                );
+                return;
             }
         }
     }
@@ -1523,6 +2123,91 @@ mod tests {
         extended
     }
 
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    fn run_gauss_blur_h_u8_scalar_direct(
+        input_data: &[u8],
+        in_region: Region,
+        out_region: Region,
+        sigma: f32,
+        bands: u32,
+    ) -> Vec<u8> {
+        let kernel = integer_kernel_with_precision(sigma, GAUSSBLUR_MIN_AMPL);
+        let out_len = out_region.pixel_count() * bands as usize;
+        let input = Tile::<U8>::new(in_region, bands, input_data);
+        let mut output_data = vec![0u8; out_len];
+        let mut output = TileMut::<U8>::new(out_region, bands, &mut output_data);
+        process_horizontal_u8_scalar(&kernel, &input, &mut output);
+        output_data
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    fn run_gauss_blur_v_u8_scalar_direct(
+        input_data: &[u8],
+        in_region: Region,
+        out_region: Region,
+        sigma: f32,
+        bands: u32,
+    ) -> Vec<u8> {
+        let kernel = integer_kernel_with_precision(sigma, GAUSSBLUR_MIN_AMPL);
+        let out_len = out_region.pixel_count() * bands as usize;
+        let input = Tile::<U8>::new(in_region, bands, input_data);
+        let mut output_data = vec![0u8; out_len];
+        let mut output = TileMut::<U8>::new(out_region, bands, &mut output_data);
+        process_vertical_u8_scalar(&kernel, &input, &mut output);
+        output_data
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    fn run_gauss_blur_h_u8_avx2_direct(
+        input_data: &[u8],
+        in_region: Region,
+        out_region: Region,
+        sigma: f32,
+        bands: u32,
+    ) -> Vec<u8> {
+        let kernel = integer_kernel_with_precision(sigma, GAUSSBLUR_MIN_AMPL);
+        let out_len = out_region.pixel_count() * bands as usize;
+        let input = Tile::<U8>::new(in_region, bands, input_data);
+        let mut output_data = vec![0u8; out_len];
+        let mut output = TileMut::<U8>::new(out_region, bands, &mut output_data);
+        // SAFETY: the test guards AVX2 availability before invoking the specialized path.
+        unsafe { process_horizontal_u8_avx2(&kernel, &input, &mut output) };
+        output_data
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    fn run_gauss_blur_v_u8_avx2_direct(
+        input_data: &[u8],
+        in_region: Region,
+        out_region: Region,
+        sigma: f32,
+        bands: u32,
+    ) -> Vec<u8> {
+        let kernel = integer_kernel_with_precision(sigma, GAUSSBLUR_MIN_AMPL);
+        let out_len = out_region.pixel_count() * bands as usize;
+        let input = Tile::<U8>::new(in_region, bands, input_data);
+        let mut output_data = vec![0u8; out_len];
+        let mut output = TileMut::<U8>::new(out_region, bands, &mut output_data);
+        // SAFETY: the test guards AVX2 availability before invoking the specialized path.
+        unsafe { process_vertical_u8_avx2(&kernel, &input, &mut output) };
+        output_data
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    fn gauss_case_u8() -> impl Strategy<Value = (usize, usize, usize, f32, Vec<u8>)> {
+        (
+            1usize..=12,
+            1usize..=8,
+            prop_oneof![Just(1usize), Just(3usize), Just(4usize)],
+            prop_oneof![Just(0.0f32), Just(0.5f32), Just(1.5f32), Just(3.0f32)],
+        )
+            .prop_flat_map(|(width, height, bands, sigma)| {
+                let len = width * height * bands;
+                prop::collection::vec(any::<u8>(), len)
+                    .prop_map(move |pixels| (width, height, bands, sigma, pixels))
+            })
+    }
+
     // ── 1. Kernel sum = 1.0 ───────────────────────────────────────────────
 
     #[test]
@@ -2306,6 +2991,81 @@ mod tests {
                 (actual[height * width - 1] - expected[height * width - 1]).abs()
                     <= f32::EPSILON
             );
+        }
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    proptest! {
+        #[test]
+        fn gauss_blur_h_avx2_matches_scalar(
+            (width, height, bands, sigma, pixels) in gauss_case_u8(),
+        ) {
+            if !is_x86_feature_detected!("avx2") {
+                return Ok(());
+            }
+
+            let radius = integer_kernel_with_precision(sigma, GAUSSBLUR_MIN_AMPL).radius();
+            let input_data = edge_extend_u8_rows(&pixels, width, height, bands, radius);
+            let input_region = Region::new(
+                -(radius as i32),
+                0,
+                (width + 2 * radius) as u32,
+                height as u32,
+            );
+            let output_region = Region::new(0, 0, width as u32, height as u32);
+
+            let scalar = run_gauss_blur_h_u8_scalar_direct(
+                &input_data,
+                input_region,
+                output_region,
+                sigma,
+                bands as u32,
+            );
+            let avx2 = run_gauss_blur_h_u8_avx2_direct(
+                &input_data,
+                input_region,
+                output_region,
+                sigma,
+                bands as u32,
+            );
+
+            prop_assert_eq!(avx2, scalar);
+        }
+
+        #[test]
+        fn gauss_blur_v_avx2_matches_scalar(
+            (width, height, bands, sigma, pixels) in gauss_case_u8(),
+        ) {
+            if !is_x86_feature_detected!("avx2") {
+                return Ok(());
+            }
+
+            let radius = integer_kernel_with_precision(sigma, GAUSSBLUR_MIN_AMPL).radius();
+            let input_data = edge_extend_u8_columns(&pixels, width, height, bands, radius);
+            let input_region = Region::new(
+                0,
+                -(radius as i32),
+                width as u32,
+                (height + 2 * radius) as u32,
+            );
+            let output_region = Region::new(0, 0, width as u32, height as u32);
+
+            let scalar = run_gauss_blur_v_u8_scalar_direct(
+                &input_data,
+                input_region,
+                output_region,
+                sigma,
+                bands as u32,
+            );
+            let avx2 = run_gauss_blur_v_u8_avx2_direct(
+                &input_data,
+                input_region,
+                output_region,
+                sigma,
+                bands as u32,
+            );
+
+            prop_assert_eq!(avx2, scalar);
         }
     }
 }
