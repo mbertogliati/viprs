@@ -1,24 +1,23 @@
 [package]
 name = "viprs-ops-spatial"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
-publish = false
 
 [lints]
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core", version = "0.1.0" }
+viprs-core.workspace = true
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
 
 [dev-dependencies]
 proptest = "1"
-viprs-runtime = { path = "../viprs-runtime", version = "0.1.0" }
-viprs-ports = { path = "../viprs-ports", version = "0.1.0" }
-viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.0" }
+viprs-runtime.workspace = true
+viprs-ports.workspace = true
+viprs-ops-composite.workspace = true
 
 [features]
 _integration = []
