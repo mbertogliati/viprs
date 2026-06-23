@@ -217,7 +217,22 @@ fn shrink_v_u8(
         }
     }
 
-    #[cfg(not(target_arch = "aarch64"))]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        if std::arch::is_x86_feature_detected!("avx2") {
+            // SAFETY: the runtime AVX2 check guarantees the required ISA support,
+            // and the helper only touches rows and scratch slices derived from
+            // the validated output geometry.
+            unsafe {
+                shrink_v_u8_generic_avx2(factor, input, bands, out_w, out_h, scratch, output);
+            }
+        } else {
+            shrink_v_u8_generic_scalar(factor, input, bands, out_w, out_h, scratch, output);
+        }
+        return;
+    }
+
+    #[cfg(not(any(target_arch = "aarch64", target_arch = "x86", target_arch = "x86_64")))]
     shrink_v_u8_generic_scalar(factor, input, bands, out_w, out_h, scratch, output);
 }
 
@@ -322,6 +337,205 @@ const fn shrink_u8_multiplier(factor: usize) -> u32 {
 #[inline(always)]
 const fn shrink_u8_fixed_point_average(sum: u32, multiplier: u32) -> u8 {
     (((sum as u64) * multiplier as u64) >> 24) as u8
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx2")]
+#[inline]
+// SAFETY: caller must dispatch only when AVX2 is available; `input`, `scratch`,
+// and `output` must cover `out_h` rows of `out_w * bands` samples so every
+// vector load/store stays within the provided slices.
+// REASON: AVX2 load/store intrinsics accept unaligned pointers; the casts are
+// intentional to operate on contiguous pixel and accumulator buffers.
+#[allow(clippy::cast_ptr_alignment)]
+unsafe fn shrink_v_u8_generic_avx2(
+    factor: usize,
+    input: &[u8],
+    bands: usize,
+    out_w: usize,
+    out_h: usize,
+    scratch: &mut Vec<u32>,
+    output: &mut [u8],
+) {
+    #[cfg(target_arch = "x86")]
+    use std::arch::x86::{
+        __m128i, __m256i, _mm_loadl_epi64, _mm256_add_epi32, _mm256_cvtepu8_epi32,
+        _mm256_loadu_si256, _mm256_mul_epu32, _mm256_set1_epi32, _mm256_srli_epi64,
+        _mm256_storeu_si256,
+    };
+    #[cfg(target_arch = "x86_64")]
+    use std::arch::x86_64::{
+        __m128i, __m256i, _mm_loadl_epi64, _mm256_add_epi32, _mm256_cvtepu8_epi32,
+        _mm256_loadu_si256, _mm256_mul_epu32, _mm256_set1_epi32, _mm256_srli_epi64,
+        _mm256_storeu_si256,
+    };
+
+    let row_len = out_w * bands;
+    let amend = factor as u32 / 2;
+    let multiplier = shrink_u8_multiplier(factor);
+    let chunks = row_len / 32;
+
+    if scratch.len() < row_len {
+        scratch.resize(row_len, 0);
+    }
+
+    if (factor as u64 * u64::from(u8::MAX)) + u64::from(amend) > i32::MAX as u64 {
+        shrink_v_u8_generic_scalar(factor, input, bands, out_w, out_h, scratch, output);
+        return;
+    }
+
+    // SAFETY: AVX2 is enabled for this function and `_mm256_set1_epi32` has no
+    // memory preconditions.
+    let multiplier_vec = unsafe { _mm256_set1_epi32(multiplier as i32) };
+
+    for y_out in 0..out_h {
+        scratch[..row_len].fill(amend);
+
+        for k in 0..factor {
+            let src_idx = (y_out * factor + k) * row_len;
+            let src_row = &input[src_idx..src_idx + row_len];
+
+            for chunk in 0..chunks {
+                let offset = chunk * 32;
+
+                // SAFETY: each 8-byte input load and 8-lane scratch load/store stays
+                // within the current row chunk because `offset + 32 <= row_len`.
+                unsafe {
+                    let src_ptr = src_row.as_ptr().add(offset);
+                    let scratch_ptr = scratch.as_mut_ptr().add(offset);
+
+                    let pixels0 = _mm256_cvtepu8_epi32(_mm_loadl_epi64(src_ptr.cast::<__m128i>()));
+                    let acc0 = _mm256_loadu_si256(scratch_ptr.cast::<__m256i>());
+                    _mm256_storeu_si256(
+                        scratch_ptr.cast::<__m256i>(),
+                        _mm256_add_epi32(acc0, pixels0),
+                    );
+
+                    let pixels1 =
+                        _mm256_cvtepu8_epi32(_mm_loadl_epi64(src_ptr.add(8).cast::<__m128i>()));
+                    let acc1 = _mm256_loadu_si256(scratch_ptr.add(8).cast::<__m256i>());
+                    _mm256_storeu_si256(
+                        scratch_ptr.add(8).cast::<__m256i>(),
+                        _mm256_add_epi32(acc1, pixels1),
+                    );
+
+                    let pixels2 =
+                        _mm256_cvtepu8_epi32(_mm_loadl_epi64(src_ptr.add(16).cast::<__m128i>()));
+                    let acc2 = _mm256_loadu_si256(scratch_ptr.add(16).cast::<__m256i>());
+                    _mm256_storeu_si256(
+                        scratch_ptr.add(16).cast::<__m256i>(),
+                        _mm256_add_epi32(acc2, pixels2),
+                    );
+
+                    let pixels3 =
+                        _mm256_cvtepu8_epi32(_mm_loadl_epi64(src_ptr.add(24).cast::<__m128i>()));
+                    let acc3 = _mm256_loadu_si256(scratch_ptr.add(24).cast::<__m256i>());
+                    _mm256_storeu_si256(
+                        scratch_ptr.add(24).cast::<__m256i>(),
+                        _mm256_add_epi32(acc3, pixels3),
+                    );
+                }
+            }
+
+            for i in chunks * 32..row_len {
+                scratch[i] += u32::from(src_row[i]);
+            }
+        }
+
+        let output_row = &mut output[y_out * row_len..(y_out + 1) * row_len];
+        for chunk in 0..chunks {
+            let offset = chunk * 32;
+
+            // SAFETY: each scratch vector covers 8 contiguous accumulators within the
+            // current chunk and the temporary arrays are sized for the AVX2 stores.
+            unsafe {
+                let scratch_ptr = scratch.as_ptr().add(offset);
+
+                let sums0 = _mm256_loadu_si256(scratch_ptr.cast::<__m256i>());
+                let even0 = _mm256_srli_epi64(_mm256_mul_epu32(sums0, multiplier_vec), 24);
+                let odd0 = _mm256_srli_epi64(
+                    _mm256_mul_epu32(_mm256_srli_epi64(sums0, 32), multiplier_vec),
+                    24,
+                );
+                let mut even0_lanes = [0_u64; 4];
+                let mut odd0_lanes = [0_u64; 4];
+                _mm256_storeu_si256(even0_lanes.as_mut_ptr().cast::<__m256i>(), even0);
+                _mm256_storeu_si256(odd0_lanes.as_mut_ptr().cast::<__m256i>(), odd0);
+                output_row[offset] = even0_lanes[0] as u8;
+                output_row[offset + 1] = odd0_lanes[0] as u8;
+                output_row[offset + 2] = even0_lanes[1] as u8;
+                output_row[offset + 3] = odd0_lanes[1] as u8;
+                output_row[offset + 4] = even0_lanes[2] as u8;
+                output_row[offset + 5] = odd0_lanes[2] as u8;
+                output_row[offset + 6] = even0_lanes[3] as u8;
+                output_row[offset + 7] = odd0_lanes[3] as u8;
+
+                let sums1 = _mm256_loadu_si256(scratch_ptr.add(8).cast::<__m256i>());
+                let even1 = _mm256_srli_epi64(_mm256_mul_epu32(sums1, multiplier_vec), 24);
+                let odd1 = _mm256_srli_epi64(
+                    _mm256_mul_epu32(_mm256_srli_epi64(sums1, 32), multiplier_vec),
+                    24,
+                );
+                let mut even1_lanes = [0_u64; 4];
+                let mut odd1_lanes = [0_u64; 4];
+                _mm256_storeu_si256(even1_lanes.as_mut_ptr().cast::<__m256i>(), even1);
+                _mm256_storeu_si256(odd1_lanes.as_mut_ptr().cast::<__m256i>(), odd1);
+                output_row[offset + 8] = even1_lanes[0] as u8;
+                output_row[offset + 9] = odd1_lanes[0] as u8;
+                output_row[offset + 10] = even1_lanes[1] as u8;
+                output_row[offset + 11] = odd1_lanes[1] as u8;
+                output_row[offset + 12] = even1_lanes[2] as u8;
+                output_row[offset + 13] = odd1_lanes[2] as u8;
+                output_row[offset + 14] = even1_lanes[3] as u8;
+                output_row[offset + 15] = odd1_lanes[3] as u8;
+
+                let sums2 = _mm256_loadu_si256(scratch_ptr.add(16).cast::<__m256i>());
+                let even2 = _mm256_srli_epi64(_mm256_mul_epu32(sums2, multiplier_vec), 24);
+                let odd2 = _mm256_srli_epi64(
+                    _mm256_mul_epu32(_mm256_srli_epi64(sums2, 32), multiplier_vec),
+                    24,
+                );
+                let mut even2_lanes = [0_u64; 4];
+                let mut odd2_lanes = [0_u64; 4];
+                _mm256_storeu_si256(even2_lanes.as_mut_ptr().cast::<__m256i>(), even2);
+                _mm256_storeu_si256(odd2_lanes.as_mut_ptr().cast::<__m256i>(), odd2);
+                output_row[offset + 16] = even2_lanes[0] as u8;
+                output_row[offset + 17] = odd2_lanes[0] as u8;
+                output_row[offset + 18] = even2_lanes[1] as u8;
+                output_row[offset + 19] = odd2_lanes[1] as u8;
+                output_row[offset + 20] = even2_lanes[2] as u8;
+                output_row[offset + 21] = odd2_lanes[2] as u8;
+                output_row[offset + 22] = even2_lanes[3] as u8;
+                output_row[offset + 23] = odd2_lanes[3] as u8;
+
+                let sums3 = _mm256_loadu_si256(scratch_ptr.add(24).cast::<__m256i>());
+                let even3 = _mm256_srli_epi64(_mm256_mul_epu32(sums3, multiplier_vec), 24);
+                let odd3 = _mm256_srli_epi64(
+                    _mm256_mul_epu32(_mm256_srli_epi64(sums3, 32), multiplier_vec),
+                    24,
+                );
+                let mut even3_lanes = [0_u64; 4];
+                let mut odd3_lanes = [0_u64; 4];
+                _mm256_storeu_si256(even3_lanes.as_mut_ptr().cast::<__m256i>(), even3);
+                _mm256_storeu_si256(odd3_lanes.as_mut_ptr().cast::<__m256i>(), odd3);
+                output_row[offset + 24] = even3_lanes[0] as u8;
+                output_row[offset + 25] = odd3_lanes[0] as u8;
+                output_row[offset + 26] = even3_lanes[1] as u8;
+                output_row[offset + 27] = odd3_lanes[1] as u8;
+                output_row[offset + 28] = even3_lanes[2] as u8;
+                output_row[offset + 29] = odd3_lanes[2] as u8;
+                output_row[offset + 30] = even3_lanes[3] as u8;
+                output_row[offset + 31] = odd3_lanes[3] as u8;
+            }
+        }
+
+        for (dst, sum) in output_row[chunks * 32..]
+            .iter_mut()
+            .zip(scratch[chunks * 32..row_len].iter().copied())
+        {
+            *dst = shrink_u8_fixed_point_average(sum, multiplier);
+        }
+    }
 }
 
 /// NEON-accelerated vertical shrink for any factor > 2.
@@ -818,6 +1032,62 @@ mod tests {
             let floor = ShrinkV::<U8>::new_with_ceil(factor, false).unwrap().output_height(height);
             let ceil = ShrinkV::<U8>::new_with_ceil(factor, true).unwrap().output_height(height);
             prop_assert!(ceil >= floor);
+        }
+
+        #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+        #[test]
+        fn shrinkv_avx2_matches_scalar_prop(
+            (width, out_h, bands, factor, pixels) in (1u32..=16, 1u32..=8, 1u32..=4, 3u32..=19).prop_flat_map(
+                |(width, out_h, bands, factor)| {
+                    let height = out_h * factor;
+                    (
+                        Just(width),
+                        Just(out_h),
+                        Just(bands),
+                        Just(factor),
+                        prop::collection::vec(any::<u8>(), (width * height * bands) as usize),
+                    )
+                }
+            ),
+        ) {
+            if !std::arch::is_x86_feature_detected!("avx2") {
+                return Ok(());
+            }
+
+            let factor_usize = factor as usize;
+            let out_h_usize = out_h as usize;
+            let bands_usize = bands as usize;
+            let width_usize = width as usize;
+            let mut expected = vec![0u8; width_usize * out_h_usize * bands_usize];
+            let mut actual = vec![0u8; width_usize * out_h_usize * bands_usize];
+            let mut scalar_scratch = Vec::new();
+            let mut avx2_scratch = Vec::new();
+
+            shrink_v_u8_generic_scalar(
+                factor_usize,
+                &pixels,
+                bands_usize,
+                width_usize,
+                out_h_usize,
+                &mut scalar_scratch,
+                &mut expected,
+            );
+
+            // SAFETY: the test gates execution on runtime AVX2 support and both
+            // buffers are sized from the exact same geometry passed to the helper.
+            unsafe {
+                shrink_v_u8_generic_avx2(
+                    factor_usize,
+                    &pixels,
+                    bands_usize,
+                    width_usize,
+                    out_h_usize,
+                    &mut avx2_scratch,
+                    &mut actual,
+                );
+            }
+
+            prop_assert_eq!(actual, expected);
         }
     }
 }
