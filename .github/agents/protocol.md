@@ -1,13 +1,13 @@
 # Agent notification protocol
 
 All inter-agent signals in viprs use a single structured format so the orchestrator
-and merger can parse them unambiguously.
+can parse them unambiguously.
 
 ---
 
 ## Developer → Orchestrator: task finished
 
-When a developer agent completes its task (Done + archived), it emits:
+When a developer agent completes its task (Done + archived + PR opened), it emits:
 
 ```
 AGENT_DONE agent_id=<agent-id> task=<task-id> branch=<branch-name> worktree=<absolute-worktree-path> status=<success|blocked>
@@ -26,35 +26,36 @@ not exist.
 
 ---
 
-## Orchestrator → Merger: merge request
+## Developer → GitHub: PR with auto-merge
 
-When the orchestrator receives an `AGENT_DONE` with `status=success`, it forwards
-a merge request to the always-on merger:
+When a developer agent finishes implementation (all quality gates passed, task archived),
+it must open a PR and enable auto-merge **before** emitting `AGENT_DONE`:
 
-```
-MERGE_REQUEST agent_id=<agent-id> task=<task-id> branch=<branch-name> worktree=<absolute-worktree-path>
+```bash
+# 1. Push the branch
+git push -u origin <branch-name>
+
+# 2. Open the PR
+gh pr create --title "<issue title>" \
+             --body "<resolution summary from RESOLUTION section>" \
+             --base main
+
+# 3. Enable auto-merge — GitHub merges when all required checks pass
+gh pr merge <PR-number> --auto --squash
 ```
 
----
+**CRITICAL: Never call `gh pr merge` without `--auto`.** Direct merge bypasses GitHub's
+required status checks. Any CI failure → branch waits, no exception.
 
-## Merger → Orchestrator: merge result
-
-```
-MERGE_RESULT task=<task-id> branch=<branch-name> worktree=<absolute-worktree-path> status=<merged|failed> reason=<none|"description of failure">
-```
-
-Examples:
-```
-MERGE_RESULT task=task-42 branch=task-42 worktree=... status=merged reason=none
-MERGE_RESULT task=task-42 branch=task-42 worktree=... status=failed reason="task not archived"
-```
+The worktree must NOT be deleted until the PR is merged. After `gh pr merge --auto` the
+agent can remove the worktree because GitHub owns the merge from that point.
 
 ---
 
 ## Orchestrator → Agents: spawn payload
 
 The orchestrator always passes the full task context in the spawn prompt.
-The prompt format is defined in `docs/ai/agents/orchestrator.md` (see "Prompts to include").
+The prompt format is defined in `.github/agents/orchestrator.md` (see "Prompts to include").
 It is not a structured signal — it is a natural-language prompt.
 
 ---
@@ -71,7 +72,6 @@ active developer agents: <count>/<max>
   [dev-42] task=task-42 running for 4m
   [dev-17] task=task-55 running for 12m
   [dev-09] task=task-60 running for 1m
-merger: running
 analyzer: idle (last run: after completion 20)
 performance_engineer: idle (last run: after completion 10)
 next checkpoint: after completion <(floor(completed/10)+1)*10>

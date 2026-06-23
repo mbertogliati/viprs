@@ -20,9 +20,9 @@ The orchestrator spawns **three types of developer agents** based on the task:
 
 | Task type | Agent | Workflow file |
 |---|---|---|
-| `the task` (label `performance`, type Improvement) | **performance_developer** | `docs/ai/agents/performance_developer.md` |
-| `the task` with label `correctness` or `calidad` | **bug_solver** | `docs/ai/agents/bug_solver.md` |
-| `the task` with label `funcionalidad` or `arquitectura`, `D-NNN` | **feature_developer** | `docs/ai/agents/feature_developer.md` |
+| `the task` (label `performance`, type Improvement) | **performance_developer** | `.github/agents/performance_developer.md` |
+| `the task` with label `correctness` or `calidad` | **bug_solver** | `.github/agents/bug_solver.md` |
+| `the task` with label `funcionalidad` or `arquitectura`, `D-NNN` | **feature_developer** | `.github/agents/feature_developer.md` |
 
 ### Routing rules
 
@@ -45,9 +45,10 @@ The orchestrator spawns **three types of developer agents** based on the task:
 
 ## Non-negotiable rules
 
-1. **The merger agent is mandatory.** The orchestrator MUST spawn a merger agent at startup
-   and keep it running for the entire session. No branch is merged without passing through
-   the merger's full validation checklist (including performance regression checks).
+1. **GitHub CI is the merge gate — no agent merges directly.** Developer agents open a PR
+   and enable auto-merge (`gh pr merge --auto --squash`). GitHub merges the PR only after
+   all required status checks pass. No AI agent ever calls `git merge` or `gh pr merge`
+   without `--auto`. If CI is red, the branch waits. Period.
 
 2. **The orchestrator solves NOTHING itself.** Every problem — build failures, merge
    conflicts, performance regressions, blocked tasks — is delegated to the appropriate
@@ -60,7 +61,7 @@ The orchestrator spawns **three types of developer agents** based on the task:
    reading code is a token that cannot be spent on coordination. When in doubt, delegate
    rather than investigate.
 
-Notification protocol (signal formats between agents): `cat docs/ai/agents/protocol.md`
+Notification protocol (signal formats between agents): `cat .github/agents/protocol.md`
 
 ---
 
@@ -68,19 +69,12 @@ Notification protocol (signal formats between agents): `cat docs/ai/agents/proto
 
 On first launch, before entering the main loop:
 
-1. Spawn one **merger agent** (always-on, runs for the lifetime of the orchestrator):
-   ```
-   spawn merger_agent()   # see docs/ai/agents/merger.md
-   ```
-   The merger listens for `MERGE_REQUEST` signals independently.
-   The orchestrator does not think about merging — that is the merger's job.
-
-2. Read the issue tracker to initialise state:
+1. Read the issue tracker to initialise state:
    ```bash
    # list active tasks
    ```
 
-3. Enter the main loop.
+2. Enter the main loop.
 
 ---
 
@@ -90,7 +84,6 @@ On first launch, before entering the main loop:
 |----------|------|---------|
 | `active_agents` | map: agent_id → `{task_id, worktree, started_at, timeout_count}` | Currently running developer agents |
 | `agents_completed` | integer | Cumulative developer agents finished since startup |
-| `merger` | agent handle | The single always-on merger agent |
 | `analyzer_running` | bool | Whether an analyzer agent is currently active |
 | `perf_eng_running` | bool | Whether a performance_engineer agent is currently active |
 
@@ -148,7 +141,9 @@ LOOP:
        active_agents.remove(agent_id)
        if status == "success":
            agents_completed++
-           send MERGE_REQUEST(agent_id, task_id, branch, worktree) to merger
+           # PR was already opened by the developer agent with --auto flag.
+           # GitHub merges it once all required CI checks pass.
+           # No orchestrator action required — merging is handled by GitHub.
            if agents_completed % 10 == 0:
                if not analyzer_running:
                    spawn analyzer_agent()
@@ -157,15 +152,10 @@ LOOP:
                    spawn performance_engineer_agent()
                    perf_eng_running = true
        # status == "blocked": task remains In Progress with a blocked note; skip automatic retry.
-  6. on MERGE_RESULT(task_id, status, reason):
-       if status == "failed":
-           log "Merge failed for <task_id>: <reason>"
-           # Worktree and branch are preserved — human intervention required.
-           # Do not retry automatically.
-  7. on analyzer_done: analyzer_running = false
-  8. on perf_eng_done: perf_eng_running = false
-  9. if active_agents is empty and ready_tasks is empty: STOP
-  10. goto LOOP
+  6. on analyzer_done: analyzer_running = false
+  7. on perf_eng_done: perf_eng_running = false
+  8. if active_agents is empty and ready_tasks is empty: STOP
+  9. goto LOOP
 ```
 
 ### route_task(task) logic
@@ -228,12 +218,18 @@ Assigned task: <paste full output captured from repo root on master with `issue 
 Worktree: <worktree-path>
 
 Read before starting:
-  cat docs/ai/agents/feature_developer.md
-  cat docs/ai/agents/protocol.md
+  cat .github/agents/feature_developer.md
+  cat .github/agents/protocol.md
   cat AGENTS.md
 
 Work inside the provided worktree. Mark the task In Progress, implement,
-validate, mark Done, archive. Then emit the completion signal:
+validate, mark Done, archive. Then open a PR and enable auto-merge:
+
+  gh pr create --title "<issue title>" --body "<resolution summary>" --base main
+  gh pr merge <PR-number> --auto --squash
+
+GitHub will merge the PR automatically once all required CI checks pass.
+Finally emit the completion signal:
 
   AGENT_DONE agent_id=<your-id> task=<task-id> branch=<branch-name> worktree=<worktree-path> status=success
 
@@ -251,12 +247,18 @@ Assigned task: <paste full output captured from repo root on master with `issue 
 Worktree: <worktree-path>
 
 Read before starting:
-  cat docs/ai/agents/bug_solver.md
-  cat docs/ai/agents/protocol.md
+  cat .github/agents/bug_solver.md
+  cat .github/agents/protocol.md
   cat AGENTS.md
 
 Work inside the provided worktree. Reproduce the bug, isolate root cause, fix,
-validate, mark Done, archive. Then emit the completion signal:
+validate, mark Done, archive. Then open a PR and enable auto-merge:
+
+  gh pr create --title "<issue title>" --body "<resolution summary>" --base main
+  gh pr merge <PR-number> --auto --squash
+
+GitHub will merge the PR automatically once all required CI checks pass.
+Finally emit the completion signal:
 
   AGENT_DONE agent_id=<your-id> task=<task-id> branch=<branch-name> worktree=<worktree-path> status=success
 
@@ -274,15 +276,21 @@ Assigned task: <paste full output of `issue view the task --plain`>
 Worktree: <worktree-path>
 
 Read before starting:
-  cat docs/ai/agents/performance_developer.md
-  cat docs/ai/agents/protocol.md
+  cat .github/agents/performance_developer.md
+  cat .github/agents/protocol.md
   cat AGENTS.md
   cat docs/PERFORMANCE.md
 
 CRITICAL: You MUST profile before optimizing. No code change without flame graph
 evidence of the bottleneck function. Read your workflow for the mandatory 7-step process.
 
-Work inside the provided worktree. Follow Steps 1-7 exactly. Then emit:
+Work inside the provided worktree. Follow Steps 1-7 exactly. Then open a PR and enable auto-merge:
+
+  gh pr create --title "<issue title>" --body "<resolution summary>" --base main
+  gh pr merge <PR-number> --auto --squash
+
+GitHub will merge the PR automatically once all required CI checks pass.
+Finally emit:
 
   AGENT_DONE agent_id=<your-id> task=<task-id> branch=<branch-name> worktree=<worktree-path> status=success
 
@@ -291,28 +299,13 @@ If the task lacks profiling evidence or the gap no longer exists, leave it In Pr
   AGENT_DONE agent_id=<your-id> task=<task-id> branch=<branch-name> worktree=<worktree-path> status=blocked
 ```
 
-### Merger agent prompt
-
-```
-You are the merger agent for viprs. You run for the lifetime of the orchestrator.
-
-Read your workflow:
-  cat docs/ai/agents/merger.md
-
-Read the notification protocol:
-  cat docs/ai/agents/protocol.md
-
-Wait for MERGE_REQUEST signals. For each one, run the pre-merge checklist
-and merge to master if all checks pass. Emit MERGE_RESULT when done.
-```
-
 ### Analyzer agent prompt
 
 ```
 You are an analyzer agent for viprs. You work in the main repository (no worktree).
 
 Read your workflow:
-  cat docs/ai/agents/analyzer.md
+  cat .github/agents/analyzer.md
 
 Read project rules:
   cat AGENTS.md
@@ -327,7 +320,7 @@ Do NOT fix anything.
 You are a performance engineer agent for viprs. You work in the main repository (no worktree).
 
 Read your workflow:
-  cat docs/ai/agents/performance_engineer.md
+  cat .github/agents/performance_engineer.md
 
 Read the benchmark methodology:
   cat docs/PERFORMANCE.md
@@ -346,16 +339,14 @@ Do NOT implement fixes.
 - All remaining issues are `Done`, or explicitly left `In Progress` with a blocked note, and `active_agents` is empty.
 - The orchestrator receives an explicit stop signal from the user.
 
-On stop: let the merger agent finish any in-flight merge, then shut it down.
-
 ---
 
 ## What the orchestrator must NOT do
 
 - Read source files, build output, or task descriptions in detail — delegate to agents.
 - Touch source code or issue content directly.
-- Merge branches — that is the merger's job.
-- Delete worktrees — that is the merger's job (after a successful merge).
+- Merge branches directly — developer agents open PRs with `--auto`, GitHub merges them.
+- Delete worktrees — developer agents remove their own worktree after the PR is opened.
 - Start more than 10 developer agents simultaneously.
 - Skip the analyzer or performance_engineer checkpoints at the 10-completion boundary.
 - Mark tasks `In Progress` without immediately spawning the agent.

@@ -305,14 +305,19 @@ EOF
 )"
 ```
 
-**Step 2 — Mark Done and archive:**
+**Step 2 — Push, open PR, enable auto-merge, then archive:**
 
 ```bash
+git push -u origin <branch-name>
+gh pr create --title "<issue title>" --body "<paste RESOLUTION summary>" --base main
+gh pr merge <PR-number> --auto --squash
 issue edit the task -s Done
 # archive completed task
 ```
 
-**The merger will grep the archived file for `RESOLUTION:BEGIN`. A missing section = merge blocked.**
+**CRITICAL: `gh pr merge` MUST include `--auto`.** Never merge directly — GitHub's required
+CI checks enforce the quality gate. The PR will merge automatically once all checks pass.
+If checks fail, fix the branch and push again; `--auto` re-evaluates on the new commit.
 
 ---
 

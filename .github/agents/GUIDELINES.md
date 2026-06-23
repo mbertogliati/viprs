@@ -455,7 +455,7 @@ toolchain. "It should be faster" is not evidence. Required for every P-NNN task:
 | After-fix ratio confirmation | `cargo xtask bench` (same command, same image) |
 
 A PR that claims a performance improvement without before/after benchmark output
-will be rejected by the merger regardless of the measured result.
+will not pass review regardless of the measured result.
 
 ---
 
