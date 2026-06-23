@@ -1,0 +1,48 @@
+crates/viprs-ops-spatial/src/resample/mapim.rs
+  s_0c2bca4c39f53c::t_5f3f679085bcbf 1532,1541-1542
+  s_0c2bca4c39f53c::t_76debd30e8913a 1531,1540,1543-1564,2418
+crates/viprs-ops-spatial/Cargo.toml
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7-8
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+crates/viprs-runtime/Cargo.toml
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7
+crates/viprs-core/Cargo.toml
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7
+crates/viprs-ports/Cargo.toml
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+crates/viprs-ops-composite/Cargo.toml
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7-8
+crates/viprs-ops-colour/Cargo.toml
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7-8
+Cargo.toml
+  s_0c2bca4c39f53c::t_bac10b3b07b302 8,17
+crates/viprs-codecs/Cargo.toml
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+crates/viprs-ops-pixel/Cargo.toml
+  s_0c2bca4c39f53c::t_bac10b3b07b302 7-8
+  s_0c2bca4c39f53c::t_b3871706033bfe 9
+.github/workflows/release.yml
+  s_0c2bca4c39f53c::t_db6ac137422e14 6,28,35-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "b2a81b16dec868ff36f34670fceeb1dc578ea034",
+  "prompts": {},
+  "sessions": {
+    "s_0c2bca4c39f53c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef4a9-57b2-7793-b090-b3a993deffc9",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
