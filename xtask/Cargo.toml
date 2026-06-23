@@ -1,6 +1,6 @@
 [package]
 name = "xtask"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version.workspace = true
 license.workspace = true
@@ -11,7 +11,7 @@ count-alloc = []
 
 [dependencies]
 # Keep libspng enabled so PNG E2E benches use the same C-backed decoder family as libvips.
-viprs = { path = "..", version = "0.1.0", features = ["rayon", "jpeg", "png", "webp", "tiff", "heif", "avif", "gif", "jp2k", "fft", "exr"] }
+viprs = { path = "..", version = "0.1.1", features = ["rayon", "jpeg", "png", "webp", "tiff", "heif", "avif", "gif", "jp2k", "fft", "exr"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 libc = "0.2"
