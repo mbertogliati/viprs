@@ -1,6 +1,6 @@
 [package]
 name = "viprs-runtime"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -11,13 +11,13 @@ description = "Runtime adapters and pipeline implementations for viprs"
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core", version = "0.1.0" }
-viprs-ports = { path = "../viprs-ports", version = "0.1.0" }
-viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.0" }
-viprs-ops-spatial = { path = "../viprs-ops-spatial", version = "0.1.0" }
-viprs-ops-colour = { path = "../viprs-ops-colour", version = "0.1.0" }
-viprs-ops-composite = { path = "../viprs-ops-composite", version = "0.1.0" }
-viprs-codecs = { path = "../viprs-codecs", version = "0.1.0", default-features = false }
+viprs-core.workspace = true
+viprs-ports.workspace = true
+viprs-ops-pixel.workspace = true
+viprs-ops-spatial.workspace = true
+viprs-ops-colour.workspace = true
+viprs-ops-composite.workspace = true
+viprs-codecs.workspace = true
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
 crossbeam-channel = "0.5"
