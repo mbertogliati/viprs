@@ -222,7 +222,6 @@ fn encode_webp_advanced(
     if let Some(enabled) = opts.smart_subsample {
         config.use_sharp_yuv = i32::from(enabled);
     }
-    config.thread_level = 1;
     let use_argb = lossless || near_lossless.is_some() || opts.smart_subsample.unwrap_or(false);
 
     // SAFETY: `config` is initialized via libwebp, the imported pixel slice outlives the encode

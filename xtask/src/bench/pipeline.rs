@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 use bytemuck::Pod;
 use mozjpeg::decompress::DecompressStarted;
 use mozjpeg::{ALL_MARKERS, ColorSpace, ColorSpaceExt, Decompress};
-use viprs::adapters::codecs::{JpegCodec, PngCodec, TiffDecoder, WebpCodec};
+use viprs::adapters::codecs::{PngCodec, TiffDecoder, WebpCodec};
 use viprs::adapters::pipeline::{CompiledPipeline, PipelineArena, PipelineBuilder};
 use viprs::adapters::sources::create::GreySource;
 use viprs::adapters::sources::decoder_source::DecoderSource;
@@ -1367,8 +1367,8 @@ fn build_viprs_path_backed_pipeline(
     let opts = LoadOptions::default();
     match extension.as_str() {
         "jpg" | "jpeg" | "jpe" => Some(build_viprs_pipeline_from_source_with_access(
-            DecoderSource::<_, U8>::probed_path_with_options(JpegCodec, input, opts)
-                .expect("failed to build JPEG deferred thumbnail/workflow source"),
+            JpegSequentialScanlineSource::open(input)
+                .expect("failed to open JPEG scanline thumbnail/workflow source"),
             op,
             op_args,
             true,
