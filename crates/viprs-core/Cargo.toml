@@ -1,6 +1,6 @@
 [package]
 name = "viprs-core"
-version.workspace = true
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true

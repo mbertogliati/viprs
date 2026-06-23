@@ -1,6 +1,6 @@
 [package]
 name = "viprs-ports"
-version.workspace = true
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -10,4 +10,4 @@ description = "Infrastructure port traits for viprs (codecs, scheduler, sinks, s
 workspace = true
 
 [dependencies]
-viprs-core.workspace = true
+viprs-core = { path = "../viprs-core", version = "0.1.0" }
