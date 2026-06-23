@@ -286,6 +286,54 @@ mod tests {
         }
     }
 
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    proptest! {
+        #[test]
+        fn invert_u8_avx2_matches_scalar_reference(
+            pixels in proptest::collection::vec(any::<u8>(), 33..=257)
+        ) {
+            if !std::arch::is_x86_feature_detected!("avx2") {
+                return;
+            }
+
+            use viprs_core::format::U8;
+
+            let len = pixels.len();
+            let region = Region::new(0, 0, len as u32, 1);
+            let mut output = vec![0u8; len];
+            let input = Tile::<U8>::new(region, 1, &pixels);
+            let mut output_tile = TileMut::<U8>::new(region, 1, &mut output);
+            let mut state = ();
+
+            Invert::<U8>::new().process_region(&mut state, &input, &mut output_tile);
+
+            let expected: Vec<u8> = pixels.iter().map(|&sample| 255 - sample).collect();
+            prop_assert_eq!(output, expected);
+        }
+
+        #[test]
+        fn invert_f32_avx2_matches_scalar_reference(
+            pixels in proptest::collection::vec(0.0f32..=1.0f32, 17..=129)
+        ) {
+            if !std::arch::is_x86_feature_detected!("avx2") {
+                return;
+            }
+
+            let len = pixels.len();
+            let region = Region::new(0, 0, len as u32, 1);
+            let mut output = vec![0.0f32; len];
+            let input = Tile::<F32>::new(region, 1, &pixels);
+            let mut output_tile = TileMut::<F32>::new(region, 1, &mut output);
+            let mut state = ();
+
+            Invert::<F32>::new().process_region(&mut state, &input, &mut output_tile);
+
+            for (actual, expected) in output.iter().zip(pixels.iter().map(|&sample| 1.0 - sample)) {
+                prop_assert!((actual - expected).abs() < f32::EPSILON);
+            }
+        }
+    }
+
     /// Boundary value: invert(0u8) == 255, invert(255u8) == 0.
     #[test]
     fn invert_u8_boundary_values() {

@@ -24,6 +24,21 @@ use std::arch::aarch64::{
 #[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
 use std::arch::x86_64::*;
 
+#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+// REASON: these kernels widen source samples before multiplying, so each iteration processes
+// fewer logical elements than the raw 256-bit register width.
+const AVX2_U8_LANES: usize = 8;
+#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+const AVX2_U16_LANES: usize = 8;
+#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+const AVX2_F32_LANES: usize = 4;
+
+#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[inline(always)]
+const fn vectorized_prefix_len(row_len: usize, lanes: usize) -> usize {
+    row_len / lanes * lanes
+}
+
 #[inline]
 pub fn reduce_h_scalar<T: ReduceSample>(
     filter: &ReduceKernel,
@@ -2487,9 +2502,9 @@ unsafe fn reduce_h_u8_avx2_pixel(
     let mut acc = 0_i64;
     let mut tap = 0usize;
 
-    while tap + 8 <= weights.len() {
-        let mut samples = [0_u8; 8];
-        for lane in 0..8 {
+    while tap + AVX2_U8_LANES <= weights.len() {
+        let mut samples = [0_u8; AVX2_U8_LANES];
+        for lane in 0..AVX2_U8_LANES {
             let tile_x = clamp_axis(start_x + (tap + lane) as i64, input_origin, row.len());
             samples[lane] = row[tile_x];
         }
@@ -2501,11 +2516,11 @@ unsafe fn reduce_h_u8_avx2_pixel(
                 _mm256_cvtepi16_epi32(_mm_loadu_si128(weights.as_ptr().add(tap).cast()));
             _mm256_mullo_epi32(sample_vec, weight_vec)
         };
-        let mut lanes = [0_i32; 8];
+        let mut lanes = [0_i32; AVX2_U8_LANES];
         // SAFETY: `lanes` has exact storage for the AVX2 result.
         unsafe { _mm256_storeu_si256(lanes.as_mut_ptr().cast(), product) };
         acc += lanes.into_iter().map(i64::from).sum::<i64>();
-        tap += 8;
+        tap += AVX2_U8_LANES;
     }
 
     while tap < weights.len() {
@@ -2564,9 +2579,9 @@ unsafe fn reduce_h_u16_avx2_pixel(
     let mut acc = 0_i64;
     let mut tap = 0usize;
 
-    while tap + 8 <= weights.len() {
-        let mut samples = [0_u16; 8];
-        for lane in 0..8 {
+    while tap + AVX2_U16_LANES <= weights.len() {
+        let mut samples = [0_u16; AVX2_U16_LANES];
+        for lane in 0..AVX2_U16_LANES {
             let tile_x = clamp_axis(start_x + (tap + lane) as i64, input_origin, row.len());
             samples[lane] = row[tile_x];
         }
@@ -2578,11 +2593,11 @@ unsafe fn reduce_h_u16_avx2_pixel(
                 _mm256_cvtepi16_epi32(_mm_loadu_si128(weights.as_ptr().add(tap).cast()));
             _mm256_mullo_epi32(sample_vec, weight_vec)
         };
-        let mut lanes = [0_i32; 8];
+        let mut lanes = [0_i32; AVX2_U16_LANES];
         // SAFETY: `lanes` has exact storage for the AVX2 result.
         unsafe { _mm256_storeu_si256(lanes.as_mut_ptr().cast(), product) };
         acc += lanes.into_iter().map(i64::from).sum::<i64>();
-        tap += 8;
+        tap += AVX2_U16_LANES;
     }
 
     while tap < weights.len() {
@@ -2641,10 +2656,10 @@ unsafe fn reduce_h_f32_avx2_pixel(
     let mut acc = 0.0_f64;
     let mut tap = 0usize;
 
-    while tap + 4 <= weights.len() {
-        let mut samples = [0.0_f32; 4];
-        let mut weight_arr = [0.0_f64; 4];
-        for lane in 0..4 {
+    while tap + AVX2_F32_LANES <= weights.len() {
+        let mut samples = [0.0_f32; AVX2_F32_LANES];
+        let mut weight_arr = [0.0_f64; AVX2_F32_LANES];
+        for lane in 0..AVX2_F32_LANES {
             let tile_x = clamp_axis(start_x + (tap + lane) as i64, input_origin, row.len());
             samples[lane] = row[tile_x];
             weight_arr[lane] = weights[tap + lane];
@@ -2657,11 +2672,11 @@ unsafe fn reduce_h_f32_avx2_pixel(
                 _mm256_loadu_pd(weight_arr.as_ptr()),
             )
         };
-        let mut lanes = [0.0_f64; 4];
+        let mut lanes = [0.0_f64; AVX2_F32_LANES];
         // SAFETY: `lanes` has exact storage for the AVX2 result.
         unsafe { _mm256_storeu_pd(lanes.as_mut_ptr(), product) };
         acc += lanes.into_iter().sum::<f64>();
-        tap += 4;
+        tap += AVX2_F32_LANES;
     }
 
     while tap < weights.len() {
@@ -2690,7 +2705,7 @@ unsafe fn reduce_v_u8_avx2(
     let in_h = input_region.height as usize;
     let row_stride = input_region.width as usize * bands as usize;
     let row_len = out_w * bands as usize;
-    let vector_len = row_len / 8 * 8;
+    let vector_len = vectorized_prefix_len(row_len, AVX2_U8_LANES);
 
     for y_out in 0..out_h {
         let source_y = filter.source_position(output_region.y as f64 + y_out as f64);
@@ -2699,7 +2714,7 @@ unsafe fn reduce_v_u8_avx2(
 
         let mut x = 0usize;
         while x < vector_len {
-            let mut acc = [0_i64; 8];
+            let mut acc = [0_i64; AVX2_U8_LANES];
             for (tap, &weight) in weights.iter().enumerate() {
                 let tile_y = clamp_axis(start_y + tap as i64, input_region.y, in_h);
                 let row_offset = tile_y * row_stride + x;
@@ -2712,18 +2727,18 @@ unsafe fn reduce_v_u8_avx2(
                     let weight_vec = _mm256_set1_epi32(i32::from(weight));
                     _mm256_mullo_epi32(sample_vec, weight_vec)
                 };
-                let mut lanes = [0_i32; 8];
+                let mut lanes = [0_i32; AVX2_U8_LANES];
                 // SAFETY: `lanes` has exact storage for the AVX2 result.
                 unsafe { _mm256_storeu_si256(lanes.as_mut_ptr().cast(), product) };
-                for lane in 0..8 {
+                for lane in 0..AVX2_U8_LANES {
                     acc[lane] += i64::from(lanes[lane]);
                 }
             }
 
-            for lane in 0..8 {
+            for lane in 0..AVX2_U8_LANES {
                 out_row[x + lane] = <u8 as ReduceSample>::from_fixed_i64(acc[lane]);
             }
-            x += 8;
+            x += AVX2_U8_LANES;
         }
 
         while x < row_len {
@@ -2755,7 +2770,7 @@ unsafe fn reduce_v_u16_avx2(
     let in_h = input_region.height as usize;
     let row_stride = input_region.width as usize * bands as usize;
     let row_len = out_w * bands as usize;
-    let vector_len = row_len / 8 * 8;
+    let vector_len = vectorized_prefix_len(row_len, AVX2_U16_LANES);
 
     for y_out in 0..out_h {
         let source_y = filter.source_position(output_region.y as f64 + y_out as f64);
@@ -2764,7 +2779,7 @@ unsafe fn reduce_v_u16_avx2(
 
         let mut x = 0usize;
         while x < vector_len {
-            let mut acc = [0_i64; 8];
+            let mut acc = [0_i64; AVX2_U16_LANES];
             for (tap, &weight) in weights.iter().enumerate() {
                 let tile_y = clamp_axis(start_y + tap as i64, input_region.y, in_h);
                 let row_offset = tile_y * row_stride + x;
@@ -2777,18 +2792,18 @@ unsafe fn reduce_v_u16_avx2(
                     let weight_vec = _mm256_set1_epi32(i32::from(weight));
                     _mm256_mullo_epi32(sample_vec, weight_vec)
                 };
-                let mut lanes = [0_i32; 8];
+                let mut lanes = [0_i32; AVX2_U16_LANES];
                 // SAFETY: `lanes` has exact storage for the AVX2 result.
                 unsafe { _mm256_storeu_si256(lanes.as_mut_ptr().cast(), product) };
-                for lane in 0..8 {
+                for lane in 0..AVX2_U16_LANES {
                     acc[lane] += i64::from(lanes[lane]);
                 }
             }
 
-            for lane in 0..8 {
+            for lane in 0..AVX2_U16_LANES {
                 out_row[x + lane] = <u16 as ReduceSample>::from_fixed_i64(acc[lane]);
             }
-            x += 8;
+            x += AVX2_U16_LANES;
         }
 
         while x < row_len {
@@ -2820,7 +2835,7 @@ unsafe fn reduce_v_f32_avx2(
     let in_h = input_region.height as usize;
     let row_stride = input_region.width as usize * bands as usize;
     let row_len = out_w * bands as usize;
-    let vector_len = row_len / 8 * 8;
+    let vector_len = vectorized_prefix_len(row_len, AVX2_F32_LANES);
 
     for y_out in 0..out_h {
         let source_y = filter.source_position(output_region.y as f64 + y_out as f64);
@@ -2829,7 +2844,7 @@ unsafe fn reduce_v_f32_avx2(
 
         let mut x = 0usize;
         while x < vector_len {
-            let mut acc = [0.0_f64; 4];
+            let mut acc = [0.0_f64; AVX2_F32_LANES];
             for (tap, &weight) in weights.iter().enumerate() {
                 let tile_y = clamp_axis(start_y + tap as i64, input_region.y, in_h);
                 let row_offset = tile_y * row_stride + x;
@@ -2841,18 +2856,18 @@ unsafe fn reduce_v_f32_avx2(
                         _mm256_set1_pd(weight),
                     )
                 };
-                let mut lanes = [0.0_f64; 4];
+                let mut lanes = [0.0_f64; AVX2_F32_LANES];
                 // SAFETY: `lanes` has exact storage for the AVX2 result.
                 unsafe { _mm256_storeu_pd(lanes.as_mut_ptr(), product) };
-                for lane in 0..4 {
+                for lane in 0..AVX2_F32_LANES {
                     acc[lane] += lanes[lane];
                 }
             }
 
-            for lane in 0..4 {
+            for lane in 0..AVX2_F32_LANES {
                 out_row[x + lane] = acc[lane] as f32;
             }
-            x += 4;
+            x += AVX2_F32_LANES;
         }
 
         while x < row_len {
@@ -2920,6 +2935,66 @@ mod horizontal_multiband_tests {
                 let len = width as usize * height as usize * bands as usize;
                 prop::collection::vec(-10_000.0f32..10_000.0f32, len)
                     .prop_map(move |input| (width, height, factor, kernel, input))
+            },
+        )
+    }
+
+    fn reduce_case_h_boundary_u8(
+        bands: u32,
+    ) -> impl Strategy<Value = (u32, u32, f64, InterpolationKernel, Vec<u8>)> {
+        prop_oneof![Just((1u32, 1u32)), Just((5u32, 3u32)), Just((7u32, 1u32))].prop_flat_map(
+            move |(width, height)| {
+                let len = width as usize * height as usize * bands as usize;
+                (
+                    Just(width),
+                    Just(height),
+                    factor_strategy(),
+                    kernel_strategy(),
+                )
+                    .prop_flat_map(move |(width, height, factor, kernel)| {
+                        prop::collection::vec(any::<u8>(), len)
+                            .prop_map(move |input| (width, height, factor, kernel, input))
+                    })
+            },
+        )
+    }
+
+    fn reduce_case_h_boundary_u16(
+        bands: u32,
+    ) -> impl Strategy<Value = (u32, u32, f64, InterpolationKernel, Vec<u16>)> {
+        prop_oneof![Just((1u32, 1u32)), Just((5u32, 3u32)), Just((7u32, 1u32))].prop_flat_map(
+            move |(width, height)| {
+                let len = width as usize * height as usize * bands as usize;
+                (
+                    Just(width),
+                    Just(height),
+                    factor_strategy(),
+                    kernel_strategy(),
+                )
+                    .prop_flat_map(move |(width, height, factor, kernel)| {
+                        prop::collection::vec(any::<u16>(), len)
+                            .prop_map(move |input| (width, height, factor, kernel, input))
+                    })
+            },
+        )
+    }
+
+    fn reduce_case_h_boundary_f32(
+        bands: u32,
+    ) -> impl Strategy<Value = (u32, u32, f64, InterpolationKernel, Vec<f32>)> {
+        prop_oneof![Just((1u32, 1u32)), Just((5u32, 3u32)), Just((7u32, 1u32))].prop_flat_map(
+            move |(width, height)| {
+                let len = width as usize * height as usize * bands as usize;
+                (
+                    Just(width),
+                    Just(height),
+                    factor_strategy(),
+                    kernel_strategy(),
+                )
+                    .prop_flat_map(move |(width, height, factor, kernel)| {
+                        prop::collection::vec(-10_000.0f32..10_000.0f32, len)
+                            .prop_map(move |input| (width, height, factor, kernel, input))
+                    })
             },
         )
     }
@@ -3126,6 +3201,66 @@ mod horizontal_multiband_tests {
         )
     }
 
+    fn reduce_case_v_boundary_u8(
+        bands: u32,
+    ) -> impl Strategy<Value = (u32, u32, f64, InterpolationKernel, Vec<u8>)> {
+        prop_oneof![Just((1u32, 1u32)), Just((5u32, 7u32)), Just((7u32, 5u32))].prop_flat_map(
+            move |(width, height)| {
+                let len = width as usize * height as usize * bands as usize;
+                (
+                    Just(width),
+                    Just(height),
+                    factor_strategy(),
+                    kernel_strategy(),
+                )
+                    .prop_flat_map(move |(width, height, factor, kernel)| {
+                        prop::collection::vec(any::<u8>(), len)
+                            .prop_map(move |input| (width, height, factor, kernel, input))
+                    })
+            },
+        )
+    }
+
+    fn reduce_case_v_boundary_u16(
+        bands: u32,
+    ) -> impl Strategy<Value = (u32, u32, f64, InterpolationKernel, Vec<u16>)> {
+        prop_oneof![Just((1u32, 1u32)), Just((5u32, 7u32)), Just((7u32, 5u32))].prop_flat_map(
+            move |(width, height)| {
+                let len = width as usize * height as usize * bands as usize;
+                (
+                    Just(width),
+                    Just(height),
+                    factor_strategy(),
+                    kernel_strategy(),
+                )
+                    .prop_flat_map(move |(width, height, factor, kernel)| {
+                        prop::collection::vec(any::<u16>(), len)
+                            .prop_map(move |input| (width, height, factor, kernel, input))
+                    })
+            },
+        )
+    }
+
+    fn reduce_case_v_boundary_f32(
+        bands: u32,
+    ) -> impl Strategy<Value = (u32, u32, f64, InterpolationKernel, Vec<f32>)> {
+        prop_oneof![Just((1u32, 1u32)), Just((5u32, 7u32)), Just((7u32, 5u32))].prop_flat_map(
+            move |(width, height)| {
+                let len = width as usize * height as usize * bands as usize;
+                (
+                    Just(width),
+                    Just(height),
+                    factor_strategy(),
+                    kernel_strategy(),
+                )
+                    .prop_flat_map(move |(width, height, factor, kernel)| {
+                        prop::collection::vec(-10_000.0f32..10_000.0f32, len)
+                            .prop_map(move |input| (width, height, factor, kernel, input))
+                    })
+            },
+        )
+    }
+
     fn run_reduce_v_u8_pair(
         input: &[u8],
         width: u32,
@@ -3304,6 +3439,19 @@ mod horizontal_multiband_tests {
         };
     }
 
+    macro_rules! prop_reduce_h_boundary_u8_matches_scalar {
+        ($name:ident, $bands:expr) => {
+            proptest! {
+                #[test]
+                fn $name((width, height, factor, kernel, input) in reduce_case_h_boundary_u8($bands)) {
+                    let (scalar, simd) =
+                        run_reduce_h_u8_pair(&input, width, height, $bands, factor, kernel);
+                    prop_assert_eq!(simd, scalar);
+                }
+            }
+        };
+    }
+
     macro_rules! prop_reduce_h_u16_matches_scalar {
         ($name:ident, $bands:expr) => {
             proptest! {
@@ -3317,11 +3465,40 @@ mod horizontal_multiband_tests {
         };
     }
 
+    macro_rules! prop_reduce_h_boundary_u16_matches_scalar {
+        ($name:ident, $bands:expr) => {
+            proptest! {
+                #[test]
+                fn $name((width, height, factor, kernel, input) in reduce_case_h_boundary_u16($bands)) {
+                    let (scalar, simd) =
+                        run_reduce_h_u16_pair(&input, width, height, $bands, factor, kernel);
+                    prop_assert_eq!(simd, scalar);
+                }
+            }
+        };
+    }
+
     macro_rules! prop_reduce_h_f32_matches_scalar {
         ($name:ident, $bands:expr) => {
             proptest! {
                 #[test]
                 fn $name((width, height, factor, kernel, input) in reduce_case_f32($bands)) {
+                    let (scalar, simd) =
+                        run_reduce_h_f32_pair(&input, width, height, $bands, factor, kernel);
+                    prop_assert_eq!(simd.len(), scalar.len());
+                    for (lhs, rhs) in simd.iter().zip(scalar.iter()) {
+                        prop_assert!((lhs - rhs).abs() <= 1e-3);
+                    }
+                }
+            }
+        };
+    }
+
+    macro_rules! prop_reduce_h_boundary_f32_matches_scalar {
+        ($name:ident, $bands:expr) => {
+            proptest! {
+                #[test]
+                fn $name((width, height, factor, kernel, input) in reduce_case_h_boundary_f32($bands)) {
                     let (scalar, simd) =
                         run_reduce_h_f32_pair(&input, width, height, $bands, factor, kernel);
                     prop_assert_eq!(simd.len(), scalar.len());
@@ -3375,35 +3552,89 @@ mod horizontal_multiband_tests {
         };
     }
 
+    macro_rules! prop_reduce_v_boundary_u8_matches_scalar {
+        ($name:ident, $bands:expr) => {
+            proptest! {
+                #[test]
+                fn $name((width, height, factor, kernel, input) in reduce_case_v_boundary_u8($bands)) {
+                    let (scalar, simd) =
+                        run_reduce_v_u8_pair(&input, width, height, $bands, factor, kernel);
+                    prop_assert_eq!(simd, scalar);
+                }
+            }
+        };
+    }
+
+    macro_rules! prop_reduce_v_boundary_u16_matches_scalar {
+        ($name:ident, $bands:expr) => {
+            proptest! {
+                #[test]
+                fn $name((width, height, factor, kernel, input) in reduce_case_v_boundary_u16($bands)) {
+                    let (scalar, simd) =
+                        run_reduce_v_u16_pair(&input, width, height, $bands, factor, kernel);
+                    prop_assert_eq!(simd, scalar);
+                }
+            }
+        };
+    }
+
+    macro_rules! prop_reduce_v_boundary_f32_matches_scalar {
+        ($name:ident, $bands:expr) => {
+            proptest! {
+                #[test]
+                fn $name((width, height, factor, kernel, input) in reduce_case_v_boundary_f32($bands)) {
+                    let (scalar, simd) =
+                        run_reduce_v_f32_pair(&input, width, height, $bands, factor, kernel);
+                    prop_assert_eq!(simd.len(), scalar.len());
+                    for (lhs, rhs) in simd.iter().zip(scalar.iter()) {
+                        prop_assert!((lhs - rhs).abs() <= 1e-3);
+                    }
+                }
+            }
+        };
+    }
+
     prop_reduce_h_u8_matches_scalar!(reduce_h_u8_matches_scalar_bands_1, 1);
     prop_reduce_h_u8_matches_scalar!(reduce_h_u8_matches_scalar_bands_2, 2);
     prop_reduce_h_u8_matches_scalar!(reduce_h_u8_matches_scalar_bands_3, 3);
     prop_reduce_h_u8_matches_scalar!(reduce_h_u8_matches_scalar_bands_4, 4);
+    prop_reduce_h_boundary_u8_matches_scalar!(reduce_h_u8_boundary_matches_scalar_bands_1, 1);
+    prop_reduce_h_boundary_u8_matches_scalar!(reduce_h_u8_boundary_matches_scalar_bands_3, 3);
 
     prop_reduce_h_u16_matches_scalar!(reduce_h_u16_matches_scalar_bands_1, 1);
     prop_reduce_h_u16_matches_scalar!(reduce_h_u16_matches_scalar_bands_2, 2);
     prop_reduce_h_u16_matches_scalar!(reduce_h_u16_matches_scalar_bands_3, 3);
     prop_reduce_h_u16_matches_scalar!(reduce_h_u16_matches_scalar_bands_4, 4);
+    prop_reduce_h_boundary_u16_matches_scalar!(reduce_h_u16_boundary_matches_scalar_bands_1, 1);
+    prop_reduce_h_boundary_u16_matches_scalar!(reduce_h_u16_boundary_matches_scalar_bands_3, 3);
 
     prop_reduce_h_f32_matches_scalar!(reduce_h_f32_matches_scalar_bands_1, 1);
     prop_reduce_h_f32_matches_scalar!(reduce_h_f32_matches_scalar_bands_2, 2);
     prop_reduce_h_f32_matches_scalar!(reduce_h_f32_matches_scalar_bands_3, 3);
     prop_reduce_h_f32_matches_scalar!(reduce_h_f32_matches_scalar_bands_4, 4);
+    prop_reduce_h_boundary_f32_matches_scalar!(reduce_h_f32_boundary_matches_scalar_bands_1, 1);
+    prop_reduce_h_boundary_f32_matches_scalar!(reduce_h_f32_boundary_matches_scalar_bands_3, 3);
 
     prop_reduce_v_u8_matches_scalar!(reduce_v_u8_matches_scalar_bands_1, 1);
     prop_reduce_v_u8_matches_scalar!(reduce_v_u8_matches_scalar_bands_2, 2);
     prop_reduce_v_u8_matches_scalar!(reduce_v_u8_matches_scalar_bands_3, 3);
     prop_reduce_v_u8_matches_scalar!(reduce_v_u8_matches_scalar_bands_4, 4);
+    prop_reduce_v_boundary_u8_matches_scalar!(reduce_v_u8_boundary_matches_scalar_bands_1, 1);
+    prop_reduce_v_boundary_u8_matches_scalar!(reduce_v_u8_boundary_matches_scalar_bands_3, 3);
 
     prop_reduce_v_u16_matches_scalar!(reduce_v_u16_matches_scalar_bands_1, 1);
     prop_reduce_v_u16_matches_scalar!(reduce_v_u16_matches_scalar_bands_2, 2);
     prop_reduce_v_u16_matches_scalar!(reduce_v_u16_matches_scalar_bands_3, 3);
     prop_reduce_v_u16_matches_scalar!(reduce_v_u16_matches_scalar_bands_4, 4);
+    prop_reduce_v_boundary_u16_matches_scalar!(reduce_v_u16_boundary_matches_scalar_bands_1, 1);
+    prop_reduce_v_boundary_u16_matches_scalar!(reduce_v_u16_boundary_matches_scalar_bands_3, 3);
 
     prop_reduce_v_f32_matches_scalar!(reduce_v_f32_matches_scalar_bands_1, 1);
     prop_reduce_v_f32_matches_scalar!(reduce_v_f32_matches_scalar_bands_2, 2);
     prop_reduce_v_f32_matches_scalar!(reduce_v_f32_matches_scalar_bands_3, 3);
     prop_reduce_v_f32_matches_scalar!(reduce_v_f32_matches_scalar_bands_4, 4);
+    prop_reduce_v_boundary_f32_matches_scalar!(reduce_v_f32_boundary_matches_scalar_bands_1, 1);
+    prop_reduce_v_boundary_f32_matches_scalar!(reduce_v_f32_boundary_matches_scalar_bands_3, 3);
 
     #[cfg(target_arch = "aarch64")]
     #[test]

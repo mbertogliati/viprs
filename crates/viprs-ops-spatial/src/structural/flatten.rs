@@ -215,6 +215,16 @@ fn flatten_rgba_u8(input: &[u8], background: [u8; 3], output: &mut [u8]) {
 #[cfg(not(target_arch = "aarch64"))]
 #[inline]
 fn flatten_rgba_u8(input: &[u8], background: [u8; 3], output: &mut [u8]) {
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    if std::arch::is_x86_feature_detected!("avx2") {
+        // SAFETY: runtime dispatch guarantees AVX2 support and the helper only touches
+        // full 8-pixel chunks plus the scalar tail.
+        unsafe {
+            flatten_rgba_u8_avx2(input, background, output);
+        }
+        return;
+    }
+
     flatten_rgba_u8_scalar(input, background, output);
 }
 
@@ -245,6 +255,116 @@ unsafe fn flatten_rgba_u8_neon(input: &[u8], background: [u8; 3], output: &mut [
         // SAFETY: `output_offset + 48 <= output.len()`, the pointer is valid for 16 interleaved
         // RGB pixels, and `vst3q_u8` accepts unaligned pointers.
         unsafe { vst3q_u8(output.as_mut_ptr().add(output_offset), rgb) };
+    }
+
+    let input_tail = simd_pixels * 4;
+    let output_tail = simd_pixels * 3;
+    flatten_rgba_u8_scalar(&input[input_tail..], background, &mut output[output_tail..]);
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx2")]
+// SAFETY: caller must execute this only when AVX2 is available and provide RGBA-packed input
+// plus RGB output with matching pixel counts so each 8-pixel chunk and scalar tail stay in bounds.
+// REASON: SIMD intrinsics operate on unaligned memory via explicit load/store intrinsics; the
+// pointer casts are intentional and remain within the chunk-local stack arrays and output slices.
+#[allow(clippy::cast_ptr_alignment)]
+unsafe fn flatten_rgba_u8_avx2(input: &[u8], background: [u8; 3], output: &mut [u8]) {
+    #[cfg(target_arch = "x86")]
+    use std::arch::x86::{
+        __m128i, __m256i, _mm_loadl_epi64, _mm256_add_epi32, _mm256_cvtepu8_epi32,
+        _mm256_mullo_epi32, _mm256_set1_epi32, _mm256_srli_epi32, _mm256_storeu_si256,
+        _mm256_sub_epi32,
+    };
+    #[cfg(target_arch = "x86_64")]
+    use std::arch::x86_64::{
+        __m128i, __m256i, _mm_loadl_epi64, _mm256_add_epi32, _mm256_cvtepu8_epi32,
+        _mm256_mullo_epi32, _mm256_set1_epi32, _mm256_srli_epi32, _mm256_storeu_si256,
+        _mm256_sub_epi32,
+    };
+
+    let pixel_count = input.len() / 4;
+    let simd_pixels = (pixel_count / 8) * 8;
+    let max255 = _mm256_set1_epi32(i32::from(u8::MAX));
+    let one = _mm256_set1_epi32(1);
+    let bg_r = _mm256_set1_epi32(i32::from(background[0]));
+    let bg_g = _mm256_set1_epi32(i32::from(background[1]));
+    let bg_b = _mm256_set1_epi32(i32::from(background[2]));
+
+    for chunk in 0..(simd_pixels / 8) {
+        let input_offset = chunk * 32;
+        let output_offset = chunk * 24;
+        let mut r_bytes = [0u8; 8];
+        let mut g_bytes = [0u8; 8];
+        let mut b_bytes = [0u8; 8];
+        let mut a_bytes = [0u8; 8];
+
+        for lane in 0..8 {
+            let base = input_offset + (lane * 4);
+            r_bytes[lane] = input[base];
+            g_bytes[lane] = input[base + 1];
+            b_bytes[lane] = input[base + 2];
+            a_bytes[lane] = input[base + 3];
+        }
+
+        // SAFETY: each local byte array contains exactly 8 lanes, `_mm_loadl_epi64` reads those
+        // 8 bytes, and the AVX2 widening/multiply/add/store operations stay within stack buffers.
+        unsafe {
+            let r = _mm256_cvtepu8_epi32(_mm_loadl_epi64(r_bytes.as_ptr().cast::<__m128i>()));
+            let g = _mm256_cvtepu8_epi32(_mm_loadl_epi64(g_bytes.as_ptr().cast::<__m128i>()));
+            let b = _mm256_cvtepu8_epi32(_mm_loadl_epi64(b_bytes.as_ptr().cast::<__m128i>()));
+            let alpha = _mm256_cvtepu8_epi32(_mm_loadl_epi64(a_bytes.as_ptr().cast::<__m128i>()));
+            let inverse_alpha = _mm256_sub_epi32(max255, alpha);
+
+            let r_blended = _mm256_add_epi32(
+                _mm256_mullo_epi32(r, alpha),
+                _mm256_mullo_epi32(bg_r, inverse_alpha),
+            );
+            let g_blended = _mm256_add_epi32(
+                _mm256_mullo_epi32(g, alpha),
+                _mm256_mullo_epi32(bg_g, inverse_alpha),
+            );
+            let b_blended = _mm256_add_epi32(
+                _mm256_mullo_epi32(b, alpha),
+                _mm256_mullo_epi32(bg_b, inverse_alpha),
+            );
+
+            let r_div = _mm256_srli_epi32(
+                _mm256_add_epi32(
+                    _mm256_add_epi32(r_blended, _mm256_srli_epi32(r_blended, 8)),
+                    one,
+                ),
+                8,
+            );
+            let g_div = _mm256_srli_epi32(
+                _mm256_add_epi32(
+                    _mm256_add_epi32(g_blended, _mm256_srli_epi32(g_blended, 8)),
+                    one,
+                ),
+                8,
+            );
+            let b_div = _mm256_srli_epi32(
+                _mm256_add_epi32(
+                    _mm256_add_epi32(b_blended, _mm256_srli_epi32(b_blended, 8)),
+                    one,
+                ),
+                8,
+            );
+
+            let mut r_out = [0u32; 8];
+            let mut g_out = [0u32; 8];
+            let mut b_out = [0u32; 8];
+            _mm256_storeu_si256(r_out.as_mut_ptr().cast::<__m256i>(), r_div);
+            _mm256_storeu_si256(g_out.as_mut_ptr().cast::<__m256i>(), g_div);
+            _mm256_storeu_si256(b_out.as_mut_ptr().cast::<__m256i>(), b_div);
+
+            for lane in 0..8 {
+                let out_base = output_offset + (lane * 3);
+                output[out_base] = r_out[lane] as u8;
+                output[out_base + 1] = g_out[lane] as u8;
+                output[out_base + 2] = b_out[lane] as u8;
+            }
+        }
     }
 
     let input_tail = simd_pixels * 4;
@@ -755,6 +875,32 @@ mod tests {
         }
 
         assert_eq!(neon, scalar);
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    proptest! {
+        #[test]
+        fn avx2_rgba_path_matches_scalar_reference(
+            pixels in proptest::collection::vec(any::<u8>(), 32..=512),
+            bg_r in any::<u8>(),
+            bg_g in any::<u8>(),
+            bg_b in any::<u8>(),
+        ) {
+            if !std::arch::is_x86_feature_detected!("avx2") {
+                return;
+            }
+
+            let usable_len = pixels.len() - (pixels.len() % 4);
+            prop_assume!(usable_len > 0);
+            let input = &pixels[..usable_len];
+            let background = [bg_r, bg_g, bg_b];
+
+            let mut scalar = vec![0u8; (usable_len / 4) * 3];
+            flatten_rgba_u8_scalar(input, background, &mut scalar);
+
+            let avx2 = run_flatten_u8(input, 4, background.to_vec());
+            prop_assert_eq!(avx2, scalar);
+        }
     }
 
     // ── Proptest ──────────────────────────────────────────────────────────────

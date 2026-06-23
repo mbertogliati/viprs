@@ -88,6 +88,13 @@ const fn validate_linear_parameters(scale: f64, offset: f64) -> Result<(), Build
 
 trait LinearSample: Copy + 'static {
     fn linear(self, scale: f64, offset: f64) -> Self;
+
+    #[inline]
+    fn linear_bulk(input: &[Self], output: &mut [Self], scale: f64, offset: f64) {
+        for (s, d) in input.iter().zip(output.iter_mut()) {
+            *d = s.linear(scale, offset);
+        }
+    }
 }
 
 macro_rules! impl_linear_sample_int {
@@ -110,6 +117,11 @@ impl LinearSample for f32 {
     #[inline(always)]
     fn linear(self, scale: f64, offset: f64) -> Self {
         self.mul_add(scale as Self, offset as Self)
+    }
+
+    #[inline]
+    fn linear_bulk(input: &[Self], output: &mut [Self], scale: f64, offset: f64) {
+        linear_bulk_f32(input, output, scale as Self, offset as Self);
     }
 }
 
@@ -141,12 +153,7 @@ where
 
     #[inline]
     fn process_region(&self, _state: &mut (), input: &Tile<F>, output: &mut TileMut<F>) {
-        let scale = self.scale;
-        let offset = self.offset;
-
-        for (s, d) in input.data.iter().zip(output.data.iter_mut()) {
-            *d = s.linear(scale, offset);
-        }
+        F::Sample::linear_bulk(input.data, output.data, self.scale, self.offset);
     }
 }
 
@@ -218,6 +225,76 @@ impl Op for LinearKernelU8 {
 }
 
 impl PixelLocalOp for LinearKernelU8 {}
+
+#[inline]
+fn linear_bulk_f32_scalar(input: &[f32], output: &mut [f32], scale: f32, offset: f32) {
+    for (s, d) in input.iter().zip(output.iter_mut()) {
+        *d = s.mul_add(scale, offset);
+    }
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+fn linear_bulk_f32(input: &[f32], output: &mut [f32], scale: f32, offset: f32) {
+    if std::arch::is_x86_feature_detected!("avx2") && std::arch::is_x86_feature_detected!("fma") {
+        // SAFETY: runtime dispatch guarantees the required AVX2+FMA features and the helper
+        // only touches the common in-bounds prefix of `input` and `output`.
+        unsafe {
+            linear_bulk_f32_avx2(input, output, scale, offset);
+        }
+    } else {
+        linear_bulk_f32_scalar(input, output, scale, offset);
+    }
+}
+
+#[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+#[inline]
+fn linear_bulk_f32(input: &[f32], output: &mut [f32], scale: f32, offset: f32) {
+    linear_bulk_f32_scalar(input, output, scale, offset);
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[target_feature(enable = "avx2,fma")]
+// SAFETY: caller must dispatch only when AVX2 and FMA are available and pass slices whose
+// common prefix is valid for unaligned 8-lane loads/stores plus the scalar tail.
+#[allow(clippy::cast_ptr_alignment)]
+unsafe fn linear_bulk_f32_avx2(input: &[f32], output: &mut [f32], scale: f32, offset: f32) {
+    #[cfg(target_arch = "x86")]
+    use std::arch::x86::{_mm256_fmadd_ps, _mm256_loadu_ps, _mm256_set1_ps, _mm256_storeu_ps};
+    #[cfg(target_arch = "x86_64")]
+    use std::arch::x86_64::{_mm256_fmadd_ps, _mm256_loadu_ps, _mm256_set1_ps, _mm256_storeu_ps};
+
+    let len = input.len().min(output.len());
+    let chunks = len / 16;
+    let remainder_start = chunks * 16;
+    let scale_v = _mm256_set1_ps(scale);
+    let offset_v = _mm256_set1_ps(offset);
+
+    for chunk in 0..chunks {
+        let base = chunk * 16;
+        // SAFETY: `base + 16 <= len`, both pointers are valid for two unaligned 8-lane
+        // float loads/stores, and AVX2+FMA availability is guaranteed by the caller.
+        unsafe {
+            let v0 = _mm256_loadu_ps(input.as_ptr().add(base));
+            let v1 = _mm256_loadu_ps(input.as_ptr().add(base + 8));
+            _mm256_storeu_ps(
+                output.as_mut_ptr().add(base),
+                _mm256_fmadd_ps(v0, scale_v, offset_v),
+            );
+            _mm256_storeu_ps(
+                output.as_mut_ptr().add(base + 8),
+                _mm256_fmadd_ps(v1, scale_v, offset_v),
+            );
+        }
+    }
+
+    linear_bulk_f32_scalar(
+        &input[remainder_start..len],
+        &mut output[remainder_start..len],
+        scale,
+        offset,
+    );
+}
 
 #[cfg(test)]
 mod tests {
@@ -346,6 +423,18 @@ mod tests {
         let mut output_data = vec![0u16; input_data.len()];
         let input = Tile::<U16>::new(region, 1, input_data);
         let mut output = TileMut::<U16>::new(region, 1, &mut output_data);
+        let mut state = ();
+        op.process_region(&mut state, &input, &mut output);
+        output_data
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    fn run_linear_f32(scale: f32, offset: f32, input_data: &[f32]) -> Vec<f32> {
+        let region = Region::new(0, 0, input_data.len() as u32, 1);
+        let op = Linear::<F32>::new(scale, offset).unwrap();
+        let mut output_data = vec![0.0f32; input_data.len()];
+        let input = Tile::<F32>::new(region, 1, input_data);
+        let mut output = TileMut::<F32>::new(region, 1, &mut output_data);
         let mut state = ();
         op.process_region(&mut state, &input, &mut output);
         output_data
@@ -544,6 +633,29 @@ mod tests {
                 .iter()
                 .copied()
                 .map(|sample| linear_reference_u8(sample, 1.25, 10.0))
+                .collect();
+            prop_assert_eq!(output, expected);
+        }
+    }
+
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    proptest! {
+        #[test]
+        fn linear_f32_avx2_matches_scalar_reference(
+            pixels in proptest::collection::vec(-1024.0f32..1024.0f32, 17..=257),
+            scale in -8.0f32..8.0f32,
+            offset in -2048.0f32..2048.0f32,
+        ) {
+            if !(std::arch::is_x86_feature_detected!("avx2")
+                && std::arch::is_x86_feature_detected!("fma"))
+            {
+                return;
+            }
+
+            let output = run_linear_f32(scale, offset, &pixels);
+            let expected: Vec<f32> = pixels
+                .iter()
+                .map(|&sample| sample.mul_add(scale, offset))
                 .collect();
             prop_assert_eq!(output, expected);
         }
