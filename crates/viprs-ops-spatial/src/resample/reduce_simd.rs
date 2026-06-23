@@ -21,20 +21,24 @@ use std::arch::aarch64::{
     vshrq_n_s64, vst1_u8, vst1_u16, vst1q_f64,
 };
 #[cfg(target_arch = "x86")]
+// REASON: x86 intrinsic imports require wildcard; listing hundreds of intrinsic names individually is unmaintainable.
+#[allow(clippy::wildcard_imports)]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
+// REASON: x86 intrinsic imports require wildcard; listing hundreds of intrinsic names individually is unmaintainable.
+#[allow(clippy::wildcard_imports)]
 use std::arch::x86_64::*;
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 // REASON: these kernels widen source samples before multiplying, so each iteration processes
 // fewer logical elements than the raw 256-bit register width.
 const AVX2_U8_LANES: usize = 8;
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 const AVX2_U16_LANES: usize = 8;
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 const AVX2_F32_LANES: usize = 4;
 
-#[cfg(all(target_arch = "x86_64", target_feature = "avx2"))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[inline(always)]
 const fn vectorized_prefix_len(row_len: usize, lanes: usize) -> usize {
     row_len / lanes * lanes
@@ -2682,7 +2686,7 @@ unsafe fn reduce_h_f32_avx2_pixel(
 
     while tap < weights.len() {
         let tile_x = clamp_axis(start_x + tap as i64, input_origin, row.len());
-        acc += f64::from(row[tile_x]) * weights[tap];
+        acc = f64::from(row[tile_x]).mul_add(weights[tap], acc);
         tap += 1;
     }
 
@@ -2875,7 +2879,7 @@ unsafe fn reduce_v_f32_avx2(
             let mut acc = 0.0_f64;
             for (tap, &weight) in weights.iter().enumerate() {
                 let tile_y = clamp_axis(start_y + tap as i64, input_region.y, in_h);
-                acc += f64::from(input[tile_y * row_stride + x]) * weight;
+                acc = f64::from(input[tile_y * row_stride + x]).mul_add(weight, acc);
             }
             out_row[x] = acc as f32;
             x += 1;

@@ -35,8 +35,12 @@ use std::arch::aarch64::{
     vst3_u8, vst4_u8,
 };
 #[cfg(target_arch = "x86")]
+// REASON: x86 intrinsic imports require wildcard; listing hundreds of intrinsic names individually is unmaintainable.
+#[allow(clippy::wildcard_imports)]
 use std::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
+// REASON: x86 intrinsic imports require wildcard; listing hundreds of intrinsic names individually is unmaintainable.
+#[allow(clippy::wildcard_imports)]
 use std::arch::x86_64::*;
 
 use viprs_core::{
@@ -680,7 +684,7 @@ unsafe fn gauss_blur_h_u8_avx2_row_3(
                 &mut output_row[x * 3..(x + 8) * 3],
                 scale,
                 rounding,
-            )
+            );
         };
         x += 8;
     }
@@ -751,7 +755,7 @@ unsafe fn gauss_blur_h_u8_avx2_row_4(
                 &mut output_row[x * 4..(x + 8) * 4],
                 scale,
                 rounding,
-            )
+            );
         };
         x += 8;
     }
@@ -856,7 +860,7 @@ unsafe fn gauss_blur_v_u8_avx2_row_3(
                 &mut output_row[x * 3..(x + 8) * 3],
                 scale,
                 rounding,
-            )
+            );
         };
         x += 8;
     }
@@ -931,7 +935,7 @@ unsafe fn gauss_blur_v_u8_avx2_row_4(
                 &mut output_row[x * 4..(x + 8) * 4],
                 scale,
                 rounding,
-            )
+            );
         };
         x += 8;
     }
@@ -983,7 +987,7 @@ unsafe fn process_horizontal_u8_avx2(
                         input_row,
                         output_row,
                         out_w,
-                    )
+                    );
                 };
             }
             3 => {
@@ -996,7 +1000,7 @@ unsafe fn process_horizontal_u8_avx2(
                         input_row,
                         output_row,
                         out_w,
-                    )
+                    );
                 };
             }
             4 => {
@@ -1009,7 +1013,7 @@ unsafe fn process_horizontal_u8_avx2(
                         input_row,
                         output_row,
                         out_w,
-                    )
+                    );
                 };
             }
             _ => {
@@ -1055,7 +1059,7 @@ unsafe fn process_vertical_u8_avx2(
                         input,
                         output_row,
                         y,
-                    )
+                    );
                 };
             }
             3 => {
@@ -1068,7 +1072,7 @@ unsafe fn process_vertical_u8_avx2(
                         input,
                         output_row,
                         y,
-                    )
+                    );
                 };
             }
             4 => {
@@ -1081,7 +1085,7 @@ unsafe fn process_vertical_u8_avx2(
                         input,
                         output_row,
                         y,
-                    )
+                    );
                 };
             }
             _ => {
