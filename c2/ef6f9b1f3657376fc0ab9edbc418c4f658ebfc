@@ -1,0 +1,19 @@
+.github/workflows/release.yml
+  s_891ab6a2f4d479::t_fdace157d6c3ca 36,51,57-74,82,95,112,129,146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "c2ef6f9b1f3657376fc0ab9edbc418c4f658ebfc",
+  "prompts": {},
+  "sessions": {
+    "s_891ab6a2f4d479": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef67f-02d3-7592-b95b-a868317a2788",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
