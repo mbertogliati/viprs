@@ -452,10 +452,16 @@ fn encode_u8_with_ravif(
     let height = height as usize;
 
     let enc = if lossless {
-        // ravif maps quality=100 to rav1e quantizer 0 and stores RGB as 4:4:4,
-        // but rav1e does not expose a true AV1 lossless mode yet. Keep this
-        // path aligned with libvips' matrix/subsampling choices and treat the
-        // round-trip as near-lossless in tests.
+        // ravif maps quality=100 to rav1e quantizer 0 and this branch already
+        // rules out the other common AVIF rounding sources:
+        // - ColorModel::RGB writes an identity-matrix RGB/GBR stream
+        // - ravif hard-codes 4:4:4 chroma here
+        // - BitDepth::Eight avoids any 8-bit -> 10-bit -> 8-bit expansion
+        // The remaining ±2 drift is therefore in rav1e's q=0 coding path, not
+        // in an RGB↔YUV conversion or bit-depth promotion. Keep this branch
+        // aligned with libvips' matrix/subsampling choices and treat the
+        // round-trip as near-lossless in tests until rav1e grows true AV1
+        // lossless support.
         RavifEncoder::new()
             .with_quality(100.0)
             .with_alpha_quality(100.0)
@@ -1467,9 +1473,10 @@ mod tests {
             prop_assert_eq!(decoded.width(), width);
             prop_assert_eq!(decoded.height(), height);
             prop_assert_eq!(decoded.bands(), 3);
-            // ravif uses an RGB/identity-matrix path here, so there is no RGB↔YUV
-            // conversion error. The remaining ±2 drift comes from rav1e's q=0 path,
-            // which upstream still does not treat as true AV1 lossless.
+            // ravif's lossless-looking branch already uses RGB identity-matrix
+            // signalling, 4:4:4 chroma, and 8-bit storage, so the remaining ±2
+            // drift comes from rav1e's q=0 path rather than color conversion or
+            // bit-depth expansion.
             for (&orig, &decoded_sample) in original.pixels().iter().zip(decoded.pixels().iter()) {
                 let diff = (i32::from(orig) - i32::from(decoded_sample)).abs();
                 // ravif/rav1e's "lossless" RGB path is quantizer-0 4:4:4, but it
