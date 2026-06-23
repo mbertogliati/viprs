@@ -4,7 +4,6 @@ version.workspace = true
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
-publish = false
 description = "Runtime adapters and pipeline implementations for viprs"
 
 [lints]
