@@ -186,13 +186,8 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{
-        error::BuildError,
         image::{Region, Tile, TileMut},
         op::OperationBridge,
-    };
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sources::memory::MemorySource,
     };
 
     fn make_region(pixels: usize) -> Region {
@@ -274,49 +269,6 @@ mod tests {
     fn operation_bridge_forces_single_output_band() {
         let bridge = OperationBridge::new_pixel_local(DE00, 6);
         assert_eq!(bridge.bands, 1);
-    }
-
-    #[test]
-    fn pipeline_rejects_three_band_de00_input() {
-        let source = MemorySource::<F32>::new(1, 1, 3, vec![0.0, 0.0, 0.0]).unwrap();
-        let err = match PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(DE00, 3)))
-        {
-            Ok(_) => panic!("expected DE00 build contract to reject 3-band input"),
-            Err(err) => err,
-        };
-
-        match err {
-            BuildError::InvalidOperationBands {
-                op,
-                input_bands,
-                expected,
-                ..
-            } => {
-                assert_eq!(op, "DE00");
-                assert_eq!(input_bands, 3);
-                assert_eq!(expected, "6 bands (two Lab triplets)");
-            }
-            other => panic!("expected InvalidOperationBands, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn pipeline_emits_non_zero_de00_for_valid_lab_pair() {
-        let source =
-            MemorySource::<F32>::new(1, 1, 6, vec![50.0, 10.0, 20.0, 40.0, -20.0, 10.0]).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(DE00, 6)))
-            .unwrap()
-            .build()
-            .unwrap();
-
-        let image = pipeline
-            .run_to_image::<F32, _>(&RayonScheduler::new(1).unwrap())
-            .unwrap();
-
-        assert_eq!(image.bands(), 1);
-        assert!(image.pixels()[0] > 0.0, "dE00={}", image.pixels()[0]);
     }
 
     /// Ported from libvips test_colour.py::test_dE00.

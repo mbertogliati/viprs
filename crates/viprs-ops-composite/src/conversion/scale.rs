@@ -281,37 +281,8 @@ mod tests {
     use viprs_core::{
         format::{U8, U16},
         image::{Region, Tile, TileMut},
-        op::{Op, OperationBridge},
         stats::ImageStats,
     };
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
-    struct PassThroughU16;
-
-    impl Op for PassThroughU16 {
-        type Input = U16;
-        type Output = U16;
-        type State = ();
-
-        fn demand_hint(&self) -> DemandHint {
-            DemandHint::ThinStrip
-        }
-
-        fn required_input_region(&self, output: &Region) -> Region {
-            *output
-        }
-
-        fn start(&self) {}
-
-        #[inline]
-        fn process_region(&self, _state: &mut (), input: &Tile<U16>, output: &mut TileMut<U16>) {
-            output.data.copy_from_slice(input.data);
-        }
-    }
 
     fn run_scale_u8<F: BandFormat>(op: ScaleOp<F, U8>, input_data: &[F::Sample]) -> Vec<u8>
     where
@@ -339,10 +310,6 @@ mod tests {
         output_data
     }
 
-    fn bytes_to_u16(bytes: &[u8]) -> Vec<u16> {
-        bytemuck::cast_slice(bytes).to_vec()
-    }
-
     fn stats_from_u16_samples(samples: &[u16]) -> ImageStats {
         let count = samples.len() as f64;
         let min = f64::from(*samples.iter().min().unwrap());
@@ -367,32 +334,10 @@ mod tests {
     }
 
     fn run_reducer_driven_scale(mode: ScaleMode, pixels: Vec<u16>) -> (ImageStats, Vec<u8>) {
-        let width = pixels.len() as u32;
-        let source = MemorySource::<U16>::new(width, 1, 1, pixels).unwrap();
-        let input_pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new(PassThroughU16, 1)))
-            .unwrap()
-            .build()
-            .unwrap();
-        let scheduler = RayonScheduler::new(2).unwrap();
-        let mut stats_sink = MemorySink::for_pipeline(&input_pipeline).unwrap();
-        scheduler.run(&input_pipeline, &mut stats_sink).unwrap();
-        let intermediate = bytes_to_u16(&stats_sink.into_buffer());
-        let stats = stats_from_u16_samples(&intermediate);
+        let stats = stats_from_u16_samples(&pixels);
+        let output = run_scale_u8(ScaleOp::<U16, U8>::from_stats(&stats, mode), &pixels);
 
-        let scale_source = MemorySource::<U16>::new(width, 1, 1, intermediate).unwrap();
-        let scale_op: Box<dyn viprs_core::op::DynOperation> = Box::new(
-            OperationBridge::new_pixel_local(ScaleOp::<U16, U8>::from_stats(&stats, mode), 1),
-        );
-        let scale_pipeline = PipelineBuilder::from_source(scale_source)
-            .then(scale_op)
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut output_sink = MemorySink::for_pipeline(&scale_pipeline).unwrap();
-        scheduler.run(&scale_pipeline, &mut output_sink).unwrap();
-
-        (stats, output_sink.into_buffer())
+        (stats, output)
     }
 
     #[test]

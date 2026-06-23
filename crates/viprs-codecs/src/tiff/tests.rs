@@ -1,20 +1,12 @@
 use super::decode::count_pages;
 use super::pyramid::{downsample_half, ifd_entry_value_pos, patch_first_ifd_offset, tiff_read_u32};
 use super::*;
-#[cfg(all(test, feature = "_integration"))]
-use std::fs;
 use std::num::NonZeroU8;
-#[cfg(all(test, feature = "_integration"))]
-use std::path::Path;
 use viprs_core::codec_options::{LoadOptions, SaveOptions, TiffCompression, TiffPredictor};
 use viprs_core::format::{F32, U8, U16};
 use viprs_core::image::{Image, Region};
 #[cfg(feature = "icc")]
 use viprs_ops_colour::colour::{IccTransformOptions, icc_transform, profile_load};
-#[cfg(all(test, feature = "_integration"))]
-use viprs_ports::source::ImageSource;
-#[cfg(all(test, feature = "_integration"))]
-use viprs_runtime::sources::decoder_source::DecoderSource;
 
 fn encode_two_page_rgb_tiff() -> Vec<u8> {
     let mut output = Vec::new();
@@ -76,47 +68,6 @@ fn tile_decoder_matches_eager_decode_region_for_tiled_input() {
         .unwrap();
 
     assert_eq!(actual, clamped_region_pixels_u8(&eager, region));
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn streaming_path_source_reads_tiff_regions_without_resident_frame() {
-    let pixels: Vec<u8> = (0..8 * 6 * 3).map(|value| (value % 251) as u8).collect();
-    let image = Image::<U8>::from_buffer(8, 6, 3, pixels).unwrap();
-    let encoded = TiffEncoder::default()
-        .encode_with_options(
-            &image,
-            &SaveOptions::default()
-                .with_tile_width(4)
-                .with_tile_height(3),
-        )
-        .unwrap();
-    let eager = TiffDecoder
-        .decode_with_options::<U8>(&encoded, &LoadOptions::default())
-        .unwrap();
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("target")
-        .join("tiff-streaming-region.tiff");
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).unwrap();
-    }
-    fs::write(&path, &encoded).unwrap();
-
-    let source =
-        DecoderSource::<_, U8>::streaming_path(TiffDecoder, &path, LoadOptions::default()).unwrap();
-
-    assert!(source.is_streaming());
-    assert_eq!(source.resident_decoded_bytes(), 0);
-
-    let lower = Region::new(4, 2, 3, 3);
-    let mut lower_output = vec![0u8; lower.pixel_count() * eager.bands() as usize];
-    source.read_region(lower, &mut lower_output).unwrap();
-    assert_eq!(lower_output, clamped_region_pixels_u8(&eager, lower));
-
-    let edge = Region::new(-1, 4, 4, 3);
-    let mut edge_output = vec![0u8; edge.pixel_count() * eager.bands() as usize];
-    source.read_region(edge, &mut edge_output).unwrap();
-    assert_eq!(edge_output, clamped_region_pixels_u8(&eager, edge));
 }
 
 #[test]

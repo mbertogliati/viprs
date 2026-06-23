@@ -17,10 +17,6 @@ use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
 #[cfg(all(feature = "icc", feature = "_integration"))]
 use viprs_ops_colour::colour::profile_load;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
-#[cfg(all(test, feature = "_integration"))]
-use viprs_ports::source::ImageSource;
-#[cfg(all(test, feature = "_integration"))]
-use viprs_runtime::sources::decoder_source::DecoderSource;
 use webp::{AnimEncoder, AnimFrame, BitstreamFeatures, WebPConfig};
 
 struct WebpScratchAllocationLimitGuard {
@@ -154,46 +150,6 @@ fn tile_decoder_matches_eager_decode_region_after_shrink() {
         .unwrap();
 
     assert_eq!(actual, clamped_region_pixels_u8(&eager, region));
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn tile_decoder_streaming_region_matches_eager_decode_without_resident_frame() {
-    let image = patterned_rgb(8, 6);
-    let encoded = WebpCodec.encode(&image).unwrap();
-    let opts = LoadOptions::default().with_shrink(NonZeroU8::new(2).unwrap());
-    let eager = WebpCodec
-        .decode_with_options::<U8>(&encoded, &opts)
-        .unwrap();
-    let source = DecoderSource::<_, U8>::streaming(WebpCodec, &encoded, opts.clone()).unwrap();
-    let region = Region::new(1, 1, 2, 2);
-    let mut output = vec![0u8; region.pixel_count() * 3];
-
-    assert!(source.is_streaming());
-    assert_eq!(source.resident_decoded_bytes(), 0);
-
-    source.read_region(region, &mut output).unwrap();
-    assert_eq!(output, clamped_region_pixels_u8(&eager, region));
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn tile_decoder_full_resolution_streaming_region_matches_eager_without_resident_frame() {
-    let image = patterned_rgb(19, 17);
-    let encoded = WebpCodec.encode(&image).unwrap();
-    let opts = LoadOptions::default();
-    let eager = WebpCodec
-        .decode_with_options::<U8>(&encoded, &opts)
-        .unwrap();
-    let source = DecoderSource::<_, U8>::streaming(WebpCodec, &encoded, opts.clone()).unwrap();
-    let region = Region::new(6, 5, 5, 4);
-    let mut output = vec![0u8; region.pixel_count() * eager.bands() as usize];
-
-    assert!(source.is_streaming());
-    assert_eq!(source.resident_decoded_bytes(), 0);
-
-    source.read_region(region, &mut output).unwrap();
-    assert_eq!(output, clamped_region_pixels_u8(&eager, region));
 }
 
 #[test]
@@ -721,65 +677,6 @@ fn decode_region_into_preserves_alpha_for_rgba_webp() {
         "fixture must include transparent pixels in the decoded region"
     );
     assert_eq!(output, expected);
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn streaming_rgba_region_reads_reuse_cached_full_frame_decode() {
-    let codec = WebpCodec;
-    let original = transparent_payload_rgba(64, 64);
-    let encoded = codec
-        .encode_with_options(
-            &original,
-            &SaveOptions::default().lossless().with_exact_alpha(true),
-        )
-        .unwrap();
-    let eager = codec.decode::<U8>(&encoded).unwrap();
-    let source =
-        DecoderSource::<_, U8>::streaming(WebpCodec, &encoded, LoadOptions::default()).unwrap();
-    let regions = [Region::new(5, 40, 9, 7), Region::new(11, 49, 8, 6)];
-
-    reset_webp_static_region_frame_decode_count();
-
-    for region in regions {
-        let mut output = vec![0u8; region.pixel_count() * eager.bands() as usize];
-        source.read_region(region, &mut output).unwrap();
-        assert_eq!(output, clamped_region_pixels_u8(&eager, region));
-    }
-
-    assert_eq!(
-        webp_static_region_frame_decode_count(),
-        1,
-        "RGBA streaming region reads must reuse one cached full-frame decode"
-    );
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn streaming_shrunk_region_reads_reuse_cached_full_frame_decode() {
-    let codec = WebpCodec;
-    let original = patterned_rgb(96, 80);
-    let encoded = codec
-        .encode_with_options(&original, &SaveOptions::default().lossless())
-        .unwrap();
-    let opts = LoadOptions::default().with_shrink(NonZeroU8::new(2).unwrap());
-    let eager = codec.decode_with_options::<U8>(&encoded, &opts).unwrap();
-    let source = DecoderSource::<_, U8>::streaming(WebpCodec, &encoded, opts.clone()).unwrap();
-    let regions = [Region::new(4, 21, 10, 8), Region::new(9, 28, 7, 6)];
-
-    reset_webp_static_region_frame_decode_count();
-
-    for region in regions {
-        let mut output = vec![0u8; region.pixel_count() * eager.bands() as usize];
-        source.read_region(region, &mut output).unwrap();
-        assert_eq!(output, clamped_region_pixels_u8(&eager, region));
-    }
-
-    assert_eq!(
-        webp_static_region_frame_decode_count(),
-        1,
-        "shrunk streaming region reads must reuse one cached full-frame decode"
-    );
 }
 
 #[test]

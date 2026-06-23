@@ -210,12 +210,6 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{format::U8, op::DynOperation};
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     fn run_grid(
         input_width: u32,
         input_height: u32,
@@ -271,34 +265,6 @@ mod tests {
         ];
         let output = run_grid(1, 6, 2, 2, 1, &input, Region::new(0, 0, 2, 4));
         assert_eq!(output, vec![1, 2, 1, 2, 3, 0, 3, 0]);
-    }
-
-    #[test]
-    fn builder_runs_grid_end_to_end() {
-        let source = MemorySource::<U8>::new(
-            2,
-            8,
-            1,
-            vec![1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8],
-        )
-        .expect("valid source");
-        let pipeline = PipelineBuilder::from_source(source)
-            .grid(2, 2)
-            .expect("grid op")
-            .build()
-            .expect("compiled pipeline");
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(1)
-            .expect("scheduler")
-            .run(&pipeline, &mut sink)
-            .expect("grid execution");
-
-        assert_eq!(pipeline.width, 4);
-        assert_eq!(pipeline.height, 4);
-        assert_eq!(
-            sink.into_buffer(),
-            vec![1, 1, 3, 3, 2, 2, 4, 4, 5, 5, 7, 7, 6, 6, 8, 8]
-        );
     }
 
     proptest! {

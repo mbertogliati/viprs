@@ -294,20 +294,12 @@ where
 mod tests {
     use super::*;
     use proptest::prelude::*;
-    use std::sync::{Arc, Mutex};
     use viprs_core::{
-        error::{BuildError, ViprsError},
+        error::BuildError,
         format::{BandFormatId, U8},
-        image::{DemandHint, Region, Tile, TileMut},
-        op::{DynOperation, OperationBridge, SourceReadPlan},
+        image::{Region, Tile, TileMut},
+        op::{DynOperation, SourceReadPlan},
     };
-    use viprs_ops_pixel::arithmetic::invert::Invert;
-    use viprs_ports::{scheduler::TileScheduler, source::ImageSource};
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     fn expected_subsample(
         input: &[u8],
         input_width: usize,
@@ -450,158 +442,6 @@ mod tests {
         assert_eq!(spec.input_tile_h, 0);
         assert_eq!(spec.output_tile_w, 0);
         assert_eq!(spec.output_tile_h, 1);
-    }
-
-    #[test]
-    fn pipeline_uses_subsampled_dimensions() {
-        let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(SubsampleBridge::<U8>::new(2, 2, 1).unwrap()))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(1)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-
-        assert_eq!(pipeline.width, 2);
-        assert_eq!(pipeline.height, 2);
-        assert_eq!(sink.into_buffer(), vec![0u8, 2, 8, 10]);
-    }
-
-    struct RecordingSource {
-        reads: Arc<Mutex<Vec<Region>>>,
-    }
-
-    impl ImageSource for RecordingSource {
-        type Format = U8;
-
-        fn width(&self) -> u32 {
-            64
-        }
-
-        fn height(&self) -> u32 {
-            32
-        }
-
-        fn bands(&self) -> u32 {
-            1
-        }
-
-        fn demand_hint(&self) -> DemandHint {
-            DemandHint::ThinStrip
-        }
-
-        fn read_region(&self, region: Region, output: &mut [u8]) -> Result<(), ViprsError> {
-            self.reads.lock().unwrap().push(region);
-            for row in 0..region.height {
-                for col in 0..region.width {
-                    let x = (region.x + col as i32).clamp(0, 63) as u8;
-                    let y = (region.y + row as i32).clamp(0, 31) as u8;
-                    output[row as usize * region.width as usize + col as usize] = x + y;
-                }
-            }
-            Ok(())
-        }
-    }
-
-    #[test]
-    fn point_mode_pipeline_reads_single_source_pixels() {
-        let reads = Arc::new(Mutex::new(Vec::new()));
-        let source = RecordingSource {
-            reads: Arc::clone(&reads),
-        };
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(
-                SubsampleBridge::<U8>::with_point(12, 5, 1, true).unwrap(),
-            ))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-
-        RayonScheduler::new(1)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-
-        let reads = reads.lock().unwrap();
-        assert_eq!(reads.len(), 30);
-        assert!(
-            reads
-                .iter()
-                .all(|region| region.width == 1 && region.height == 1)
-        );
-        assert_eq!(reads[0], Region::new(0, 0, 1, 1));
-        assert_eq!(reads[1], Region::new(12, 0, 1, 1));
-        assert_eq!(reads[5], Region::new(0, 5, 1, 1));
-        assert!(!reads.contains(&Region::new(0, 0, 49, 26)));
-
-        let expected = expected_subsample(
-            &(0..32)
-                .flat_map(|y| (0..64).map(move |x| (x + y) as u8))
-                .collect::<Vec<_>>(),
-            64,
-            1,
-            5,
-            6,
-            12,
-            5,
-        );
-        assert_eq!(sink.into_buffer(), expected);
-    }
-
-    #[test]
-    fn point_mode_pipeline_after_invert_reads_single_source_pixels() {
-        let reads = Arc::new(Mutex::new(Vec::new()));
-        let source = RecordingSource {
-            reads: Arc::clone(&reads),
-        };
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(
-                Invert::<U8>::new(),
-                1,
-            )))
-            .unwrap()
-            .then(Box::new(
-                SubsampleBridge::<U8>::with_point(12, 5, 1, true).unwrap(),
-            ))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-
-        RayonScheduler::new(1)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-
-        let reads = reads.lock().unwrap();
-        assert_eq!(reads.len(), 30);
-        assert!(
-            reads
-                .iter()
-                .all(|region| region.width == 1 && region.height == 1)
-        );
-        assert_eq!(reads[0], Region::new(0, 0, 1, 1));
-        assert_eq!(reads[1], Region::new(12, 0, 1, 1));
-        assert_eq!(reads[5], Region::new(0, 5, 1, 1));
-        assert!(!reads.contains(&Region::new(0, 0, 49, 26)));
-
-        let expected = expected_subsample(
-            &(0..32)
-                .flat_map(|y| (0..64).map(move |x| 255 - (x + y) as u8))
-                .collect::<Vec<_>>(),
-            64,
-            1,
-            5,
-            6,
-            12,
-            5,
-        );
-        assert_eq!(sink.into_buffer(), expected);
     }
 
     proptest! {

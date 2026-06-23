@@ -252,16 +252,74 @@ mod tests {
     use super::*;
     use crate::histogram::{HistFindNDimOp, HistFindOp};
     use viprs_core::{
-        format::{U8, U16, U32},
-        op::OperationBridge,
+        error::ViprsError,
+        format::{BandFormat, U8, U16, U32},
+        image::DemandHint,
         reducer::TileReducer,
     };
-    use viprs_ops_pixel::arithmetic::Linear;
-    use viprs_ports::scheduler::ReducingScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
+    use viprs_ports::source::ImageSource;
+
+    struct TestMemorySource<F: BandFormat> {
+        width: u32,
+        height: u32,
+        bands: u32,
+        pixels: Vec<F::Sample>,
+    }
+
+    impl<F: BandFormat> TestMemorySource<F> {
+        fn new(
+            width: u32,
+            height: u32,
+            bands: u32,
+            pixels: Vec<F::Sample>,
+        ) -> Result<Self, ViprsError> {
+            Ok(Self {
+                width,
+                height,
+                bands,
+                pixels,
+            })
+        }
+    }
+
+    impl<F> ImageSource for TestMemorySource<F>
+    where
+        F: BandFormat + Send + Sync,
+        F::Sample: bytemuck::Pod,
+    {
+        type Format = F;
+
+        fn width(&self) -> u32 {
+            self.width
+        }
+
+        fn height(&self) -> u32 {
+            self.height
+        }
+
+        fn bands(&self) -> u32 {
+            self.bands
+        }
+
+        fn demand_hint(&self) -> DemandHint {
+            DemandHint::ThinStrip
+        }
+
+        fn read_region(&self, region: Region, output: &mut [u8]) -> Result<(), ViprsError> {
+            let bands = self.bands as usize;
+            let samples = bytemuck::cast_slice_mut(output);
+            for out_y in 0..region.height {
+                let src_y = (region.y + out_y as i32).clamp(0, self.height as i32 - 1) as usize;
+                for out_x in 0..region.width {
+                    let src_x = (region.x + out_x as i32).clamp(0, self.width as i32 - 1) as usize;
+                    let src = (src_y * self.width as usize + src_x) * bands;
+                    let dst = (out_y as usize * region.width as usize + out_x as usize) * bands;
+                    samples[dst..dst + bands].copy_from_slice(&self.pixels[src..src + bands]);
+                }
+            }
+            Ok(())
+        }
+    }
 
     fn run_indexed_histogram(
         width: u32,
@@ -271,23 +329,15 @@ mod tests {
         index_pixels: Vec<u8>,
         max_index: u32,
     ) -> HistFindIndexedResult {
-        let source = MemorySource::<U8>::new(width, height, bands, pixels).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(
-                Linear::<U8>::new(1, 0).unwrap(),
-                bands,
-            )))
-            .unwrap()
-            .build()
-            .unwrap();
-        let sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        let scheduler = RayonScheduler::new(2).unwrap();
-        let index = Arc::new(MemorySource::<U8>::new(width, height, 1, index_pixels).unwrap());
+        let index = Arc::new(TestMemorySource::<U8>::new(width, height, 1, index_pixels).unwrap());
         let reducer = HistFindIndexedOp::new(width, height, bands, max_index, index).unwrap();
+        let region = Region::new(0, 0, width, height);
+        let tile = Tile::<U8>::new(region, bands, &pixels);
 
-        scheduler
-            .run_with_reducer::<U8, HistFindIndexedOp>(&pipeline, &sink, &reducer)
-            .unwrap()
+        <HistFindIndexedOp as TileReducer<U8>>::finalize(
+            &reducer,
+            <HistFindIndexedOp as TileReducer<U8>>::reduce_tile(&reducer, &tile, &region),
+        )
     }
 
     #[test]
@@ -336,24 +386,15 @@ mod tests {
 
     #[test]
     fn u16_index_is_supported_and_counts_into_requested_range() {
-        let source = MemorySource::<U8>::new(3, 1, 1, vec![1, 2, 3]).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(
-                Linear::<U8>::new(1, 0).unwrap(),
-                1,
-            )))
-            .unwrap()
-            .build()
-            .unwrap();
-        let sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        let scheduler = RayonScheduler::new(2).unwrap();
-        let index =
-            Arc::new(MemorySource::<viprs_core::format::U16>::new(3, 1, 1, vec![0, 2, 2]).unwrap());
+        let index = Arc::new(TestMemorySource::<U16>::new(3, 1, 1, vec![0, 2, 2]).unwrap());
         let reducer = HistFindIndexedOp::new(3, 1, 1, 2, index).unwrap();
+        let region = Region::new(0, 0, 3, 1);
+        let tile = Tile::<U8>::new(region, 1, &[1, 2, 3]);
 
-        let hist = scheduler
-            .run_with_reducer::<U8, HistFindIndexedOp>(&pipeline, &sink, &reducer)
-            .unwrap();
+        let hist = <HistFindIndexedOp as TileReducer<U8>>::finalize(
+            &reducer,
+            <HistFindIndexedOp as TileReducer<U8>>::reduce_tile(&reducer, &tile, &region),
+        );
 
         assert_eq!(hist.bins, vec![1, 0, 2]);
     }
@@ -363,7 +404,7 @@ mod tests {
         let region = Region::new(0, 0, 2, 1);
         let first = Tile::<U8>::new(region, 2, &[10, 20, 11, 21]);
         let second = Tile::<U8>::new(region, 2, &[12, 22, 13, 23]);
-        let index = Arc::new(MemorySource::<U8>::new(2, 1, 1, vec![0, 2]).unwrap());
+        let index = Arc::new(TestMemorySource::<U8>::new(2, 1, 1, vec![0, 2]).unwrap());
         let reducer = HistFindIndexedOp::new(2, 1, 2, 2, index).unwrap();
         let mut partial = None;
 
@@ -409,19 +450,20 @@ mod tests {
 
     #[test]
     fn new_rejects_invalid_configuration_and_unsupported_index_format() {
-        let index = Arc::new(MemorySource::<U8>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
+        let index = Arc::new(TestMemorySource::<U8>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
         assert!(HistFindIndexedOp::new(2, 2, 0, 3, index.clone()).is_err());
 
-        let wrong_size = Arc::new(MemorySource::<U8>::new(1, 2, 1, vec![0, 1]).unwrap());
+        let wrong_size = Arc::new(TestMemorySource::<U8>::new(1, 2, 1, vec![0, 1]).unwrap());
         assert!(HistFindIndexedOp::new(2, 2, 1, 3, wrong_size).is_err());
 
-        let multi_band = Arc::new(MemorySource::<U8>::new(2, 2, 2, vec![0; 8]).unwrap());
+        let multi_band = Arc::new(TestMemorySource::<U8>::new(2, 2, 2, vec![0; 8]).unwrap());
         assert!(HistFindIndexedOp::new(2, 2, 1, 3, multi_band).is_err());
 
-        let u8_index = Arc::new(MemorySource::<U8>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
+        let u8_index = Arc::new(TestMemorySource::<U8>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
         assert!(HistFindIndexedOp::new(2, 2, 1, u16::from(u8::MAX) as u32 + 1, u8_index).is_err());
 
-        let unsupported = Arc::new(MemorySource::<U32>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
+        let unsupported =
+            Arc::new(TestMemorySource::<U32>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
         assert!(HistFindIndexedOp::new(2, 2, 1, 3, unsupported).is_err());
     }
 
@@ -429,7 +471,7 @@ mod tests {
     fn reduce_tile_clamps_region_coordinates_to_input_bounds() {
         let region = Region::new(0, 0, 2, 2);
         let tile = Tile::<U8>::new(region, 1, &[0, 1, 2, 3]);
-        let index = Arc::new(MemorySource::<U16>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
+        let index = Arc::new(TestMemorySource::<U16>::new(2, 2, 1, vec![0, 1, 2, 3]).unwrap());
         let reducer = HistFindIndexedOp::new(2, 2, 1, 2, index).unwrap();
         let wide_region = Region::new(-1, -1, 4, 4);
 

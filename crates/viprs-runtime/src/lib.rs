@@ -10,6 +10,8 @@ pub mod freqfilt;
 pub mod image_api;
 /// Tracing and event macros used by runtime adapters.
 pub mod instrumentation;
+#[cfg(all(test, feature = "_integration"))]
+mod integration_tests;
 /// Optional lock profiling helpers for scheduler contention analysis.
 pub mod lock_instrumentation;
 pub mod pipeline;
