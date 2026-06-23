@@ -1,6 +1,6 @@
 [package]
 name = "viprs-ops-colour"
-version.workspace = true
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -9,15 +9,15 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-viprs-core.workspace = true
-viprs-ports.workspace = true
-viprs-ops-pixel.workspace = true
+viprs-core = { path = "../viprs-core", version = "0.1.0" }
+viprs-ports = { path = "../viprs-ports", version = "0.1.0" }
+viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.0" }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 lcms2 = { version = "6.1.1", optional = true }
 
 [dev-dependencies]
 proptest = "1"
-viprs-runtime.workspace = true
+viprs-runtime = { path = "../viprs-runtime", version = "0.1.0" }
 
 [features]
 _integration = []
