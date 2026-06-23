@@ -649,7 +649,7 @@ mod tests {
             if !(std::arch::is_x86_feature_detected!("avx2")
                 && std::arch::is_x86_feature_detected!("fma"))
             {
-                return;
+                return Ok(());
             }
 
             let output = run_linear_f32(scale, offset, &pixels);

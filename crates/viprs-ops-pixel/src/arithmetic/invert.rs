@@ -293,7 +293,7 @@ mod tests {
             pixels in proptest::collection::vec(any::<u8>(), 33..=257)
         ) {
             if !std::arch::is_x86_feature_detected!("avx2") {
-                return;
+                return Ok(());
             }
 
             use viprs_core::format::U8;
@@ -316,7 +316,7 @@ mod tests {
             pixels in proptest::collection::vec(0.0f32..=1.0f32, 17..=129)
         ) {
             if !std::arch::is_x86_feature_detected!("avx2") {
-                return;
+                return Ok(());
             }
 
             let len = pixels.len();
