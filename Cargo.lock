@@ -3029,7 +3029,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "viprs"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ab_glyph",
  "bytemuck",
@@ -3060,7 +3060,7 @@ dependencies = [
 
 [[package]]
 name = "viprs-codecs"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytemuck",
  "crc32fast",
@@ -3102,7 +3102,7 @@ dependencies = [
 
 [[package]]
 name = "viprs-core"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ab_glyph",
  "bytemuck",
@@ -3112,7 +3112,7 @@ dependencies = [
 
 [[package]]
 name = "viprs-ops-colour"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytemuck",
  "lcms2",
@@ -3125,7 +3125,7 @@ dependencies = [
 
 [[package]]
 name = "viprs-ops-composite"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -3139,7 +3139,7 @@ dependencies = [
 
 [[package]]
 name = "viprs-ops-pixel"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -3148,7 +3148,7 @@ dependencies = [
 
 [[package]]
 name = "viprs-ops-spatial"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -3160,14 +3160,14 @@ dependencies = [
 
 [[package]]
 name = "viprs-ports"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "viprs-core",
 ]
 
 [[package]]
 name = "viprs-runtime"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ab_glyph",
  "bytemuck",
@@ -3468,7 +3468,7 @@ checksum = "ec7a2a501ed189703dba8b08142f057e887dfc4b2cc4db2d343ac6376ba3e0b9"
 
 [[package]]
 name = "xtask"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bytemuck",
  "libc",
