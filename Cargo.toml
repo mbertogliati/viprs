@@ -91,7 +91,7 @@ memmap2 = { version = "0.9", optional = true }
 rustfft = { version = "6", optional = true }
 pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
 png = { version = "0.17", optional = true }
-libheif-rs = { version = "0.20", optional = true }
+libheif-rs = { version = "0.21", optional = true }
 
 [dev-dependencies]
 proptest = "1"
