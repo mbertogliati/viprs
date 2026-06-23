@@ -3,12 +3,13 @@ members = [".", "xtask", "crates/viprs-core", "crates/viprs-ports", "crates/vipr
 resolver = "3"
 
 [workspace.package]
+version = "0.1.0"
 rust-version = "1.92"
 license = "MIT"
 
 [package]
 name = "viprs"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 rust-version.workspace = true
 description = "Native Rust reimplementation of libvips focused on demand-driven, horizontally-threaded image processing."

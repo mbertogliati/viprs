@@ -1,10 +1,9 @@
 [package]
 name = "viprs-ops-colour"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
-publish = false
 
 [lints]
 workspace = true
