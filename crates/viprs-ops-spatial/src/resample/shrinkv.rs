@@ -229,7 +229,6 @@ fn shrink_v_u8(
         } else {
             shrink_v_u8_generic_scalar(factor, input, bands, out_w, out_h, scratch, output);
         }
-        return;
     }
 
     #[cfg(not(any(target_arch = "aarch64", target_arch = "x86", target_arch = "x86_64")))]
@@ -384,9 +383,8 @@ unsafe fn shrink_v_u8_generic_avx2(
         return;
     }
 
-    // SAFETY: AVX2 is enabled for this function and `_mm256_set1_epi32` has no
-    // memory preconditions.
-    let multiplier_vec = unsafe { _mm256_set1_epi32(multiplier as i32) };
+    // AVX2 is enabled for this function, so splatting the scalar multiplier is valid.
+    let multiplier_vec = _mm256_set1_epi32(multiplier as i32);
 
     for y_out in 0..out_h {
         scratch[..row_len].fill(amend);
