@@ -220,4 +220,5 @@ mod apply;
 mod builder_core;
 mod colourspace;
 mod geometry;
+mod spatial_integration;
 mod thumbnail_execution;

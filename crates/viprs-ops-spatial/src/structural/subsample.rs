@@ -192,12 +192,10 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{
-        error::BuildError,
         format::{BandFormatId, U8},
         image::{Region, Tile, TileMut},
         op::DynOperation,
     };
-    use viprs_runtime::{pipeline::PipelineBuilder, sources::memory::MemorySource};
 
     fn expected_subsample(
         input: &[u8],
@@ -243,20 +241,6 @@ mod tests {
         let bridge = SubsampleBridge::<U8>::new(2, 3, 1).unwrap();
         assert_eq!(bridge.output_width(7), 3);
         assert_eq!(bridge.output_height(8), 2);
-    }
-
-    #[test]
-    fn structural_subsample_builder_zero_x_factor_returns_error() {
-        let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-        let result = PipelineBuilder::from_source(source).subsample(0, 1);
-
-        assert!(matches!(
-            result,
-            Err(BuildError::SourceHint {
-                context: "subsample",
-                ..
-            })
-        ));
     }
 
     #[test]

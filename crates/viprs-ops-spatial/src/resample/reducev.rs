@@ -269,6 +269,7 @@ mod tests {
         any(target_arch = "x86", target_arch = "x86_64")
     ))]
     use crate::resample::reduce_simd;
+    use crate::test_support::TestMemorySource;
     use proptest::prelude::*;
     #[cfg(any(
         target_arch = "aarch64",
@@ -282,8 +283,6 @@ mod tests {
         op::DynOperation,
         resample::ResampleOp,
     };
-    use viprs_ports::source::ImageSource;
-    use viprs_runtime::sources::memory::MemorySource;
 
     #[test]
     fn new_rejects_extreme_finite_factor() {
@@ -297,7 +296,8 @@ mod tests {
 
     fn run_reduce_v_u8(input_data: &[u8], factor: f64, kernel: InterpolationKernel) -> Vec<u8> {
         let source =
-            MemorySource::<U8>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
+            TestMemorySource::<U8>::new(1, input_data.len() as u32, 1, input_data.to_vec())
+                .unwrap();
         let op = ReduceV::<U8>::new(factor, kernel)
             .unwrap()
             .with_input_height(input_data.len() as u32);
@@ -317,7 +317,8 @@ mod tests {
 
     fn run_reduce_v_f32(input_data: &[f32], factor: f64, kernel: InterpolationKernel) -> Vec<f32> {
         let source =
-            MemorySource::<F32>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
+            TestMemorySource::<F32>::new(1, input_data.len() as u32, 1, input_data.to_vec())
+                .unwrap();
         let op = ReduceV::<F32>::new(factor, kernel)
             .unwrap()
             .with_input_height(input_data.len() as u32);
@@ -341,7 +342,8 @@ mod tests {
     ))]
     fn run_reduce_v_u16(input_data: &[u16], factor: f64, kernel: InterpolationKernel) -> Vec<u16> {
         let source =
-            MemorySource::<U16>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
+            TestMemorySource::<U16>::new(1, input_data.len() as u32, 1, input_data.to_vec())
+                .unwrap();
         let op = ReduceV::<U16>::new(factor, kernel)
             .unwrap()
             .with_input_height(input_data.len() as u32);
@@ -369,7 +371,8 @@ mod tests {
         kernel: InterpolationKernel,
     ) -> Vec<u8> {
         let source =
-            MemorySource::<U8>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
+            TestMemorySource::<U8>::new(1, input_data.len() as u32, 1, input_data.to_vec())
+                .unwrap();
         let op = ReduceV::<U8>::new(factor, kernel)
             .unwrap()
             .with_input_height(input_data.len() as u32);
@@ -401,7 +404,8 @@ mod tests {
         kernel: InterpolationKernel,
     ) -> Vec<u16> {
         let source =
-            MemorySource::<U16>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
+            TestMemorySource::<U16>::new(1, input_data.len() as u32, 1, input_data.to_vec())
+                .unwrap();
         let op = ReduceV::<U16>::new(factor, kernel)
             .unwrap()
             .with_input_height(input_data.len() as u32);
@@ -433,7 +437,8 @@ mod tests {
         kernel: InterpolationKernel,
     ) -> Vec<f32> {
         let source =
-            MemorySource::<F32>::new(1, input_data.len() as u32, 1, input_data.to_vec()).unwrap();
+            TestMemorySource::<F32>::new(1, input_data.len() as u32, 1, input_data.to_vec())
+                .unwrap();
         let op = ReduceV::<F32>::new(factor, kernel)
             .unwrap()
             .with_input_height(input_data.len() as u32);
@@ -463,7 +468,8 @@ mod tests {
         factor: f64,
         kernel: InterpolationKernel,
     ) -> Vec<u8> {
-        let source = MemorySource::<U8>::new(width, height, bands, input_data.to_vec()).unwrap();
+        let source =
+            TestMemorySource::<U8>::new(width, height, bands, input_data.to_vec()).unwrap();
         let op = ReduceV::<U8>::new(factor, kernel)
             .unwrap()
             .with_input_height(height);
@@ -587,7 +593,7 @@ mod tests {
                 .node_spec(1, 2)
         );
 
-        let source = MemorySource::<U8>::new(1, 4, 1, vec![0, 1, 2, 3]).unwrap();
+        let source = TestMemorySource::<U8>::new(1, 4, 1, vec![0, 1, 2, 3]).unwrap();
         let out_region = Region::new(0, 0, 1, 2);
         let input_region = bridge.required_input_region(&out_region);
         let mut input_bytes = vec![0u8; input_region.pixel_count()];

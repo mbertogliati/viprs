@@ -364,24 +364,6 @@ mod tests {
         image::{Image, Region, Tile, TileMut},
         resample::ResampleOp,
     };
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
-    fn patterned_u8_image(width: u32, height: u32, bands: u32) -> Image<U8> {
-        let mut pixels = Vec::with_capacity(width as usize * height as usize * bands as usize);
-        for y in 0..height {
-            for x in 0..width {
-                for band in 0..bands {
-                    pixels.push(((x * 31 + y * 17 + band * 53 + 11) % 256) as u8);
-                }
-            }
-        }
-
-        Image::from_buffer(width, height, bands, pixels).unwrap()
-    }
 
     fn read_region_with_edge_copy(image: &Image<U8>, region: Region) -> Vec<u8> {
         let width = image.width() as i64;
@@ -601,34 +583,6 @@ mod tests {
                 .unwrap()
                 .scratch_len_for_tile(64, 32, 3)
         );
-    }
-
-    #[test]
-    fn fractional_reduce_pipeline_matches_declared_dimensions() {
-        let image = patterned_u8_image(777, 333, 3);
-        let pipeline = PipelineBuilder::from_source(
-            MemorySource::<U8>::new(
-                image.width(),
-                image.height(),
-                image.bands(),
-                image.pixels().to_vec(),
-            )
-            .unwrap(),
-        )
-        .reduce(1.5, 2.5, InterpolationKernel::Lanczos3)
-        .unwrap()
-        .build()
-        .unwrap();
-
-        let expected_len =
-            pipeline.width as usize * pipeline.height as usize * pipeline.output_bands as usize;
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(2)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-
-        assert_eq!(sink.into_buffer().len(), expected_len);
     }
 
     #[test]
