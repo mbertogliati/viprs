@@ -1,6 +1,6 @@
 [package]
 name = "viprs-ops-colour"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -12,9 +12,9 @@ include = ["Cargo.toml", "src/**"]
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core", version = "0.1.3" }
-viprs-ports = { path = "../viprs-ports", version = "0.1.3" }
-viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.3" }
+viprs-core = { path = "../viprs-core", version = "0.1.4" }
+viprs-ports = { path = "../viprs-ports", version = "0.1.4" }
+viprs-ops-pixel = { path = "../viprs-ops-pixel", version = "0.1.4" }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 lcms2 = { version = "6.1.1", optional = true }
 
