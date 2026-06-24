@@ -15,7 +15,7 @@ workspace = true
 viprs-core = { path = "../viprs-core", version = "0.1.5" }
 viprs-ports = { path = "../viprs-ports", version = "0.1.5" }
 viprs-ops-colour = { path = "../viprs-ops-colour", version = "0.1.5", optional = true }
-jpeg-encoder = { version = "0.6", optional = true }
+jpeg-encoder = { version = "0.7", optional = true }
 turbojpeg = { version = "1", optional = true, default-features = false, features = ["pkg-config", "require-simd"] }
 png = { version = "0.18", optional = true }
 spng = { version = "0.2.0-alpha.3", optional = true }
