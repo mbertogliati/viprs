@@ -4,18 +4,30 @@
 [![crates.io](https://img.shields.io/crates/v/viprs.svg)](https://crates.io/crates/viprs)
 [![docs.rs](https://docs.rs/viprs/badge.svg)](https://docs.rs/viprs)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![MSRV](https://img.shields.io/badge/MSRV-1.92-orange.svg)](https://www.rust-lang.org)
+[![MSRV](https://img.shields.io/badge/MSRV-1.96-orange.svg)](rust-toolchain.toml)
 
-`viprs` is a native Rust reimplementation of libvips: demand-driven, horizontally-threaded image processing with a performance-first architecture.
+`viprs` is a native Rust reimplementation of libvips: a demand-driven,
+horizontally-threaded image processing library for systems where large images,
+concurrency, memory use, and latency matter at the same time.
 
-## Why use it?
+The project is not a wrapper around the C library. The goal is to keep the libvips
+execution model and compatibility expectations while using Rust to explore stronger
+compile-time specialization, ownership-driven zero-copy designs, typed errors,
+controllable scheduling, feature-gated native dependencies, and SIMD-friendly
+abstractions.
 
-- Native Rust pipeline and scheduling model
-- C-backed hot codecs where throughput matters (`jpeg`, `webp`, `heif`, `openslide`)
-- Demand-driven execution instead of eager whole-image transforms
-- Bench tooling to compare `viprs` against libvips directly
+## Production use cases
+
+- Web image services that transform uploads or remote images in HTTP handlers.
+- Upload and ingest workers that generate derivatives for disk or object storage.
+- CDN, edge, and media proxy optimizers that need predictable latency and memory.
+- Scientific, medical, and geospatial systems that work with huge tiled images.
+- Creative, document, and asset automation backends that need repeatable recipes.
 
 ## Quick start
+
+The public facade API is still evolving, but the intended shape is a compact pipeline
+that can be embedded in services and workers:
 
 ```rust,no_run
 use viprs::prelude::*;
@@ -24,208 +36,27 @@ fn main() -> Result<(), ViprsError> {
     ImageApi::open("input.jpg")?
         .thumbnail(400)?
         .save("thumb.jpg")?;
+
     Ok(())
 }
 ```
 
-## Runnable examples
+Runnable examples live in [`examples/`](examples/):
 
 ```bash
 cargo run --example thumbnail --features jpeg -- input.jpg thumb.jpg 400
 ```
 
-## Use Cases
+## Documentation
 
-| Scenario | How viprs handles it |
-|----------|---------------------|
-| **Web thumbnailing** | Decode → thumbnail → encode in a single pipeline, bytes-in/bytes-out |
-| **CDN image optimization** | Chain resize + sharpen + quality reduction without intermediate buffers |
-| **Batch processing** | Thread-pool scheduler processes tiles in parallel across all cores |
-| **Scientific imaging** | Float32/Float64 pipelines with EXR, FITS, NIfTI codecs |
-| **Color correction** | Lab/XYZ/LCh colorspace conversions + ICC profile transforms |
-| **Concurrent HTTP service** | Multiple requests processed in parallel with linear scaling |
-| **Large uploads** | Demand-driven evaluation — only decode tiles that are needed |
+- Explanatory guide: [`docs/`](docs/)
+- API reference: <https://docs.rs/viprs>
+- Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/src/contributing/`](docs/src/contributing/)
+- Agent workflows: [`.github/agents/`](.github/agents/)
+- Performance methodology: [`.github/agents/PERFORMANCE.md`](.github/agents/PERFORMANCE.md)
 
-## Available Operations
-
-### Arithmetic
-`add`, `subtract`, `multiply`, `divide`, `linear`, `invert`, `abs`, `sign`, `round`,
-`clamp`, `sum`, `power`, `sqrt`, `exp`, `log`, `remainder`, `recomb`,
-`sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `maxpair`, `minpair`
-
-### Boolean & Bitwise
-`and`, `or`, `xor`, `lshift`, `rshift`
-
-### Relational
-`equal`, `not_equal`, `less`, `less_eq`, `more`, `more_eq`
-
-### Colour
-`colourspace` (sRGB ↔ Lab ↔ XYZ ↔ LCh ↔ HSV ↔ scRGB ↔ CMYK ↔ GREY16 ↔ YXY),
-`icc_transform`, `dE76`, `dE00`, `dECMC`
-
-### Convolution
-`gauss_blur`, `sharpen`, `unsharp_mask`, `conv`, `convsep`,
-`sobel`, `scharr`, `prewitt`, `canny`, `compass`, `edge`, `fastcor`, `spcor`
-
-### Resample
-`resize`, `thumbnail`, `shrink`, `shrinkh`, `shrinkv`, `reduce`, `reduceh`, `reducev`,
-`affine`, `similarity`, `mapim`, `quadratic`, `zoom`
-
-### Structural
-`extract_area`, `embed`, `flip_horizontal`, `flip_vertical`,
-`rotate90`, `rotate180`, `rotate270`, `join`, `insert`, `replicate`, `subsample`,
-`flatten`, `premultiply`, `unpremultiply`
-
-### Frequency Domain (feature: `fft`)
-`fwfft`, `invfft`, `freqmult`, `phasecor`, `spectrum`
-
-### Morphology
-`rank`, `erode`, `dilate`, `median`
-
-### Histogram
-`hist_find`, `hist_cum`, `hist_norm`, `hist_equal`, `hist_match`
-
-### Create / Generators
-`black`, `gaussnoise`, `xyz`, `zone`, `eye`, `sines`, `text`, `gaussmat`, `logmat`
-
-## Feature flags
-
-### Runtime and processing
-
-| Feature | Default | Purpose | Notes |
-|---|---:|---|---|
-| `rayon` | yes | Parallel tile scheduler | Recommended for production pipelines |
-| `mmap` | yes | Memory-mapped sources | Useful for large local files |
-| `simd-pulp` | yes | SIMD dispatch helpers | Faster arithmetic/resample paths |
-| `fft` | no | FFT / frequency-domain ops | Enables `fwfft` / `invfft` |
-| `ffi` | no | FFI surface | For embedding from non-Rust callers |
-| `lock_instrumentation` | no | Scheduler lock diagnostics | Debug-only instrumentation |
-
-### Codec and format support
-
-| Feature | Default | What it enables | Native/system dependency |
-|---|---:|---|---|
-| `jpeg` | no | JPEG decode + encode | `libjpeg-turbo` / `libturbojpeg` |
-| `png` | no | PNG decode + encode | none |
-| `libspng` | no | Alternative PNG backend | `png` feature plus `spng` crate |
-| `webp` | no | WebP decode + encode | C-backed `libwebp` path |
-| `bmp` | no | BMP decode + encode | none |
-| `tiff` | no | TIFF decode + encode | none |
-| `gif` | no | GIF decode + encode | none |
-| `exr` | no | OpenEXR support | none |
-| `radiance` | no | Radiance HDR support | none |
-| `pfm` | no | Portable Float Map support | none |
-| `svg` | no | SVG rasterization | none |
-| `avif` | no | AVIF encode/decode path | `libheif` |
-| `heif` | no | HEIF/HEIC decode | `libheif` |
-| `jxl` | no | JPEG XL decode | libjxl-backed wrapper path |
-| `jp2k` | no | JPEG 2000 support | OpenJPEG / `openjp2` |
-| `icc` | no | ICC profile transforms | `lcms2` |
-| `openslide` | no | Whole-slide microscopy | `openslide` |
-| `fits` | no | FITS codec | `cfitsio` toolchain via `fitsio-sys` |
-| `mat-hdf5` | no | MATLAB v7.3 / HDF5 MAT support | HDF5 Rust stack |
-| `nifti` | no | NIfTI support | none |
-| `uhdr` | no | Ultra HDR support | builds on `jpeg` |
-| `deepzoom` | no | DeepZoom export | no extra deps beyond output codecs |
-| `dcraw` | no | RAW import via external tooling | `dcraw` / `dcraw_emu` on PATH |
-| `magick` | no | ImageMagick fallback load/save | `magick` CLI on PATH |
-| `pdf-poppler` | no | PDF rasterization fallback | `pdfinfo` / `pdftoppm` on PATH |
-| `csv` | no | CSV matrix codec | none |
-| `vips-format` | no | Native `.v` / `.vips` format | none |
-| `pnm` | no | PBM/PGM/PPM/PNM | none |
-
-## System dependencies
-
-These are the features most likely to fail with linker or header errors when their native dependencies are missing.
-
-### macOS (Homebrew)
+Routine validation goes through the Makefile:
 
 ```bash
-brew install pkgconf jpeg-turbo webp libheif openslide little-cms2 openjpeg
+make check
 ```
-
-### Ubuntu / Debian
-
-```bash
-sudo apt-get update
-sudo apt-get install -y \
-  pkg-config \
-  libturbojpeg0-dev \
-  libwebp-dev \
-  libheif-dev \
-  libopenslide-dev \
-  liblcms2-dev \
-  libopenjp2-7-dev
-```
-
-### Fedora
-
-```bash
-sudo dnf install -y \
-  pkgconf-pkg-config \
-  libjpeg-turbo-devel \
-  libwebp-devel \
-  libheif-devel \
-  openslide-devel \
-  lcms2-devel \
-  openjpeg2-devel
-```
-
-### Feature-by-feature notes
-
-| Feature | What to install | Why |
-|---|---|---|
-| `jpeg` | `libjpeg-turbo` + `pkg-config` | `turbojpeg` links to `libturbojpeg` |
-| `webp` | `libwebp` packages or a working C toolchain | `viprs` intentionally uses the C-backed WebP path |
-| `heif`, `avif` | `libheif` | HEIF/AVIF integration goes through libheif |
-| `openslide` | `openslide` | Whole-slide reader bindings need native headers/libs |
-| `icc` | `lcms2` | ICC transforms use Little CMS |
-| `jp2k` | `openjpeg` | JPEG 2000 stack depends on OpenJPEG |
-
-## Benchmarks
-
-| Command | Measures | Use it for |
-|---|---|---|
-| `cargo bench` | Criterion microbenchmarks | Regressions in a specific op |
-| `cargo xtask bench <input> <op>` | viprs vs libvips latency/resources | Publishable side-by-side comparisons |
-| `cargo xtask perf <input> <op> --metrics alloc` | Allocation count / bytes | Hot-path allocation audits |
-| `cargo xtask perf <input> <op> --metrics simd` | SIMD instruction ratio | Vectorization validation |
-| `cargo xtask perf <input> <op> --metrics hw` | Cache / PMU metrics | Deep performance investigations |
-
-## Development
-
-### Quick validation
-
-```bash
-make check          # fmt + clippy + build + test (native)
-make ci             # full CI pipeline locally
-```
-
-### Cross-architecture validation
-
-Runs any Makefile target inside the pre-built [`viprs-ci`](https://ghcr.io/mbertogliati/viprs-ci) Docker image
-on the opposite architecture (ARM mac → x86_64, or vice versa). Catches arch-specific issues
-(e.g., x86 SIMD lint errors invisible on ARM) before pushing.
-
-```bash
-make cross CMD=clippy          # clippy on opposite arch
-make cross CMD=test            # tests on opposite arch
-make cross CMD=build           # just compile
-make cross CMD=check           # full check (fmt+clippy+build+test)
-make check-cross               # shorthand for CMD=check
-
-# Force a specific architecture:
-make cross CMD=clippy ARCH=x86_64
-make cross CMD=clippy ARCH=arm64
-```
-
-> **First run** pulls the image (~1.5 GB). Subsequent runs start instantly.
-> Compilation under QEMU emulation is slower than native — use for validation, not iteration.
-
-## Minimum Supported Rust Version (MSRV)
-
-**1.92**
-
-## License
-
-[MIT](LICENSE) © Matias Bertogliati
