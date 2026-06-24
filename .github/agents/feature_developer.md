@@ -83,7 +83,7 @@ It does NOT handle:
 
 ### Worktree cleanup on merge
 
-When a sub-agent finishes its work and the branch is merged to master, it must remove
+When a sub-agent finishes its work and the branch is merged to `main`, it must remove
 **its own** worktree before finishing:
 
 ```bash
@@ -94,12 +94,15 @@ git worktree remove "$WORKTREE_PATH" --force
 
 ### Worktree preparation before rebase
 
-Before `git rebase master`, always check whether the worktree is dirty. If it is, stash first so the rebase starts cleanly, then restore or drop the stash after the rebase as appropriate:
+Before `git rebase origin/main`, always check whether the worktree is dirty. If it is,
+stash first so the rebase starts cleanly, then restore or drop the stash after the rebase
+as appropriate:
 
 ```bash
 git status --short
 git stash push -u -m "pre-rebase <task-id>"   # only if status is not empty
-git rebase master
+git fetch origin main
+git rebase origin/main
 git stash pop || git stash drop
 ```
 
@@ -255,7 +258,7 @@ Do not accumulate gaps to register later. Knowledge is lost between sessions.
 
 ## Close flow
 
-**Step 1 — Write the Resolution section BEFORE archiving.**
+**Step 1 — Write the Resolution section before closing the task.**
 
 Edit the task description to add the mandatory Resolution block. Do not skip any item.
 Unchecked boxes are allowed only if you add a `<!-- reason: ... -->` comment explaining why.
@@ -305,15 +308,18 @@ EOF
 )"
 ```
 
-**Step 2 — Push, open PR, enable auto-merge, then archive:**
+**Step 2 — Push, open PR, enable auto-merge, then mark the task Done:**
 
 ```bash
 git push -u origin <branch-name>
 gh pr create --title "<issue title>" --body "<paste RESOLUTION summary>" --base main
 gh pr merge <PR-number> --auto --squash
 issue edit the task -s Done
-# archive completed task
 ```
+
+The task description in GitHub Issues is the source of truth for the `RESOLUTION:BEGIN`
+block. Do not depend on repository-local archive paths; they are not part of the current
+workflow.
 
 **CRITICAL: `gh pr merge` MUST include `--auto`.** Never merge directly — GitHub's required
 CI checks enforce the quality gate. The PR will merge automatically once all checks pass.
@@ -336,7 +342,7 @@ cargo clippy --lib -- -D clippy::perf -D clippy::pedantic
 
 `cargo check -p xtask` is mandatory because `xtask/src/bench/pipeline.rs` imports
 40+ internal viprs types. Any rename, move, or removal of those symbols breaks xtask
-silently — this is the most common cause of `cargo xtask bench` failures on master.
+silently — this is the most common cause of `cargo xtask bench` failures on main.
 
 Zero warnings. No `#[allow(...)]` without a justifying `// REASON:` comment.
 

@@ -127,7 +127,7 @@ cat GUIDELINES.md
 cd /Users/mbertogliati/Documents/proof_of_concept/viprs && issue view the task --plain
 ```
 
-Run the task-view command from the main repository on `master`; older task worktrees can fail
+Run the task-view command from the main repository on `main`; older task worktrees can fail
 to hydrate archived cross-links.
 
 The task MUST already contain:
@@ -140,7 +140,7 @@ If the task lacks evidence, **do not start**. Leave it `In Progress`, append a b
 
 ### Step 2: Reproduce the baseline
 
-Run the benchmark yourself to confirm the gap still exists on current master:
+Run the benchmark yourself to confirm the gap still exists on current `main`:
 
 ```bash
 cargo xtask bench tests/fixtures/images/<image> <op> [args] --iterations 30
@@ -273,8 +273,11 @@ git push -u origin <branch-name>
 gh pr create --title "<issue title>" --body "<paste RESOLUTION summary>" --base main
 gh pr merge <PR-number> --auto --squash
 issue edit the task -s Done
-issue archive the task
 ```
+
+The task description in GitHub Issues is the source of truth for the `RESOLUTION:BEGIN`
+block. Do not depend on repository-local archive paths; they are not part of the current
+workflow.
 
 **CRITICAL: `gh pr merge` MUST include `--auto`.** Never merge directly — GitHub's required
 CI checks enforce the quality gate. The PR will merge automatically once all checks pass.
@@ -379,12 +382,15 @@ git worktree remove "$WORKTREE_PATH" --force
 
 ### Worktree preparation before rebase
 
-Before `git rebase master`, always check whether the worktree is dirty. If it is, stash first so the rebase starts cleanly, then restore or drop the stash after the rebase as appropriate:
+Before `git rebase origin/main`, always check whether the worktree is dirty. If it is,
+stash first so the rebase starts cleanly, then restore or drop the stash after the rebase
+as appropriate:
 
 ```bash
 git status --short
 git stash push -u -m "pre-rebase <task-id>"   # only if status is not empty
-git rebase master
+git fetch origin main
+git rebase origin/main
 git stash pop || git stash drop
 ```
 
