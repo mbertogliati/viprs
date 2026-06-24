@@ -1,6 +1,6 @@
 [package]
 name = "viprs-ops-spatial"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2024"
 rust-version = "1.92"
 license.workspace = true
@@ -12,13 +12,13 @@ include = ["Cargo.toml", "src/**"]
 workspace = true
 
 [dependencies]
-viprs-core = { path = "../viprs-core", version = "0.1.4" }
+viprs-core = { path = "../viprs-core", version = "0.1.5" }
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 pulp = { version = "0.22.2", optional = true, default-features = false, features = ["std", "x86-v3"] }
 
 [dev-dependencies]
 proptest = "1"
-viprs-ports = { path = "../viprs-ports", version = "0.1.4" }
+viprs-ports = { path = "../viprs-ports", version = "0.1.5" }
 
 [features]
 _integration = []

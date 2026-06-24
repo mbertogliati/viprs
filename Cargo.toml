@@ -9,7 +9,7 @@ repository = "https://github.com/mbertogliati/viprs"
 
 [package]
 name = "viprs"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2024"
 rust-version.workspace = true
 description = "Native Rust reimplementation of libvips focused on demand-driven, horizontally-threaded image processing."
@@ -74,14 +74,14 @@ warnings = "deny"
 missing_docs = "deny"
 
 [dependencies]
-viprs-core = { path = "crates/viprs-core", version = "0.1.4" }
-viprs-ports = { path = "crates/viprs-ports", version = "0.1.4" }
-viprs-ops-pixel = { path = "crates/viprs-ops-pixel", version = "0.1.4" }
-viprs-ops-spatial = { path = "crates/viprs-ops-spatial", version = "0.1.4" }
-viprs-ops-colour = { path = "crates/viprs-ops-colour", version = "0.1.4" }
-viprs-ops-composite = { path = "crates/viprs-ops-composite", version = "0.1.4" }
-viprs-codecs = { path = "crates/viprs-codecs", version = "0.1.4", default-features = false }
-viprs-runtime = { path = "crates/viprs-runtime", version = "0.1.4", default-features = false }
+viprs-core = { path = "crates/viprs-core", version = "0.1.5" }
+viprs-ports = { path = "crates/viprs-ports", version = "0.1.5" }
+viprs-ops-pixel = { path = "crates/viprs-ops-pixel", version = "0.1.5" }
+viprs-ops-spatial = { path = "crates/viprs-ops-spatial", version = "0.1.5" }
+viprs-ops-colour = { path = "crates/viprs-ops-colour", version = "0.1.5" }
+viprs-ops-composite = { path = "crates/viprs-ops-composite", version = "0.1.5" }
+viprs-codecs = { path = "crates/viprs-codecs", version = "0.1.5", default-features = false }
+viprs-runtime = { path = "crates/viprs-runtime", version = "0.1.5", default-features = false }
 thiserror = "2"
 bytemuck = { version = "1", features = ["derive", "extern_crate_alloc"] }
 ab_glyph = "0.2"
