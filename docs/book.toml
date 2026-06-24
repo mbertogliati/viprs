@@ -1,0 +1,11 @@
+[book]
+title = "The viprs Guide"
+authors = ["viprs contributors"]
+description = "Explanatory guide for viprs, a native Rust reimplementation of libvips."
+language = "en"
+multilingual = false
+src = "src"
+
+[output.html]
+git-repository-url = "https://github.com/mbertogliati/viprs"
+edit-url-template = "https://github.com/mbertogliati/viprs/edit/main/docs/{path}"
