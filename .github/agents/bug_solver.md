@@ -84,7 +84,7 @@ It does NOT handle:
 
 ### Worktree cleanup on merge
 
-When a sub-agent finishes its work and the branch is merged to master, it must remove
+When a sub-agent finishes its work and the branch is merged to `main`, it must remove
 **its own** worktree before finishing:
 
 ```bash
@@ -95,12 +95,15 @@ git worktree remove "$WORKTREE_PATH" --force
 
 ### Worktree preparation before rebase
 
-Before `git rebase master`, always check whether the worktree is dirty. If it is, stash first so the rebase starts cleanly, then restore or drop the stash after the rebase as appropriate:
+Before `git rebase origin/main`, always check whether the worktree is dirty. If it is,
+stash first so the rebase starts cleanly, then restore or drop the stash after the rebase
+as appropriate:
 
 ```bash
 git status --short
 git stash push -u -m "pre-rebase <task-id>"   # only if status is not empty
-git rebase master
+git fetch origin main
+git rebase origin/main
 git stash pop || git stash drop
 ```
 
@@ -210,7 +213,7 @@ On **discovering** a related bug while fixing:
 
 ## Close flow
 
-**Step 1 — Write the Resolution section BEFORE archiving.**
+**Step 1 — Write the Resolution section before closing the task.**
 
 Edit the task description to add the mandatory Resolution block. Every item in the
 checklist must reflect what actually happened — not what you hope happened.
@@ -258,14 +261,13 @@ EOF
 )"
 ```
 
-**Step 2 — Mark Done and archive:**
+**Step 2 — Mark Done:**
 
 ```bash
 issue edit the task -s Done
-# archive completed task
 ```
 
-**The merger will grep the archived file for `RESOLUTION:BEGIN`. A missing section = merge blocked.**
+**The merger will verify `RESOLUTION:BEGIN` in the GitHub issue body. A missing section = merge blocked.**
 
 ---
 
@@ -284,7 +286,7 @@ cargo clippy --lib -- -D clippy::perf -D clippy::pedantic
 
 `cargo check -p xtask` is mandatory because `xtask/src/bench/pipeline.rs` imports
 40+ internal viprs types. Any rename, move, or removal of those symbols breaks xtask
-silently — this is the most common cause of `cargo xtask bench` failures on master.
+silently — this is the most common cause of `cargo xtask bench` failures on main.
 
 Zero warnings. No `#[allow(...)]` without a justifying `// REASON:` comment.
 

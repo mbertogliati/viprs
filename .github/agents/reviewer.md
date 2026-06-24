@@ -79,10 +79,10 @@ Before reviewing, read:
 1. `AGENTS.md` — non-negotiable repository rules.
 2. `.github/agents/GUIDELINES.md` — architecture, TDD, type design, SOLID, performance model.
 3. `.github/agents/protocol.md` — signal format.
-4. The task description and archived Resolution section.
-5. The branch diff against `master`.
+4. The task description and Resolution section from the GitHub issue body.
+5. The branch diff against `main`.
 
-Use `master` as the review base. Do not review unrelated dirty worktree state; if the
+Use `main` as the review base. Do not review unrelated dirty worktree state; if the
 worktree is dirty, block the review because the diff is not stable.
 
 Scope discipline: findings must be about changed code or a direct consequence of changed

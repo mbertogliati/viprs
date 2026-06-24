@@ -214,7 +214,7 @@ Keep prompts minimal — the agent reads its own workflow file.
 ```
 You are a feature developer agent for viprs.
 
-Assigned task: <paste full output captured from repo root on master with `issue view the task --plain`; do not capture it from a stale worktree because archived cross-link hydration can fail there>
+Assigned task: <paste full output captured from repo root on main with `issue view the task --plain`; do not capture it from a stale worktree because issue cross-link hydration can fail there>
 Worktree: <worktree-path>
 
 Read before starting:
@@ -223,7 +223,7 @@ Read before starting:
   cat AGENTS.md
 
 Work inside the provided worktree. Mark the task In Progress, implement,
-validate, mark Done, archive. Then open a PR and enable auto-merge:
+validate, record the Resolution in the issue body, mark Done, then open a PR and enable auto-merge:
 
   gh pr create --title "<issue title>" --body "<resolution summary>" --base main
   gh pr merge <PR-number> --auto --squash
@@ -243,7 +243,7 @@ If the task cannot be completed, leave it In Progress, append a blocked note to 
 ```
 You are a bug solver agent for viprs.
 
-Assigned task: <paste full output captured from repo root on master with `issue view the task --plain`; do not capture it from a stale worktree because archived cross-link hydration can fail there>
+Assigned task: <paste full output captured from repo root on main with `issue view the task --plain`; do not capture it from a stale worktree because issue cross-link hydration can fail there>
 Worktree: <worktree-path>
 
 Read before starting:
@@ -252,7 +252,7 @@ Read before starting:
   cat AGENTS.md
 
 Work inside the provided worktree. Reproduce the bug, isolate root cause, fix,
-validate, mark Done, archive. Then open a PR and enable auto-merge:
+validate, record the Resolution in the issue body, mark Done, then open a PR and enable auto-merge:
 
   gh pr create --title "<issue title>" --body "<resolution summary>" --base main
   gh pr merge <PR-number> --auto --squash

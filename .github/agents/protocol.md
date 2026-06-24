@@ -7,7 +7,7 @@ can parse them unambiguously.
 
 ## Developer → Orchestrator: task finished
 
-When a developer agent completes its task (Done + archived + PR opened), it emits:
+When a developer agent completes its task (Resolution recorded + Done + PR opened), it emits:
 
 ```
 AGENT_DONE agent_id=<agent-id> task=<task-id> branch=<branch-name> worktree=<absolute-worktree-path> status=<success|blocked>
@@ -28,7 +28,8 @@ not exist.
 
 ## Developer → GitHub: PR with auto-merge
 
-When a developer agent finishes implementation (all quality gates passed, task archived),
+When a developer agent finishes implementation (all quality gates passed, Resolution recorded
+in the GitHub issue body, and task marked Done),
 it must open a PR and enable auto-merge **before** emitting `AGENT_DONE`:
 
 ```bash

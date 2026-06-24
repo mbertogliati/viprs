@@ -43,10 +43,10 @@ Before QA, read:
 1. `AGENTS.md` — repository validation and test rules.
 2. `.github/agents/GUIDELINES.md` — TDD, coverage, reference parity, issue filing.
 3. `.github/agents/protocol.md` — signal format.
-4. The task description and archived Resolution section.
-5. The branch diff against `master`, especially tests and validation-related changes.
+4. The task description and Resolution section from the GitHub issue body.
+5. The branch diff against `main`, especially tests and validation-related changes.
 
-Use `master` as the QA base. If the worktree is dirty, block QA because the evidence does
+Use `main` as the QA base. If the worktree is dirty, block QA because the evidence does
 not correspond to a stable diff.
 
 Scope discipline: findings must be about changed behavior or evidence needed to trust it.
