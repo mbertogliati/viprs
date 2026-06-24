@@ -1,0 +1,60 @@
+docs/src/contributing/validation-and-performance.md
+  s_2f32d62654622d::t_03964952553ecb 1-31
+docs/src/overview.md
+  s_2f32d62654622d::t_03964952553ecb 1-24
+docs/src/use-cases/web-image-services.md
+  s_2f32d62654622d::t_03964952553ecb 1-21
+docs/src/concepts/tiles-and-regions.md
+  s_2f32d62654622d::t_03964952553ecb 1-17
+docs/src/getting-started.md
+  s_2f32d62654622d::t_03964952553ecb 1-51
+docs/src/use-cases/creative-asset-automation.md
+  s_2f32d62654622d::t_03964952553ecb 1-20
+docs/src/concepts/demand-driven-execution.md
+  s_2f32d62654622d::t_03964952553ecb 1-21
+.github/workflows/docs.yml
+  s_2f32d62654622d::t_03964952553ecb 1-52
+docs/src/use-cases/cdn-edge-optimization.md
+  s_2f32d62654622d::t_03964952553ecb 1-21
+docs/src/concepts/resource-limits.md
+  s_2f32d62654622d::t_03964952553ecb 1-21
+docs/src/concepts/facade-and-pipeline-apis.md
+  s_2f32d62654622d::t_03964952553ecb 1-25
+docs/src/contributing/repository-architecture.md
+  s_2f32d62654622d::t_03964952553ecb 1-36
+docs/src/SUMMARY.md
+  s_2f32d62654622d::t_03964952553ecb 1-2,6-28
+  s_2f32d62654622d::t_06d4ddaefd5c13 3-5
+docs/src/contributing/agent-workflows.md
+  s_2f32d62654622d::t_03964952553ecb 1-22
+README.md
+  s_2f32d62654622d::t_03964952553ecb 7,9-11,13-17,19-25,29-31,39,44,50,52-56,58,61
+docs/book.toml
+  s_2f32d62654622d::t_03964952553ecb 1-11
+docs/src/concepts/codecs-and-features.md
+  s_2f32d62654622d::t_03964952553ecb 1-20
+docs/src/why-rust.md
+  s_2f32d62654622d::t_03964952553ecb 1-51
+docs/src/use-cases/scientific-large-images.md
+  s_2f32d62654622d::t_03964952553ecb 1-20
+docs/src/contributing/index.md
+  s_2f32d62654622d::t_03964952553ecb 1-26
+docs/src/use-cases/upload-ingest-workers.md
+  s_2f32d62654622d::t_03964952553ecb 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "1c84190bd43f4c474ea232012d884ea5060e19e6",
+  "prompts": {},
+  "sessions": {
+    "s_2f32d62654622d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef776-f639-7e93-a47d-ae70e3146041",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
