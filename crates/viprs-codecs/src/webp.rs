@@ -51,10 +51,6 @@ pub(crate) use common::{
     test_webp_max_total_animation_bytes_override, webp_anim_shrink_on_load_plan,
     webp_shrink_on_load_plan,
 };
-#[cfg(all(test, feature = "_integration"))]
-pub(crate) use common::{
-    reset_webp_static_region_frame_decode_count, webp_static_region_frame_decode_count,
-};
 #[cfg(test)]
 pub(crate) use static_decode::decode_static_webp_pixels;
 

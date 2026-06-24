@@ -434,12 +434,6 @@ mod tests {
         image::{Region, Tile, TileMut},
         op::DynOperation,
     };
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     fn run_falsecolour_u8(input_data: &[u8], input_bands: u32) -> Vec<u8> {
         let pixel_count = input_data.len() / input_bands as usize;
         let op = FalsecolourOp::<U8>::new();
@@ -481,27 +475,6 @@ mod tests {
         assert_eq!(bridge.input_format(), viprs_core::format::BandFormatId::U16);
         assert_eq!(bridge.output_format(), viprs_core::format::BandFormatId::U8);
         assert_eq!(bridge.bands(), 3);
-    }
-
-    #[test]
-    fn pipeline_maps_grayscale_to_rgb() {
-        let source = MemorySource::<U8>::new(2, 1, 1, vec![0, 255]).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(FalsecolourOp::<U8>::new().into_bridge(1)))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(1)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-
-        assert_eq!(pipeline.output_bands, 3);
-        assert_eq!(
-            sink.into_buffer(),
-            [FALSECOLOUR_PET_LUT[0], FALSECOLOUR_PET_LUT[255]].concat()
-        );
     }
 
     #[test]

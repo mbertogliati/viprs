@@ -2,7 +2,7 @@ use libwebp_sys::{VP8StatusCode, WEBP_CSP_MODE, WebPDecode, WebPDecoderConfig, W
 #[cfg(test)]
 use std::cell::Cell;
 #[cfg(all(test, feature = "_integration"))]
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::AtomicUsize;
 use std::{
     collections::{HashMap, hash_map::DefaultHasher},
     hash::{Hash, Hasher},
@@ -101,16 +101,6 @@ pub(super) fn webp_static_region_cache_key(
         src_len: src.len(),
         shrink_factor,
     }
-}
-
-#[cfg(all(test, feature = "_integration"))]
-pub(crate) fn reset_webp_static_region_frame_decode_count() {
-    WEBP_STATIC_REGION_FRAME_DECODES.store(0, Ordering::Relaxed);
-}
-
-#[cfg(all(test, feature = "_integration"))]
-pub(crate) fn webp_static_region_frame_decode_count() -> usize {
-    WEBP_STATIC_REGION_FRAME_DECODES.load(Ordering::Relaxed)
 }
 
 #[cfg(test)]

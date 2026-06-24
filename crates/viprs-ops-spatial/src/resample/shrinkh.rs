@@ -1442,6 +1442,7 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
+    use crate::test_support::TestMemorySource;
     use proptest::prelude::*;
     use viprs_core::{
         error::BuildError,
@@ -1449,8 +1450,6 @@ mod tests {
         image::{DemandHint, Region, Tile, TileMut},
         op::DynOperation,
     };
-    use viprs_ports::source::ImageSource;
-    use viprs_runtime::sources::memory::MemorySource;
 
     fn run_shrinkh<F>(
         factor: u32,
@@ -1735,7 +1734,7 @@ mod tests {
             ShrinkH::<U8>::new(2).unwrap().node_spec(2, 1)
         );
 
-        let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 10, 20, 30]).unwrap();
+        let source = TestMemorySource::<U8>::new(4, 1, 1, vec![0, 10, 20, 30]).unwrap();
         let out_region = Region::new(0, 0, 2, 1);
         let input_region = bridge.required_input_region(&out_region);
         let mut input_bytes = vec![0u8; input_region.pixel_count()];

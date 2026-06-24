@@ -405,6 +405,7 @@ where
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
+    use crate::test_support::TestMemorySource;
     use proptest::prelude::*;
     use viprs_core::{
         error::{BuildError, ViprsError},
@@ -413,8 +414,6 @@ mod tests {
         op::DynOperation,
         resample::ResampleOp,
     };
-    use viprs_ports::source::ImageSource;
-    use viprs_runtime::sources::memory::MemorySource;
 
     fn run_shrink<F>(
         hshrink: usize,
@@ -428,7 +427,7 @@ mod tests {
         F: BandFormat,
         F::Sample: ShrinkSample + bytemuck::Pod,
     {
-        let source = MemorySource::<F>::new(in_w, in_h, bands, input_data.to_vec()).unwrap();
+        let source = TestMemorySource::<F>::new(in_w, in_h, bands, input_data.to_vec()).unwrap();
         let op = Shrink::<F>::new(hshrink, vshrink).unwrap();
         let out_region = Region::new(0, 0, op.output_width(in_w), op.output_height(in_h));
         let in_region = op.required_input_region(&out_region);
@@ -700,7 +699,7 @@ mod tests {
             Shrink::<U8>::new(2, 2).unwrap().node_spec(2, 2)
         );
 
-        let source = MemorySource::<U8>::new(
+        let source = TestMemorySource::<U8>::new(
             4,
             4,
             1,

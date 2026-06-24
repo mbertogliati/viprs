@@ -316,12 +316,6 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{format::U8, image::ImageMetadata, op::DynOperation};
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     fn run_autorot(
         width: u32,
         height: u32,
@@ -377,25 +371,6 @@ mod tests {
                 coordinate_driven_source: None,
             }
         );
-    }
-
-    #[test]
-    fn pipeline_applies_orientation_six() {
-        let source = MemorySource::<U8>::new(2, 3, 1, vec![1, 2, 3, 4, 5, 6]).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(AutorotBridge::<U8>::new(2, 3, 1, 6)))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(1)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-
-        assert_eq!(pipeline.width, 3);
-        assert_eq!(pipeline.height, 2);
-        assert_eq!(sink.into_buffer(), vec![5u8, 3, 1, 6, 4, 2]);
     }
 
     #[test]

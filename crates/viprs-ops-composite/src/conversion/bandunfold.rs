@@ -194,12 +194,6 @@ pub(crate) mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::format::U8;
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     pub fn run_bandunfold_for_bandfold_roundtrip(
         factor: u32,
         input_width: u32,
@@ -236,27 +230,6 @@ pub(crate) mod tests {
         ];
         let output = run_bandunfold(2, 2, 1, 4, &input);
         assert_eq!(output, vec![1, 10, 2, 20, 3, 30, 4, 40]);
-    }
-
-    #[test]
-    fn bridge_reports_unfolded_geometry_and_runs_pipeline() {
-        let source = MemorySource::<U8>::new(2, 1, 4, vec![1, 10, 2, 20, 3, 30, 4, 40])
-            .expect("valid source");
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(BandunfoldBridge::<U8>::new(2, 4)))
-            .expect("bandunfold op")
-            .build()
-            .expect("compiled pipeline");
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(1)
-            .expect("scheduler")
-            .run(&pipeline, &mut sink)
-            .expect("bandunfold execution");
-
-        assert_eq!(pipeline.width, 4);
-        assert_eq!(pipeline.height, 1);
-        assert_eq!(pipeline.output_bands, 2);
-        assert_eq!(sink.into_buffer(), vec![1, 10, 2, 20, 3, 30, 4, 40]);
     }
 
     #[test]

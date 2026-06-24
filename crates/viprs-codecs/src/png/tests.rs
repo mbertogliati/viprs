@@ -20,10 +20,6 @@ use viprs_core::error::ViprsError;
 use viprs_core::format::{U8, U16};
 use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
-#[cfg(all(test, feature = "_integration"))]
-use viprs_ports::source::ImageSource;
-#[cfg(all(test, feature = "_integration"))]
-use viprs_runtime::sources::decoder_source::DecoderSource;
 
 fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
     let bands = image.bands() as usize;
@@ -806,73 +802,6 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     );
 }
 
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn tile_decoder_streams_u8_regions_out_of_order_without_resident_frame() {
-    let codec = PngCodec::default();
-    let pixels: Vec<u8> = (0u8..60).collect();
-    let image = Image::<U8>::from_buffer(5, 4, 3, pixels.clone()).unwrap();
-    let encoded = codec.encode::<U8>(&image).unwrap();
-    let source =
-        DecoderSource::<_, U8>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
-            .unwrap();
-
-    assert!(source.is_streaming());
-    assert_eq!(source.resident_decoded_bytes(), 0);
-    assert!(source.image().is_none());
-
-    let lower = Region::new(2, 2, 2, 2);
-    let mut lower_output = vec![0u8; lower.pixel_count() * 3];
-    source.read_region(lower, &mut lower_output).unwrap();
-    assert_eq!(
-        lower_output,
-        vec![36, 37, 38, 39, 40, 41, 51, 52, 53, 54, 55, 56]
-    );
-
-    let upper = Region::new(0, 0, 3, 1);
-    let mut upper_output = vec![0u8; upper.pixel_count() * 3];
-    source.read_region(upper, &mut upper_output).unwrap();
-    assert_eq!(upper_output, vec![0, 1, 2, 3, 4, 5, 6, 7, 8]);
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn tile_decoder_clamps_region_edges() {
-    let codec = PngCodec::default();
-    let pixels: Vec<u8> = (0u8..16).collect();
-    let image = Image::<U8>::from_buffer(4, 4, 1, pixels).unwrap();
-    let encoded = codec.encode::<U8>(&image).unwrap();
-    let source =
-        DecoderSource::<_, U8>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
-            .unwrap();
-
-    let region = Region::new(-1, -1, 3, 3);
-    let mut output = vec![0u8; region.pixel_count()];
-    source.read_region(region, &mut output).unwrap();
-
-    assert_eq!(output, vec![0, 0, 1, 0, 0, 1, 4, 4, 5]);
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn tile_decoder_streams_u16_region_without_full_frame() {
-    let codec = PngCodec::default();
-    let pixels: Vec<u16> = (0u16..27).map(|sample| sample * 257).collect();
-    let image = Image::<U16>::from_buffer(3, 3, 3, pixels).unwrap();
-    let encoded = codec.encode::<U16>(&image).unwrap();
-    let source =
-        DecoderSource::<_, U16>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
-            .unwrap();
-
-    let region = Region::new(1, 1, 2, 1);
-    let mut output = vec![0u8; region.pixel_count() * 3 * std::mem::size_of::<u16>()];
-    source.read_region(region, &mut output).unwrap();
-    let samples: &[u16] = bytemuck::try_cast_slice(&output).unwrap();
-
-    assert_eq!(samples, &[3084, 3341, 3598, 3855, 4112, 4369]);
-    assert_eq!(source.resident_decoded_bytes(), 0);
-}
-
 #[test]
 fn decode_region_into_interlaced_png_matches_eager_decode() {
     let pixels: Vec<u8> = (0u8..192).cycle().take(8 * 8 * 3).collect();
@@ -1025,34 +954,6 @@ fn decode_region_into_returns_image_too_large_for_overflowing_region() {
             ..
         }) if width == u32::MAX && height == u32::MAX && bands == 3
     ));
-}
-
-#[cfg(all(test, feature = "_integration"))]
-#[test]
-fn tile_decoder_streams_interlaced_png_region_matches_eager_decode() {
-    let pixels: Vec<u8> = (0u8..192).cycle().take(8 * 8 * 3).collect();
-    let image = Image::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
-    let encoded = PngEncoder {
-        compression: 6,
-        interlace: true,
-        filter: Filter::Adaptive,
-    }
-    .encode(&image)
-    .unwrap();
-    let eager = PngCodec::default().decode::<U8>(&encoded).unwrap();
-    let source =
-        DecoderSource::<_, U8>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
-            .unwrap();
-
-    let lower = Region::new(2, 3, 3, 2);
-    let mut lower_output = vec![0u8; lower.pixel_count() * 3];
-    source.read_region(lower, &mut lower_output).unwrap();
-    assert_eq!(lower_output, clamped_region_pixels_u8(&eager, lower));
-
-    let edge = Region::new(-1, 6, 4, 3);
-    let mut edge_output = vec![0u8; edge.pixel_count() * 3];
-    source.read_region(edge, &mut edge_output).unwrap();
-    assert_eq!(edge_output, clamped_region_pixels_u8(&eager, edge));
 }
 
 // ── unsupported format error ──────────────────────────────────────────────

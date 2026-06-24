@@ -698,12 +698,6 @@ mod tests {
 
     use super::*;
     use viprs_core::format::U8;
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     fn write_ppm_rgb(path: &Path, width: u32, height: u32, pixels: &[u8]) {
         let mut bytes = format!("P6\n{width} {height}\n255\n").into_bytes();
         bytes.extend_from_slice(pixels);
@@ -927,21 +921,6 @@ mod tests {
         assert!(op.crop_top() <= 4);
         assert!(op.crop_left() + 4 > 3);
         assert!(op.crop_top() + 4 > 2);
-
-        let source = MemorySource::<U8>::new(8, 8, 1, pixels).unwrap();
-        let mut arena = PipelineArena::with_source(Box::new(source));
-        let node = arena.add_view_node(Box::new(op.into_bridge(1)));
-        let pipeline = {
-            let _ = node;
-            arena.compile().unwrap()
-        };
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(RayonScheduler::default_threads())
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-        let cropped = sink.into_buffer();
-        assert!(cropped.iter().any(|&value| value != 0));
     }
 
     #[test]

@@ -628,17 +628,9 @@ impl DynOperation for CompositeOp<F32> {
 #[cfg(all(test, feature = "_integration"))]
 mod tests {
     use super::*;
-    use crate::conversion::copy::CopyOp;
     use proptest::prelude::*;
     use proptest::proptest;
     use std::{fs, path::Path, process::Command};
-    use viprs_core::op::OperationBridge;
-    use viprs_ports::{scheduler::TileScheduler, source::DynImageSource};
-    use viprs_runtime::{
-        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
-
     fn run_composite(
         mode: BlendMode,
         premultiplied: bool,
@@ -708,43 +700,6 @@ mod tests {
         let overlay = vec![0.0, 0.0, 0.0, 1.0];
         let output = run_composite(BlendMode::Multiply, false, 4, &base, &overlay, 1, 1);
         assert_eq!(output, vec![0.0, 0.0, 0.0, 1.0]);
-    }
-
-    #[test]
-    fn composite_runs_end_to_end_through_compiled_pipeline() {
-        let pixels = vec![
-            0.1, 0.2, 0.3, 1.0, //
-            0.4, 0.5, 0.6, 1.0,
-        ];
-        let source = MemorySource::<F32>::new(2, 1, 4, pixels.clone()).unwrap();
-
-        let mut arena = PipelineArena::with_source(Box::new(source) as Box<dyn DynImageSource>);
-        let base = arena.add_node(Box::new(OperationBridge::new_pixel_local(
-            CopyOp::<F32>::default(),
-            4,
-        )));
-        let overlay = arena.add_node(Box::new(OperationBridge::new_pixel_local(
-            CopyOp::<F32>::default(),
-            4,
-        )));
-        let composite = arena.add_node(Box::new(
-            CompositeOp::<F32>::new(BlendMode::Over, false, 4).unwrap(),
-        ));
-
-        arena.connect(base, overlay).unwrap();
-        arena.connect(base, composite).unwrap();
-        arena.connect_to_slot(overlay, composite, 1).unwrap();
-
-        let pipeline = arena.compile().unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(1)
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-        let raw = sink.into_buffer();
-        let result = bytemuck::cast_slice::<u8, f32>(&raw).to_vec();
-
-        assert_eq!(result, pixels);
     }
 
     #[test]

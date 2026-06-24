@@ -147,12 +147,7 @@ where
 mod tests {
     use super::*;
     use proptest::prelude::*;
-    use viprs_core::{format::U8, op::OperationBridge};
-    use viprs_ports::scheduler::TileScheduler;
-    use viprs_runtime::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
-    };
+    use viprs_core::format::U8;
 
     fn run_transpose3d(
         width: u32,
@@ -160,21 +155,15 @@ mod tests {
         page_height: u32,
         pixels: Vec<u8>,
     ) -> Vec<u8> {
-        let source = MemorySource::<U8>::new(width, image_height, 1, pixels).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new(
-                Transpose3dOp::<U8>::new(image_height, page_height),
-                1,
-            )))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(RayonScheduler::default_threads())
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-        sink.into_buffer()
+        let op = Transpose3dOp::<U8>::new(image_height, page_height);
+        let output_region = Region::new(0, 0, width, image_height);
+        let input_region = op.required_input_region(&output_region);
+        let input = Tile::<U8>::new(input_region, 1, &pixels);
+        let mut output = vec![0u8; pixels.len()];
+        let mut output_tile = TileMut::<U8>::new(output_region, 1, &mut output);
+        let mut state = ();
+        op.process_region(&mut state, &input, &mut output_tile);
+        output
     }
 
     fn run_transpose3d_round_trip(
@@ -184,26 +173,12 @@ mod tests {
         pixels: Vec<u8>,
     ) -> Vec<u8> {
         let output_page_height = image_height / page_height;
-        let source = MemorySource::<U8>::new(width, image_height, 1, pixels).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new(
-                Transpose3dOp::<U8>::new(image_height, page_height),
-                1,
-            )))
-            .unwrap()
-            .then(Box::new(OperationBridge::new(
-                Transpose3dOp::<U8>::new(image_height, output_page_height),
-                1,
-            )))
-            .unwrap()
-            .build()
-            .unwrap();
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        RayonScheduler::new(RayonScheduler::default_threads())
-            .unwrap()
-            .run(&pipeline, &mut sink)
-            .unwrap();
-        sink.into_buffer()
+        run_transpose3d(
+            width,
+            image_height,
+            output_page_height,
+            run_transpose3d(width, image_height, page_height, pixels),
+        )
     }
 
     #[test]

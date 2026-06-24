@@ -3095,7 +3095,6 @@ dependencies = [
  "viprs-core",
  "viprs-ops-colour",
  "viprs-ports",
- "viprs-runtime",
  "webp",
  "weezl",
 ]
@@ -3120,7 +3119,6 @@ dependencies = [
  "viprs-core",
  "viprs-ops-pixel",
  "viprs-ports",
- "viprs-runtime",
 ]
 
 [[package]]
@@ -3134,7 +3132,6 @@ dependencies = [
  "viprs-ops-pixel",
  "viprs-ops-spatial",
  "viprs-ports",
- "viprs-runtime",
 ]
 
 [[package]]
@@ -3155,7 +3152,6 @@ dependencies = [
  "pulp",
  "viprs-core",
  "viprs-ports",
- "viprs-runtime",
 ]
 
 [[package]]
