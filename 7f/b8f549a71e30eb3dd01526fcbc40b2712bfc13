@@ -1,0 +1,34 @@
+.github/agents/protocol.md
+  s_891ab6a2f4d479::t_17e748ba5825a8 10,31-32
+.github/agents/performance_developer.md
+  s_891ab6a2f4d479::t_17e748ba5825a8 130,143,278-281,385-387,392-393
+.github/agents/reviewer.md
+  s_891ab6a2f4d479::t_17e748ba5825a8 82-83,85
+.github/agents/orchestrator.md
+  s_891ab6a2f4d479::t_d0e6e5f6fec8a3 217,226,246
+  s_891ab6a2f4d479::t_eea197dc9ebeff 255
+.github/agents/bug_solver.md
+  s_891ab6a2f4d479::t_d0e6e5f6fec8a3 289
+  s_891ab6a2f4d479::t_17e748ba5825a8 87,98-100,105-106,216,264,270
+.github/agents/feature_developer.md
+  s_891ab6a2f4d479::t_d0e6e5f6fec8a3 345
+  s_891ab6a2f4d479::t_17e748ba5825a8 86,97-99,104-105,261,311,320-322
+.github/agents/qa.md
+  s_891ab6a2f4d479::t_17e748ba5825a8 46-47,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.11",
+  "base_commit_sha": "7fb8f549a71e30eb3dd01526fcbc40b2712bfc13",
+  "prompts": {},
+  "sessions": {
+    "s_891ab6a2f4d479": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ef67f-02d3-7592-b95b-a868317a2788",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
