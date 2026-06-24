@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 10
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 10
     container: ghcr.io/${{ github.repository_owner }}/viprs-ci:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Run security checks
         run: make security
 
@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Install fixture tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends curl xz-utils
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -90,7 +90,7 @@ jobs:
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends ${{ env.CONTAINER_BUILD_DEPS }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -129,7 +129,7 @@ jobs:
     steps:
       - name: Install fixture tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends curl xz-utils
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -220,7 +220,7 @@ jobs:
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make nasm
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
@@ -249,7 +249,7 @@ jobs:
     steps:
       - name: Install build tools
         run: apt-get update -qq && apt-get install -y --no-install-recommends build-essential pkg-config cmake make git libvips-dev nasm jq bc curl xz-utils
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.96.0"
