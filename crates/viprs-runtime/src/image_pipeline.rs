@@ -13,6 +13,6 @@ mod sink;
 pub use config::ProcessingConfig;
 pub use format::Format;
 pub use input::Input;
-pub use output::PipelineOutput;
+pub use output::{PipelineOutput, RawOutputPipeline};
 pub use pipeline::ImagePipeline;
 pub use sink::Sink;
