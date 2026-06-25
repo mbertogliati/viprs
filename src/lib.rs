@@ -58,7 +58,10 @@ static TEST_ALLOCATOR: test_support::CountingAllocator = test_support::CountingA
 pub mod prelude {
     #[cfg(feature = "icc")]
     pub use crate::ImageApiThumbnailOptions;
-    pub use crate::{ImageApi, ImageApiLoader, ImageCodecExt, ResourceLimits, ViprsError};
+    pub use crate::{
+        Format, ImageApi, ImageApiLoader, ImageCodecExt, ImagePipeline, Input, PipelineOutput,
+        ProcessingConfig, ResourceLimits, Sink, ViprsError,
+    };
 }
 
 /// Explicit advanced pipeline surface for manual graph construction and execution.
@@ -95,10 +98,20 @@ pub mod codecs {
     pub use crate::ports::codec::{ImageDecoder, ImageEncoder};
 }
 
+/// First-class public image pipeline API.
+pub mod image_pipeline {
+    pub use crate::adapters::image_pipeline::{
+        Format, ImagePipeline, Input, PipelineOutput, ProcessingConfig, Sink,
+    };
+}
+
 pub use adapters::codecs::registry::ImageCodecExt;
 #[cfg(feature = "icc")]
 pub use adapters::image_api::ImageApiThumbnailOptions;
 pub use adapters::image_api::{ImageApi, ImageApiLoader};
+pub use adapters::image_pipeline::{
+    Format, ImagePipeline, Input, PipelineOutput, ProcessingConfig, Sink,
+};
 pub use domain::error::ViprsError;
 pub use domain::limits::{DecodeLimits, ResourceLimits};
 

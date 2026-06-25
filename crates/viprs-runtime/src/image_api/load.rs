@@ -231,6 +231,12 @@ impl ImageApi {
         })
     }
 
+    /// Consume this facade into the staged pipeline builder for sibling public
+    /// vocabulary adapters.
+    pub(crate) fn into_pipeline_builder(self) -> PipelineBuilder {
+        self.builder
+    }
+
     pub(in crate::image_api) fn open_with_options(
         path: &Path,
         opts: &LoadOptions,

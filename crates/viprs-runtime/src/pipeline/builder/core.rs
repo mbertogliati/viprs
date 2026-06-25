@@ -140,6 +140,18 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self.current_format
     }
 
+    /// `current_bands` exposes adapter behavior needed by the surrounding module.
+    /// Call it when you need the concrete operation implemented here.
+    ///
+    /// # Examples
+    ///
+    /// ```ignore
+    /// let _ = viprs_runtime::pipeline::builder::current_bands;
+    /// ```
+    pub(crate) const fn current_bands(&self) -> u32 {
+        self.bands
+    }
+
     /// `node_count` exposes adapter behavior needed by the surrounding module.
     /// Call it when you need the concrete operation implemented here.
     ///

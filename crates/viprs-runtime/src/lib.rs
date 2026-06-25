@@ -8,6 +8,7 @@ pub mod foreign;
 #[cfg(feature = "fft")]
 pub mod freqfilt;
 pub mod image_api;
+pub mod image_pipeline;
 /// Tracing and event macros used by runtime adapters.
 pub mod instrumentation;
 #[cfg(all(test, feature = "_integration"))]
@@ -29,6 +30,7 @@ pub mod adapters {
     #[cfg(feature = "fft")]
     pub use crate::freqfilt;
     pub use crate::image_api;
+    pub use crate::image_pipeline;
     pub use crate::instrumentation;
     pub use crate::lock_instrumentation;
     pub use crate::pipeline;
