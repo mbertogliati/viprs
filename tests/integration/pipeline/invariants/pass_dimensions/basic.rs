@@ -9,12 +9,12 @@ mod chaos_monkey_18 {
 
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
+      BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
+      adapters::{
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sources::memory::MemorySource,
         },
-        domain::{
+      domain::{
             kernel::InterpolationKernel,
             op::{Op, OperationBridge, PixelLocalOp},
             ops::{
@@ -26,7 +26,7 @@ mod chaos_monkey_18 {
             reducer::TileReducer,
             reducers::HistEqualReducer,
         },
-        ports::codec::{ImageDecoder, ImageEncoder},
+      ports::codec::{ImageDecoder, ImageEncoder},
     };
 
     #[cfg(feature = "png")]
@@ -46,8 +46,8 @@ mod chaos_monkey_18 {
         }
     }
 
-    fn make_u8_image(width: u32, height: u32, bands: u32, pixels: Vec<u8>) -> Image<U8> {
-        let image = Image::from_buffer(width, height, bands, pixels).unwrap();
+    fn make_u8_image(width: u32, height: u32, bands: u32, pixels: Vec<u8>) -> InMemoryImage<U8> {
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels).unwrap();
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -55,8 +55,8 @@ mod chaos_monkey_18 {
         }
     }
 
-    fn make_u16_image(width: u32, height: u32, bands: u32, pixels: Vec<u16>) -> Image<U16> {
-        Image::from_buffer(width, height, bands, pixels).unwrap()
+    fn make_u16_image(width: u32, height: u32, bands: u32, pixels: Vec<u16>) -> InMemoryImage<U16> {
+        InMemoryImage::from_buffer(width, height, bands, pixels).unwrap()
     }
 
     fn make_f32_image(
@@ -65,13 +65,13 @@ mod chaos_monkey_18 {
         bands: u32,
         pixels: Vec<f32>,
         metadata: ImageMetadata,
-    ) -> Image<F32> {
-        Image::from_buffer(width, height, bands, pixels)
+    ) -> InMemoryImage<F32> {
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(metadata)
     }
 
-    fn grayscale_pattern(width: u32, height: u32) -> Image<U8> {
+    fn grayscale_pattern(width: u32, height: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity((width * height) as usize);
         for y in 0..height {
             for x in 0..width {
@@ -81,7 +81,7 @@ mod chaos_monkey_18 {
         make_u8_image(width, height, 1, pixels)
     }
 
-    fn rgb_pattern(width: u32, height: u32) -> Image<U8> {
+    fn rgb_pattern(width: u32, height: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * 3);
         for y in 0..height {
             for x in 0..width {
@@ -93,7 +93,7 @@ mod chaos_monkey_18 {
         make_u8_image(width, height, 3, pixels)
     }
 
-    fn rgba_pattern(width: u32, height: u32) -> Image<U8> {
+    fn rgba_pattern(width: u32, height: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * 4);
         for y in 0..height {
             for x in 0..width {
@@ -106,7 +106,7 @@ mod chaos_monkey_18 {
         make_u8_image(width, height, 4, pixels)
     }
 
-    fn u16_pattern(width: u32, height: u32, bands: u32) -> Image<U16> {
+    fn u16_pattern(width: u32, height: u32, bands: u32) -> InMemoryImage<U16> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * bands as usize);
         for y in 0..height {
             for x in 0..width {
@@ -119,7 +119,7 @@ mod chaos_monkey_18 {
         make_u16_image(width, height, bands, pixels)
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
@@ -134,17 +134,17 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
-        image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<FOut>), String>
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
+      image: &InMemoryImage<FIn>,
+      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
             image,
         )))
         .map_err(|error| format!("stage failed: {error:?}"))?
@@ -160,7 +160,7 @@ mod chaos_monkey_18 {
         Ok((pipeline, output))
     }
 
-    fn apply_hist_equal(image: &Image<U8>) -> Image<U8> {
+    fn apply_hist_equal(image: &InMemoryImage<U8>) -> InMemoryImage<U8> {
         let reducer = HistEqualReducer::new(1, 0, 256).unwrap();
         let region = viprs::Region::new(0, 0, image.width(), image.height());
         let tile = viprs::Tile::<U8>::new(region, image.bands(), image.pixels());
@@ -171,7 +171,7 @@ mod chaos_monkey_18 {
         let mut output_tile = viprs::TileMut::<U8>::new(region, image.bands(), &mut output);
         let mut state = ();
         op.process_region(&mut state, &tile, &mut output_tile);
-        Image::from_buffer(image.width(), image.height(), image.bands(), output)
+        InMemoryImage::from_buffer(image.width(), image.height(), image.bands(), output)
             .unwrap()
             .with_metadata(image.metadata().clone())
     }

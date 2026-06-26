@@ -3,7 +3,7 @@ use super::build_normalize_to_srgb_op;
 use super::colour::interpretation_to_colorspace;
 use super::{
     ArenaNodeOp, BandFormatId, BuildError, ColorspaceId, CompiledPipeline, DemandHint,
-    DynImageSource, DynOperation, Flush, Identity, ImageMetadata, Interpretation, LineCacheAccess,
+    DynImageSource, DynOperation, Commit, Committed, ImageMetadata, Interpretation, LineCacheAccess,
     LineCacheRequest, NodeIdx, NonZeroUsize, PipelineArena, PipelineOp, format_sample_size,
 };
 
@@ -13,7 +13,7 @@ use super::{
 /// validates the format against the current pipeline output. Convenience methods
 /// (`linear`, `invert`, `cast`) dispatch over the current format and hide
 /// `OperationBridge` from callers.
-pub struct PipelineBuilder<Op = Identity> {
+pub struct ImagePipeline<Op = Committed> {
     pub(in crate::pipeline::builder) arena: PipelineArena,
     pub(in crate::pipeline::builder) last_node: Option<NodeIdx>,
     /// Format of the last operation's output (or the source's format if no ops yet).
@@ -31,7 +31,7 @@ pub struct PipelineBuilder<Op = Identity> {
     pub(in crate::pipeline::builder) pending: Op,
 }
 
-impl PipelineBuilder<Identity> {
+impl ImagePipeline<Committed> {
     /// Primary constructor. The source defines width, height, format, and band count.
     ///
     /// Accepts `impl DynImageSource + 'static` — no `Box::new` at the call site.
@@ -52,7 +52,7 @@ impl PipelineBuilder<Identity> {
             current_colorspace,
             current_interpretation,
             current_icc_profile,
-            pending: Identity,
+            pending: Committed,
         }
     }
 
@@ -69,7 +69,7 @@ impl PipelineBuilder<Identity> {
             current_colorspace: None,
             current_interpretation: None,
             current_icc_profile: None,
-            pending: Identity,
+            pending: Committed,
         }
     }
 
@@ -84,7 +84,7 @@ impl PipelineBuilder<Identity> {
     }
 }
 
-impl<Op: Flush> PipelineBuilder<Op> {
+impl<Op: Commit> ImagePipeline<Op> {
     fn configure_line_cache(
         mut self,
         lines_ahead: usize,
@@ -113,8 +113,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
     pub(in crate::pipeline::builder) fn into_state<NextOp>(
         self,
         pending: NextOp,
-    ) -> PipelineBuilder<NextOp> {
-        PipelineBuilder {
+    ) -> ImagePipeline<NextOp> {
+        ImagePipeline {
             arena: self.arena,
             last_node: self.last_node,
             current_format: self.current_format,
@@ -225,7 +225,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     }
 
     pub(in crate::pipeline::builder) fn flush_pending(&mut self) -> Result<(), BuildError> {
-        Op::flush(self)
+        Op::commit(self)
     }
 
     #[inline]
@@ -247,9 +247,9 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::flush_into_identity;
     /// ```
-    pub fn flush_into_identity(mut self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn flush_into_identity(mut self) -> Result<ImagePipeline<Committed>, BuildError> {
         self.flush_pending()?;
-        Ok(self.into_state(Identity))
+        Ok(self.into_state(Committed))
     }
 
     pub(in crate::pipeline::builder) fn push_dyn_op(
@@ -299,7 +299,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::normalize_to_srgb;
     /// ```
-    pub fn normalize_to_srgb(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn normalize_to_srgb(self) -> Result<ImagePipeline<Committed>, BuildError> {
         let builder = self.flush_into_identity()?;
         let op = build_normalize_to_srgb_op(
             builder.current_format,
@@ -317,7 +317,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// Validates that `op.input_format() == self.current_format`. Prefer the typed
     /// convenience methods (`linear`, `invert`, `cast`) which build the bridge internally.
-    pub fn then(self, op: Box<dyn DynOperation>) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn then(self, op: Box<dyn DynOperation>) -> Result<ImagePipeline<Committed>, BuildError> {
         self.validate_non_zero_bands()?;
         let mut builder = self.flush_into_identity()?;
         builder.push_dyn_op(op)?;
@@ -333,7 +333,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     pub fn cache_last_op(
         self,
         max_bytes: NonZeroUsize,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let mut builder = self.flush_into_identity()?;
         // Full-frame reruns revisit the last op in row-major order. If the cache budget
         // cannot hold the whole output, large affine-family images churn the LRU and pay
@@ -394,7 +394,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     pub fn apply<O: PipelineOp<Op>>(
         self,
         op: O,
-    ) -> Result<PipelineBuilder<O::NextState>, BuildError> {
+    ) -> Result<ImagePipeline<O::NextState>, BuildError> {
         self.validate_non_zero_bands()?;
         op.apply_to_pipeline(self)
     }
@@ -413,7 +413,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         scale: f64,
         offset: f64,
     ) -> Result<
-        PipelineBuilder<<crate::domain::ops::point::Linear as PipelineOp<Op>>::NextState>,
+        ImagePipeline<<crate::domain::ops::point::Linear as PipelineOp<Op>>::NextState>,
         BuildError,
     >
     where
@@ -434,7 +434,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     pub fn invert(
         self,
     ) -> Result<
-        PipelineBuilder<<crate::domain::ops::point::Invert as PipelineOp<Op>>::NextState>,
+        ImagePipeline<<crate::domain::ops::point::Invert as PipelineOp<Op>>::NextState>,
         BuildError,
     >
     where

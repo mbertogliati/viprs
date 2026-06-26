@@ -11,7 +11,7 @@ use libheif_sys as lh;
 use viprs_core::codec_options::HeifSubsampling;
 use viprs_core::error::ViprsError;
 use viprs_core::format::BandFormat;
-use viprs_core::image::{Image, ImageMetadata};
+use viprs_core::image::{InMemoryImage, ImageMetadata};
 
 static LIBHEIF: OnceLock<Result<LibHeif, String>> = OnceLock::new();
 const EXIF_SIGNATURE: &[u8] = b"Exif\0\0";
@@ -792,10 +792,10 @@ fn apply_orientation_to_pixels<T: Copy>(
 /// let _ = viprs_codecs::heif_support::normalize_decoded_image;
 /// ```
 pub fn normalize_decoded_image<F: BandFormat>(
-    image: Image<F>,
-    no_rotate: bool,
-    context: &str,
-) -> Result<Image<F>, ViprsError>
+  image: InMemoryImage<F>,
+  no_rotate: bool,
+  context: &str,
+) -> Result<InMemoryImage<F>, ViprsError>
 where
     F::Sample: Copy,
 {
@@ -826,7 +826,7 @@ where
             orientation,
             context,
         )?;
-        Image::from_buffer(width, height, bands, pixels)
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .map(|image| image.with_metadata(metadata))
             .map_err(|e| ViprsError::Codec(format!("{context}: {e}")))
     } else {
@@ -846,9 +846,9 @@ mod tests {
     use libheif_rs::CompressionFormat;
     use std::{ffi::c_void, ptr};
     use viprs_core::{
-        codec_options::HeifSubsampling,
-        format::U8,
-        image::{Image, ImageMetadata},
+      codec_options::HeifSubsampling,
+      format::U8,
+      image::{InMemoryImage, ImageMetadata},
     };
 
     fn exif_blob(orientation: u16) -> Vec<u8> {
@@ -914,11 +914,11 @@ mod tests {
             .filter(|value| (1..=8).contains(value))
     }
 
-    fn decoded_image_fixture() -> Image<U8> {
+    fn decoded_image_fixture() -> InMemoryImage<U8> {
         let pixels = vec![
             10, 11, 12, 20, 21, 22, 30, 31, 32, 40, 41, 42, 50, 51, 52, 60, 61, 62,
         ];
-        Image::from_buffer(2, 3, 3, pixels)
+        InMemoryImage::from_buffer(2, 3, 3, pixels)
             .unwrap()
             .with_metadata(ImageMetadata {
                 exif: Some(exif_blob(6)),
@@ -1155,7 +1155,7 @@ mod tests {
 
     #[test]
     fn normalize_decoded_image_infers_orientation_from_exif() {
-        let image = Image::<U8>::from_buffer(2, 1, 3, vec![1_u8, 2, 3, 4, 5, 6])
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![1_u8, 2, 3, 4, 5, 6])
             .unwrap()
             .with_metadata(ImageMetadata {
                 exif: Some(exif_blob(2)),

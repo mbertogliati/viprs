@@ -75,7 +75,7 @@ pub(super) fn compression_quality(opts: &SaveOptions) -> u8 {
     opts.quality.unwrap_or(100)
 }
 
-pub(super) fn pages_for_encode<F: BandFormat>(image: &Image<F>) -> Result<Vec<Image<F>>, ViprsError>
+pub(super) fn pages_for_encode<F: BandFormat>(image: &InMemoryImage<F>) -> Result<Vec<InMemoryImage<F>>, ViprsError>
 where
     F::Sample: Clone,
 {
@@ -104,7 +104,7 @@ where
     for page_index in 0..rows as usize {
         let start = page_index * page_stride;
         let end = start + page_stride;
-        let mut page = Image::from_buffer(
+        let mut page = InMemoryImage::from_buffer(
             image.width(),
             page_height,
             image.bands(),
@@ -121,12 +121,12 @@ where
     Ok(pages)
 }
 pub(super) fn recast_pages_u8<F: BandFormat>(
-    pages: &[Image<F>],
-) -> Result<Vec<Image<U8>>, ViprsError> {
+  pages: &[InMemoryImage<F>],
+) -> Result<Vec<InMemoryImage<U8>>, ViprsError> {
     pages
         .iter()
         .map(|page| {
-            Image::<U8>::from_buffer(
+            InMemoryImage::<U8>::from_buffer(
                 page.width(),
                 page.height(),
                 page.bands(),
@@ -139,12 +139,12 @@ pub(super) fn recast_pages_u8<F: BandFormat>(
 }
 
 pub(super) fn recast_pages_u16<F: BandFormat>(
-    pages: &[Image<F>],
-) -> Result<Vec<Image<U16>>, ViprsError> {
+  pages: &[InMemoryImage<F>],
+) -> Result<Vec<InMemoryImage<U16>>, ViprsError> {
     pages
         .iter()
         .map(|page| {
-            Image::<U16>::from_buffer(
+            InMemoryImage::<U16>::from_buffer(
                 page.width(),
                 page.height(),
                 page.bands(),
@@ -157,12 +157,12 @@ pub(super) fn recast_pages_u16<F: BandFormat>(
 }
 
 pub(super) fn recast_pages_f32<F: BandFormat>(
-    pages: &[Image<F>],
-) -> Result<Vec<Image<F32>>, ViprsError> {
+  pages: &[InMemoryImage<F>],
+) -> Result<Vec<InMemoryImage<F32>>, ViprsError> {
     pages
         .iter()
         .map(|page| {
-            Image::<F32>::from_buffer(
+            InMemoryImage::<F32>::from_buffer(
                 page.width(),
                 page.height(),
                 page.bands(),
@@ -404,12 +404,12 @@ pub(super) fn encode_jpeg_chunk(
 }
 
 pub(super) fn write_strips<W, K, C, F>(
-    directory: &mut DirectoryEncoder<'_, W, K>,
-    image: &Image<F>,
-    compression: TiffCompression,
-    predictor: TiffPredictor,
-    compression_level: Option<u8>,
-    quality: u8,
+  directory: &mut DirectoryEncoder<'_, W, K>,
+  image: &InMemoryImage<F>,
+  compression: TiffCompression,
+  predictor: TiffPredictor,
+  compression_level: Option<u8>,
+  quality: u8,
 ) -> Result<(), ViprsError>
 where
     W: Write + std::io::Seek,
@@ -488,14 +488,14 @@ where
 }
 
 pub(super) fn write_tiles<W, K, C, F>(
-    directory: &mut DirectoryEncoder<'_, W, K>,
-    image: &Image<F>,
-    compression: TiffCompression,
-    predictor: TiffPredictor,
-    compression_level: Option<u8>,
-    quality: u8,
-    tile_width: u32,
-    tile_height: u32,
+  directory: &mut DirectoryEncoder<'_, W, K>,
+  image: &InMemoryImage<F>,
+  compression: TiffCompression,
+  predictor: TiffPredictor,
+  compression_level: Option<u8>,
+  quality: u8,
+  tile_width: u32,
+  tile_height: u32,
 ) -> Result<(), ViprsError>
 where
     W: Write + std::io::Seek,
@@ -569,16 +569,16 @@ where
 #[allow(deprecated)]
 // REASON: tiff crate deprecation, upgrade tracked in backlog.
 pub(super) fn write_page<C, F>(
-    encoder: &mut RawTiffEncoder<SharedWriteBuffer>,
-    image: &Image<F>,
-    compression: TiffCompression,
-    predictor: TiffPredictor,
-    compression_level: Option<u8>,
-    quality: u8,
-    tile: Option<(u32, u32)>,
-    page_number: Option<(u16, u16)>,
-    reduced_resolution: bool,
-    subifd_count: usize,
+  encoder: &mut RawTiffEncoder<SharedWriteBuffer>,
+  image: &InMemoryImage<F>,
+  compression: TiffCompression,
+  predictor: TiffPredictor,
+  compression_level: Option<u8>,
+  quality: u8,
+  tile: Option<(u32, u32)>,
+  page_number: Option<(u16, u16)>,
+  reduced_resolution: bool,
+  subifd_count: usize,
 ) -> Result<Option<SubIfdPatchTarget>, ViprsError>
 where
     C: ColorType,
@@ -631,11 +631,11 @@ where
 }
 
 pub(super) fn encode_tiff_document<C, F>(
-    pages: &[Image<F>],
-    opts: &SaveOptions,
-    compression: TiffCompression,
-    predictor: TiffPredictor,
-    tile: Option<(u32, u32)>,
+  pages: &[InMemoryImage<F>],
+  opts: &SaveOptions,
+  compression: TiffCompression,
+  predictor: TiffPredictor,
+  tile: Option<(u32, u32)>,
 ) -> Result<Vec<u8>, ViprsError>
 where
     C: ColorType,

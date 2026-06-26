@@ -18,7 +18,7 @@ use crate::viprs_span;
 use viprs_core::codec_options::{JpegSubsampling, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::ImageEncoder;
 
 fn map_jpeg_encoding_error(error: jpeg_encoder::EncodingError) -> ViprsError {
@@ -120,7 +120,7 @@ fn add_streaming_metadata_segments<W: JfifWrite>(
 }
 
 fn prepare_encode_input<'a, F: BandFormat>(
-    image: &'a Image<F>,
+  image: &'a InMemoryImage<F>,
 ) -> Result<EncodeInput<'a>, ViprsError> {
     // SAFETY: callers check `F::ID == BandFormatId::U8` before reaching this helper,
     // therefore `F::Sample` is layout-identical to `u8`.
@@ -162,14 +162,14 @@ impl ImageEncoder for JpegCodec {
         "jpeg"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -185,7 +185,7 @@ impl ImageEncoder for JpegCodec {
         // SAFETY: the `F::ID == BandFormatId::U8` guard above guarantees `F::Sample == u8`.
         // `Image<F>` and `Image<U8>` therefore have identical layouts for this call site.
         let image =
-            normalize_web_output_u8(unsafe { &*std::ptr::from_ref(image).cast::<Image<U8>>() })?;
+            normalize_web_output_u8(unsafe { &*std::ptr::from_ref(image).cast::<InMemoryImage<U8>>() })?;
         let image = image.as_ref();
         let quality = opts.quality.unwrap_or(75);
         let prepared = prepare_encode_input(image)?;
@@ -259,10 +259,10 @@ impl ImageEncoder for JpegCodec {
     }
 
     fn encode_to_writer<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &SaveOptions,
-        writer: &mut dyn Write,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &SaveOptions,
+      writer: &mut dyn Write,
     ) -> Result<(), ViprsError>
     where
         Self: Sized,

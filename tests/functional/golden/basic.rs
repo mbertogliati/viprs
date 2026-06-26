@@ -4,12 +4,12 @@ use super::support as golden;
 use std::{any::Any, fs};
 
 use viprs::{
-    BuildError, DynOperation, Multiply, OperationBridge, PipelineBuilder, TileScheduler,
-    adapters::{
+  BuildError, DynOperation, Multiply, OperationBridge, ImagePipeline, TileScheduler,
+  adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-    domain::{
+  domain::{
         colorspace::{ColorspaceId, Lab},
         format::{BandFormat, BandFormatId, F32, U8},
         image::{DemandHint, Region},
@@ -155,15 +155,15 @@ fn structural_source() -> Vec<u8> {
     pixels
 }
 
-fn run_pipeline_u8<S: viprs::pipeline::Flush>(
-    source_pixels: Vec<u8>,
-    width: u32,
-    height: u32,
-    bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+fn run_pipeline_u8<S: viprs::pipeline::Commit>(
+  source_pixels: Vec<u8>,
+  width: u32,
+  height: u32,
+  bands: u32,
+  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(ImagePipeline::from_source(source))
         .unwrap()
         .build()
         .unwrap();
@@ -176,15 +176,15 @@ fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     sink.into_buffer()
 }
 
-fn run_pipeline_f32<S: viprs::pipeline::Flush>(
-    source_pixels: Vec<f32>,
-    width: u32,
-    height: u32,
-    bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+fn run_pipeline_f32<S: viprs::pipeline::Commit>(
+  source_pixels: Vec<f32>,
+  width: u32,
+  height: u32,
+  bands: u32,
+  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(ImagePipeline::from_source(source))
         .unwrap()
         .build()
         .unwrap();

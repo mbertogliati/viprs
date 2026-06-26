@@ -3,7 +3,7 @@
 use crate::domain::{
     error::{HoughError, ViprsError},
     format::{BandFormat, U32},
-    image::{Image, Region, Tile},
+    image::{InMemoryImage, Region, Tile},
     ops::resample::sample_conv::ToF64,
     reducer::TileReducer,
 };
@@ -81,7 +81,7 @@ where
     F::Sample: ToF64 + Copy,
 {
     type Partial = Vec<u32>;
-    type Output = Image<U32>;
+    type Output = InMemoryImage<U32>;
     /// Pre-allocated Hough line accumulator. The full `width × height` buffer is
     /// allocated once per rayon thread and zeroed at the start of each tile, saving
     /// up to 46 KB per tile for a 180×64 accumulator.
@@ -199,7 +199,7 @@ where
     }
 
     fn finalize(&self, combined: Self::Partial) -> Self::Output {
-        Image::<U32>::from_buffer(self.width as u32, self.height as u32, 1, combined)
+        InMemoryImage::<U32>::from_buffer(self.width as u32, self.height as u32, 1, combined)
             .unwrap_or_else(|error| {
                 debug_assert!(
                     false,
@@ -344,7 +344,7 @@ where
     F::Sample: ToF64 + Copy,
 {
     type Partial = Vec<u32>;
-    type Output = Image<U32>;
+    type Output = InMemoryImage<U32>;
     /// Pre-allocated circle accumulator `width × height × radius_bands` reused
     /// across tiles per rayon thread, eliminating per-tile alloc.
     type Scratch = Vec<u32>;
@@ -456,7 +456,7 @@ where
             }
         }
 
-        Image::<U32>::from_buffer(
+        InMemoryImage::<U32>::from_buffer(
             self.width as u32,
             self.height as u32,
             self.bands as u32,

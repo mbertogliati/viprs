@@ -1,5 +1,5 @@
 use super::{
-    Arc, BandFormat, DecodeRegionFn, DecoderInput, Image, ImageDecoder, ImageMetadata, LoadOptions,
+    Arc, BandFormat, DecodeRegionFn, DecoderInput, InMemoryImage, ImageDecoder, ImageMetadata, LoadOptions,
     OnceLock, Path, PhantomData, ProbeInputFn, StableDecoderInput, TileImageDecoder, ViprsError,
     decode_region_with, eager_backing_shrink_factor, eager_backing_shrink_factor_from_path,
     normalize_shrink_factor, normalize_streaming_options, probe_input_with,
@@ -7,13 +7,13 @@ use super::{
 };
 
 pub(super) enum DecoderBacking<'a, D: ImageDecoder, F: BandFormat> {
-    Eager(Image<F>),
+    Eager(InMemoryImage<F>),
     Deferred {
         width: u32,
         height: u32,
         bands: u32,
         metadata: ImageMetadata,
-        image: OnceLock<Result<Arc<Image<F>>, String>>,
+        image: OnceLock<Result<Arc<InMemoryImage<F>>, String>>,
     },
     Streaming {
         input: DecoderInput<'a>,
@@ -269,7 +269,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
     /// Create a streaming source from shared compressed input.
     ///
     /// The returned source is `'static`, so it can be inserted into
-    /// [`PipelineBuilder::from_source`](crate::pipeline::PipelineBuilder::from_source).
+    /// [`PipelineBuilder::from_source`](crate::pipeline::ImagePipeline::from_source).
     ///
     /// # Errors
     ///

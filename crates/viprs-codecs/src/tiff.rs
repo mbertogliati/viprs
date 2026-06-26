@@ -47,7 +47,7 @@ use viprs_core::codec_options::{LoadOptions, SaveOptions};
 pub use viprs_core::codec_options::{TiffCompression, TiffPredictor};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F32, U8, U16};
-use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, ImageMetadataProbe, TileImageDecoder};
 
 const TIFF_LE_MAGIC: [u8; 4] = [0x49, 0x49, 0x2A, 0x00];
@@ -288,7 +288,7 @@ impl ImageDecoder for TiffDecoder {
         is_tiff_header(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError>
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError>
     where
         F::Sample: Clone,
     {
@@ -299,7 +299,7 @@ impl ImageDecoder for TiffDecoder {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
         F::Sample: Clone,
@@ -360,7 +360,7 @@ impl ImageEncoder for TiffEncoder {
         "tiff"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError>
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError>
     where
         F::Sample: Clone,
     {
@@ -368,9 +368,9 @@ impl ImageEncoder for TiffEncoder {
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -470,7 +470,7 @@ impl ImageDecoder for TiffCodec {
         TiffDecoder.sniff(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError>
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError>
     where
         F::Sample: Clone,
     {
@@ -481,7 +481,7 @@ impl ImageDecoder for TiffCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
         F::Sample: Clone,
@@ -528,7 +528,7 @@ impl ImageEncoder for TiffCodec {
         self.encoder.format_name()
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError>
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError>
     where
         F::Sample: Clone,
     {
@@ -536,9 +536,9 @@ impl ImageEncoder for TiffCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

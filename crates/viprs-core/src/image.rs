@@ -5,7 +5,7 @@ mod region;
 mod tests;
 
 pub use crate::op::DemandHint;
-pub use core::Image;
+pub use core::InMemoryImage;
 pub use metadata::{
     AnimationFrame, AnimationLoopCount, FrameDisposal, ImageMetadata, Interpretation,
     MetadataOverrides, UhdrGainMap, UhdrGainMapMetadata,

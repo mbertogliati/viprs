@@ -2,12 +2,12 @@ mod robustez_idempotencia {
     use std::num::NonZeroUsize;
 
     use viprs::{
-        Image, ImageMetadata, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
+      InMemoryImage, ImageMetadata, Interpretation, U8,
+      adapters::{
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sources::memory::MemorySource,
         },
-        domain::{
+      domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             kernel::InterpolationKernel,
             ops::resample::{Thumbnail, thumbnail::ThumbnailTarget},
@@ -23,13 +23,13 @@ mod robustez_idempotencia {
     #[cfg(feature = "png")]
     use viprs::{adapters::codecs::PngCodec, domain::codec_options::PngFilterStrategy};
 
-    fn patterned_image(width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn patterned_image(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let len = width as usize * height as usize * bands as usize;
         let pixels = (0..len)
             .map(|index| ((index * 37 + (index / bands as usize) * 13 + 17) % 251) as u8)
             .collect();
 
-        Image::from_buffer(width, height, bands, pixels)
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(ImageMetadata {
                 interpretation: Some(match bands {
@@ -40,7 +40,7 @@ mod robustez_idempotencia {
             })
     }
 
-    fn source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+    fn source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
         MemorySource::new(
             image.width(),
             image.height(),
@@ -51,12 +51,12 @@ mod robustez_idempotencia {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline<S: viprs::pipeline::Flush>(
-        image: &Image<U8>,
-        threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, viprs::BuildError>,
-    ) -> Image<U8> {
-        let pipeline = configure(PipelineBuilder::from_source(source_from_image(image)))
+    fn execute_pipeline<S: viprs::pipeline::Commit>(
+      image: &InMemoryImage<U8>,
+      threads: usize,
+      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, viprs::BuildError>,
+    ) -> InMemoryImage<U8> {
+        let pipeline = configure(ImagePipeline::from_source(source_from_image(image)))
             .unwrap()
             .build()
             .unwrap();
@@ -101,7 +101,7 @@ mod robustez_idempotencia {
     #[test]
     fn same_pipeline_twice_produces_identical_bytes() {
         let image = patterned_image(257, 193, 3);
-        let pipeline = PipelineBuilder::from_source(source_from_image(&image))
+        let pipeline = ImagePipeline::from_source(source_from_image(&image))
             .thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(91),
                 InterpolationKernel::Lanczos3,

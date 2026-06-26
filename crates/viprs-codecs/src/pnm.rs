@@ -3,7 +3,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8, U16};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -420,7 +420,7 @@ fn decode_binary_samples_u16(header: &ParsedPnm, src: &[u8]) -> Result<Vec<u16>,
         .collect())
 }
 
-fn decode_pnm_u8(src: &[u8]) -> Result<(ParsedPnm, Image<U8>), ViprsError> {
+fn decode_pnm_u8(src: &[u8]) -> Result<(ParsedPnm, InMemoryImage<U8>), ViprsError> {
     let header = parse_pnm_header(src)?;
     let pixels = if header.magic.is_ascii() {
         decode_ascii_samples_u8(&header, src)?
@@ -428,13 +428,13 @@ fn decode_pnm_u8(src: &[u8]) -> Result<(ParsedPnm, Image<U8>), ViprsError> {
         decode_binary_samples_u8(&header, src)?
     };
     let metadata = image_metadata_for_pnm(header.magic, BandFormatId::U8);
-    let image = Image::from_buffer(header.width, header.height, header.magic.bands(), pixels)
+    let image = InMemoryImage::from_buffer(header.width, header.height, header.magic.bands(), pixels)
         .map(|image| image.with_metadata(metadata))
         .map_err(|error| ViprsError::Codec(error.to_string()))?;
     Ok((header, image))
 }
 
-fn decode_pnm_u16(src: &[u8]) -> Result<(ParsedPnm, Image<U16>), ViprsError> {
+fn decode_pnm_u16(src: &[u8]) -> Result<(ParsedPnm, InMemoryImage<U16>), ViprsError> {
     let header = parse_pnm_header(src)?;
     if !header.magic.is_bitmap() && header.max_value.unwrap_or_default() <= u8::MAX.into() {
         return Err(ViprsError::Codec(
@@ -447,7 +447,7 @@ fn decode_pnm_u16(src: &[u8]) -> Result<(ParsedPnm, Image<U16>), ViprsError> {
         decode_binary_samples_u16(&header, src)?
     };
     let metadata = image_metadata_for_pnm(header.magic, BandFormatId::U16);
-    let image = Image::from_buffer(header.width, header.height, header.magic.bands(), pixels)
+    let image = InMemoryImage::from_buffer(header.width, header.height, header.magic.bands(), pixels)
         .map(|image| image.with_metadata(metadata))
         .map_err(|error| ViprsError::Codec(error.to_string()))?;
     Ok((header, image))
@@ -508,8 +508,8 @@ impl PnmCodec {
 }
 
 fn select_pnm_magic_for_image<F: BandFormat>(
-    kind: PnmEncodeKind,
-    image: &Image<F>,
+  kind: PnmEncodeKind,
+  image: &InMemoryImage<F>,
 ) -> Result<PnmMagic, ViprsError> {
     match kind {
         PnmEncodeKind::Pbm => {
@@ -547,7 +547,7 @@ fn select_pnm_magic_for_image<F: BandFormat>(
     }
 }
 
-fn is_binary_bitmap<F: BandFormat>(image: &Image<F>) -> bool {
+fn is_binary_bitmap<F: BandFormat>(image: &InMemoryImage<F>) -> bool {
     match F::ID {
         BandFormatId::U8 => bytemuck::cast_slice::<F::Sample, u8>(image.pixels())
             .iter()
@@ -559,7 +559,7 @@ fn is_binary_bitmap<F: BandFormat>(image: &Image<F>) -> bool {
     }
 }
 
-fn encode_pbm_u8(image: &Image<U8>) -> Vec<u8> {
+fn encode_pbm_u8(image: &InMemoryImage<U8>) -> Vec<u8> {
     let width = image.width() as usize;
     let row_bytes = width.div_ceil(8);
     let mut raster = Vec::with_capacity(row_bytes * image.height() as usize);
@@ -584,7 +584,7 @@ fn encode_pbm_u8(image: &Image<U8>) -> Vec<u8> {
     raster
 }
 
-fn encode_pbm_u16(image: &Image<U16>) -> Vec<u8> {
+fn encode_pbm_u16(image: &InMemoryImage<U16>) -> Vec<u8> {
     let width = image.width() as usize;
     let row_bytes = width.div_ceil(8);
     let mut raster = Vec::with_capacity(row_bytes * image.height() as usize);
@@ -609,7 +609,7 @@ fn encode_pbm_u16(image: &Image<U16>) -> Vec<u8> {
     raster
 }
 
-fn encode_pnm<F: BandFormat>(kind: PnmEncodeKind, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+fn encode_pnm<F: BandFormat>(kind: PnmEncodeKind, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
     let magic = select_pnm_magic_for_image(kind, image)?;
     let mut output = Vec::new();
     let magic_header = match magic {
@@ -643,14 +643,14 @@ fn encode_pnm<F: BandFormat>(kind: PnmEncodeKind, image: &Image<F>) -> Result<Ve
         (PnmMagic::P4, BandFormatId::U8) => {
             let pixels = bytemuck::cast_slice::<F::Sample, u8>(image.pixels()).to_vec();
             let image =
-                Image::<U8>::from_buffer(image.width(), image.height(), image.bands(), pixels)
+                InMemoryImage::<U8>::from_buffer(image.width(), image.height(), image.bands(), pixels)
                     .map_err(|error| ViprsError::Codec(error.to_string()))?;
             output.extend_from_slice(&encode_pbm_u8(&image));
         }
         (PnmMagic::P4, BandFormatId::U16) => {
             let pixels = bytemuck::cast_slice::<F::Sample, u16>(image.pixels()).to_vec();
             let image =
-                Image::<U16>::from_buffer(image.width(), image.height(), image.bands(), pixels)
+                InMemoryImage::<U16>::from_buffer(image.width(), image.height(), image.bands(), pixels)
                     .map_err(|error| ViprsError::Codec(error.to_string()))?;
             output.extend_from_slice(&encode_pbm_u16(&image));
         }
@@ -684,7 +684,7 @@ impl ImageDecoder for PnmCodec {
         Self::sniff_header(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -692,7 +692,7 @@ impl ImageDecoder for PnmCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -702,7 +702,7 @@ impl ImageDecoder for PnmCodec {
                 let (width, height, bands) = (image.width(), image.height(), image.bands());
                 let metadata = image.metadata().clone();
                 let pixels = bytemuck::cast_vec::<u8, F::Sample>(image.into_buffer());
-                Image::from_buffer(width, height, bands, pixels)
+                InMemoryImage::from_buffer(width, height, bands, pixels)
                     .map(|decoded| decoded.with_metadata(metadata))
                     .map_err(|error| ViprsError::Codec(error.to_string()))
             }
@@ -711,7 +711,7 @@ impl ImageDecoder for PnmCodec {
                 let (width, height, bands) = (image.width(), image.height(), image.bands());
                 let metadata = image.metadata().clone();
                 let pixels = bytemuck::cast_vec::<u16, F::Sample>(image.into_buffer());
-                Image::from_buffer(width, height, bands, pixels)
+                InMemoryImage::from_buffer(width, height, bands, pixels)
                     .map(|decoded| decoded.with_metadata(metadata))
                     .map_err(|error| ViprsError::Codec(error.to_string()))
             }
@@ -735,14 +735,14 @@ impl ImageEncoder for PnmCodec {
         "pnm"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

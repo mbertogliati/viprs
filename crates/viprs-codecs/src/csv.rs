@@ -11,7 +11,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F64};
-use viprs_core::image::Image;
+use viprs_core::image::InMemoryImage;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── Token scanner ────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ fn decode_csv(
     src: &[u8],
     skip_lines: u32,
     limit_lines: Option<u32>,
-) -> Result<Image<F64>, ViprsError> {
+) -> Result<InMemoryImage<F64>, ViprsError> {
     let whitespace = build_whitespace_map(" ");
     let separators = build_separator_map(";,\t");
 
@@ -307,12 +307,12 @@ fn decode_csv(
         decode_scanner.consume_newline();
     }
 
-    Image::from_buffer(width, height, 1, pixels).map_err(|e| ViprsError::Codec(e.to_string()))
+    InMemoryImage::from_buffer(width, height, 1, pixels).map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 // ── Core encode ──────────────────────────────────────────────────────────────
 
-fn encode_csv<F: BandFormat>(image: &Image<F>, separator: &str) -> Result<Vec<u8>, ViprsError> {
+fn encode_csv<F: BandFormat>(image: &InMemoryImage<F>, separator: &str) -> Result<Vec<u8>, ViprsError> {
     if image.bands() != 1 {
         return Err(ViprsError::Codec(
             "csv: only single-band images can be saved as CSV".into(),
@@ -453,7 +453,7 @@ impl ImageDecoder for CsvCodec {
         Self::sniff_header(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -461,7 +461,7 @@ impl ImageDecoder for CsvCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -476,7 +476,7 @@ impl ImageDecoder for CsvCodec {
         let (w, h, b) = (image.width(), image.height(), image.bands());
         let raw: Vec<f64> = image.into_buffer();
         let samples: Vec<F::Sample> = bytemuck::cast_vec(raw);
-        Image::from_buffer(w, h, b, samples).map_err(|e| ViprsError::Codec(e.to_string()))
+        InMemoryImage::from_buffer(w, h, b, samples).map_err(|e| ViprsError::Codec(e.to_string()))
     }
 
     fn probe(&self, src: &[u8]) -> Result<(u32, u32, u32), ViprsError>
@@ -493,14 +493,14 @@ impl ImageEncoder for CsvCodec {
         "csv"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

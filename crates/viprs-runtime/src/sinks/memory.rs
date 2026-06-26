@@ -7,7 +7,7 @@ use crate::{
     domain::{
         error::ViprsError,
         format::{BandFormat, BandFormatId},
-        image::{Image, ImageMetadata, Region},
+        image::{InMemoryImage, ImageMetadata, Region},
     },
     pipeline::CompiledPipeline,
     ports::sink::{ConcurrentSink, ImageSink},
@@ -125,14 +125,14 @@ impl MemorySink {
         self.buffer.into_inner()
     }
 
-    /// Consumes the sink and rehydrates the collected bytes into an owned [`Image`].
+    /// Consumes the sink and rehydrates the collected bytes into an owned [`InMemoryImage`].
     pub fn into_image<F: BandFormat>(
         self,
         width: u32,
         height: u32,
         bands: u32,
         metadata: ImageMetadata,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         let bytes = self.into_buffer();
         let sample_size = std::mem::size_of::<F::Sample>();
         if !bytes.len().is_multiple_of(sample_size) {
@@ -148,7 +148,7 @@ impl MemorySink {
             .map(bytemuck::pod_read_unaligned::<F::Sample>)
             .collect();
 
-        Image::from_buffer(width, height, bands, samples).map(|image| image.with_metadata(metadata))
+        InMemoryImage::from_buffer(width, height, bands, samples).map(|image| image.with_metadata(metadata))
     }
 
     /// Scatter `data` (a contiguous tile in row-major order) into the correct
@@ -315,7 +315,7 @@ mod tests {
         format::U8,
         image::{DemandHint, Tile, TileMut},
     };
-    use crate::pipeline::PipelineBuilder;
+    use crate::pipeline::ImagePipeline;
     use std::sync::Arc;
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -572,7 +572,7 @@ mod tests {
 
     #[test]
     fn for_pipeline_infers_bps_for_u8() {
-        let pipeline = PipelineBuilder::new(16, 16)
+        let pipeline = ImagePipeline::new(16, 16)
             .then(Box::new(OperationBridge::new(
                 PassThrough { bands: 1 },
                 1u32,
@@ -594,7 +594,7 @@ mod tests {
         use crate::sources::zero::ZeroSource;
 
         // Use a F32 source so that the pipeline's current_format matches F32PassThrough.
-        let pipeline = PipelineBuilder::from_source(ZeroSource::<F32>::new(16, 16, 1))
+        let pipeline = ImagePipeline::from_source(ZeroSource::<F32>::new(16, 16, 1))
             .then(Box::new(OperationBridge::new(F32PassThrough, 1u32)))
             .unwrap()
             .build()

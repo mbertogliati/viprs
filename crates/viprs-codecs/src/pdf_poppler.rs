@@ -18,7 +18,7 @@ use std::process::{Command, Stdio};
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::ImageDecoder;
 
 const DEFAULT_DPI: f64 = 72.0;
@@ -295,7 +295,7 @@ fn cast_u8_samples<F: BandFormat>(samples: Vec<u8>) -> Result<Vec<F::Sample>, Vi
     })
 }
 
-fn decode_pdf<F: BandFormat>(src: &[u8], opts: &LoadOptions) -> Result<Image<F>, ViprsError> {
+fn decode_pdf<F: BandFormat>(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<F>, ViprsError> {
     require_u8::<F>()?;
     let dpi = resolved_dpi(opts)?;
     let total_pages = parse_pdf_page_count(&run_poppler_tool("pdfinfo", &["-"], src)?)?;
@@ -329,7 +329,7 @@ fn decode_pdf<F: BandFormat>(src: &[u8], opts: &LoadOptions) -> Result<Image<F>,
         }
 
         let frame_samples = cast_u8_samples::<F>(page.rgba.clone())?;
-        let frame = Image::from_buffer(page.width, page.height, PDF_BANDS, frame_samples)
+        let frame = InMemoryImage::from_buffer(page.width, page.height, PDF_BANDS, frame_samples)
             .map_err(|err| ViprsError::Codec(err.to_string()))?;
         frames.push(frame);
         top += page.height;
@@ -338,7 +338,7 @@ fn decode_pdf<F: BandFormat>(src: &[u8], opts: &LoadOptions) -> Result<Image<F>,
     let page_height = (page_count > 1).then_some(pages[0].height);
     let metadata = pdf_metadata(total_pages, dpi, page_height);
     let stacked_samples = cast_u8_samples::<F>(stacked)?;
-    Image::from_buffer(max_width, total_height, PDF_BANDS, stacked_samples)
+    InMemoryImage::from_buffer(max_width, total_height, PDF_BANDS, stacked_samples)
         .map(|image| image.with_metadata(metadata).with_frames(frames))
         .map_err(|err| ViprsError::Codec(err.to_string()))
 }
@@ -363,7 +363,7 @@ impl ImageDecoder for PdfPopplerDecoder {
         sniff_pdf(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -371,7 +371,7 @@ impl ImageDecoder for PdfPopplerDecoder {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {

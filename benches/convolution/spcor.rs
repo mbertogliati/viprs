@@ -1,14 +1,14 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    adapters::{
+  adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-    domain::ops::convolution::SpcorOp,
-    domain::{format::F32, image::Image},
-    pipeline::{OperationBridge, PipelineBuilder},
-    ports::scheduler::TileScheduler,
+  domain::ops::convolution::SpcorOp,
+  domain::{format::F32, image::InMemoryImage},
+  pipeline::{OperationBridge, ImagePipeline},
+  ports::scheduler::TileScheduler,
 };
 
 fn make_pixels(size: u32) -> Vec<f32> {
@@ -18,8 +18,8 @@ fn make_pixels(size: u32) -> Vec<f32> {
         .collect()
 }
 
-fn reference_patch() -> Image<F32> {
-    Image::from_buffer(
+fn reference_patch() -> InMemoryImage<F32> {
+    InMemoryImage::from_buffer(
         5,
         5,
         1,
@@ -42,7 +42,7 @@ fn bench_spcor(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = SpcorOp::<F32>::new(reference.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new(op, 1)))
                     .unwrap()
                     .build()

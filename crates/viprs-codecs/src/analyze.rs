@@ -26,7 +26,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8};
-use viprs_core::image::Image;
+use viprs_core::image::InMemoryImage;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -200,7 +200,7 @@ fn decode_analyze(
     match (info.datatype, target_format) {
         (DT_UNSIGNED_CHAR | DT_RGB, BandFormatId::U8) => {
             let pixels = pixel_bytes.to_vec();
-            let img = Image::<U8>::from_buffer(info.width, info.height, info.bands, pixels)
+            let img = InMemoryImage::<U8>::from_buffer(info.width, info.height, info.bands, pixels)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
             Ok(Box::new(img))
         }
@@ -209,7 +209,7 @@ fn decode_analyze(
                 .chunks_exact(2)
                 .map(|c| i16::from_be_bytes([c[0], c[1]]))
                 .collect();
-            let img = Image::<I16>::from_buffer(info.width, info.height, 1, pixels)
+            let img = InMemoryImage::<I16>::from_buffer(info.width, info.height, 1, pixels)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
             Ok(Box::new(img))
         }
@@ -218,7 +218,7 @@ fn decode_analyze(
                 .chunks_exact(4)
                 .map(|c| i32::from_be_bytes([c[0], c[1], c[2], c[3]]))
                 .collect();
-            let img = Image::<I32>::from_buffer(info.width, info.height, 1, pixels)
+            let img = InMemoryImage::<I32>::from_buffer(info.width, info.height, 1, pixels)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
             Ok(Box::new(img))
         }
@@ -227,7 +227,7 @@ fn decode_analyze(
                 .chunks_exact(4)
                 .map(|c| f32::from_be_bytes([c[0], c[1], c[2], c[3]]))
                 .collect();
-            let img = Image::<F32>::from_buffer(info.width, info.height, 1, pixels)
+            let img = InMemoryImage::<F32>::from_buffer(info.width, info.height, 1, pixels)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
             Ok(Box::new(img))
         }
@@ -236,7 +236,7 @@ fn decode_analyze(
                 .chunks_exact(8)
                 .map(|c| f64::from_be_bytes([c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]]))
                 .collect();
-            let img = Image::<F64>::from_buffer(info.width, info.height, 1, pixels)
+            let img = InMemoryImage::<F64>::from_buffer(info.width, info.height, 1, pixels)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
             Ok(Box::new(img))
         }
@@ -251,7 +251,7 @@ fn decode_analyze(
 /// Encode an image into a concatenated `hdr+img` buffer.
 ///
 /// The header is always written big-endian (Analyze specification).
-fn encode_analyze<F: BandFormat>(image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+fn encode_analyze<F: BandFormat>(image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
     // Map BandFormatId to Analyze datatype + bytes_per_sample.
     let (datatype, bytes_per_sample, ndim): (i16, usize, i16) = match (F::ID, image.bands()) {
         (BandFormatId::U8, 1) => (DT_UNSIGNED_CHAR, 1, 2),
@@ -298,9 +298,9 @@ fn encode_analyze<F: BandFormat>(image: &Image<F>) -> Result<Vec<u8>, ViprsError
 }
 
 fn encode_pixels_be<F: BandFormat>(
-    image: &Image<F>,
-    datatype: i16,
-    _bytes_per_sample: usize,
+  image: &InMemoryImage<F>,
+  datatype: i16,
+  _bytes_per_sample: usize,
 ) -> Result<Vec<u8>, ViprsError> {
     match datatype {
         DT_UNSIGNED_CHAR | DT_RGB => {
@@ -385,7 +385,7 @@ impl ImageDecoder for AnalyzeCodec {
         Self::sniff_header(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -393,12 +393,12 @@ impl ImageDecoder for AnalyzeCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
         let boxed = decode_analyze(src, F::ID)?;
-        boxed.downcast::<Image<F>>().map(|b| *b).map_err(|_| {
+        boxed.downcast::<InMemoryImage<F>>().map(|b| *b).map_err(|_| {
             ViprsError::Codec(format!(
                 "analyze: decoded image type does not match requested format {:?}",
                 F::ID
@@ -420,14 +420,14 @@ impl ImageEncoder for AnalyzeCodec {
         "analyze"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -489,7 +489,7 @@ mod tests {
     #[test]
     fn round_trip_u8_grayscale() {
         let codec = AnalyzeCodec;
-        let original = Image::<U8>::from_buffer(4, 2, 1, (0..8u8).collect()).unwrap();
+        let original = InMemoryImage::<U8>::from_buffer(4, 2, 1, (0..8u8).collect()).unwrap();
         let encoded = codec.encode(&original).unwrap();
         assert_eq!(encoded.len(), ANALYZE_HEADER_SIZE + 8);
         let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -503,7 +503,7 @@ mod tests {
     fn round_trip_u8_rgb() {
         let codec = AnalyzeCodec;
         let pixels: Vec<u8> = (0..24).collect();
-        let original = Image::<U8>::from_buffer(4, 2, 3, pixels).unwrap();
+        let original = InMemoryImage::<U8>::from_buffer(4, 2, 3, pixels).unwrap();
         let encoded = codec.encode(&original).unwrap();
         assert_eq!(encoded.len(), ANALYZE_HEADER_SIZE + 24);
         let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -514,7 +514,7 @@ mod tests {
     #[test]
     fn trait_entrypoints_round_trip_rgb_and_probe_dimensions() {
         let codec = AnalyzeCodec;
-        let image = Image::<U8>::from_buffer(3, 2, 3, (0u8..18).collect()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(3, 2, 3, (0u8..18).collect()).unwrap();
 
         let encoded = codec
             .encode_with_options(&image, &SaveOptions::default())
@@ -532,7 +532,7 @@ mod tests {
     fn round_trip_i16() {
         let codec = AnalyzeCodec;
         let pixels: Vec<i16> = vec![-1000, 0, 1000, i16::MAX];
-        let original = Image::<I16>::from_buffer(4, 1, 1, pixels).unwrap();
+        let original = InMemoryImage::<I16>::from_buffer(4, 1, 1, pixels).unwrap();
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<I16>(&encoded).unwrap();
         assert_eq!(decoded.pixels(), original.pixels());
@@ -541,7 +541,7 @@ mod tests {
     #[test]
     fn encode_writes_big_endian_header_and_i16_payload() {
         let codec = AnalyzeCodec;
-        let original = Image::<I16>::from_buffer(2, 1, 1, vec![0x1234, -2]).unwrap();
+        let original = InMemoryImage::<I16>::from_buffer(2, 1, 1, vec![0x1234, -2]).unwrap();
         let encoded = codec.encode(&original).unwrap();
 
         assert_eq!(
@@ -565,7 +565,7 @@ mod tests {
     fn round_trip_i32() {
         let codec = AnalyzeCodec;
         let pixels: Vec<i32> = vec![i32::MIN, -1, 0, i32::MAX];
-        let original = Image::<I32>::from_buffer(4, 1, 1, pixels).unwrap();
+        let original = InMemoryImage::<I32>::from_buffer(4, 1, 1, pixels).unwrap();
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<I32>(&encoded).unwrap();
         assert_eq!(decoded.pixels(), original.pixels());
@@ -575,7 +575,7 @@ mod tests {
     fn round_trip_f32() {
         let codec = AnalyzeCodec;
         let pixels: Vec<f32> = vec![-1.5, 0.0, 1.5, f32::MAX];
-        let original = Image::<F32>::from_buffer(4, 1, 1, pixels).unwrap();
+        let original = InMemoryImage::<F32>::from_buffer(4, 1, 1, pixels).unwrap();
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F32>(&encoded).unwrap();
         for (a, b) in decoded.pixels().iter().zip(original.pixels().iter()) {
@@ -599,7 +599,7 @@ mod tests {
     fn round_trip_f64() {
         let codec = AnalyzeCodec;
         let pixels: Vec<f64> = vec![-1.0, 0.5, 1.0, std::f64::consts::PI];
-        let original = Image::<F64>::from_buffer(4, 1, 1, pixels).unwrap();
+        let original = InMemoryImage::<F64>::from_buffer(4, 1, 1, pixels).unwrap();
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F64>(&encoded).unwrap();
         for (a, b) in decoded.pixels().iter().zip(original.pixels().iter()) {
@@ -639,7 +639,7 @@ mod tests {
     fn decode_format_mismatch_errors() {
         let codec = AnalyzeCodec;
         // Encode as U8, then try to decode as I16.
-        let original = Image::<U8>::from_buffer(2, 2, 1, vec![0; 4]).unwrap();
+        let original = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0; 4]).unwrap();
         let encoded = codec.encode(&original).unwrap();
         assert!(codec.decode::<I16>(&encoded).is_err());
     }
@@ -722,7 +722,7 @@ mod tests {
 
     #[test]
     fn encode_rejects_unsupported_format_band_combo() {
-        let image = Image::<I16>::from_buffer(2, 1, 2, vec![1, 2, 3, 4]).unwrap();
+        let image = InMemoryImage::<I16>::from_buffer(2, 1, 2, vec![1, 2, 3, 4]).unwrap();
 
         let err = encode_analyze(&image).unwrap_err();
         assert!(
@@ -733,7 +733,7 @@ mod tests {
 
     #[test]
     fn encode_pixels_rejects_unexpected_datatype() {
-        let image = Image::<U8>::from_buffer(2, 1, 1, vec![1, 2]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![1, 2]).unwrap();
 
         let err = encode_pixels_be(&image, 999, 1).unwrap_err();
         assert!(

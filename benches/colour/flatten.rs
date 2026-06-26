@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     ports::scheduler::TileScheduler,
@@ -37,7 +37,7 @@ fn bench_flatten(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<U8>::new(image_size, image_size, 4, rgba.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .flatten([0.0, 0.0, 0.0, 1.0])
                         .unwrap()
                         .build()

@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::convolution::Prewitt},
     ports::scheduler::TileScheduler,
@@ -20,7 +20,7 @@ fn bench_prewitt(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let bridge = OperationBridge::new(Prewitt::<F32>::new(), 1u32);
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(bridge))
                     .unwrap()
                     .build()

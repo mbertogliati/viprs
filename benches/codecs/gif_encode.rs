@@ -3,9 +3,9 @@
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
 #[cfg(feature = "gif")]
 use viprs::{
-    adapters::codecs::GifCodec,
-    domain::{codec_options::SaveOptions, format::U8, image::Image},
-    ports::codec::ImageEncoder,
+  adapters::codecs::GifCodec,
+  domain::{codec_options::SaveOptions, format::U8, image::InMemoryImage},
+  ports::codec::ImageEncoder,
 };
 
 #[cfg(feature = "gif")]
@@ -31,8 +31,8 @@ fn rgba_pixels(dimension: u32) -> Vec<u8> {
 }
 
 #[cfg(feature = "gif")]
-fn make_image(dimension: u32) -> Image<U8> {
-    match Image::<U8>::from_buffer(dimension, dimension, 4, rgba_pixels(dimension)) {
+fn make_image(dimension: u32) -> InMemoryImage<U8> {
+    match InMemoryImage::<U8>::from_buffer(dimension, dimension, 4, rgba_pixels(dimension)) {
         Ok(image) => image,
         Err(err) => panic!("gif encode bench fixture image must be valid: {err}"),
     }
@@ -41,7 +41,7 @@ fn make_image(dimension: u32) -> Image<U8> {
 #[cfg(feature = "gif")]
 fn bench_gif_encode(c: &mut Criterion) {
     let codec = GifCodec::default();
-    let images: Vec<(u32, Image<U8>)> = DIMENSIONS
+    let images: Vec<(u32, InMemoryImage<U8>)> = DIMENSIONS
         .iter()
         .copied()
         .map(|dimension| (dimension, make_image(dimension)))

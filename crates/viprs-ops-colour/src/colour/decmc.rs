@@ -70,9 +70,9 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{
-        format::F32,
-        image::{Image, Region, Tile, TileMut},
-        op::OperationBridge,
+      format::F32,
+      image::{InMemoryImage, Region, Tile, TileMut},
+      op::OperationBridge,
     };
 
     fn make_region(pixels: usize) -> Region {
@@ -81,7 +81,7 @@ mod tests {
 
     fn run_distance(input_data: Vec<f32>) -> Vec<f32> {
         let pixels = input_data.len() / 6;
-        let input_image = Image::<F32>::from_buffer(pixels as u32, 1, 6, input_data).unwrap();
+        let input_image = InMemoryImage::<F32>::from_buffer(pixels as u32, 1, 6, input_data).unwrap();
         let region = make_region(pixels);
         let input = Tile::new(region, 6, input_image.pixels());
         let mut output_data = vec![0.0_f32; pixels];

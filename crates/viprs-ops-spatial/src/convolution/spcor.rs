@@ -6,10 +6,10 @@
 use bytemuck::Pod;
 
 use viprs_core::{
-    error::ViprsError,
-    format::{BandFormat, F32},
-    image::{DemandHint, Image, Region, Tile, TileMut},
-    op::{NodeSpec, Op},
+  error::ViprsError,
+  format::{BandFormat, F32},
+  image::{DemandHint, InMemoryImage, Region, Tile, TileMut},
+  op::{NodeSpec, Op},
 };
 
 use super::common::ToF64;
@@ -24,7 +24,7 @@ use super::common::ToF64;
 /// // Run `op` through a compiled image pipeline.
 /// ```
 pub struct SpcorOp<F: BandFormat> {
-    reference: Image<F>,
+    reference: InMemoryImage<F>,
     centered_reference: Box<[f64]>,
     means: Box<[f64]>,
     norms: Box<[f64]>,
@@ -40,7 +40,7 @@ where
     F::Sample: ToF64,
 {
     /// Creates a new `SpcorOp`.
-    pub fn new(reference: Image<F>) -> Result<Self, ViprsError> {
+    pub fn new(reference: InMemoryImage<F>) -> Result<Self, ViprsError> {
         let ref_width = reference.width() as usize;
         let ref_height = reference.height() as usize;
         let ref_bands = reference.bands() as usize;
@@ -99,14 +99,14 @@ where
         ref_height: u32,
         ref_bands: u32,
     ) -> Result<Self, ViprsError> {
-        Self::new(Image::from_buffer(
+        Self::new(InMemoryImage::from_buffer(
             ref_width, ref_height, ref_bands, reference,
         )?)
     }
 
     #[must_use]
     /// Returns or performs reference.
-    pub const fn reference(&self) -> &Image<F> {
+    pub const fn reference(&self) -> &InMemoryImage<F> {
         &self.reference
     }
 }
@@ -249,7 +249,7 @@ mod tests {
 
     #[test]
     fn metadata_expands_by_reference_radius() {
-        let reference = Image::<F32>::from_buffer(5, 3, 1, vec![0.0; 15]).unwrap();
+        let reference = InMemoryImage::<F32>::from_buffer(5, 3, 1, vec![0.0; 15]).unwrap();
         let op = SpcorOp::<F32>::new(reference).unwrap();
         let output = Region::new(7, 9, 11, 13);
 

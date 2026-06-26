@@ -1,7 +1,7 @@
 use super::{
-    Arc, BandFormat, DecoderBacking, Image, ImageDecoder, ImageMetadataProbe, LoadOptions, Path,
-    PathBuf, Region, TileImageDecoder, ViprsError, eager_backing_shrink_factor,
-    eager_backing_shrink_factor_from_path, fmt,
+  Arc, BandFormat, DecoderBacking, InMemoryImage, ImageDecoder, ImageMetadataProbe, LoadOptions, Path,
+  PathBuf, Region, TileImageDecoder, ViprsError, eager_backing_shrink_factor,
+  eager_backing_shrink_factor_from_path, fmt,
 };
 
 pub(super) type DecodeRegionFn<D> = for<'input> fn(
@@ -61,7 +61,7 @@ pub(super) fn streaming_eager_decode<D: ImageDecoder, F: BandFormat>(
     backing: &DecoderBacking<'_, D, F>,
     decoder: &D,
     opts: &LoadOptions,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let DecoderBacking::Streaming { input, .. } = backing else {
         return Err(ViprsError::Codec(
             "streaming_eager_decode called on non-streaming backing".into(),
@@ -78,10 +78,10 @@ pub(super) fn streaming_eager_decode<D: ImageDecoder, F: BandFormat>(
 /// streaming input. Mirrors `eager_backing_shrink_factor` /
 /// `eager_backing_shrink_factor_from_path` but dispatches on `DecoderInput`.
 pub(super) fn streaming_backing_shrink_factor<D: ImageDecoder, F: BandFormat>(
-    backing: &DecoderBacking<'_, D, F>,
-    decoder: &D,
-    requested_factor: u8,
-    image: &Image<F>,
+  backing: &DecoderBacking<'_, D, F>,
+  decoder: &D,
+  requested_factor: u8,
+  image: &InMemoryImage<F>,
 ) -> u8 {
     if requested_factor <= 1 {
         return 1;
@@ -196,7 +196,7 @@ impl StableDecoderInput {
         &self,
         decoder: &D,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         match self {
             Self::Shared(src) => decoder.decode_with_options::<F>(src, opts),
             Self::Path(path) => decoder.decode_path_with_options::<F>(path, opts),
@@ -204,10 +204,10 @@ impl StableDecoderInput {
     }
 
     pub(super) fn backing_shrink_factor<D: ImageDecoder, F: BandFormat>(
-        &self,
-        decoder: &D,
-        requested_factor: u8,
-        image: &Image<F>,
+      &self,
+      decoder: &D,
+      requested_factor: u8,
+      image: &InMemoryImage<F>,
     ) -> u8 {
         match self {
             Self::Shared(src) => eager_backing_shrink_factor(decoder, src, requested_factor, image),

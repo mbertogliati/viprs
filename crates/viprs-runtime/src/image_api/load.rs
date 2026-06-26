@@ -2,8 +2,8 @@
 // REASON: image-api constructors preserve a uniform fallible adapter interface across source types.
 
 use super::{
-    BandFormat, BandFormatId, BuildError, CompiledPipeline, DecodeLimits, ForeignRegistry, Image,
-    JPEG_HEADER, LoadOptions, MemorySource, PNG_HEADER, Path, PipelineBuilder, Pod, RayonScheduler,
+    BandFormat, BandFormatId, BuildError, CompiledPipeline, DecodeLimits, ForeignRegistry, InMemoryImage,
+    JPEG_HEADER, LoadOptions, MemorySource, PNG_HEADER, Path, ImagePipeline, Pod, RayonScheduler,
     Read, ResourceLimits, ViprsError, size_of,
 };
 
@@ -34,20 +34,20 @@ use std::fs;
 /// # Examples
 ///
 /// ```rust,no_run
-/// use viprs_runtime::image_api::ImageApi;
+/// use viprs_runtime::image_api::ImagePipeline2;
 ///
-/// ImageApi::open("photo.jpg")?
+/// ImagePipeline2::open("photo.jpg")?
 ///     .invert()?
 ///     .thumbnail(400)?
 ///     .save("out.jpg")?;
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
-pub struct ImageApi {
-    pub(in crate::image_api) builder: PipelineBuilder,
+pub struct ImagePipeline2 {
+    pub(in crate::image_api) builder: ImagePipeline,
     pub(in crate::image_api) resource_limits: Option<ResourceLimits>,
 }
 
-impl std::fmt::Debug for ImageApi {
+impl std::fmt::Debug for ImagePipeline2 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ImageApi").finish()
     }
@@ -62,11 +62,11 @@ impl std::fmt::Debug for ImageApi {
 ///
 /// ```rust,no_run
 /// use viprs_runtime::{
-///     image_api::ImageApi,
+///     image_api::ImagePipeline2,
 ///     domain::limits::ResourceLimits,
 /// };
 ///
-/// let loader = ImageApi::with_limits(ResourceLimits::default());
+/// let loader = ImagePipeline2::with_limits(ResourceLimits::default());
 /// let _image = loader.open("photo.jpg")?;
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
@@ -75,7 +75,7 @@ pub struct ImageApiLoader {
     limits: ResourceLimits,
 }
 
-/// Optional thumbnail planning controls for the fluent [`ImageApi`] façade.
+/// Optional thumbnail planning controls for the fluent [`ImagePipeline2`] façade.
 ///
 /// This type solves the small set of thumbnail policy knobs that should remain
 /// ergonomic without exposing the full lower-level thumbnail planner.
@@ -120,7 +120,7 @@ impl ImageApiThumbnailOptions {
     }
 }
 
-impl ImageApi {
+impl ImagePipeline2 {
     /// Create a configured loader that applies the provided limits to every decode
     /// and execution. Clone a single [`ResourceLimits`] value in service state to
     /// share its concurrency gate across requests.
@@ -129,11 +129,11 @@ impl ImageApi {
     ///
     /// ```rust
     /// use viprs_runtime::{
-    ///     image_api::ImageApi,
+    ///     image_api::ImagePipeline2,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
-    /// let _loader = ImageApi::with_limits(ResourceLimits::default());
+    /// let _loader = ImagePipeline2::with_limits(ResourceLimits::default());
     /// ```
     #[must_use]
     pub const fn with_limits(limits: ResourceLimits) -> ImageApiLoader {
@@ -148,9 +148,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?;
+    /// let image = ImagePipeline2::open("photo.jpg")?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -167,10 +167,10 @@ impl ImageApi {
     ///
     /// ```rust
     /// use std::io::Cursor;
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
     /// let bytes = Cursor::new(vec![0_u8; 0]);
-    /// let _ = ImageApi::from_reader(bytes);
+    /// let _ = ImagePipeline2::from_reader(bytes);
     /// ```
     pub fn from_reader<R: Read>(mut reader: R) -> Result<Self, ViprsError> {
         let mut buf = Vec::new();
@@ -187,11 +187,11 @@ impl ImageApi {
     ///
     /// ```rust
     /// use viprs_runtime::{
-    ///     image_api::ImageApi,
+    ///     image_api::ImagePipeline2,
     ///     domain::limits::DecodeLimits,
     /// };
     ///
-    /// let _ = ImageApi::from_bytes_with_limits(&[], DecodeLimits::default());
+    /// let _ = ImagePipeline2::from_bytes_with_limits(&[], DecodeLimits::default());
     /// ```
     pub fn from_bytes_with_limits(buf: &[u8], limits: DecodeLimits) -> Result<Self, ViprsError> {
         Self::from_bytes_with_options(
@@ -213,16 +213,16 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let _ = ImageApi::from_bytes(&[]);
+    /// let _ = ImagePipeline2::from_bytes(&[]);
     /// ```
     pub fn from_bytes(buf: &[u8]) -> Result<Self, ViprsError> {
         Self::from_bytes_with_options(buf, None, &LoadOptions::default(), None)
     }
 
     pub(in crate::image_api) const fn from_builder(
-        builder: PipelineBuilder,
+        builder: ImagePipeline,
         resource_limits: Option<ResourceLimits>,
     ) -> Result<Self, BuildError> {
         Ok(Self {
@@ -288,7 +288,7 @@ impl ImageApi {
     }
 
     pub(in crate::image_api) fn from_image_with_limits<F>(
-        image: Image<F>,
+        image: InMemoryImage<F>,
         limits: Option<&DecodeLimits>,
         resource_limits: Option<ResourceLimits>,
     ) -> Result<Self, ViprsError>
@@ -312,7 +312,7 @@ impl ImageApi {
             .with_metadata(metadata);
 
         Ok(Self {
-            builder: PipelineBuilder::from_source(source),
+            builder: ImagePipeline::from_source(source),
             resource_limits,
         })
     }
@@ -333,7 +333,7 @@ impl ImageApi {
             limits,
         )?;
         Ok(Self {
-            builder: PipelineBuilder::from_source(source),
+            builder: ImagePipeline::from_source(source),
             resource_limits,
         })
     }
@@ -528,23 +528,23 @@ impl ImageApi {
 impl ImageApiLoader {
     /// Open an image from a file path with shared resource limits.
     ///
-    /// This mirrors [`ImageApi::open`] while consistently applying the loader's
+    /// This mirrors [`ImagePipeline2::open`] while consistently applying the loader's
     /// configured decode and execution budgets.
     ///
     /// # Examples
     ///
     /// ```rust,no_run
     /// use viprs_runtime::{
-    ///     image_api::ImageApi,
+    ///     image_api::ImagePipeline2,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
-    /// let loader = ImageApi::with_limits(ResourceLimits::default());
+    /// let loader = ImagePipeline2::with_limits(ResourceLimits::default());
     /// let _image = loader.open("photo.jpg")?;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn open(&self, path: impl AsRef<Path>) -> Result<ImageApi, ViprsError> {
-        ImageApi::open_with_options(
+    pub fn open(&self, path: impl AsRef<Path>) -> Result<ImagePipeline2, ViprsError> {
+        ImagePipeline2::open_with_options(
             path.as_ref(),
             &LoadOptions {
                 limits: Some(self.limits.decode_limits()),
@@ -564,14 +564,14 @@ impl ImageApiLoader {
     /// ```rust
     /// use std::io::Cursor;
     /// use viprs_runtime::{
-    ///     image_api::ImageApi,
+    ///     image_api::ImagePipeline2,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
-    /// let loader = ImageApi::with_limits(ResourceLimits::default());
+    /// let loader = ImagePipeline2::with_limits(ResourceLimits::default());
     /// let _ = loader.from_reader(Cursor::new(Vec::<u8>::new()));
     /// ```
-    pub fn from_reader<R: Read>(&self, mut reader: R) -> Result<ImageApi, ViprsError> {
+    pub fn from_reader<R: Read>(&self, mut reader: R) -> Result<ImagePipeline2, ViprsError> {
         let mut buf = Vec::new();
         reader.read_to_end(&mut buf)?;
         self.from_bytes(&buf)
@@ -579,22 +579,22 @@ impl ImageApiLoader {
 
     /// Decode bytes into an in-memory source using the configured limits.
     ///
-    /// This mirrors [`ImageApi::from_bytes`] while ensuring decode size and
+    /// This mirrors [`ImagePipeline2::from_bytes`] while ensuring decode size and
     /// scheduler concurrency stay within the loader's configured limits.
     ///
     /// # Examples
     ///
     /// ```rust
     /// use viprs_runtime::{
-    ///     image_api::ImageApi,
+    ///     image_api::ImagePipeline2,
     ///     domain::limits::ResourceLimits,
     /// };
     ///
-    /// let loader = ImageApi::with_limits(ResourceLimits::default());
+    /// let loader = ImagePipeline2::with_limits(ResourceLimits::default());
     /// let _ = loader.from_bytes(&[]);
     /// ```
-    pub fn from_bytes(&self, buf: &[u8]) -> Result<ImageApi, ViprsError> {
-        ImageApi::from_bytes_with_options(
+    pub fn from_bytes(&self, buf: &[u8]) -> Result<ImagePipeline2, ViprsError> {
+        ImagePipeline2::from_bytes_with_options(
             buf,
             None,
             &LoadOptions {

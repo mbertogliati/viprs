@@ -8,7 +8,7 @@ use viprs_core::error::ViprsError;
 #[cfg(feature = "uhdr")]
 use viprs_core::format::U8;
 #[cfg(feature = "uhdr")]
-use viprs_core::image::Image;
+use viprs_core::image::InMemoryImage;
 use viprs_core::image::{ImageMetadata, Interpretation};
 
 pub(super) const ICC_PROFILE_SIGNATURE: &[u8] = b"ICC_PROFILE\0";
@@ -858,10 +858,10 @@ pub fn apply_exif_orientation(
 /// ```
 #[cfg(feature = "uhdr")]
 pub fn orient_u8_image(
-    image: &Image<U8>,
-    orientation: u8,
-    codec_name: &str,
-) -> Result<Image<U8>, ViprsError> {
+  image: &InMemoryImage<U8>,
+  orientation: u8,
+  codec_name: &str,
+) -> Result<InMemoryImage<U8>, ViprsError> {
     if !(2..=8).contains(&orientation) {
         return Ok(image.clone());
     }
@@ -877,7 +877,7 @@ pub fn orient_u8_image(
     let mut metadata = image.metadata().clone();
     metadata.orientation = Some(1);
 
-    Image::from_buffer(width, height, image.bands(), pixels)
+    InMemoryImage::from_buffer(width, height, image.bands(), pixels)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(format!("{codec_name}: {e}")))
 }

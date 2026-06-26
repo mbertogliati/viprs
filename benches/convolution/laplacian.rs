@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::convolution::ConvOp},
     ports::scheduler::TileScheduler,
@@ -27,7 +27,7 @@ fn bench_laplacian(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = ConvOp::<F32>::new(laplacian_3x3_kernel()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new(op, 1)))
                     .unwrap()
                     .build()

@@ -17,7 +17,7 @@ use super::common::{
 use viprs_core::codec_options::SaveOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, U8};
-use viprs_core::image::Image;
+use viprs_core::image::InMemoryImage;
 use viprs_ports::codec::ImageEncoder;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -293,9 +293,9 @@ fn encode_webp_advanced(
 impl WebpCodec {
     /// Encode with explicit WebP controls while still flowing through [`ImageEncoder`].
     pub fn encode_with_webp_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &WebpEncodeOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &WebpEncodeOptions,
     ) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::from(*opts))
     }
@@ -308,22 +308,22 @@ impl ImageEncoder for WebpCodec {
         "webp"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_webp_options(image, &WebpEncodeOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
     {
         require_u8::<F>()?;
         let image = normalize_web_output_u8(
-            // SAFETY: `require_u8::<F>()` above guarantees `F::Sample == u8`.
-            unsafe { &*std::ptr::from_ref(image).cast::<Image<U8>>() },
+          // SAFETY: `require_u8::<F>()` above guarantees `F::Sample == u8`.
+          unsafe { &*std::ptr::from_ref(image).cast::<InMemoryImage<U8>>() },
         )?;
         let image = image.as_ref();
 

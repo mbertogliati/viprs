@@ -19,7 +19,7 @@ use crate::domain::codec_options::SaveOptions;
 use crate::{
     adapters::{
         codecs::ForeignRegistry,
-        pipeline::{CompiledPipeline, PipelineBuilder, PipelineOp},
+        pipeline::{CompiledPipeline, ImagePipeline, PipelineOp},
         scheduler::rayon_scheduler::RayonScheduler,
         sources::memory::MemorySource,
     },
@@ -27,7 +27,7 @@ use crate::{
         codec_options::LoadOptions,
         error::{BuildError, ViprsError},
         format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-        image::Image,
+        image::InMemoryImage,
         kernel::InterpolationKernel,
         limits::{DecodeLimits, ResourceLimits},
         ops::conversion::SmartcropOp,
@@ -100,7 +100,7 @@ macro_rules! with_output_image {
 mod load;
 #[cfg(feature = "icc")]
 pub use load::ImageApiThumbnailOptions;
-pub use load::{ImageApi, ImageApiLoader};
+pub use load::{ImagePipeline2, ImageApiLoader};
 
 mod encode;
 mod transform;

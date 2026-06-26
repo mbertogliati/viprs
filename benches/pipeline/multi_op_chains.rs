@@ -7,8 +7,8 @@ use std::{
 use libc::{RUSAGE_SELF, getrusage, rusage};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::BandFormatId,
     domain::{
@@ -57,7 +57,7 @@ fn grayscale_pixels(size: u32) -> Vec<u8> {
 
 fn build_invert_invert(size: u32) -> viprs::adapters::pipeline::CompiledPipeline {
     let source = MemorySource::<U8>::new(size, size, 1, grayscale_pixels(size)).unwrap();
-    PipelineBuilder::from_source(source)
+    ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .invert()
@@ -68,7 +68,7 @@ fn build_invert_invert(size: u32) -> viprs::adapters::pipeline::CompiledPipeline
 
 fn build_thumbnail_sharpen(size: u32) -> viprs::adapters::pipeline::CompiledPipeline {
     let source = MemorySource::<U8>::new(size, size, 3, rgb_pixels(size)).unwrap();
-    PipelineBuilder::from_source(source)
+    ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
         .thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
@@ -83,7 +83,7 @@ fn build_thumbnail_sharpen(size: u32) -> viprs::adapters::pipeline::CompiledPipe
 
 fn build_thumbnail_colourspace_cast(size: u32) -> viprs::adapters::pipeline::CompiledPipeline {
     let source = MemorySource::<U8>::new(size, size, 3, rgb_pixels(size)).unwrap();
-    PipelineBuilder::from_source(source)
+    ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
         .thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),

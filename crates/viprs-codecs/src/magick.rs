@@ -11,10 +11,10 @@ use std::{
 };
 
 use viprs_core::{
-    codec_options::{LoadOptions, SaveOptions},
-    error::ViprsError,
-    format::{BandFormatId, U8},
-    image::Image,
+  codec_options::{LoadOptions, SaveOptions},
+  error::ViprsError,
+  format::{BandFormatId, U8},
+  image::InMemoryImage,
 };
 use viprs_ports::codec::ImageCodec;
 
@@ -164,7 +164,7 @@ impl ImageCodec for MagickFallbackSaver {
         }
 
         let image = image
-            .downcast_ref::<Image<U8>>()
+            .downcast_ref::<InMemoryImage<U8>>()
             .ok_or_else(|| ViprsError::Codec("magick fallback expected Image<U8>".into()))?;
         let pam = build_pam_u8(image);
         run_magick(&pam, self.output_spec)
@@ -314,7 +314,7 @@ fn run_magick_program(
     Ok(output.stdout)
 }
 
-fn parse_pam_u8(bytes: &[u8]) -> Result<Image<U8>, ViprsError> {
+fn parse_pam_u8(bytes: &[u8]) -> Result<InMemoryImage<U8>, ViprsError> {
     if !bytes.starts_with(b"P7\n") {
         return Err(ViprsError::Codec(
             "magick fallback decode expected PAM (P7) output".into(),
@@ -396,7 +396,7 @@ fn parse_pam_u8(bytes: &[u8]) -> Result<Image<U8>, ViprsError> {
         )));
     }
 
-    Image::<U8>::from_buffer(width, height, depth, payload.to_vec())
+    InMemoryImage::<U8>::from_buffer(width, height, depth, payload.to_vec())
 }
 
 fn parse_header_u32(value: &[u8], key: &str) -> Result<u32, ViprsError> {
@@ -406,7 +406,7 @@ fn parse_header_u32(value: &[u8], key: &str) -> Result<u32, ViprsError> {
         .map_err(|_| ViprsError::Codec(format!("magick fallback PAM field {key} is invalid")))
 }
 
-fn build_pam_u8(image: &Image<U8>) -> Vec<u8> {
+fn build_pam_u8(image: &InMemoryImage<U8>) -> Vec<u8> {
     let tuple_type = match image.bands() {
         1 => "GRAYSCALE",
         2 => "GRAYSCALE_ALPHA",

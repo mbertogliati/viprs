@@ -10,14 +10,14 @@ use viprs::domain::codec_options::{LoadOptions, SaveOptions};
 #[cfg(feature = "jpeg")]
 use viprs::domain::format::U8;
 #[cfg(feature = "jpeg")]
-use viprs::domain::image::Image;
+use viprs::domain::image::InMemoryImage;
 #[cfg(feature = "jpeg")]
 use viprs::ports::codec::{ImageDecoder, ImageEncoder};
 #[cfg(feature = "jpeg")]
 use viprs::ports::source::ImageSource;
 
 #[cfg(feature = "jpeg")]
-fn patterned_rgb_8x8() -> Image<U8> {
+fn patterned_rgb_8x8() -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(8 * 8 * 3);
     for y in 0u8..8 {
         for x in 0u8..8 {
@@ -26,7 +26,7 @@ fn patterned_rgb_8x8() -> Image<U8> {
             data.push(x.saturating_add(y).saturating_mul(11));
         }
     }
-    Image::from_buffer(8, 8, 3, data).unwrap()
+    InMemoryImage::from_buffer(8, 8, 3, data).unwrap()
 }
 
 #[test]

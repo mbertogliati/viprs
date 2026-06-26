@@ -4,7 +4,7 @@ use super::*;
 use std::num::NonZeroU8;
 use viprs_core::codec_options::{LoadOptions, SaveOptions, TiffCompression, TiffPredictor};
 use viprs_core::format::{F32, U8, U16};
-use viprs_core::image::{Image, Region};
+use viprs_core::image::{InMemoryImage, Region};
 #[cfg(feature = "icc")]
 use viprs_ops_colour::colour::{IccTransformOptions, icc_transform, profile_load};
 
@@ -20,7 +20,7 @@ fn encode_two_page_rgb_tiff() -> Vec<u8> {
     output
 }
 
-fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
+fn clamped_region_pixels_u8(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
     let bands = image.bands() as usize;
     let mut output = vec![0u8; region.pixel_count() * bands];
     for out_y in 0..region.height {
@@ -48,7 +48,7 @@ fn shared_write_buffer_into_inner_returns_written_bytes() {
 #[test]
 fn tile_decoder_matches_eager_decode_region_for_tiled_input() {
     let pixels: Vec<u8> = (0..8 * 6 * 3).map(|value| (value % 251) as u8).collect();
-    let image = Image::<U8>::from_buffer(8, 6, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 6, 3, pixels).unwrap();
     let encoded = TiffEncoder::default()
         .encode_with_options(
             &image,
@@ -72,7 +72,7 @@ fn tile_decoder_matches_eager_decode_region_for_tiled_input() {
 
 #[test]
 fn decode_region_into_returns_image_too_large_for_overflowing_region() {
-    let image = Image::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
     let encoded = TiffEncoder::default().encode(&image).unwrap();
     let region = Region::new(0, 0, u32::MAX, u32::MAX);
     let mut output = Vec::new();
@@ -116,15 +116,15 @@ fn encode_rgb_f32_tiff() -> Vec<u8> {
     output
 }
 
-fn sample_rgb_image() -> Image<U8> {
-    Image::<U8>::from_buffer(6, 4, 3, (0u8..72).collect()).unwrap()
+fn sample_rgb_image() -> InMemoryImage<U8> {
+    InMemoryImage::<U8>::from_buffer(6, 4, 3, (0u8..72).collect()).unwrap()
 }
 
-fn solid_gray_image(value: u8) -> Image<U8> {
-    Image::<U8>::from_buffer(8, 8, 1, vec![value; 64]).unwrap()
+fn solid_gray_image(value: u8) -> InMemoryImage<U8> {
+    InMemoryImage::<U8>::from_buffer(8, 8, 1, vec![value; 64]).unwrap()
 }
 
-fn multi_strip_rgb_image() -> Image<U8> {
+fn multi_strip_rgb_image() -> InMemoryImage<U8> {
     let width = 7u32;
     let height = DEFAULT_TIFF_ROWS_PER_STRIP * 2 + 5;
     let bands = 3u32;
@@ -132,7 +132,7 @@ fn multi_strip_rgb_image() -> Image<U8> {
     let pixels = (0..pixel_count)
         .map(|index| u8::try_from(index % 251).unwrap())
         .collect();
-    Image::<U8>::from_buffer(width, height, bands, pixels).unwrap()
+    InMemoryImage::<U8>::from_buffer(width, height, bands, pixels).unwrap()
 }
 
 #[test]
@@ -148,7 +148,7 @@ fn sniff_rejects_png() {
 #[test]
 fn round_trip_u8_rgb_is_pixel_exact() {
     let codec = TiffCodec::default();
-    let original = Image::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
 
     let encoded = codec.encode(&original).unwrap();
     let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -168,7 +168,7 @@ fn round_trip_u8_rgb_is_pixel_exact() {
 fn round_trip_u16_grayscale_is_pixel_exact() {
     let codec = TiffCodec::default();
     let pixels: Vec<u16> = (0u16..16).map(|value| value * 257).collect();
-    let original = Image::<U16>::from_buffer(4, 4, 1, pixels).unwrap();
+    let original = InMemoryImage::<U16>::from_buffer(4, 4, 1, pixels).unwrap();
 
     let encoded = codec.encode(&original).unwrap();
     let decoded = codec.decode::<U16>(&encoded).unwrap();
@@ -247,7 +247,7 @@ fn decode_embedded_gray_profile_transforms_to_srgb_correctly() {
 #[test]
 fn pyramid_tiff_round_trips_with_subifd_level_selection() {
     let codec = TiffCodec::default();
-    let original = Image::<U8>::from_buffer(8, 8, 1, (0u8..64).collect()).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(8, 8, 1, (0u8..64).collect()).unwrap();
 
     let mut encoded = codec
         .encode_with_options(
@@ -374,7 +374,7 @@ fn decode_populates_orientation_and_resolution_metadata() {
 #[test]
 fn lzw_round_trip_is_pixel_exact() {
     let codec = TiffEncoder::with_compression(TiffCompression::Lzw);
-    let original = Image::<U8>::from_buffer(3, 2, 3, (0u8..18).collect()).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(3, 2, 3, (0u8..18).collect()).unwrap();
 
     let encoded = codec.encode(&original).unwrap();
     let decoded = TiffDecoder.decode::<U8>(&encoded).unwrap();
@@ -401,7 +401,7 @@ fn deflate_round_trip_is_pixel_exact() {
     let codec = TiffEncoder::with_compression(TiffCompression::Deflate)
         .with_predictor(TiffPredictor::Horizontal);
     let original =
-        Image::<U16>::from_buffer(3, 2, 1, vec![0, 1024, 2048, 4096, 8192, 16384]).unwrap();
+        InMemoryImage::<U16>::from_buffer(3, 2, 1, vec![0, 1024, 2048, 4096, 8192, 16384]).unwrap();
 
     let encoded = codec
         .encode_with_options(&original, &SaveOptions::default().with_compression_level(9))
@@ -527,7 +527,7 @@ fn tiled_output_sets_requested_tile_dimensions() {
 fn round_trip_f32_rgb_is_pixel_exact() {
     let codec = TiffCodec::default();
     let original =
-        Image::<F32>::from_buffer(2, 1, 3, vec![0.0, 0.5, 1.0, 0.25, 0.75, 0.125]).unwrap();
+        InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![0.0, 0.5, 1.0, 0.25, 0.75, 0.125]).unwrap();
 
     let encoded = codec.encode(&original).unwrap();
     let mut decoder = Decoder::new(Cursor::new(encoded.as_slice())).unwrap();

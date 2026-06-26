@@ -24,7 +24,7 @@ fn main() -> Result<(), ViprsError> {
     let output = args.next().unwrap_or_else(|| usage(&program));
     let target_width = parse_width(args.next())?;
 
-    ImageApi::open(&input)?
+    ImagePipeline2::open(&input)?
         .thumbnail(target_width)?
         .save(&output)?;
     println!("Saved thumbnail to {output}");

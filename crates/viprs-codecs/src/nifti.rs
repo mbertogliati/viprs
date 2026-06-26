@@ -45,7 +45,7 @@ use std::path::Path;
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── NIfTI-1 datatype constants ─────────────────────────────────────────────
@@ -381,7 +381,7 @@ fn cast_samples_to_band_format<T: bytemuck::Pod, F: BandFormat>(
 fn decode_path_object<F: BandFormat>(
     header: &::nifti::NiftiHeader,
     volume: InMemNiftiVolume,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let dt = NiftiDatatype::from_i16(header.datatype).ok_or_else(|| {
         ViprsError::Codec(format!("nifti: unsupported datatype={}", header.datatype))
     })?;
@@ -438,7 +438,7 @@ fn decode_path_object<F: BandFormat>(
         ..ImageMetadata::default()
     };
 
-    Image::from_buffer(width, height, bands, samples)
+    InMemoryImage::from_buffer(width, height, bands, samples)
         .map(|img| img.with_metadata(metadata))
         .map_err(|err| ViprsError::Codec(err.to_string()))
 }
@@ -461,7 +461,7 @@ impl NiftiCodec {
     /// Returns [`ViprsError::Codec`] when the buffer is too short, the magic
     /// field is invalid, the datatype is unsupported, or `F::ID` does not
     /// match the header's datatype.
-    pub fn decode_nifti<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    pub fn decode_nifti<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         let hdr = Nifti1Header::parse(src)?;
         hdr.validate_magic()?;
         if &hdr.magic == b"ni1\0" {
@@ -527,7 +527,7 @@ impl NiftiCodec {
             ..ImageMetadata::default()
         };
 
-        Image::from_buffer(width, height, bands, samples)
+        InMemoryImage::from_buffer(width, height, bands, samples)
             .map(|img| img.with_metadata(metadata))
             .map_err(|err| ViprsError::Codec(err.to_string()))
     }
@@ -549,11 +549,11 @@ impl ImageDecoder for NiftiCodec {
         sniff_nifti(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_nifti(src)
     }
 
-    fn decode_path<F: BandFormat>(&self, path: &Path) -> Result<Image<F>, ViprsError>
+    fn decode_path<F: BandFormat>(&self, path: &Path) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -564,7 +564,7 @@ impl ImageDecoder for NiftiCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -575,7 +575,7 @@ impl ImageDecoder for NiftiCodec {
         &self,
         path: &Path,
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -625,7 +625,7 @@ impl ImageEncoder for NiftiCodec {
         "nifti"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         let dt = band_format_to_nifti(F::ID, image.bands())?;
 
         let mut header = [0u8; 348];
@@ -642,9 +642,9 @@ impl ImageEncoder for NiftiCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

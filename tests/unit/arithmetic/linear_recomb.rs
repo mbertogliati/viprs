@@ -2,11 +2,11 @@ mod chaos_monkey_2 {
     use bytemuck::{Pod, cast_slice};
     use proptest::prelude::*;
     use viprs::{
-        BandFormat, BandFormatId, BuildError, CompiledPipeline, F32, Image, ImageMetadata,
+        BandFormat, BandFormatId, BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata,
         Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab, SRgb},
@@ -31,7 +31,7 @@ mod chaos_monkey_2 {
         }
     }
 
-    fn patterned_u8_image(width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn patterned_u8_image(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * bands as usize);
         for y in 0..height {
             for x in 0..width {
@@ -41,7 +41,7 @@ mod chaos_monkey_2 {
             }
         }
 
-        Image::from_buffer(width, height, bands, pixels)
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(if bands >= 3 {
                 rgb_metadata()
@@ -50,7 +50,7 @@ mod chaos_monkey_2 {
             })
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
@@ -65,15 +65,15 @@ mod chaos_monkey_2 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs::pipeline::Flush>(
-        image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<F>), String>
+    fn execute_same_format<F, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<F>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
             image,
         )))
         .map_err(|error| format!("stage failed: {error:?}"))?
@@ -98,15 +98,15 @@ mod chaos_monkey_2 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
-        image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    fn execute_to_buffer<F, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<F>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
             image,
         )))
         .map_err(|error| format!("stage failed: {error:?}"))?
@@ -214,7 +214,7 @@ mod chaos_monkey_2 {
 
     #[test]
     fn pass4_linear_u8_clamps_boundary_values() {
-        let image: Image<U8> = Image::from_buffer(1, 1, 1, vec![200u8]).unwrap();
+        let image: InMemoryImage<U8> = InMemoryImage::from_buffer(1, 1, 1, vec![200u8]).unwrap();
         let (_pipeline, output) = execute_same_format(&image, |builder| builder.linear(2.0, 0.0))
             .expect("linear should succeed");
 
@@ -223,8 +223,8 @@ mod chaos_monkey_2 {
 
     #[test]
     fn pass4_linear_f32_handles_nan_and_infinities_without_panicking() {
-        let image: Image<F32> =
-            Image::from_buffer(3, 1, 1, vec![f32::NAN, f32::INFINITY, f32::NEG_INFINITY]).unwrap();
+        let image: InMemoryImage<F32> =
+            InMemoryImage::from_buffer(3, 1, 1, vec![f32::NAN, f32::INFINITY, f32::NEG_INFINITY]).unwrap();
         let (_pipeline, output) = execute_same_format(&image, |builder| builder.linear(1.5, -2.0))
             .expect("linear should succeed");
 

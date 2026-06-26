@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         colorspace::{Lab, Lch},
@@ -50,7 +50,7 @@ fn bench_lch(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<F32>::new(image_size, image_size, 3, lab.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .then(Box::new(ColourConvertBridge::<LabToLch, Lab, Lch>::new(
                             LabToLch, 3,
                         )))
@@ -74,7 +74,7 @@ fn bench_lch(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<F32>::new(image_size, image_size, 3, lch.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .then(Box::new(ColourConvertBridge::<LchToLab, Lch, Lab>::new(
                             LchToLab, 3,
                         )))

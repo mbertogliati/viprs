@@ -4,10 +4,10 @@
 //! ergonomic functions over `Image` values rather than pipeline nodes.
 
 use crate::domain::{
-    error::{FreqfiltError, ViprsError},
-    format::{BandFormat, F64},
-    image::Image,
-    ops::resample::sample_conv::ToF64,
+  error::{FreqfiltError, ViprsError},
+  format::{BandFormat, F64},
+  image::InMemoryImage,
+  ops::resample::sample_conv::ToF64,
 };
 use rustfft::{FftPlanner, num_complex::Complex};
 
@@ -41,15 +41,15 @@ pub const FFT_COMPLEX_BANDS: u32 = 2;
 /// ```rust
 /// use viprs_runtime::{
 ///     freqfilt::{fwfft, FFT_COMPLEX_BANDS},
-///     domain::{format::F32, image::Image},
+///     domain::{format::F32, image::InMemoryImage},
 /// };
 ///
-/// let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0])?;
+/// let image = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![1.0])?;
 /// let spectrum = fwfft(&image)?;
 /// assert_eq!(spectrum.bands(), FFT_COMPLEX_BANDS);
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
-pub fn fwfft<F>(input: &Image<F>) -> Result<Image<F64>, ViprsError>
+pub fn fwfft<F>(input: &InMemoryImage<F>) -> Result<InMemoryImage<F64>, ViprsError>
 where
     F: BandFormat,
     F::Sample: ToF64,
@@ -63,7 +63,7 @@ where
 
     let (width, height, pixel_count) = checked_dimensions(input.width(), input.height())?;
     if pixel_count == 0 {
-        return Image::<F64>::from_buffer(
+        return InMemoryImage::<F64>::from_buffer(
             input.width(),
             input.height(),
             FFT_COMPLEX_BANDS,
@@ -87,7 +87,7 @@ where
         data.push(value.im / scale);
     }
 
-    Image::<F64>::from_buffer(input.width(), input.height(), FFT_COMPLEX_BANDS, data)
+    InMemoryImage::<F64>::from_buffer(input.width(), input.height(), FFT_COMPLEX_BANDS, data)
 }
 
 /// Transform a complex frequency-domain image back to a real image.
@@ -101,15 +101,15 @@ where
 /// ```rust
 /// use viprs_runtime::{
 ///     freqfilt::{fwfft, invfft},
-///     domain::{format::F32, image::Image},
+///     domain::{format::F32, image::InMemoryImage},
 /// };
 ///
-/// let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0])?;
+/// let image = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![1.0])?;
 /// let spatial = invfft(&fwfft(&image)?)?;
 /// assert_eq!(spatial.bands(), 1);
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
-pub fn invfft(input: &Image<F64>) -> Result<Image<F64>, ViprsError> {
+pub fn invfft(input: &InMemoryImage<F64>) -> Result<InMemoryImage<F64>, ViprsError> {
     if input.bands() != FFT_COMPLEX_BANDS {
         return Err(FreqfiltError::InvfftBands {
             bands: input.bands(),
@@ -119,7 +119,7 @@ pub fn invfft(input: &Image<F64>) -> Result<Image<F64>, ViprsError> {
 
     let (width, height, pixel_count) = checked_dimensions(input.width(), input.height())?;
     if pixel_count == 0 {
-        return Image::<F64>::from_buffer(input.width(), input.height(), 1, Vec::new());
+        return InMemoryImage::<F64>::from_buffer(input.width(), input.height(), 1, Vec::new());
     }
 
     let mut spatial: Vec<Complex<f64>> = input
@@ -132,7 +132,7 @@ pub fn invfft(input: &Image<F64>) -> Result<Image<F64>, ViprsError> {
     fft_2d_in_place(&mut spatial, width, height, FftDirection::Inverse);
 
     let data = spatial.into_iter().map(|value| value.re).collect();
-    Image::<F64>::from_buffer(input.width(), input.height(), 1, data)
+    InMemoryImage::<F64>::from_buffer(input.width(), input.height(), 1, data)
 }
 
 #[derive(Copy, Clone)]
@@ -231,7 +231,7 @@ mod tests {
     proptest! {
         #[test]
         fn fwfft_then_invfft_round_trip_is_identity((width, height, pixels) in mono_images()) {
-            let image = Image::<F32>::from_buffer(width, height, 1, pixels.clone()).unwrap();
+            let image = InMemoryImage::<F32>::from_buffer(width, height, 1, pixels.clone()).unwrap();
 
             let spectrum = fwfft(&image).unwrap();
             let reconstructed = invfft(&spectrum).unwrap();
@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn single_pixel_round_trip_preserves_value() {
-        let image = Image::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
 
         let spectrum = fwfft(&image).unwrap();
         let reconstructed = invfft(&spectrum).unwrap();
@@ -257,7 +257,7 @@ mod tests {
 
     #[test]
     fn constant_signal_places_dc_at_image_center() {
-        let image = Image::<F32>::from_buffer(4, 4, 1, vec![2.0; 16]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(4, 4, 1, vec![2.0; 16]).unwrap();
 
         let spectrum = fwfft(&image).unwrap();
 
@@ -281,7 +281,7 @@ mod tests {
 
     #[test]
     fn empty_image_returns_empty_buffers() {
-        let image = Image::<F32>::from_buffer(0, 0, 1, Vec::new()).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(0, 0, 1, Vec::new()).unwrap();
 
         let spectrum = fwfft(&image).unwrap();
         let reconstructed = invfft(&spectrum).unwrap();
@@ -292,7 +292,7 @@ mod tests {
 
     #[test]
     fn fwfft_rejects_multiband_input() {
-        let image = Image::<F32>::from_buffer(1, 1, 2, vec![1.0, 0.0]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 2, vec![1.0, 0.0]).unwrap();
 
         let err = fwfft(&image).unwrap_err();
 
@@ -304,7 +304,7 @@ mod tests {
 
     #[test]
     fn invfft_rejects_non_complex_layout() {
-        let image = Image::<F64>::from_buffer(1, 1, 1, vec![1.0]).unwrap();
+        let image = InMemoryImage::<F64>::from_buffer(1, 1, 1, vec![1.0]).unwrap();
 
         let err = invfft(&image).unwrap_err();
 

@@ -7,8 +7,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::arithmetic::round::{Ceil, Floor, Round};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::F32,
     domain::op::OperationBridge,
@@ -24,7 +24,7 @@ fn bench_round(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new_pixel_local(Round::<F32>::new(), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()
@@ -51,7 +51,7 @@ fn bench_floor(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new_pixel_local(Floor::<F32>::new(), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()
@@ -78,7 +78,7 @@ fn bench_ceil(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new_pixel_local(Ceil::<F32>::new(), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()

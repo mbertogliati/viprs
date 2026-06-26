@@ -7,7 +7,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const VIPS_MAGIC_INTEL_BYTES: [u8; 4] = [0xB6, 0xA6, 0xF2, 0x08];
@@ -81,7 +81,7 @@ impl VipsCodec {
     /// ```rust,no_run
     /// let _ = viprs_codecs::vips_format::VipsCodec::decode_vips::<viprs_core::format::U8>;
     /// ```
-    pub fn decode_vips<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    pub fn decode_vips<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         let (header, endianness) = parse_header(src)?;
         if header.band_format != F::ID {
             return Err(ViprsError::Codec(format!(
@@ -128,7 +128,7 @@ impl VipsCodec {
             yres: Some(header.yres),
             ..ImageMetadata::default()
         };
-        Image::from_buffer(header.width, header.height, header.bands, samples)
+        InMemoryImage::from_buffer(header.width, header.height, header.bands, samples)
             .map_err(|err| ViprsError::Codec(err.to_string()))
             .map(|image| image.with_metadata(metadata))
     }
@@ -141,7 +141,7 @@ impl VipsCodec {
     /// ```rust,no_run
     /// let _ = viprs_codecs::vips_format::VipsCodec::encode_vips::<viprs_core::format::U8>;
     /// ```
-    pub fn encode_vips<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    pub fn encode_vips<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         let sample_size = std::mem::size_of::<F::Sample>();
         let pixel_bytes = bytemuck::cast_slice::<F::Sample, u8>(image.pixels());
         let length_i32 = i32::try_from(pixel_bytes.len()).map_err(|_| {
@@ -219,7 +219,7 @@ impl ImageDecoder for VipsCodec {
         sniff_vips(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_vips(src)
     }
 
@@ -227,7 +227,7 @@ impl ImageDecoder for VipsCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -248,14 +248,14 @@ impl ImageEncoder for VipsCodec {
         "vips"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_vips(image)
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

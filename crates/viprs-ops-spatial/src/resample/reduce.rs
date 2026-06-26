@@ -359,13 +359,13 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{
-        error::ViprsError,
-        format::U8,
-        image::{Image, Region, Tile, TileMut},
-        resample::ResampleOp,
+      error::ViprsError,
+      format::U8,
+      image::{InMemoryImage, Region, Tile, TileMut},
+      resample::ResampleOp,
     };
 
-    fn read_region_with_edge_copy(image: &Image<U8>, region: Region) -> Vec<u8> {
+    fn read_region_with_edge_copy(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
         let width = image.width() as i64;
         let height = image.height() as i64;
         let bands = image.bands() as usize;
@@ -385,7 +385,7 @@ mod tests {
         prepared
     }
 
-    fn run_reduce(image: &Image<U8>, h_factor: f64, v_factor: f64) -> (Region, Vec<u8>) {
+    fn run_reduce(image: &InMemoryImage<U8>, h_factor: f64, v_factor: f64) -> (Region, Vec<u8>) {
         let op = ReduceOp::<U8>::new(h_factor, v_factor, InterpolationKernel::Bilinear).unwrap();
         let out_region = Region::new(
             0,
@@ -404,7 +404,7 @@ mod tests {
         (out_region, output_data)
     }
 
-    fn run_reduce_reference(image: &Image<U8>, h_factor: f64, v_factor: f64) -> (Region, Vec<u8>) {
+    fn run_reduce_reference(image: &InMemoryImage<U8>, h_factor: f64, v_factor: f64) -> (Region, Vec<u8>) {
         let h_op = ReduceH::<U8>::new(h_factor, InterpolationKernel::Bilinear).unwrap();
         let h_out_region = Region::new(0, 0, h_op.output_width(image.width()), image.height());
         let h_in_region = h_op.required_input_region(&h_out_region);
@@ -415,7 +415,7 @@ mod tests {
         let mut h_state = h_op.start_with_tile(h_out_region.width, h_out_region.height);
         h_op.process_region(&mut h_state, &h_tile, &mut h_target);
 
-        let intermediate = Image::<U8>::from_buffer(
+        let intermediate = InMemoryImage::<U8>::from_buffer(
             h_out_region.width,
             h_out_region.height,
             image.bands(),
@@ -472,7 +472,7 @@ mod tests {
 
     #[test]
     fn factor_one_is_identity() {
-        let image = Image::<U8>::from_buffer(4, 3, 1, (0u8..12).collect()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 3, 1, (0u8..12).collect()).unwrap();
         let (region, output) = run_reduce(&image, 1.0, 1.0);
         assert_eq!(region, Region::new(0, 0, image.width(), image.height()));
         assert_eq!(output, image.pixels());
@@ -528,7 +528,7 @@ mod tests {
 
     #[test]
     fn mixed_multiband_pixels_match_separable_reference_at_factor_two() {
-        let image = Image::<U8>::from_buffer(
+        let image = InMemoryImage::<U8>::from_buffer(
             4,
             4,
             3,
@@ -550,7 +550,7 @@ mod tests {
 
     #[test]
     fn mixed_pixels_match_separable_reference_for_anisotropic_shrink() {
-        let image = Image::<U8>::from_buffer(
+        let image = InMemoryImage::<U8>::from_buffer(
             5,
             4,
             1,

@@ -15,7 +15,7 @@ use super::common::{
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::BandFormat;
-use viprs_core::image::{Image, ImageMetadata, Region};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Region};
 
 pub(super) struct WebpDemux(*mut libwebp_sys::WebPDemuxer);
 
@@ -351,7 +351,7 @@ pub(super) fn decode_animated_webp<F: BandFormat>(
     opts: &LoadOptions,
     icc_profile: Option<Vec<u8>>,
     xmp: Option<Vec<u8>>,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let shrink_factor = opts.shrink_factor.map_or(1, std::num::NonZeroU8::get);
     let shrink_plan = webp_anim_shrink_on_load_plan(shrink_factor);
     let demux = WebpDemux::new(src)?;

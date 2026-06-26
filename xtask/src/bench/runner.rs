@@ -16,7 +16,7 @@ use viprs::adapters::sinks::{discard::DiscardSink, memory::MemorySink};
 use viprs::domain::codec_options::{LoadOptions, SaveOptions};
 use viprs::domain::draw::DrawOp;
 use viprs::domain::format::{BandFormat, BandFormatId, F32, U8, U16};
-use viprs::domain::image::{Image, ImageMetadata, Region};
+use viprs::domain::image::{InMemoryImage, ImageMetadata, Region};
 use viprs::domain::kernel::InterpolationKernel;
 use viprs::domain::op::DynOperation;
 use viprs::domain::ops::conversion::BlendMode;
@@ -917,19 +917,19 @@ fn run_viprs_special_profile_only(input: &Path, op: &str, op_args: &[String], it
             && !is_load_benchmark(op)
         {
             Some(
-                Image::<U8>::load(input)
+                InMemoryImage::<U8>::load(input)
                     .expect("Failed to pre-load integer image for encode benchmark"),
             )
         } else {
             None
         };
     let preloaded_u16 = if save_avif_format == Some("u16") {
-        Some(Image::<U16>::load(input).expect("Failed to pre-load image for 16-bit AVIF encode"))
+        Some(InMemoryImage::<U16>::load(input).expect("Failed to pre-load image for 16-bit AVIF encode"))
     } else {
         None
     };
     let preloaded_f32 = if is_save_exr {
-        Some(Image::<F32>::load(input).expect("Failed to pre-load image for EXR encode"))
+        Some(InMemoryImage::<F32>::load(input).expect("Failed to pre-load image for EXR encode"))
     } else {
         None
     };
@@ -1123,7 +1123,7 @@ pub fn run_viprs_bench(
             && !e2e
         {
             Some(
-                Image::<U8>::load(input)
+                InMemoryImage::<U8>::load(input)
                     .expect("Failed to pre-load integer image for encode benchmark"),
             )
         } else {
@@ -1131,13 +1131,13 @@ pub fn run_viprs_bench(
         };
         let preloaded_u16 = if save_avif_format == Some("u16") && !e2e {
             Some(
-                Image::<U16>::load(input).expect("Failed to pre-load image for 16-bit AVIF encode"),
+                InMemoryImage::<U16>::load(input).expect("Failed to pre-load image for 16-bit AVIF encode"),
             )
         } else {
             None
         };
         let preloaded_f32 = if is_save_exr && !e2e {
-            Some(Image::<F32>::load(input).expect("Failed to pre-load image for EXR encode"))
+            Some(InMemoryImage::<F32>::load(input).expect("Failed to pre-load image for EXR encode"))
         } else {
             None
         };
@@ -1158,13 +1158,13 @@ pub fn run_viprs_bench(
                 } else {
                     match save_avif_format {
                         Some("u16") => {
-                            let image = Image::<U16>::load(input).expect("Failed to load image");
+                            let image = InMemoryImage::<U16>::load(input).expect("Failed to load image");
                             let encoded =
                                 codec.encode(&image).expect("Failed to encode 16-bit AVIF");
                             black_box(encoded);
                         }
                         _ => {
-                            let image = Image::<U8>::load(input).expect("Failed to load image");
+                            let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                             let encoded = codec.encode(&image).expect("Failed to encode AVIF");
                             black_box(encoded);
                         }
@@ -1175,7 +1175,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode GIF");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode GIF");
                     black_box(encoded);
                 }
@@ -1184,7 +1184,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode HEIF");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode HEIF");
                     black_box(encoded);
                 }
@@ -1198,7 +1198,7 @@ pub fn run_viprs_bench(
                         .expect("Failed to encode JPEG");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec
                         .encode_with_options(&image, opts)
                         .expect("Failed to encode JPEG");
@@ -1209,7 +1209,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode EXR");
                     black_box(encoded);
                 } else {
-                    let image = Image::<F32>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<F32>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode EXR");
                     black_box(encoded);
                 }
@@ -1218,7 +1218,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode JPEG 2000");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode JPEG 2000");
                     black_box(encoded);
                 }
@@ -1266,13 +1266,13 @@ pub fn run_viprs_bench(
                 } else {
                     match save_avif_format {
                         Some("u16") => {
-                            let image = Image::<U16>::load(input).expect("Failed to load image");
+                            let image = InMemoryImage::<U16>::load(input).expect("Failed to load image");
                             let encoded =
                                 codec.encode(&image).expect("Failed to encode 16-bit AVIF");
                             black_box(encoded);
                         }
                         _ => {
-                            let image = Image::<U8>::load(input).expect("Failed to load image");
+                            let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                             let encoded = codec.encode(&image).expect("Failed to encode AVIF");
                             black_box(encoded);
                         }
@@ -1283,7 +1283,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode GIF");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode GIF");
                     black_box(encoded);
                 }
@@ -1292,7 +1292,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode HEIF");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode HEIF");
                     black_box(encoded);
                 }
@@ -1306,7 +1306,7 @@ pub fn run_viprs_bench(
                         .expect("Failed to encode JPEG");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec
                         .encode_with_options(&image, opts)
                         .expect("Failed to encode JPEG");
@@ -1317,7 +1317,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode EXR");
                     black_box(encoded);
                 } else {
-                    let image = Image::<F32>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<F32>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode EXR");
                     black_box(encoded);
                 }
@@ -1326,7 +1326,7 @@ pub fn run_viprs_bench(
                     let encoded = codec.encode(image).expect("Failed to encode JPEG 2000");
                     black_box(encoded);
                 } else {
-                    let image = Image::<U8>::load(input).expect("Failed to load image");
+                    let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
                     let encoded = codec.encode(&image).expect("Failed to encode JPEG 2000");
                     black_box(encoded);
                 }
@@ -1599,7 +1599,7 @@ fn build_mapim_index(width: u32, height: u32, dx: f32, dy: f32) -> Vec<f32> {
     index
 }
 
-fn run_mapim_kernel<F>(image: &Image<F>, index: &[f32], threads: usize)
+fn run_mapim_kernel<F>(image: &InMemoryImage<F>, index: &[f32], threads: usize)
 where
     F: BandFormat + Send + Sync + 'static,
     F::Sample: Pod + Send + Sync,
@@ -1787,7 +1787,7 @@ fn encode_sink_to_format(
     }
 }
 
-fn encode_image_u8(image: &Image<U8>, target_format: &str) -> Vec<u8> {
+fn encode_image_u8(image: &InMemoryImage<U8>, target_format: &str) -> Vec<u8> {
     match target_format {
         "jpg" | "jpeg" => {
             let codec = JpegCodec;

@@ -66,8 +66,8 @@ mod tests {
     use crate::colour::labs_to_labq::LabSToLabQ;
     use proptest::prelude::*;
     use viprs_core::{
-        image::{Image, Region, Tile, TileMut},
-        op::OperationBridge,
+      image::{InMemoryImage, Region, Tile, TileMut},
+      op::OperationBridge,
     };
 
     fn make_region(pixels: usize) -> Region {
@@ -93,7 +93,7 @@ mod tests {
 
     fn decode_labq(input_data: Vec<u8>) -> Vec<i16> {
         let pixels = input_data.len() / 4;
-        let input_image = Image::<U8>::from_buffer(pixels as u32, 1, 4, input_data).unwrap();
+        let input_image = InMemoryImage::<U8>::from_buffer(pixels as u32, 1, 4, input_data).unwrap();
         let region = make_region(pixels);
         let input = Tile::new(region, 4, input_image.pixels());
         let mut output_data = vec![0_i16; pixels * 3];
@@ -106,7 +106,7 @@ mod tests {
 
     fn encode_labs(input_data: Vec<i16>) -> Vec<u8> {
         let pixels = input_data.len() / 3;
-        let input_image = Image::<I16>::from_buffer(pixels as u32, 1, 3, input_data).unwrap();
+        let input_image = InMemoryImage::<I16>::from_buffer(pixels as u32, 1, 3, input_data).unwrap();
         let region = make_region(pixels);
         let input = Tile::new(region, 3, input_image.pixels());
         let mut output_data = vec![0_u8; pixels * 4];

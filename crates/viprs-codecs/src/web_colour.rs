@@ -6,9 +6,9 @@
 use std::borrow::Cow;
 
 use viprs_core::{
-    error::ViprsError,
-    format::{U8, U16},
-    image::{Image, Interpretation},
+  error::ViprsError,
+  format::{U8, U16},
+  image::{InMemoryImage, Interpretation},
 };
 
 #[cfg(feature = "icc")]
@@ -25,7 +25,7 @@ use viprs_ops_colour::colour::{
 /// ```ignore
 /// let _ = viprs_codecs::web_colour::normalize_web_output_u8;
 /// ```
-pub fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, ViprsError> {
+pub fn normalize_web_output_u8(image: &InMemoryImage<U8>) -> Result<Cow<'_, InMemoryImage<U8>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
     {
         Ok(Cow::Borrowed(image))
@@ -45,7 +45,7 @@ pub fn normalize_web_output_u8(image: &Image<U8>) -> Result<Cow<'_, Image<U8>>, 
 /// ```ignore
 /// let _ = viprs_codecs::web_colour::normalize_web_output_u16;
 /// ```
-pub fn normalize_web_output_u16(image: &Image<U16>) -> Result<Cow<'_, Image<U16>>, ViprsError> {
+pub fn normalize_web_output_u16(image: &InMemoryImage<U16>) -> Result<Cow<'_, InMemoryImage<U16>>, ViprsError> {
     #[cfg(not(feature = "icc"))]
     {
         Ok(Cow::Borrowed(image))
@@ -60,11 +60,11 @@ pub fn normalize_web_output_u16(image: &Image<U16>) -> Result<Cow<'_, Image<U16>
 #[cfg(feature = "icc")]
 mod enabled {
     use super::{
-        Cow, IccImage, IccIntent, IccTransformOptions, Image, Interpretation, U8, U16, ViprsError,
-        icc_transform, needs_srgb_normalization, srgb_profile_bytes,
+      Cow, IccImage, IccIntent, IccTransformOptions, InMemoryImage, Interpretation, U8, U16, ViprsError,
+      icc_transform, needs_srgb_normalization, srgb_profile_bytes,
     };
 
-    fn should_normalize<F>(image: &Image<F>) -> bool
+    fn should_normalize<F>(image: &InMemoryImage<F>) -> bool
     where
         F: viprs_core::format::BandFormat,
     {
@@ -84,7 +84,7 @@ mod enabled {
         srgb_profile_bytes()
     }
 
-    fn transformed_u8(image: IccImage) -> Result<Image<U8>, ViprsError> {
+    fn transformed_u8(image: IccImage) -> Result<InMemoryImage<U8>, ViprsError> {
         match image {
             IccImage::U8(image) => Ok(image),
             IccImage::U16(_) | IccImage::F32(_) => Err(ViprsError::Codec(
@@ -93,7 +93,7 @@ mod enabled {
         }
     }
 
-    fn transformed_u16(image: IccImage) -> Result<Image<U16>, ViprsError> {
+    fn transformed_u16(image: IccImage) -> Result<InMemoryImage<U16>, ViprsError> {
         match image {
             IccImage::U16(image) => Ok(image),
             IccImage::U8(_) | IccImage::F32(_) => Err(ViprsError::Codec(
@@ -102,7 +102,7 @@ mod enabled {
         }
     }
 
-    fn split_alpha_u8(image: &Image<U8>) -> Result<(Image<U8>, Vec<u8>), ViprsError> {
+    fn split_alpha_u8(image: &InMemoryImage<U8>) -> Result<(InMemoryImage<U8>, Vec<u8>), ViprsError> {
         let colour_bands = image.bands().checked_sub(1).ok_or_else(|| {
             ViprsError::Codec(
                 "web-output ICC normalization requires at least one colour band".into(),
@@ -116,12 +116,12 @@ mod enabled {
             colour.extend_from_slice(&pixel[..colour_bands as usize]);
             alpha.push(pixel[colour_bands as usize]);
         }
-        let colour_image = Image::from_buffer(image.width(), image.height(), colour_bands, colour)?
+        let colour_image = InMemoryImage::from_buffer(image.width(), image.height(), colour_bands, colour)?
             .with_metadata(image.metadata().clone());
         Ok((colour_image, alpha))
     }
 
-    fn split_alpha_u16(image: &Image<U16>) -> Result<(Image<U16>, Vec<u16>), ViprsError> {
+    fn split_alpha_u16(image: &InMemoryImage<U16>) -> Result<(InMemoryImage<U16>, Vec<u16>), ViprsError> {
         let colour_bands = image.bands().checked_sub(1).ok_or_else(|| {
             ViprsError::Codec(
                 "web-output ICC normalization requires at least one colour band".into(),
@@ -135,24 +135,24 @@ mod enabled {
             colour.extend_from_slice(&pixel[..colour_bands as usize]);
             alpha.push(pixel[colour_bands as usize]);
         }
-        let colour_image = Image::from_buffer(image.width(), image.height(), colour_bands, colour)?
+        let colour_image = InMemoryImage::from_buffer(image.width(), image.height(), colour_bands, colour)?
             .with_metadata(image.metadata().clone());
         Ok((colour_image, alpha))
     }
 
-    fn normalize_alpha_u8(image: &Image<U8>, srgb: &[u8]) -> Result<Image<U8>, ViprsError> {
+    fn normalize_alpha_u8(image: &InMemoryImage<U8>, srgb: &[u8]) -> Result<InMemoryImage<U8>, ViprsError> {
         let (colour, alpha) = split_alpha_u8(image)?;
         let colour = transformed_u8(icc_transform(&colour, srgb, &srgb_options(8))?)?;
         join_alpha_u8(&colour, &alpha)
     }
 
-    fn normalize_alpha_u16(image: &Image<U16>, srgb: &[u8]) -> Result<Image<U16>, ViprsError> {
+    fn normalize_alpha_u16(image: &InMemoryImage<U16>, srgb: &[u8]) -> Result<InMemoryImage<U16>, ViprsError> {
         let (colour, alpha) = split_alpha_u16(image)?;
         let colour = transformed_u16(icc_transform(&colour, srgb, &srgb_options(16))?)?;
         join_alpha_u16(&colour, &alpha)
     }
 
-    fn join_alpha_u8(colour: &Image<U8>, alpha: &[u8]) -> Result<Image<U8>, ViprsError> {
+    fn join_alpha_u8(colour: &InMemoryImage<U8>, alpha: &[u8]) -> Result<InMemoryImage<U8>, ViprsError> {
         let pixel_count = colour.width() as usize * colour.height() as usize;
         if alpha.len() != pixel_count {
             return Err(ViprsError::Codec(
@@ -169,12 +169,12 @@ mod enabled {
             pixels.push(alpha_sample);
         }
         Ok(
-            Image::from_buffer(colour.width(), colour.height(), colour.bands() + 1, pixels)?
+          InMemoryImage::from_buffer(colour.width(), colour.height(), colour.bands() + 1, pixels)?
                 .with_metadata(colour.metadata().clone()),
         )
     }
 
-    fn join_alpha_u16(colour: &Image<U16>, alpha: &[u16]) -> Result<Image<U16>, ViprsError> {
+    fn join_alpha_u16(colour: &InMemoryImage<U16>, alpha: &[u16]) -> Result<InMemoryImage<U16>, ViprsError> {
         let pixel_count = colour.width() as usize * colour.height() as usize;
         if alpha.len() != pixel_count {
             return Err(ViprsError::Codec(
@@ -191,7 +191,7 @@ mod enabled {
             pixels.push(alpha_sample);
         }
         Ok(
-            Image::from_buffer(colour.width(), colour.height(), colour.bands() + 1, pixels)?
+          InMemoryImage::from_buffer(colour.width(), colour.height(), colour.bands() + 1, pixels)?
                 .with_metadata(colour.metadata().clone()),
         )
     }
@@ -205,8 +205,8 @@ mod enabled {
     /// let _ = viprs_codecs::web_colour::normalize_web_output_u8;
     /// ```
     pub(super) fn normalize_web_output_u8(
-        image: &Image<U8>,
-    ) -> Result<Cow<'_, Image<U8>>, ViprsError> {
+      image: &InMemoryImage<U8>,
+    ) -> Result<Cow<'_, InMemoryImage<U8>>, ViprsError> {
         if !should_normalize(image) {
             return Ok(Cow::Borrowed(image));
         }
@@ -232,8 +232,8 @@ mod enabled {
     /// let _ = viprs_codecs::web_colour::normalize_web_output_u16;
     /// ```
     pub(super) fn normalize_web_output_u16(
-        image: &Image<U16>,
-    ) -> Result<Cow<'_, Image<U16>>, ViprsError> {
+      image: &InMemoryImage<U16>,
+    ) -> Result<Cow<'_, InMemoryImage<U16>>, ViprsError> {
         if !should_normalize(image) {
             return Ok(Cow::Borrowed(image));
         }
@@ -260,7 +260,7 @@ mod tests {
 
     #[test]
     fn rgba_gray_profile_normalization_preserves_alpha_and_promotes_to_srgb() {
-        let image = Image::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
             .unwrap()
             .with_metadata(ImageMetadata {
                 icc_profile: Some(profile_load("gray").expect("load gray profile")),
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn normalization_borrows_when_profile_is_absent_or_already_srgb() {
-        let plain = Image::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
+        let plain = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
         assert!(matches!(
             normalize_web_output_u8(&plain).expect("plain image"),
             Cow::Borrowed(_)
@@ -300,7 +300,7 @@ mod tests {
 
     #[test]
     fn unsupported_band_counts_are_borrowed_even_with_non_srgb_profile() {
-        let image = Image::<U8>::from_buffer(1, 1, 5, vec![1, 2, 3, 4, 5])
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 5, vec![1, 2, 3, 4, 5])
             .unwrap()
             .with_metadata(ImageMetadata {
                 icc_profile: Some(profile_load("gray").expect("load gray profile")),
@@ -315,7 +315,7 @@ mod tests {
 
     #[test]
     fn gray_u16_profile_normalization_preserves_alpha_and_promotes_to_srgb() {
-        let image = Image::<U16>::from_buffer(2, 1, 2, vec![1024, 17, 49152, 23])
+        let image = InMemoryImage::<U16>::from_buffer(2, 1, 2, vec![1024, 17, 49152, 23])
             .unwrap()
             .with_metadata(ImageMetadata {
                 icc_profile: Some(profile_load("gray").expect("load gray profile")),
@@ -341,7 +341,7 @@ mod tests {
             Ok(profile) => profile,
             Err(_) => return,
         };
-        let image = Image::<U8>::from_buffer(1, 1, 4, vec![0, 0, 0, 0])
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 4, vec![0, 0, 0, 0])
             .unwrap()
             .with_metadata(ImageMetadata {
                 interpretation: Some(Interpretation::Cmyk),

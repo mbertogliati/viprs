@@ -23,10 +23,10 @@ mod robustness_adversarial {
 
     #[cfg(feature = "jpeg")]
     fn tiny_valid_jpeg() -> Vec<u8> {
-        use viprs::{Image, U8, adapters::codecs::JpegCodec, ports::codec::ImageEncoder};
+        use viprs::{InMemoryImage, U8, adapters::codecs::JpegCodec, ports::codec::ImageEncoder};
 
         let image =
-            Image::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56]).expect("valid RGB test image");
+            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56]).expect("valid RGB test image");
         JpegCodec.encode(&image).expect("tiny JPEG fixture")
     }
 
@@ -101,10 +101,10 @@ mod robustness_adversarial {
 
     #[cfg(feature = "png")]
     fn tiny_valid_png() -> Vec<u8> {
-        use viprs::{Image, U8, adapters::codecs::PngCodec, ports::codec::ImageEncoder};
+        use viprs::{InMemoryImage, U8, adapters::codecs::PngCodec, ports::codec::ImageEncoder};
 
         let image =
-            Image::<U8>::from_buffer(1, 1, 3, vec![200, 100, 50]).expect("valid RGB test image");
+            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![200, 100, 50]).expect("valid RGB test image");
         PngCodec::default()
             .encode(&image)
             .expect("tiny PNG fixture")

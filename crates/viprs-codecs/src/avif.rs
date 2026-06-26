@@ -20,7 +20,7 @@ use ravif::{BitDepth, ColorModel, Encoder as RavifEncoder, Img, RGB8, RGBA8};
 use viprs_core::codec_options::{HeifBitDepth, HeifSubsampling, LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8, U16};
-use viprs_core::image::{AnimationFrame, FrameDisposal, Image, ImageMetadata};
+use viprs_core::image::{AnimationFrame, FrameDisposal, InMemoryImage, ImageMetadata};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// AVIF codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
@@ -186,7 +186,7 @@ fn decode_u16_page(
     handle: &ImageHandle,
     opts: &LoadOptions,
     total_pages: u32,
-) -> Result<Image<U16>, ViprsError> {
+) -> Result<InMemoryImage<U16>, ViprsError> {
     let metadata = read_metadata("avif", handle)?;
     let width = handle.width();
     let height = handle.height();
@@ -228,7 +228,7 @@ fn decode_u16_page(
         }
     }
     normalize_u16_samples(&mut samples, bit_depth);
-    let image = Image::from_buffer(width, height, bands, samples)
+    let image = InMemoryImage::from_buffer(width, height, bands, samples)
         .map_err(|e| ViprsError::Codec(e.to_string()))?
         .with_metadata(avif_page_metadata(metadata, height, total_pages));
     normalize_decoded_image(image, opts.no_rotate, "avif")
@@ -238,7 +238,7 @@ fn decode_u8_page(
     handle: &ImageHandle,
     opts: &LoadOptions,
     total_pages: u32,
-) -> Result<Image<U8>, ViprsError> {
+) -> Result<InMemoryImage<U8>, ViprsError> {
     let metadata = read_metadata("avif", handle)?;
     let width = handle.width();
     let height = handle.height();
@@ -267,13 +267,13 @@ fn decode_u8_page(
         }
     }
 
-    let image = Image::from_buffer(width, height, bands, samples)
+    let image = InMemoryImage::from_buffer(width, height, bands, samples)
         .map_err(|e| ViprsError::Codec(e.to_string()))?
         .with_metadata(avif_page_metadata(metadata, height, total_pages));
     normalize_decoded_image(image, opts.no_rotate, "avif")
 }
 
-fn decode_u16_samples(src: &[u8], opts: &LoadOptions) -> Result<Image<U16>, ViprsError> {
+fn decode_u16_samples(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<U16>, ViprsError> {
     let ctx = HeifContext::read_from_bytes(src)
         .map_err(|e| ViprsError::Codec(format!("avif: read_from_bytes: {e}")))?;
     let selection = select_avif_pages(&ctx, opts)?;
@@ -297,7 +297,7 @@ fn decode_u16_samples(src: &[u8], opts: &LoadOptions) -> Result<Image<U16>, Vipr
     }
 
     let page_height = frames[0].image().height();
-    let mut image = Image::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut image = InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut metadata = image.metadata().clone();
     metadata.n_pages = Some(selection.total_pages);
     metadata.page_height = (selection.total_pages > 1).then_some(page_height);
@@ -305,7 +305,7 @@ fn decode_u16_samples(src: &[u8], opts: &LoadOptions) -> Result<Image<U16>, Vipr
     Ok(image)
 }
 
-fn decode_u8_samples(src: &[u8], opts: &LoadOptions) -> Result<Image<U8>, ViprsError> {
+fn decode_u8_samples(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<U8>, ViprsError> {
     let ctx = HeifContext::read_from_bytes(src)
         .map_err(|e| ViprsError::Codec(format!("avif: read_from_bytes: {e}")))?;
     let selection = select_avif_pages(&ctx, opts)?;
@@ -329,7 +329,7 @@ fn decode_u8_samples(src: &[u8], opts: &LoadOptions) -> Result<Image<U8>, ViprsE
     }
 
     let page_height = frames[0].image().height();
-    let mut image = Image::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut image = InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut metadata = image.metadata().clone();
     metadata.n_pages = Some(selection.total_pages);
     metadata.page_height = (selection.total_pages > 1).then_some(page_height);
@@ -352,24 +352,24 @@ const fn decoded_chroma(bit_depth: u8, has_alpha: bool) -> RgbChroma {
 }
 
 fn cast_decoded_frame<S: BandFormat, D: BandFormat>(
-    image: Image<S>,
-    context: &str,
-) -> Result<Image<D>, ViprsError> {
+  image: InMemoryImage<S>,
+  context: &str,
+) -> Result<InMemoryImage<D>, ViprsError> {
     let width = image.width();
     let height = image.height();
     let bands = image.bands();
     let metadata = image.metadata().clone();
     let samples = bytemuck::allocation::try_cast_vec::<S::Sample, D::Sample>(image.into_buffer())
         .map_err(|(e, _)| ViprsError::Codec(format!("{context}: cast error: {e:?}")))?;
-    Image::from_buffer(width, height, bands, samples)
+    InMemoryImage::from_buffer(width, height, bands, samples)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 fn cast_decoded_image<S: BandFormat, D: BandFormat>(
-    image: Image<S>,
-    context: &str,
-) -> Result<Image<D>, ViprsError>
+  image: InMemoryImage<S>,
+  context: &str,
+) -> Result<InMemoryImage<D>, ViprsError>
 where
     S::Sample: Clone,
 {
@@ -669,7 +669,7 @@ impl ImageDecoder for AvifCodec {
         &header[4..8] == b"ftyp" && (&header[8..12] == b"avif" || &header[8..12] == b"avis")
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -677,7 +677,7 @@ impl ImageDecoder for AvifCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -716,14 +716,14 @@ impl ImageEncoder for AvifCodec {
         "avif"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -814,7 +814,7 @@ mod tests {
         );
     }
 
-    fn rgb_u8_gradient(width: u32, height: u32) -> Image<U8> {
+    fn rgb_u8_gradient(width: u32, height: u32) -> InMemoryImage<U8> {
         let pixels: Vec<u8> = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -826,10 +826,10 @@ mod tests {
                 })
             })
             .collect();
-        Image::<U8>::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap()
     }
 
-    fn rgb_u16_gradient(width: u32, height: u32) -> Image<U16> {
+    fn rgb_u16_gradient(width: u32, height: u32) -> InMemoryImage<U16> {
         let pixels: Vec<u16> = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -841,12 +841,12 @@ mod tests {
                 })
             })
             .collect();
-        Image::<U16>::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::<U16>::from_buffer(width, height, 3, pixels).unwrap()
     }
 
-    fn solid_rgb_u8(width: u32, height: u32, rgb: [u8; 3]) -> Image<U8> {
+    fn solid_rgb_u8(width: u32, height: u32, rgb: [u8; 3]) -> InMemoryImage<U8> {
         let pixels = rgb.repeat((width * height) as usize);
-        Image::<U8>::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap()
     }
 
     fn libheif_rgb_image(width: u32, height: u32, pixels: &[u8]) -> LibHeifImage {
@@ -1049,7 +1049,7 @@ mod tests {
     fn round_trip_u8_rgb_solid_colour() {
         let codec = AvifCodec;
         let pixels: Vec<u8> = [0u8, 150, 150].repeat(4 * 4);
-        let original = Image::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
+        let original = InMemoryImage::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
 
         let encoded = codec
             .encode_with_options::<U8>(&original, &SaveOptions::default().with_quality(90))
@@ -1165,7 +1165,7 @@ mod tests {
 
         let codec = AvifCodec;
         let pixels: Vec<u16> = [128u16 << 6, 512u16 << 6, 900u16 << 6].repeat(4 * 4);
-        let original = Image::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
+        let original = InMemoryImage::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
 
         let encoded = codec
             .encode_with_options::<U16>(
@@ -1330,7 +1330,7 @@ mod tests {
         let pixels: Vec<u8> = (0..32)
             .flat_map(|y| (0..32).flat_map(move |x| [x as u8, y as u8, (x ^ y) as u8]))
             .collect();
-        let image = Image::<U8>::from_buffer(32, 32, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(32, 32, 3, pixels).unwrap();
 
         let fast = codec
             .encode_with_options::<U8>(
@@ -1458,7 +1458,7 @@ mod tests {
             (width, height, pixels) in rgb_u8_image(),
         ) {
             let codec = AvifCodec;
-            let original = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+            let original = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
 
             let encoded = encode_u8_with_ravif(
                 original.width(),

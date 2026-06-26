@@ -13,7 +13,7 @@ use std::process::Command;
 use viprs_core::codec_options::{JpegSubsampling, LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::U8;
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 #[cfg(feature = "icc")]
 use viprs_ops_colour::colour::profile_load;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
@@ -196,7 +196,7 @@ fn current_rss_kb() -> usize {
 }
 
 /// Helper: build a flat 8×8 RGB image with all pixels set to `[r, g, b]`.
-fn solid_rgb_image(r: u8, g: u8, b: u8) -> Image<U8> {
+fn solid_rgb_image(r: u8, g: u8, b: u8) -> InMemoryImage<U8> {
     let width = 8u32;
     let height = 8u32;
     let bands = 3u32;
@@ -207,7 +207,7 @@ fn solid_rgb_image(r: u8, g: u8, b: u8) -> Image<U8> {
             _ => b,
         })
         .collect();
-    Image::<U8>::from_buffer(width, height, bands, data).unwrap()
+    InMemoryImage::<U8>::from_buffer(width, height, bands, data).unwrap()
 }
 
 fn truncated_encoded_jpeg_bytes() -> Vec<u8> {
@@ -347,7 +347,7 @@ fn start_of_frame_sampling_factor(jpeg: &[u8]) -> Option<u8> {
     None
 }
 
-fn patterned_rgb_image(width: u32, height: u32) -> Image<U8> {
+fn patterned_rgb_image(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity((width * height * 3) as usize);
     for y in 0..height {
         for x in 0..width {
@@ -357,10 +357,10 @@ fn patterned_rgb_image(width: u32, height: u32) -> Image<U8> {
         }
     }
 
-    Image::<U8>::from_buffer(width, height, 3, data).unwrap()
+    InMemoryImage::<U8>::from_buffer(width, height, 3, data).unwrap()
 }
 
-fn quality_probe_rgb_image(width: u32, height: u32) -> Image<U8> {
+fn quality_probe_rgb_image(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity((width * height * 3) as usize);
     for y in 0..height {
         for x in 0..width {
@@ -373,7 +373,7 @@ fn quality_probe_rgb_image(width: u32, height: u32) -> Image<U8> {
         }
     }
 
-    Image::<U8>::from_buffer(width, height, 3, data).unwrap()
+    InMemoryImage::<U8>::from_buffer(width, height, 3, data).unwrap()
 }
 
 fn psnr_db(original: &[u8], decoded: &[u8]) -> f64 {
@@ -396,7 +396,7 @@ fn psnr_db(original: &[u8], decoded: &[u8]) -> f64 {
     }
 }
 
-fn rgb_histogram(image: &Image<U8>) -> [[u32; 256]; 3] {
+fn rgb_histogram(image: &InMemoryImage<U8>) -> [[u32; 256]; 3] {
     assert_eq!(image.bands(), 3);
 
     let mut histogram = [[0u32; 256]; 3];
@@ -621,7 +621,7 @@ fn audit_reference_large_fixture_decode_matches_imagemagick() {
 
 #[test]
 fn audit_roundtrip_tiny_2x2_rgba_quality_95_preserves_rgb_detail() {
-    let original = Image::<U8>::from_buffer(
+    let original = InMemoryImage::<U8>::from_buffer(
         2,
         2,
         4,
@@ -797,7 +797,7 @@ fn encode_gray_icc_input_normalizes_to_srgb_web_output() {
     let codec = JpegCodec;
     let gray_profile = profile_load("gray").expect("load gray profile");
     let srgb_profile = profile_load("srgb").expect("load srgb profile");
-    let image = Image::<U8>::from_buffer(2, 2, 1, vec![32, 96, 160, 224])
+    let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![32, 96, 160, 224])
         .unwrap()
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::BW),
@@ -901,7 +901,7 @@ fn strip_metadata_omits_embedded_icc_exif_and_xmp() {
 #[test]
 fn decode_sets_srgb_interpretation_for_rgb_jpeg() {
     let codec = JpegCodec;
-    let original = Image::<U8>::from_buffer(2, 2, 3, vec![32u8; 12]).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![32u8; 12]).unwrap();
     let encoded = codec.encode(&original).unwrap();
     let decoded = codec.decode::<viprs_core::format::U8>(&encoded).unwrap();
 
@@ -1185,7 +1185,7 @@ fn encode_1x1_grayscale_round_trip_within_tolerance() {
     // 1×1 grayscale image (1 band) with a mid-range pixel value.
     // libjpeg-turbo preserves grayscale output as 1 band.
     let data: Vec<u8> = vec![128u8];
-    let original = Image::<U8>::from_buffer(1, 1, 1, data).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(1, 1, 1, data).unwrap();
 
     let encoded = codec.encode(&original).unwrap();
     let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -1211,7 +1211,7 @@ fn encode_2_band_image_returns_codec_error() {
     let codec = JpegCodec;
     // 2 bands is not a valid JPEG colour model (only 1, 3, 4 are supported).
     let data: Vec<u8> = vec![0u8; 4 * 4 * 2];
-    let image = Image::<U8>::from_buffer(4, 4, 2, data).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(4, 4, 2, data).unwrap();
     let result = codec.encode(&image);
     assert!(
         matches!(result, Err(ViprsError::Codec(_))),

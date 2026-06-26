@@ -19,7 +19,7 @@ use jxl_oxide::{AuxBoxData, JxlImage};
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::ImageDecoder;
 
 const JXL_CODESTREAM_MAGIC: [u8; 2] = [0xFF, 0x0A];
@@ -183,7 +183,7 @@ impl ImageDecoder for JxlCodec {
         header.starts_with(&JXL_CODESTREAM_MAGIC) || header.starts_with(&JXL_CONTAINER_MAGIC)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -191,7 +191,7 @@ impl ImageDecoder for JxlCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -205,7 +205,7 @@ impl ImageDecoder for JxlCodec {
         let metadata = jxl_metadata(&image);
         let samples = decode_samples::<F>(src)?;
 
-        Image::from_buffer(width, height, bands, samples)
+        InMemoryImage::from_buffer(width, height, bands, samples)
             .map(|image| image.with_metadata(metadata))
             .map_err(|err| ViprsError::Codec(err.to_string()))
     }

@@ -15,7 +15,7 @@ use bytemuck::{Pod, Zeroable, allocation::try_cast_vec};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const MAX_NAXIS: usize = 10;
@@ -441,13 +441,13 @@ where
 }
 
 fn encode_pixels_as<T, F>(
-    fptr: *mut fitsio_sys::fitsfile,
-    datatype: c_int,
-    image: &Image<F>,
-    width: usize,
-    height: usize,
-    bands: usize,
-    label: &str,
+  fptr: *mut fitsio_sys::fitsfile,
+  datatype: c_int,
+  image: &InMemoryImage<F>,
+  width: usize,
+  height: usize,
+  bands: usize,
+  label: &str,
 ) -> Result<(), ViprsError>
 where
     T: Pod,
@@ -546,7 +546,7 @@ impl FitsCodec {
     /// ```rust,no_run
     /// let _ = viprs_codecs::fits::FitsCodec::decode_fits::<viprs_core::format::U8>;
     /// ```
-    pub fn decode_fits<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    pub fn decode_fits<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         let temp = TempFitsPath::new("decode")?;
         fs::write(temp.as_path(), src)?;
 
@@ -635,7 +635,7 @@ impl FitsCodec {
             header.image_type.band_format,
         ));
 
-        Image::from_buffer(header.width, header.height, header.bands, pixels)
+        InMemoryImage::from_buffer(header.width, header.height, header.bands, pixels)
             .map(|img| img.with_metadata(metadata))
             .map_err(|err| ViprsError::Codec(err.to_string()))
     }
@@ -653,7 +653,7 @@ impl ImageDecoder for FitsCodec {
         sniff_fits(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_fits(src)
     }
 
@@ -661,7 +661,7 @@ impl ImageDecoder for FitsCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -686,7 +686,7 @@ impl ImageEncoder for FitsCodec {
         "fits"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         let fits_type = FitsType::from_band_format(F::ID).ok_or_else(|| {
             ViprsError::Codec(format!("fits: unsupported save format {:?}", F::ID))
         })?;
@@ -786,9 +786,9 @@ impl ImageEncoder for FitsCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

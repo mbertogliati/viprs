@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::create::BuildlutOp},
     ports::scheduler::TileScheduler,
@@ -24,7 +24,7 @@ fn bench_buildlut(c: &mut Criterion) {
             ];
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, 1, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(
                         BuildlutOp::<F32>::new(points.clone(), size as usize).unwrap(),
                         1,

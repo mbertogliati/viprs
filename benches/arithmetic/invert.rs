@@ -6,8 +6,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     ports::scheduler::TileScheduler,
@@ -23,7 +23,7 @@ fn bench_invert(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .invert()
                     .unwrap()
                     .build()
@@ -49,7 +49,7 @@ fn bench_invert(c: &mut Criterion) {
         rgb_group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .invert()
                     .unwrap()
                     .build()

@@ -3,24 +3,24 @@ mod robustness_dims {
 
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8, ViprsError,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+      BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8, ViprsError,
+      adapters::{
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sinks::memory::MemorySink, sources::memory::MemorySource,
         },
-        domain::{
+      domain::{
             kernel::InterpolationKernel,
             ops::resample::{Resize, Thumbnail, thumbnail::ThumbnailTarget},
         },
-        ports::scheduler::TileScheduler,
+      ports::scheduler::TileScheduler,
     };
 
-    fn make_u8_image(width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn make_u8_image(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let len = width as usize * height as usize * bands as usize;
         let pixels = (0..len)
             .map(|index| ((index * 37 + 11) % 251) as u8)
             .collect();
-        Image::from_buffer(width, height, bands, pixels)
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(if bands >= 3 {
                 ImageMetadata {
@@ -32,7 +32,7 @@ mod robustness_dims {
             })
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> Result<MemorySource<F>, ViprsError>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> Result<MemorySource<F>, ViprsError>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
@@ -46,11 +46,11 @@ mod robustness_dims {
         .map(|source| source.with_metadata(image.metadata().clone()))
     }
 
-    fn execute_to_image<S: viprs::pipeline::Flush>(
-        image: &Image<U8>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
+    fn execute_to_image<S: viprs::pipeline::Commit>(
+      image: &InMemoryImage<U8>,
+      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<U8>), ViprsError> {
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
             image,
         )?))?
         .build()?;
@@ -65,11 +65,11 @@ mod robustness_dims {
         Ok((pipeline, output))
     }
 
-    fn execute_without_panicking<S: viprs::pipeline::Flush>(
-        image: &Image<U8>,
-        op_name: &str,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
+    fn execute_without_panicking<S: viprs::pipeline::Commit>(
+      image: &InMemoryImage<U8>,
+      op_name: &str,
+      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<U8>), ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| execute_to_image(image, configure)));
         assert!(
             result.is_ok(),
@@ -232,7 +232,7 @@ mod robustness_dims {
 
     #[test]
     fn zero_dimension_buffers_return_typed_errors_or_empty_outputs_without_panicking() {
-        let mismatched = Image::<U8>::from_buffer(0, 7, 1, vec![1]);
+        let mismatched = InMemoryImage::<U8>::from_buffer(0, 7, 1, vec![1]);
         assert!(matches!(
             mismatched,
             Err(ViprsError::RegionOutOfBounds {
@@ -243,7 +243,7 @@ mod robustness_dims {
         ));
 
         for (width, height) in [(0, 0), (0, 7), (7, 0)] {
-            let image = Image::<U8>::from_buffer(width, height, 1, Vec::new())
+            let image = InMemoryImage::<U8>::from_buffer(width, height, 1, Vec::new())
                 .unwrap()
                 .with_metadata(ImageMetadata::default());
 

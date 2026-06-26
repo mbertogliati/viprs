@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         format::F32,
@@ -25,7 +25,7 @@ fn bench_compass(c: &mut Criterion) {
                     CompassOp::<F32>::new(&PREWITT_COMPASS_MASK, 8).unwrap(),
                     1u32,
                 );
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(bridge))
                     .unwrap()
                     .build()

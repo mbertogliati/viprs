@@ -2,7 +2,7 @@
 //! horizontally-threaded pipeline architecture.
 //!
 //! For common application workflows, the crate exposes a small façade via
-//! [`prelude`]: [`ImageApi`] + [`ViprsError`]. Power users can opt into the
+//! [`prelude`]: [`ImagePipeline2`] + [`ViprsError`]. Power users can opt into the
 //! explicit advanced surfaces under [`pipeline`], [`ops`], and [`codecs`].
 //!
 //! # Quick start
@@ -12,7 +12,7 @@
 //! # fn main() -> Result<(), viprs::ViprsError> {
 //! use viprs::prelude::*;
 //!
-//! ImageApi::open("input.jpg")?
+//! ImagePipeline2::open("input.jpg")?
 //!     .thumbnail(400)?
 //!     .invert()?
 //!     .save("thumb.jpg")?;
@@ -58,15 +58,15 @@ static TEST_ALLOCATOR: test_support::CountingAllocator = test_support::CountingA
 pub mod prelude {
     #[cfg(feature = "icc")]
     pub use crate::ImageApiThumbnailOptions;
-    pub use crate::{ImageApi, ImageApiLoader, ImageCodecExt, ResourceLimits, ViprsError};
+    pub use crate::{ImagePipeline2, ImageApiLoader, ImageCodecExt, ResourceLimits, ViprsError};
 }
 
 /// Explicit advanced pipeline surface for manual graph construction and execution.
 pub mod pipeline {
-    pub use crate::adapters::pipeline::Flush;
+    pub use crate::adapters::pipeline::Commit;
     pub use crate::adapters::pipeline::{
         CompiledNode, CompiledOp, CompiledPipeline, InputSlicePtr, LineCacheConfig, PipelineArena,
-        PipelineBuilder, PipelineOp, ThreadBufferPool,
+        ImagePipeline, PipelineOp, ThreadBufferPool,
     };
     pub use crate::adapters::scheduler::rayon_scheduler::RayonScheduler;
     pub use crate::adapters::sinks::discard::DiscardSink;
@@ -98,17 +98,17 @@ pub mod codecs {
 pub use adapters::codecs::registry::ImageCodecExt;
 #[cfg(feature = "icc")]
 pub use adapters::image_api::ImageApiThumbnailOptions;
-pub use adapters::image_api::{ImageApi, ImageApiLoader};
+pub use adapters::image_api::{ImagePipeline2, ImageApiLoader};
 pub use domain::error::ViprsError;
 pub use domain::limits::{DecodeLimits, ResourceLimits};
 
 #[cfg(feature = "fft")]
 pub use adapters::freqfilt::{fwfft, invfft};
-pub use adapters::pipeline::{CompiledPipeline, PipelineBuilder};
+pub use adapters::pipeline::{CompiledPipeline, ImagePipeline};
 pub use adapters::sources::{BlackSource, any::AnySource};
 pub use domain::error::BuildError;
 pub use domain::format::{BandFormat, BandFormatId, F32, F64, U8, U16};
-pub use domain::image::{DemandHint, Image, ImageMetadata, Interpretation, Region, Tile, TileMut};
+pub use domain::image::{DemandHint, InMemoryImage, ImageMetadata, Interpretation, Region, Tile, TileMut};
 pub use domain::op::{DynOperation, Op, OperationBridge};
 #[cfg(feature = "fft")]
 pub use domain::ops::freqfilt::{FwFftOp, InvFftOp};
@@ -131,8 +131,8 @@ mod public_api_tests {
     #[test]
     fn prelude_reexports_simple_api_surface() {
         assert_eq!(
-            TypeId::of::<prelude::ImageApi>(),
-            TypeId::of::<crate::ImageApi>()
+            TypeId::of::<prelude::ImagePipeline2>(),
+            TypeId::of::<crate::ImagePipeline2>()
         );
         assert_eq!(
             TypeId::of::<prelude::ViprsError>(),
@@ -143,8 +143,8 @@ mod public_api_tests {
     #[test]
     fn pipeline_reexports_advanced_pipeline_types() {
         assert_eq!(
-            TypeId::of::<pipeline::PipelineBuilder>(),
-            TypeId::of::<adapters::pipeline::PipelineBuilder>(),
+            TypeId::of::<pipeline::ImagePipeline>(),
+            TypeId::of::<adapters::pipeline::ImagePipeline>(),
         );
         assert_eq!(
             TypeId::of::<pipeline::PipelineArena>(),

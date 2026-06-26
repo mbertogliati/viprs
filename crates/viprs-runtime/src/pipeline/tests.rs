@@ -5,16 +5,16 @@
 
 use super::*;
 use crate::{
-    domain::format::{F32, U8, U16},
-    domain::image::{DemandHint, Image, ImageMetadata, Interpretation, Tile, TileMut},
-    domain::op::{
+  domain::format::{F32, U8, U16},
+  domain::image::{DemandHint, InMemoryImage, ImageMetadata, Interpretation, Tile, TileMut},
+  domain::op::{
         CoordinateDrivenSourceSpec, DynOperation, NodeSpec, Op, OperationBridge, SourceReadPlan,
     },
-    domain::ops::resample::thumbnail::ThumbnailTarget,
-    pipeline::arena::source_region_for_scheduler_tile,
-    scheduler::rayon_scheduler::RayonScheduler,
-    sources::memory::MemorySource,
-    sources::zero::ZeroSource,
+  domain::ops::resample::thumbnail::ThumbnailTarget,
+  pipeline::arena::source_region_for_scheduler_tile,
+  scheduler::rayon_scheduler::RayonScheduler,
+  sources::memory::MemorySource,
+  sources::zero::ZeroSource,
 };
 use proptest::prelude::*;
 use std::any::Any;

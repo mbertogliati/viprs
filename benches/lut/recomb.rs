@@ -1,14 +1,14 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-    adapters::{
+  adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-    domain::format::F32,
-    domain::ops::arithmetic::{RecombOp, recomb::Matrix},
-    pipeline::{OperationBridge, PipelineBuilder},
-    ports::scheduler::TileScheduler,
+  domain::format::F32,
+  domain::ops::arithmetic::{RecombOp, recomb::Matrix},
+  pipeline::{OperationBridge, ImagePipeline},
+  ports::scheduler::TileScheduler,
 };
 
 fn make_pixels(size: u32) -> Vec<f32> {
@@ -37,7 +37,7 @@ fn bench_lut_recomb(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                         RecombOp::<F32>::new(matrix.clone()),
                         3,

@@ -13,8 +13,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::resample::shrinkh::ShrinkH;
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     domain::op::OperationBridge,
@@ -31,7 +31,7 @@ fn bench_shrinkh(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new(ShrinkH::<U8>::new(2).unwrap(), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()
@@ -57,7 +57,7 @@ fn bench_shrinkh(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 3, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new(ShrinkH::<U8>::new(2).unwrap(), 3u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()
@@ -112,7 +112,7 @@ fn bench_shrinkh_factor_sweep(c: &mut Criterion) {
                         ShrinkH::<U8>::new(factor).unwrap(),
                         BANDS as u32,
                     ));
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .then(op)
                         .unwrap()
                         .build()

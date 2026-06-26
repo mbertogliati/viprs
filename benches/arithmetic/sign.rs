@@ -7,8 +7,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::arithmetic::sign::Sign;
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::F32,
     domain::op::OperationBridge,
@@ -24,7 +24,7 @@ fn bench_sign(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new_pixel_local(Sign::<F32>::new(), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()

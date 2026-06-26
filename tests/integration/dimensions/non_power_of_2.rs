@@ -4,10 +4,10 @@ use std::{
 };
 
 use viprs::{
-    BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata, Interpretation, U8,
+    BuildError, CompiledPipeline, InMemoryImage, ImageCodecExt, ImageMetadata, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -36,15 +36,15 @@ fn fixture_path(name: &str) -> PathBuf {
 }
 
 #[cfg(feature = "jpeg")]
-fn load_u8_fixture(name: &str) -> Image<U8> {
+fn load_u8_fixture(name: &str) -> InMemoryImage<U8> {
     let path = fixture_path(name);
-    Image::<U8>::load(&path).unwrap_or_else(|error| {
+    InMemoryImage::<U8>::load(&path).unwrap_or_else(|error| {
         panic!("failed to load JPEG fixture {}: {error}", path.display());
     })
 }
 
 #[cfg(feature = "jpeg")]
-fn output_metadata(image: &Image<U8>) -> ImageMetadata {
+fn output_metadata(image: &InMemoryImage<U8>) -> ImageMetadata {
     let mut metadata = image.metadata().clone();
     if metadata.interpretation.is_none() && image.bands() >= 3 {
         metadata.interpretation = Some(Interpretation::Srgb);
@@ -53,7 +53,7 @@ fn output_metadata(image: &Image<U8>) -> ImageMetadata {
 }
 
 #[cfg(feature = "jpeg")]
-fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
     MemorySource::new(
         image.width(),
         image.height(),
@@ -65,13 +65,13 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 #[cfg(feature = "jpeg")]
-fn execute_to_image<S: viprs::pipeline::Flush>(
-    image: &Image<U8>,
+fn execute_to_image<S: viprs::pipeline::Commit>(
+    image: &InMemoryImage<U8>,
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-) -> (CompiledPipeline, Image<U8>) {
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+) -> (CompiledPipeline, InMemoryImage<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
             image,
         )))
         .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))

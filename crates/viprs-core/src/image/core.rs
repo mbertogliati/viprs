@@ -7,7 +7,7 @@ use super::metadata::{AnimationFrame, AnimationLoopCount, ImageMetadata};
 /// `Clone` and `Debug` are implemented manually: `Debug` prints dimensions and
 /// metadata (not the pixel data, which can be gigabytes), and `Clone` performs
 /// an explicit buffer copy with no hidden cost.
-pub struct Image<F: BandFormat> {
+pub struct InMemoryImage<F: BandFormat> {
     width: u32,
     height: u32,
     bands: u32,
@@ -17,7 +17,7 @@ pub struct Image<F: BandFormat> {
     animation_frames: Option<Vec<AnimationFrame<F>>>,
 }
 
-impl<F: BandFormat> Image<F> {
+impl<F: BandFormat> InMemoryImage<F> {
     /// Construct an image from an existing pixel buffer.
     ///
     /// Returns [`ViprsError::ImageTooLarge`] if the dimensions exceed
@@ -118,9 +118,9 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let frame = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
-    /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap().with_frames(vec![frame]);
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let frame = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap().with_frames(vec![frame]);
     /// assert_eq!(image.frames().unwrap().len(), 1);
     /// ```
     pub fn with_frames(mut self, frames: Vec<Self>) -> Self {
@@ -155,8 +155,8 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let image = Image::<U8>::from_buffer(2, 1, 1, vec![0, 1]).unwrap();
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 1]).unwrap();
     /// assert_eq!(image.width(), 2);
     /// ```
     #[must_use]
@@ -169,8 +169,8 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let image = Image::<U8>::from_buffer(1, 2, 1, vec![0, 1]).unwrap();
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 2, 1, vec![0, 1]).unwrap();
     /// assert_eq!(image.height(), 2);
     /// ```
     #[must_use]
@@ -183,8 +183,8 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let image = Image::<U8>::from_buffer(1, 1, 3, vec![0, 0, 0]).unwrap();
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![0, 0, 0]).unwrap();
     /// assert_eq!(image.bands(), 3);
     /// ```
     #[must_use]
@@ -197,8 +197,8 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
     /// assert_eq!(image.pixels(), &[7]);
     /// ```
     #[must_use]
@@ -211,8 +211,8 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
     /// assert!(image.metadata().interpretation.is_none());
     /// ```
     #[must_use]
@@ -226,9 +226,9 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let frame = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
-    /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap().with_frames(vec![frame]);
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let frame = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap().with_frames(vec![frame]);
     /// assert_eq!(image.frames().unwrap().len(), 1);
     /// ```
     #[must_use]
@@ -248,8 +248,8 @@ impl<F: BandFormat> Image<F> {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::Image};
-    /// let image = Image::<U8>::from_buffer(1, 1, 1, vec![9]).unwrap();
+    /// # use viprs_core::{format::U8, image::InMemoryImage};
+    /// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![9]).unwrap();
     /// assert_eq!(image.into_buffer(), vec![9]);
     /// ```
     #[must_use]
@@ -288,7 +288,7 @@ pub(super) fn checked_image_buffer_len(
     })
 }
 
-impl<F: BandFormat> std::fmt::Debug for Image<F> {
+impl<F: BandFormat> std::fmt::Debug for InMemoryImage<F> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Image")
             .field("width", &self.width)
@@ -300,7 +300,7 @@ impl<F: BandFormat> std::fmt::Debug for Image<F> {
     }
 }
 
-impl<F: BandFormat> Clone for Image<F>
+impl<F: BandFormat> Clone for InMemoryImage<F>
 where
     F::Sample: Clone,
 {
@@ -317,7 +317,7 @@ where
     }
 }
 
-impl<F: BandFormat> PartialEq for Image<F>
+impl<F: BandFormat> PartialEq for InMemoryImage<F>
 where
     F::Sample: PartialEq,
 {

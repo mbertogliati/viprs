@@ -7,8 +7,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::boolean::lshift::LShift;
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     domain::op::OperationBridge,
@@ -25,7 +25,7 @@ fn bench_lshift(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new(LShift::<U8>::new(1u32), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(op)
                     .unwrap()
                     .build()

@@ -1,5 +1,5 @@
 use super::{
-    BandFormat, Image, ImageDecoder, LoadOptions, NonZeroU8, Path, Region, ShrinkSample, ViprsError,
+  BandFormat, InMemoryImage, ImageDecoder, LoadOptions, NonZeroU8, Path, Region, ShrinkSample, ViprsError,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -45,9 +45,9 @@ pub(super) fn retains_stable_input_for_thumbnail(format_name: &str) -> bool {
 /// All other formats use f64 accumulation.
 /// The shrink runs once at pipeline construction time, not per-tile.
 pub(super) fn software_box_shrink_generic<F: BandFormat>(
-    image: &Image<F>,
-    factor: usize,
-) -> Result<Image<F>, ViprsError>
+  image: &InMemoryImage<F>,
+  factor: usize,
+) -> Result<InMemoryImage<F>, ViprsError>
 where
     F::Sample: ShrinkSample,
 {
@@ -85,7 +85,7 @@ where
         }
 
         let dst_samples: Vec<F::Sample> = bytemuck::cast_vec(dst_bytes);
-        return Image::from_buffer(dst_w as u32, dst_h as u32, bands as u32, dst_samples)
+        return InMemoryImage::from_buffer(dst_w as u32, dst_h as u32, bands as u32, dst_samples)
             .map(|img| img.with_metadata(image.metadata().clone()));
     }
 
@@ -114,7 +114,7 @@ where
         }
     }
 
-    Image::from_buffer(dst_w as u32, dst_h as u32, bands as u32, dst_samples)
+    InMemoryImage::from_buffer(dst_w as u32, dst_h as u32, bands as u32, dst_samples)
         .map(|img| img.with_metadata(image.metadata().clone()))
 }
 
@@ -160,10 +160,10 @@ fn decode_time_shrink_applied(
 }
 
 pub(super) fn eager_backing_shrink_factor<D: ImageDecoder, F: BandFormat>(
-    decoder: &D,
-    src: &[u8],
-    requested_factor: u8,
-    image: &Image<F>,
+  decoder: &D,
+  src: &[u8],
+  requested_factor: u8,
+  image: &InMemoryImage<F>,
 ) -> u8 {
     if requested_factor <= 1 {
         return 1;
@@ -186,10 +186,10 @@ pub(super) fn eager_backing_shrink_factor<D: ImageDecoder, F: BandFormat>(
 }
 
 pub(super) fn eager_backing_shrink_factor_from_path<D: ImageDecoder, F: BandFormat>(
-    decoder: &D,
-    path: &Path,
-    requested_factor: u8,
-    image: &Image<F>,
+  decoder: &D,
+  path: &Path,
+  requested_factor: u8,
+  image: &InMemoryImage<F>,
 ) -> u8 {
     if requested_factor <= 1 {
         return 1;
@@ -242,10 +242,10 @@ pub(super) fn checked_region_end(
 }
 
 pub(super) fn materialize_residual_thumbnail_shrink<F: BandFormat>(
-    image: Image<F>,
-    requested_factor: u8,
-    backing_factor: u8,
-) -> Result<(Image<F>, u8), ViprsError>
+  image: InMemoryImage<F>,
+  requested_factor: u8,
+  backing_factor: u8,
+) -> Result<(InMemoryImage<F>, u8), ViprsError>
 where
     F::Sample: ShrinkSample,
 {

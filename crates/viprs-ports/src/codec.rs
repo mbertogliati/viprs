@@ -27,11 +27,11 @@ use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Region};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Region};
 
 /// Header information needed to expose a decoded byte stream as an [`ImageSource`].
 ///
-/// This is intentionally smaller than [`Image`]: it carries dimensions, band count,
+/// This is intentionally smaller than [`InMemoryImage`]: it carries dimensions, band count,
 /// and metadata without owning decoded pixels. Tile-streaming decoders return this
 /// from [`TileImageDecoder::probe_with_options`] before any tile is requested.
 ///
@@ -111,7 +111,7 @@ impl ImageMetadataProbe {
     }
 }
 
-/// Capability to decode a byte stream into an [`Image`].
+/// Capability to decode a byte stream into an [`InMemoryImage`].
 ///
 /// # Thread safety
 ///
@@ -133,7 +133,7 @@ impl ImageMetadataProbe {
 ///     codec_options::LoadOptions,
 ///     error::ViprsError,
 ///     format::U8,
-///     image::Image,
+///     image::InMemoryImage,
 /// };
 /// use viprs_ports::codec::ImageDecoder;
 ///
@@ -142,14 +142,14 @@ impl ImageMetadataProbe {
 /// impl ImageDecoder for StubDecoder {
 ///     fn format_name(&self) -> &'static str { "stub" }
 ///     fn sniff(&self, header: &[u8]) -> bool where Self: Sized { header.starts_with(b"STUB") }
-///     fn decode<F: viprs_core::format::BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
+///     fn decode<F: viprs_core::format::BandFormat>(&self, _src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
 ///         Err(ViprsError::Codec("stub decoder".into()))
 ///     }
 ///     fn decode_with_options<F: viprs_core::format::BandFormat>(
 ///         &self,
 ///         src: &[u8],
 ///         _opts: &LoadOptions,
-///     ) -> Result<Image<F>, ViprsError>
+///     ) -> Result<InMemoryImage<F>, ViprsError>
 ///     where
 ///         Self: Sized,
 ///     {
@@ -196,7 +196,7 @@ pub trait ImageDecoder: Send + Sync {
     ///
     /// Returns [`ViprsError::Codec`] on malformed input, unsupported
     /// subformats, or I/O failures.
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError>;
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError>;
 
     /// Decode the stable on-disk image at `path` into an in-memory image.
     ///
@@ -206,7 +206,7 @@ pub trait ImageDecoder: Send + Sync {
     ///
     /// Returns [`ViprsError::Codec`] on malformed input, unsupported
     /// subformats, or I/O failures.
-    fn decode_path<F: BandFormat>(&self, path: &Path) -> Result<Image<F>, ViprsError>
+    fn decode_path<F: BandFormat>(&self, path: &Path) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -232,7 +232,7 @@ pub trait ImageDecoder: Send + Sync {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized;
 
@@ -249,7 +249,7 @@ pub trait ImageDecoder: Send + Sync {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -303,7 +303,7 @@ pub trait ImageDecoder: Send + Sync {
 ///     codec_options::LoadOptions,
 ///     error::ViprsError,
 ///     format::U8,
-///     image::{Image, Region},
+///     image::{InMemoryImage, Region},
 /// };
 /// use viprs_ports::codec::{ImageDecoder, TileImageDecoder};
 ///
@@ -312,14 +312,14 @@ pub trait ImageDecoder: Send + Sync {
 /// impl ImageDecoder for StubDecoder {
 ///     fn format_name(&self) -> &'static str { "stub" }
 ///     fn sniff(&self, _header: &[u8]) -> bool where Self: Sized { true }
-///     fn decode<F: viprs_core::format::BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
+///     fn decode<F: viprs_core::format::BandFormat>(&self, _src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
 ///         Err(ViprsError::Codec("stub decoder".into()))
 ///     }
 ///     fn decode_with_options<F: viprs_core::format::BandFormat>(
 ///         &self,
 ///         src: &[u8],
 ///         _opts: &LoadOptions,
-///     ) -> Result<Image<F>, ViprsError>
+///     ) -> Result<InMemoryImage<F>, ViprsError>
 ///     where
 ///         Self: Sized,
 ///     {
@@ -438,7 +438,7 @@ pub trait TileImageDecoder: ImageDecoder {
     }
 }
 
-/// Capability to encode an [`Image`] into a byte buffer.
+/// Capability to encode an [`InMemoryImage`] into a byte buffer.
 ///
 /// # Thread safety
 ///
@@ -459,7 +459,7 @@ pub trait TileImageDecoder: ImageDecoder {
 ///     codec_options::SaveOptions,
 ///     error::ViprsError,
 ///     format::U8,
-///     image::Image,
+///     image::InMemoryImage,
 /// };
 /// use viprs_ports::codec::ImageEncoder;
 ///
@@ -467,12 +467,12 @@ pub trait TileImageDecoder: ImageDecoder {
 ///
 /// impl ImageEncoder for StubEncoder {
 ///     fn format_name(&self) -> &'static str { "stub" }
-///     fn encode<F: viprs_core::format::BandFormat>(&self, _image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+///     fn encode<F: viprs_core::format::BandFormat>(&self, _image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
 ///         Ok(b"stub".to_vec())
 ///     }
 ///     fn encode_with_options<F: viprs_core::format::BandFormat>(
 ///         &self,
-///         image: &Image<F>,
+///         image: &InMemoryImage<F>,
 ///         _opts: &SaveOptions,
 ///     ) -> Result<Vec<u8>, ViprsError>
 ///     where
@@ -483,7 +483,7 @@ pub trait TileImageDecoder: ImageDecoder {
 /// }
 ///
 /// let encoder = StubEncoder;
-/// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0])?;
+/// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0])?;
 /// assert_eq!(encoder.encode_with_options(&image, &SaveOptions::default())?, b"stub");
 /// # Ok::<(), ViprsError>(())
 /// ```
@@ -499,7 +499,7 @@ pub trait ImageEncoder: Send + Sync {
     ///
     /// Returns [`ViprsError::Codec`] on encoding failure (e.g., a pixel
     /// value that cannot be represented in the target format).
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError>;
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError>;
 
     /// Encode `image` applying the hints in `opts`.
     ///
@@ -530,7 +530,7 @@ pub trait ImageEncoder: Send + Sync {
     /// Returns [`ViprsError::Codec`] on encoding failure.
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -553,7 +553,7 @@ pub trait ImageEncoder: Send + Sync {
     /// errors returned by `writer`.
     fn encode_to_writer<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
         writer: &mut dyn Write,
     ) -> Result<(), ViprsError>
@@ -581,7 +581,7 @@ pub trait ImageEncoder: Send + Sync {
 ///     codec_options::{LoadOptions, SaveOptions},
 ///     error::ViprsError,
 ///     format::{BandFormatId, U8},
-///     image::Image,
+///     image::InMemoryImage,
 /// };
 /// use viprs_ports::codec::ImageCodec;
 ///
@@ -597,7 +597,7 @@ pub trait ImageEncoder: Send + Sync {
 ///         _band_format: BandFormatId,
 ///         _opts: &LoadOptions,
 ///     ) -> Result<Box<dyn Any + Send>, ViprsError> {
-///         Ok(Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![0])?))
+///         Ok(Box::new(InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0])?))
 ///     }
 ///     fn encode_boxed(
 ///         &self,
@@ -645,7 +645,7 @@ pub trait ImageCodec: Send + Sync {
     /// Sniff an input header to decide whether this codec can decode it.
     fn sniff(&self, header: &[u8]) -> bool;
 
-    /// Decode `src` into a boxed typed [`Image`], applying `opts`.
+    /// Decode `src` into a boxed typed [`InMemoryImage`], applying `opts`.
     fn decode_boxed(
         &self,
         src: &[u8],
@@ -658,7 +658,7 @@ pub trait ImageCodec: Send + Sync {
         false
     }
 
-    /// Decode `path` into a boxed typed [`Image`], applying `opts`.
+    /// Decode `path` into a boxed typed [`InMemoryImage`], applying `opts`.
     fn decode_boxed_path(
         &self,
         path: &Path,
@@ -669,7 +669,7 @@ pub trait ImageCodec: Send + Sync {
         self.decode_boxed(&src, band_format, opts)
     }
 
-    /// Encode a boxed typed [`Image`], applying `opts`.
+    /// Encode a boxed typed [`InMemoryImage`], applying `opts`.
     fn encode_boxed(
         &self,
         image: &(dyn Any + Send + Sync),
@@ -701,7 +701,7 @@ mod tests {
             header.len() >= 4 && &header[..4] == b"RAWU"
         }
 
-        fn decode<F: BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, _src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             // Intentionally not implemented for non-U8 formats in this test stub.
             Err(ViprsError::Codec("RawU8Codec only decodes U8".into()))
         }
@@ -710,7 +710,7 @@ mod tests {
             &self,
             src: &[u8],
             _opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             // Test stub ignores all options and delegates to the base decode.
             self.decode(src)
         }
@@ -731,7 +731,7 @@ mod tests {
             "raw_u8"
         }
 
-        fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+        fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
             // Encode as header-only for test purposes (no actual pixel data).
             let mut buf = Vec::with_capacity(16);
             buf.extend_from_slice(b"RAWU");
@@ -743,7 +743,7 @@ mod tests {
 
         fn encode_with_options<F: BandFormat>(
             &self,
-            image: &Image<F>,
+            image: &InMemoryImage<F>,
             _opts: &SaveOptions,
         ) -> Result<Vec<u8>, ViprsError> {
             // Test stub ignores all options and delegates to the base encode.
@@ -772,7 +772,7 @@ mod tests {
     #[test]
     fn encode_writes_header() {
         let codec = RawU8Codec;
-        let image = Image::<U8>::from_buffer(4, 4, 1, vec![0u8; 16]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 4, 1, vec![0u8; 16]).unwrap();
         let encoded = codec.encode(&image).unwrap();
         assert_eq!(&encoded[..4], b"RAWU");
         assert_eq!(u32::from_le_bytes(encoded[4..8].try_into().unwrap()), 4);
@@ -802,7 +802,7 @@ mod tests {
     #[test]
     fn encode_with_options_compiles_and_delegates() {
         let codec = RawU8Codec;
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![0u8; 4]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0u8; 4]).unwrap();
         let opts = SaveOptions::default().with_quality(80);
         let encoded = codec.encode_with_options(&image, &opts).unwrap();
         assert_eq!(&encoded[..4], b"RAWU");
@@ -811,7 +811,7 @@ mod tests {
     #[test]
     fn encode_to_writer_default_impl_writes_encoded_bytes() {
         let codec = RawU8Codec;
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![0u8; 4]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0u8; 4]).unwrap();
         let opts = SaveOptions::default().with_quality(80);
         let mut encoded = Vec::new();
 

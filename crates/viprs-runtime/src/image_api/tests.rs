@@ -15,7 +15,7 @@ use crate::adapters::codecs::PngCodec;
 #[cfg(feature = "webp")]
 use crate::adapters::codecs::WebpCodec;
 use crate::adapters::{
-    pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+    pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
     sources::memory::MemorySource,
 };
 use crate::domain::colorspace::ColorspaceId;
@@ -29,10 +29,10 @@ use crate::ports::codec::ImageDecoder;
 #[cfg(feature = "png")]
 #[test]
 fn image_api_png_round_trips_losslessly() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .apply(point::Invert)
         .unwrap()
@@ -46,7 +46,7 @@ fn image_api_png_round_trips_losslessly() {
 #[cfg(feature = "jpeg")]
 #[test]
 fn image_api_jpeg_smoke_round_trip() {
-    let input = Image::<U8>::from_buffer(2, 1, 3, vec![10, 20, 30, 200, 150, 100]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![10, 20, 30, 200, 150, 100]).unwrap();
     let encoded = JpegCodec
         .encode_with_options(
             &input,
@@ -57,7 +57,7 @@ fn image_api_jpeg_smoke_round_trip() {
         )
         .unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .linear(1.0, 0.0)
         .unwrap()
@@ -73,7 +73,7 @@ fn image_api_jpeg_smoke_round_trip() {
 #[cfg(feature = "jpeg")]
 #[test]
 fn image_api_jpeg_streaming_encode_to_writer_produces_decodable_output() {
-    let input = Image::<U8>::from_buffer(8, 4, 3, (0..96).collect()).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(8, 4, 3, (0..96).collect()).unwrap();
     let encoded = JpegCodec
         .encode_with_options(
             &input,
@@ -85,7 +85,7 @@ fn image_api_jpeg_streaming_encode_to_writer_produces_decodable_output() {
         .unwrap();
 
     let mut streamed = Vec::new();
-    ImageApi::from_bytes(&encoded)
+    ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .linear(1.0, 0.0)
         .unwrap()
@@ -101,11 +101,11 @@ fn image_api_jpeg_streaming_encode_to_writer_produces_decodable_output() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_png_streaming_encode_to_writer_round_trips_losslessly() {
-    let input = Image::<U8>::from_buffer(3, 1, 1, vec![0, 64, 255]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(3, 1, 1, vec![0, 64, 255]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     let mut streamed = Vec::new();
 
-    ImageApi::from_bytes(&encoded)
+    ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .invert()
         .unwrap()
@@ -119,7 +119,7 @@ fn image_api_png_streaming_encode_to_writer_round_trips_losslessly() {
 #[cfg(feature = "jpeg")]
 #[test]
 fn image_api_from_bytes_defers_jpeg_decode_until_execution() {
-    let input = Image::<U8>::from_buffer(8, 8, 3, vec![96; 8 * 8 * 3]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(8, 8, 3, vec![96; 8 * 8 * 3]).unwrap();
     let encoded = JpegCodec
         .encode_with_options(
             &input,
@@ -131,7 +131,7 @@ fn image_api_from_bytes_defers_jpeg_decode_until_execution() {
         .unwrap();
     let truncated = truncate_jpeg_scan_data(&encoded);
 
-    let api = ImageApi::from_bytes(&truncated)
+    let api = ImagePipeline2::from_bytes(&truncated)
         .unwrap()
         .thumbnail(2)
         .unwrap();
@@ -142,7 +142,7 @@ fn image_api_from_bytes_defers_jpeg_decode_until_execution() {
 #[cfg(feature = "jpeg")]
 #[test]
 fn image_api_open_defers_jpeg_decode_until_execution() {
-    let input = Image::<U8>::from_buffer(8, 8, 3, vec![64; 8 * 8 * 3]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(8, 8, 3, vec![64; 8 * 8 * 3]).unwrap();
     let encoded = JpegCodec
         .encode_with_options(
             &input,
@@ -155,7 +155,7 @@ fn image_api_open_defers_jpeg_decode_until_execution() {
     let truncated = truncate_jpeg_scan_data(&encoded);
     let path = write_test_image("image-api-open-lazy.jpg", &truncated);
 
-    let api = ImageApi::open(&path).unwrap().thumbnail(2).unwrap();
+    let api = ImagePipeline2::open(&path).unwrap().thumbnail(2).unwrap();
     assert!(api.encode_jpeg(80).is_err());
 
     fs::remove_file(path).unwrap();
@@ -163,7 +163,7 @@ fn image_api_open_defers_jpeg_decode_until_execution() {
 
 #[test]
 fn image_api_rejects_unknown_headers() {
-    let err = match ImageApi::from_bytes(b"not-an-image") {
+    let err = match ImagePipeline2::from_bytes(b"not-an-image") {
         Ok(_) => panic!("expected invalid image header to be rejected"),
         Err(err) => err,
     };
@@ -175,10 +175,10 @@ fn image_api_rejects_unknown_headers() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_apply_accepts_generic_pipeline_ops() {
-    let input = Image::<U8>::from_buffer(1, 1, 1, vec![32]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![32]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .apply(point::Linear::new(2.0, 10.0))
         .unwrap()
@@ -192,10 +192,10 @@ fn image_api_apply_accepts_generic_pipeline_ops() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_from_reader_decodes_png_stream() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_reader(Cursor::new(encoded))
+    let output = ImagePipeline2::from_reader(Cursor::new(encoded))
         .unwrap()
         .invert()
         .unwrap()
@@ -209,11 +209,11 @@ fn image_api_from_reader_decodes_png_stream() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_open_loads_from_path() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     let path = write_test_image("image-api-open.png", &encoded);
 
-    let output = ImageApi::open(&path)
+    let output = ImagePipeline2::open(&path)
         .unwrap()
         .invert()
         .unwrap()
@@ -229,14 +229,14 @@ fn image_api_open_loads_from_path() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_from_bytes_with_limits_rejects_oversized_decode() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     let limits = DecodeLimits {
         max_width: 1,
         ..DecodeLimits::default()
     };
 
-    let err = ImageApi::from_bytes_with_limits(&encoded, limits).unwrap_err();
+    let err = ImagePipeline2::from_bytes_with_limits(&encoded, limits).unwrap_err();
     assert!(matches!(
         err,
         ViprsError::ImageTooLarge {
@@ -251,11 +251,11 @@ fn image_api_from_bytes_with_limits_rejects_oversized_decode() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_with_limits_rejects_decode_pixels() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     let limits = ResourceLimits::new(1, 1024, 1);
 
-    let err = ImageApi::with_limits(limits)
+    let err = ImagePipeline2::with_limits(limits)
         .from_bytes(&encoded)
         .unwrap_err();
     assert!(matches!(
@@ -273,13 +273,13 @@ fn image_api_with_limits_rejects_decode_pixels() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_with_limits_rejects_output_bytes() {
-    let input = Image::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     // Keep decode permissive enough for the 2×2 source so the failure is reported by
     // output validation instead of the loader.
     let limits = ResourceLimits::new(16, 3, 1).with_max_decode_bytes(4);
 
-    let err = ImageApi::with_limits(limits)
+    let err = ImagePipeline2::with_limits(limits)
         .from_bytes(&encoded)
         .unwrap()
         .encode_png()
@@ -299,10 +299,10 @@ fn image_api_with_limits_rejects_output_bytes() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_thumbnail_encodes_png_without_manual_pipeline_plumbing() {
-    let input = Image::<U8>::from_buffer(4, 2, 1, vec![0, 64, 128, 255, 255, 128, 64, 0]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![0, 64, 128, 255, 255, 128, 64, 0]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .thumbnail(2)
         .unwrap()
@@ -324,7 +324,7 @@ fn image_api_normalize_to_srgb_matches_encode_time_normalization() {
         ops::colour::profile_load,
     };
 
-    let source = Image::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
+    let source = InMemoryImage::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
         .unwrap()
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::BW),
@@ -333,13 +333,13 @@ fn image_api_normalize_to_srgb_matches_encode_time_normalization() {
         });
     let encoded = PngCodec::default().encode(&source).unwrap();
 
-    let explicit = ImageApi::from_bytes(&encoded)
+    let explicit = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .normalize_to_srgb()
         .unwrap()
         .encode_png()
         .unwrap();
-    let implicit = ImageApi::from_bytes(&encoded)
+    let implicit = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_png()
         .unwrap();
@@ -355,7 +355,7 @@ fn image_api_thumbnail_can_auto_normalize_to_srgb() {
         ops::colour::profile_load,
     };
 
-    let source = Image::<U8>::from_buffer(
+    let source = InMemoryImage::<U8>::from_buffer(
         4,
         2,
         2,
@@ -371,7 +371,7 @@ fn image_api_thumbnail_can_auto_normalize_to_srgb() {
     });
     let encoded = PngCodec::default().encode(&source).unwrap();
 
-    let explicit = ImageApi::from_bytes(&encoded)
+    let explicit = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .thumbnail_with_options(
             2,
@@ -380,7 +380,7 @@ fn image_api_thumbnail_can_auto_normalize_to_srgb() {
         .unwrap()
         .encode_png()
         .unwrap();
-    let manual = ImageApi::from_bytes(&encoded)
+    let manual = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .thumbnail(2)
         .unwrap()
@@ -399,8 +399,8 @@ fn image_api_sharpen_matches_pipeline_builder_defaults() {
         114, 130, 148, 166, 182, 200, 218,
     ];
 
-    let actual = ImageApi {
-        builder: PipelineBuilder::from_source(
+    let actual = ImagePipeline2 {
+        builder: ImagePipeline::from_source(
             MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap(),
         )
         .with_colorspace(ColorspaceId::SRgb),
@@ -414,7 +414,7 @@ fn image_api_sharpen_matches_pipeline_builder_defaults() {
     .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
     .unwrap();
 
-    let expected = PipelineBuilder::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
+    let expected = ImagePipeline::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
         .with_colorspace(ColorspaceId::SRgb)
         .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
@@ -444,8 +444,8 @@ fn image_api_sharpen_with_forwards_custom_parameters() {
     let m1 = 0.5;
     let m2 = 2.5;
 
-    let actual = ImageApi {
-        builder: PipelineBuilder::from_source(
+    let actual = ImagePipeline2 {
+        builder: ImagePipeline::from_source(
             MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap(),
         )
         .with_colorspace(ColorspaceId::SRgb),
@@ -459,7 +459,7 @@ fn image_api_sharpen_with_forwards_custom_parameters() {
     .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
     .unwrap();
 
-    let expected = PipelineBuilder::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
+    let expected = ImagePipeline::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
         .with_colorspace(ColorspaceId::SRgb)
         .sharpen(sigma, x1, y2, y3, m1, m2)
         .unwrap()
@@ -508,10 +508,10 @@ fn image_api_smartcrop_crops_to_attention_region() {
         }
     }
 
-    let input = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .smartcrop(crop_width, crop_height)
         .unwrap()
@@ -539,10 +539,10 @@ fn image_api_smartcrop_crops_to_attention_region() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_flatten_defaults_to_white_background() {
-    let input = Image::<U8>::from_buffer(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .flatten()
         .unwrap()
@@ -557,10 +557,10 @@ fn image_api_flatten_defaults_to_white_background() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_flatten_with_uses_custom_background() {
-    let input = Image::<U8>::from_buffer(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .flatten_with(10, 20, 30)
         .unwrap()
@@ -575,10 +575,10 @@ fn image_api_flatten_with_uses_custom_background() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_premultiply_scales_colour_by_alpha() {
-    let input = Image::<U8>::from_buffer(1, 1, 4, vec![128, 64, 32, 128]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 4, vec![128, 64, 32, 128]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .premultiply()
         .unwrap()
@@ -592,10 +592,10 @@ fn image_api_premultiply_scales_colour_by_alpha() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_unpremultiply_restores_expected_values() {
-    let input = Image::<U8>::from_buffer(1, 1, 4, vec![64, 32, 16, 128]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 4, vec![64, 32, 16, 128]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .unpremultiply()
         .unwrap()
@@ -609,12 +609,12 @@ fn image_api_unpremultiply_restores_expected_values() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_save_uses_output_path_extension() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     let path = write_test_image("image-api-save-source.png", &encoded);
     let output_path = write_test_image("image-api-save-output.png", &[]);
 
-    ImageApi::open(&path)
+    ImagePipeline2::open(&path)
         .unwrap()
         .invert()
         .unwrap()
@@ -632,7 +632,7 @@ fn image_api_save_uses_output_path_extension() {
 #[cfg(feature = "webp")]
 #[test]
 fn image_api_open_supports_webp_encode_flow() {
-    let input = Image::<U8>::from_buffer(2, 1, 3, vec![16, 32, 64, 128, 144, 160]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![16, 32, 64, 128, 144, 160]).unwrap();
     let encoded = WebpCodec
         .encode_with_options(
             &input,
@@ -644,7 +644,7 @@ fn image_api_open_supports_webp_encode_flow() {
         .unwrap();
     let path = write_test_image("image-api-open.webp", &encoded);
 
-    let output = ImageApi::open(&path)
+    let output = ImagePipeline2::open(&path)
         .unwrap()
         .invert()
         .unwrap()
@@ -706,8 +706,8 @@ fn image_api_chaos_sharpen_accepts_zero_negative_nan_and_large_sigma_without_pan
 
     for sigma in [0.0, -1.0, f32::NAN, 64.0] {
         let result = catch_unwind(AssertUnwindSafe(|| {
-            ImageApi {
-                builder: PipelineBuilder::from_source(
+            ImagePipeline2 {
+                builder: ImagePipeline::from_source(
                     MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap(),
                 )
                 .with_colorspace(ColorspaceId::SRgb),
@@ -729,16 +729,16 @@ fn image_api_chaos_sharpen_accepts_zero_negative_nan_and_large_sigma_without_pan
 #[cfg(feature = "png")]
 #[test]
 fn image_api_chaos_streaming_png_writer_failures_surface_as_io_errors() {
-    let input = Image::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let zero_err = ImageApi::from_bytes(&encoded)
+    let zero_err = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_png_to(&mut ZeroWriter)
         .unwrap_err();
     assert!(matches!(zero_err, ViprsError::Io(_)));
 
-    let broken_err = ImageApi::from_bytes(&encoded)
+    let broken_err = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_png_to(&mut BrokenWriter)
         .unwrap_err();
@@ -748,7 +748,7 @@ fn image_api_chaos_streaming_png_writer_failures_surface_as_io_errors() {
 #[cfg(feature = "jpeg")]
 #[test]
 fn image_api_chaos_streaming_jpeg_writer_failures_surface_as_io_errors() {
-    let input = Image::<U8>::from_buffer(2, 1, 3, vec![10, 20, 30, 40, 50, 60]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![10, 20, 30, 40, 50, 60]).unwrap();
     let encoded = JpegCodec
         .encode_with_options(
             &input,
@@ -759,13 +759,13 @@ fn image_api_chaos_streaming_jpeg_writer_failures_surface_as_io_errors() {
         )
         .unwrap();
 
-    let zero_err = ImageApi::from_bytes(&encoded)
+    let zero_err = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_jpeg_to(&mut ZeroWriter, 80)
         .unwrap_err();
     assert!(matches!(zero_err, ViprsError::Io(_)));
 
-    let broken_err = ImageApi::from_bytes(&encoded)
+    let broken_err = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_jpeg_to(&mut BrokenWriter, 80)
         .unwrap_err();
@@ -775,7 +775,7 @@ fn image_api_chaos_streaming_jpeg_writer_failures_surface_as_io_errors() {
 #[cfg(feature = "webp")]
 #[test]
 fn image_api_chaos_streaming_webp_writer_failures_surface_as_io_errors() {
-    let input = Image::<U8>::from_buffer(2, 1, 3, vec![16, 32, 64, 128, 144, 160]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![16, 32, 64, 128, 144, 160]).unwrap();
     let encoded = WebpCodec
         .encode_with_options(
             &input,
@@ -786,13 +786,13 @@ fn image_api_chaos_streaming_webp_writer_failures_surface_as_io_errors() {
         )
         .unwrap();
 
-    let zero_err = ImageApi::from_bytes(&encoded)
+    let zero_err = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_webp_to(&mut ZeroWriter, 80)
         .unwrap_err();
     assert!(matches!(zero_err, ViprsError::Io(_)));
 
-    let broken_err = ImageApi::from_bytes(&encoded)
+    let broken_err = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .encode_webp_to(&mut BrokenWriter, 80)
         .unwrap_err();
@@ -803,17 +803,17 @@ fn image_api_chaos_streaming_webp_writer_failures_surface_as_io_errors() {
 #[test]
 fn image_api_chaos_streaming_png_encode_bypasses_decode_rejection_and_preserves_output_resource_limits()
  {
-    let input = Image::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![255; 4]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
     // Keep decode permissive enough for the 2×2 source so both buffered and
     // streaming encoders report the output limit instead of failing during decode.
     let limits = ResourceLimits::new(16, 3, 1).with_max_decode_bytes(4);
 
-    let api = ImageApi::with_limits(limits.clone())
+    let api = ImagePipeline2::with_limits(limits.clone())
         .from_bytes(&encoded)
         .unwrap();
 
-    let err = ImageApi::with_limits(limits)
+    let err = ImagePipeline2::with_limits(limits)
         .from_bytes(&encoded)
         .unwrap()
         .encode_png()
@@ -847,10 +847,10 @@ fn image_api_chaos_streaming_png_encode_bypasses_decode_rejection_and_preserves_
 #[test]
 fn image_api_chaos_smartcrop_zero_dimensions_clamp_to_one_pixel() {
     let input =
-        Image::<U8>::from_buffer(2, 2, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).unwrap();
+        InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .smartcrop(0, 0)
         .unwrap()
@@ -865,10 +865,10 @@ fn image_api_chaos_smartcrop_zero_dimensions_clamp_to_one_pixel() {
 #[test]
 fn image_api_chaos_smartcrop_u32_max_clamps_to_source_bounds() {
     let input =
-        Image::<U8>::from_buffer(2, 2, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).unwrap();
+        InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
-    let output = ImageApi::from_bytes(&encoded)
+    let output = ImagePipeline2::from_bytes(&encoded)
         .unwrap()
         .smartcrop(u32::MAX, u32::MAX)
         .unwrap()
@@ -882,11 +882,11 @@ fn image_api_chaos_smartcrop_u32_max_clamps_to_source_bounds() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_chaos_premultiply_panics_on_single_band_grayscale() {
-    let input = Image::<U8>::from_buffer(1, 1, 1, vec![128]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![128]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
     let result = catch_unwind(AssertUnwindSafe(|| {
-        ImageApi::from_bytes(&encoded)
+        ImagePipeline2::from_bytes(&encoded)
             .unwrap()
             .premultiply()
             .unwrap()
@@ -903,11 +903,11 @@ fn image_api_chaos_premultiply_panics_on_single_band_grayscale() {
 #[cfg(feature = "png")]
 #[test]
 fn image_api_chaos_unpremultiply_panics_on_single_band_grayscale() {
-    let input = Image::<U8>::from_buffer(1, 1, 1, vec![64]).unwrap();
+    let input = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![64]).unwrap();
     let encoded = PngCodec::default().encode(&input).unwrap();
 
     let result = catch_unwind(AssertUnwindSafe(|| {
-        ImageApi::from_bytes(&encoded)
+        ImagePipeline2::from_bytes(&encoded)
             .unwrap()
             .unpremultiply()
             .unwrap()
@@ -923,8 +923,8 @@ fn image_api_chaos_unpremultiply_panics_on_single_band_grayscale() {
 
 #[test]
 fn image_api_chaos_flatten_with_rejects_u16_rgba() {
-    let err = ImageApi {
-        builder: PipelineBuilder::from_source(
+    let err = ImagePipeline2 {
+        builder: ImagePipeline::from_source(
             MemorySource::<U16>::new(1, 1, 4, vec![1000, 2000, 3000, 40000]).unwrap(),
         )
         .with_colorspace(ColorspaceId::SRgb),

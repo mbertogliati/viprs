@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, ops::conversion::embed::ExtendMode},
     ports::scheduler::TileScheduler,
@@ -31,7 +31,7 @@ fn bench_embed(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).embed(
+                  ImagePipeline::from_source(source).embed(
                         dst_size,
                         dst_size,
                         offset,
@@ -40,7 +40,7 @@ fn bench_embed(c: &mut Criterion) {
                         src_size,
                         ExtendMode::Black,
                     ),
-                    "add embed operation",
+                  "add embed operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

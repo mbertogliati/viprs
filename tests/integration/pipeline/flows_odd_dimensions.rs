@@ -60,7 +60,7 @@ proptest! {
             .map(|index| (index % 251) as u8)
             .collect();
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels)
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels)
             .expect("failed to create proptest image")
             .with_metadata(ImageMetadata {
                 interpretation: Some(Interpretation::Srgb),

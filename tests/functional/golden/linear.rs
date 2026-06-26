@@ -10,8 +10,8 @@ use super::support as golden;
 
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::F32,
     ports::scheduler::TileScheduler,
@@ -24,7 +24,7 @@ use viprs::{
 fn run_linear(source_pixels: Vec<f32>, scale: f64, offset: f64) -> Vec<u8> {
     let source = MemorySource::<F32>::new(4, 4, 1, source_pixels).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .linear(scale, offset)
         .unwrap()
         .build()

@@ -4,8 +4,8 @@
 fn rotate90_pipeline_changes_dimensions() {
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -17,7 +17,7 @@ fn rotate90_pipeline_changes_dimensions() {
     // Output (row-major, 2 wide × 4 tall):
     //   [5, 1, 6, 2, 7, 3, 8, 4]
     let source = MemorySource::<U8>::new(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .rotate90()
         .unwrap()
         .build()
@@ -43,7 +43,7 @@ fn rotate90_pipeline_changes_dimensions() {
     // out(ox,oy) = in(x=oy, y=H-1-ox) = in(x=oy, y=3-ox) with H=4.
     // Expected (row-major): [13,9,5,1, 14,10,6,2, 15,11,7,3, 16,12,8,4]
     let source4 = MemorySource::<U8>::new(4, 4, 1, (1u8..=16).collect()).unwrap();
-    let pipeline4 = PipelineBuilder::from_source(source4)
+    let pipeline4 = ImagePipeline::from_source(source4)
         .rotate90()
         .unwrap()
         .build()
@@ -69,8 +69,8 @@ fn thumbnail_width_only_end_to_end_sets_expected_dimensions() {
     // the test fails for zero-filled output buffers as well as wrong geometry.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -92,7 +92,7 @@ fn thumbnail_width_only_end_to_end_sets_expected_dimensions() {
         MemorySource::<U8>::new(input_width as u32, input_height as u32, 1, pixels).unwrap();
     let thumbnail = Thumbnail::new(ThumbnailTarget::Width(256), InterpolationKernel::Lanczos3);
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .thumbnail(thumbnail)
         .unwrap()
         .build()
@@ -140,20 +140,20 @@ fn thumbnail_width_only_end_to_end_sets_expected_dimensions() {
 fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: u32) {
     use std::num::NonZeroU8;
     use viprs::{
-        PipelineBuilder, ViprsError,
-        adapters::{
+      ImagePipeline, ViprsError,
+      adapters::{
             scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
             sources::decoder_source::DecoderSource,
         },
-        domain::{
-            codec_options::LoadOptions,
-            colorspace::ColorspaceId,
-            format::{BandFormat, U8},
-            image::Image,
-            kernel::InterpolationKernel,
-            ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
+      domain::{
+        codec_options::LoadOptions,
+        colorspace::ColorspaceId,
+        format::{BandFormat, U8},
+        image::InMemoryImage,
+        kernel::InterpolationKernel,
+        ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
-        ports::{codec::ImageDecoder, scheduler::TileScheduler},
+      ports::{codec::ImageDecoder, scheduler::TileScheduler},
     };
 
     struct NativeShrinkRoundingDecoder {
@@ -169,7 +169,7 @@ fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: 
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -177,7 +177,7 @@ fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: 
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "native shrink rounding decoder only supports U8".into(),
@@ -192,7 +192,7 @@ fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: 
             } else {
                 self.input_size
             };
-            let image = Image::from_buffer(
+            let image = InMemoryImage::from_buffer(
                 actual_size,
                 actual_size,
                 3,
@@ -201,7 +201,7 @@ fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: 
             .map_err(|err| ViprsError::Codec(err.to_string()))?;
 
             // SAFETY: F::ID == U8 implies F::Sample == u8 because BandFormat is sealed.
-            let cast = unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) };
+            let cast = unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) };
             Ok(cast)
         }
 
@@ -212,7 +212,7 @@ fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: 
 
     let source =
         DecoderSource::<_, U8>::new(NativeShrinkRoundingDecoder { input_size }, b"jpeg").unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
         .thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(target_width),

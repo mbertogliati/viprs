@@ -1,6 +1,6 @@
 use super::{
     BandFormatId, BuildError, DEFAULT_SHARPEN_M1, DEFAULT_SHARPEN_M2, DEFAULT_SHARPEN_SIGMA,
-    DEFAULT_SHARPEN_X1, DEFAULT_SHARPEN_Y2, DEFAULT_SHARPEN_Y3, F32, F64, I16, I32, ImageApi,
+    DEFAULT_SHARPEN_X1, DEFAULT_SHARPEN_Y2, DEFAULT_SHARPEN_Y3, F32, F64, I16, I32, ImagePipeline2,
     InterpolationKernel, PipelineOp, SmartcropOp, Thumbnail, ThumbnailTarget, U8, U16, U32,
     ViprsError,
 };
@@ -8,7 +8,7 @@ use super::{
 #[cfg(feature = "icc")]
 use super::ImageApiThumbnailOptions;
 
-impl ImageApi {
+impl ImagePipeline2 {
     /// Apply any pipeline operation.
     ///
     /// This is the generic escape hatch for fluent chains when you already have a
@@ -17,9 +17,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::{image_api::ImageApi, domain::ops::point::Invert};
+    /// use viprs_runtime::{image_api::ImagePipeline2, domain::ops::point::Invert};
     ///
-    /// let image = ImageApi::open("photo.jpg")?.apply(Invert)?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.apply(Invert)?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -38,9 +38,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?.invert()?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.invert()?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -59,9 +59,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?.linear(1.1, 2.0)?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.linear(1.1, 2.0)?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -80,9 +80,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("logo.png")?.flatten()?;
+    /// let image = ImagePipeline2::open("logo.png")?.flatten()?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -98,9 +98,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("logo.png")?.flatten_with(240, 240, 240)?;
+    /// let image = ImagePipeline2::open("logo.png")?.flatten_with(240, 240, 240)?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -127,9 +127,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("overlay.png")?.premultiply()?;
+    /// let image = ImagePipeline2::open("overlay.png")?.premultiply()?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -148,9 +148,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("overlay.png")?.premultiply()?.unpremultiply()?;
+    /// let image = ImagePipeline2::open("overlay.png")?.premultiply()?.unpremultiply()?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -161,7 +161,7 @@ impl ImageApi {
         })
     }
 
-    /// Resize to a thumbnail width using the default Lanczos3 pipeline plan.
+     /// Resize to a thumbnail width using the default Lanczos3 pipeline plan.
     ///
     /// This is the primary convenience method for web thumbnails and mirrors the
     /// common `thumbnail(width)` workflow from libvips-style APIs.
@@ -169,9 +169,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?.thumbnail(400)?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.thumbnail(400)?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -255,9 +255,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?.smartcrop(300, 300)?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.smartcrop(300, 300)?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -293,9 +293,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?.sharpen()?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.sharpen()?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -318,9 +318,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let image = ImageApi::open("photo.jpg")?.sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)?;
+    /// let image = ImagePipeline2::open("photo.jpg")?.sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)?;
     /// let _ = image;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```

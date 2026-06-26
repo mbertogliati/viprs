@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U16, op::OperationBridge, ops::conversion::byteswap::ByteswapOp},
     ports::scheduler::TileScheduler,
@@ -19,7 +19,7 @@ fn bench_byteswap(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U16>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = ByteswapOp::<U16>::new();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(op, 1)))
                     .unwrap()
                     .build()

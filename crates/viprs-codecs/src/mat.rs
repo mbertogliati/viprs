@@ -62,7 +62,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── File-level constants ───────────────────────────────────────────────────
@@ -810,7 +810,7 @@ impl MatCodec {
     /// - The "MATLAB 5.0" signature is absent.
     /// - No numeric matrix with rank 1–3 is found.
     /// - `F::ID` does not match the MATLAB class of the first matrix.
-    pub fn decode_mat<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    pub fn decode_mat<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         let dec = decode_first_matrix(src)?;
 
         if dec.format != F::ID {
@@ -832,7 +832,7 @@ impl MatCodec {
             ..ImageMetadata::default()
         };
 
-        Image::from_buffer(dec.width, dec.height, dec.bands, samples)
+        InMemoryImage::from_buffer(dec.width, dec.height, dec.bands, samples)
             .map(|img| img.with_metadata(metadata))
             .map_err(|err| ViprsError::Codec(err.to_string()))
     }
@@ -850,7 +850,7 @@ impl ImageDecoder for MatCodec {
         sniff_mat(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_mat(src)
     }
 
@@ -858,7 +858,7 @@ impl ImageDecoder for MatCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -880,7 +880,7 @@ impl ImageEncoder for MatCodec {
         "mat"
     }
 
-    fn encode<F: BandFormat>(&self, _image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, _image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         Err(ViprsError::Unimplemented {
             feature: "mat encode",
             details: "MATLAB .mat save is not supported (no libvips parity path exists)",
@@ -888,9 +888,9 @@ impl ImageEncoder for MatCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -1283,7 +1283,7 @@ mod tests {
 
     #[test]
     fn encode_always_errors() {
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![0u8; 4]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0u8; 4]).unwrap();
         let err = MatCodec.encode(&image).unwrap_err();
         assert!(
             err.to_string()

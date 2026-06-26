@@ -4,8 +4,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         colorspace::{ColorspaceId, ScRgb, Xyz},
@@ -47,7 +47,7 @@ fn bench_scrgb_xyz(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("scrgb_to_xyz", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, scrgb.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .with_colorspace(ColorspaceId::ScRgb)
                     .colourspace::<Xyz>()
                     .unwrap()
@@ -65,7 +65,7 @@ fn bench_scrgb_xyz(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("xyz_to_scrgb", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, xyz.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .with_colorspace(ColorspaceId::Xyz)
                     .colourspace::<ScRgb>()
                     .unwrap()

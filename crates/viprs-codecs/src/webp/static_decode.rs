@@ -30,7 +30,7 @@ use super::common::{
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::BandFormat;
-use viprs_core::image::{Image, ImageMetadata, Region};
+use viprs_core::image::{InMemoryImage, ImageMetadata, Region};
 use viprs_ports::codec::{ImageDecoder, ImageMetadataProbe, TileImageDecoder};
 
 type WebpSamplerRowFunc = unsafe extern "C" fn(*const u8, *const u8, *const u8, *mut u8, c_int);
@@ -551,7 +551,7 @@ fn decode_static_webp<F: BandFormat>(
     opts: &LoadOptions,
     icc_profile: Option<Vec<u8>>,
     xmp: Option<Vec<u8>>,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let (width, height, bands, pixels_u8) = decode_static_webp_pixels(src, opts)?;
     let image = image_from_u8_pixels::<F>(width, height, bands, pixels_u8)?;
     Ok(image.with_metadata(ImageMetadata {
@@ -720,7 +720,7 @@ impl ImageDecoder for WebpCodec {
         header.len() >= 12 && &header[0..4] == b"RIFF" && &header[8..12] == b"WEBP"
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -728,7 +728,7 @@ impl ImageDecoder for WebpCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {

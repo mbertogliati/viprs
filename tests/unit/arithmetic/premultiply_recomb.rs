@@ -1,8 +1,8 @@
 mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler},
+        BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
+        adapters::{pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler},
         domain::{
             colorspace::{ColorspaceId, SRgb},
             kernel::InterpolationKernel,
@@ -22,8 +22,8 @@ mod chaos_monkey_19 {
         }
     }
 
-    fn make_u8_image(width: u32, height: u32, bands: u32, pixels: Vec<u8>) -> Image<U8> {
-        let image = Image::from_buffer(width, height, bands, pixels).unwrap();
+    fn make_u8_image(width: u32, height: u32, bands: u32, pixels: Vec<u8>) -> InMemoryImage<U8> {
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels).unwrap();
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -31,8 +31,8 @@ mod chaos_monkey_19 {
         }
     }
 
-    fn make_u16_image(width: u32, height: u32, bands: u32, pixels: Vec<u16>) -> Image<U16> {
-        Image::from_buffer(width, height, bands, pixels).unwrap()
+    fn make_u16_image(width: u32, height: u32, bands: u32, pixels: Vec<u16>) -> InMemoryImage<U16> {
+        InMemoryImage::from_buffer(width, height, bands, pixels).unwrap()
     }
 
     fn make_f32_image(
@@ -41,23 +41,23 @@ mod chaos_monkey_19 {
         bands: u32,
         pixels: Vec<f32>,
         metadata: ImageMetadata,
-    ) -> Image<F32> {
-        Image::from_buffer(width, height, bands, pixels)
+    ) -> InMemoryImage<F32> {
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
-        image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(viprs::CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(
+        let pipeline = configure(ImagePipeline::from_source(
             viprs::adapters::sources::memory::MemorySource::<FIn>::new(
                 image.width(),
                 image.height(),
@@ -80,7 +80,7 @@ mod chaos_monkey_19 {
         Ok((pipeline, output))
     }
 
-    fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
+    fn patterned_rgb(width: u32, height: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * 3);
         for y in 0..height {
             for x in 0..width {
@@ -92,7 +92,7 @@ mod chaos_monkey_19 {
         make_u8_image(width, height, 3, pixels)
     }
 
-    fn rgba_image_with_partial_alpha() -> Image<U8> {
+    fn rgba_image_with_partial_alpha() -> InMemoryImage<U8> {
         make_u8_image(2, 1, 4, vec![200, 100, 50, 128, 30, 60, 90, 64])
     }
 

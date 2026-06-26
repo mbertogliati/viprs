@@ -1,13 +1,13 @@
 use super::state::{validate_reduce_factors, validate_reduce_kernel};
 use super::{
     AffineBridge, BandFormatId, BuildError, ColorspaceId, CopyOp, DemandHint, DynOperation, F32,
-    F64, FlattenBridge, Flush, I16, I32, Identity, InterpolationKernel, Interpretation, NonZeroU8,
-    OperationBridge, PipelineBuilder, Premultiply, ReduceBridge, ReduceHBridge, ReduceVBridge,
+    F64, FlattenBridge, Commit, I16, I32, Committed, InterpolationKernel, Interpretation, NonZeroU8,
+    OperationBridge, ImagePipeline, Premultiply, ReduceBridge, ReduceHBridge, ReduceVBridge,
     Resize, ResizeNode, ShrinkBridge, ShrinkHBridge, ShrinkVBridge, SimilarityBridge, Thumbnail,
     ThumbnailNode, U8, U16, U32, Unpremultiply, flatten_has_alpha,
 };
 
-impl<Op: Flush> PipelineBuilder<Op> {
+impl<Op: Commit> ImagePipeline<Op> {
     /// Reduce the image width by `factor` using `kernel` (horizontal downscale).
     ///
     /// `factor` must be >= 1.0. Output width is `round(input_width / factor)`.
@@ -17,7 +17,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self,
         factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         self.reduce_h_with_hint(factor, kernel, DemandHint::ThinStrip)
     }
 
@@ -64,7 +64,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         factor: f64,
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         validate_reduce_kernel("reduce_h", kernel)?;
         let bands = self.bands;
         let (input_w, _) = self.current_dimensions();
@@ -130,7 +130,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink_h;
     /// ```
-    pub fn shrink_h(self, factor: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn shrink_h(self, factor: u32) -> Result<ImagePipeline<Committed>, BuildError> {
         self.shrink_h_with_ceil(factor, false)
     }
 
@@ -146,7 +146,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self,
         factor: u32,
         ceil: bool,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         if factor == 0 {
             return Err(BuildError::SourceHint {
@@ -220,7 +220,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self,
         h_factor: u32,
         v_factor: u32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(ShrinkBridge::<U8>::new(
@@ -271,7 +271,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self,
         factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         self.reduce_v_with_hint(factor, kernel, DemandHint::ThinStrip)
     }
 
@@ -280,7 +280,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         factor: f64,
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         validate_reduce_kernel("reduce_v", kernel)?;
         let bands = self.bands;
         let (_, input_h) = self.current_dimensions();
@@ -351,7 +351,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         h_factor: f64,
         v_factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         validate_reduce_factors(h_factor, v_factor)?;
         validate_reduce_kernel("reduce", kernel)?;
         let bands = self.bands;
@@ -389,7 +389,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink_v;
     /// ```
-    pub fn shrink_v(self, factor: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn shrink_v(self, factor: u32) -> Result<ImagePipeline<Committed>, BuildError> {
         self.shrink_v_with_ceil(factor, false)
     }
 
@@ -405,7 +405,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self,
         factor: u32,
         ceil: bool,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         if factor == 0 {
             return Err(BuildError::SourceHint {
@@ -460,7 +460,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         output_w: u32,
         output_h: u32,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let (backward_matrix, backward_tx, backward_ty) =
             Self::forward_affine_to_backward(matrix, tx, ty, output_w, output_h)?;
         self.affine_backward_with_extend_and_hint(
@@ -485,7 +485,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
         extend: crate::domain::ops::resample::affine::ExtendMode,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         let (input_w, input_h) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -597,7 +597,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         scale: f64,
         angle: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         let (input_w, input_h) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -634,7 +634,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::resize;
     /// ```
-    pub fn resize(self, resize: Resize) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn resize(self, resize: Resize) -> Result<ImagePipeline<Committed>, BuildError> {
         if self.bands == 0 {
             return Err(BuildError::SourceHint {
                 context: "resize",
@@ -718,7 +718,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::premultiply;
     /// ```
-    pub fn premultiply(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn premultiply(self) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         let max_alpha = self.current_interpretation.map_or_else(
             || {
@@ -768,7 +768,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::unpremultiply;
     /// ```
-    pub fn unpremultiply(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn unpremultiply(self) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(OperationBridge::new_pixel_local(
@@ -801,7 +801,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::flatten;
     /// ```
-    pub fn flatten(self, background: [f32; 4]) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn flatten(self, background: [f32; 4]) -> Result<ImagePipeline<Committed>, BuildError> {
         let input_bands = self.bands;
         if !flatten_has_alpha(input_bands) {
             let op: Box<dyn DynOperation> = match self.current_format {
@@ -871,7 +871,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     pub fn thumbnail(
         mut self,
         thumbnail: Thumbnail,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         thumbnail.validate_input(self.bands)?;
         let (mut input_width, mut input_height) = self.current_dimensions();
         let mut plan = thumbnail.into_pipeline_nodes(input_width, input_height, self.bands);

@@ -5,16 +5,16 @@ mod robustness_determinism {
     };
 
     use viprs::{
-        BuildError, CompiledPipeline, Image, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+      BuildError, CompiledPipeline, InMemoryImage, Interpretation, U8,
+      adapters::{
+          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+          sinks::memory::MemorySink, sources::memory::MemorySource,
         },
-        domain::{
+      domain::{
             kernel::InterpolationKernel,
             ops::resample::{Thumbnail, thumbnail::ThumbnailTarget},
         },
-        ports::scheduler::TileScheduler,
+      ports::scheduler::TileScheduler,
     };
 
     fn project_root() -> PathBuf {
@@ -29,7 +29,7 @@ mod robustness_determinism {
             .join(name)
     }
 
-    fn load_fixture_image(name: &str, width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn load_fixture_image(name: &str, width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let path = fixture_path(name);
         let bytes = fs::read(&path)
             .unwrap_or_else(|error| panic!("failed to read fixture {}: {error}", path.display()));
@@ -41,7 +41,7 @@ mod robustness_determinism {
         };
 
         let mut image =
-            Image::from_buffer(width, height, bands, raw_pixels).unwrap_or_else(|error| {
+            InMemoryImage::from_buffer(width, height, bands, raw_pixels).unwrap_or_else(|error| {
                 panic!(
                     "failed to build fixture-backed image {}: {error}",
                     path.display()
@@ -57,7 +57,7 @@ mod robustness_determinism {
         image
     }
 
-    fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+    fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
         MemorySource::new(
             image.width(),
             image.height(),
@@ -68,12 +68,12 @@ mod robustness_determinism {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_buffer<S: viprs::pipeline::Flush>(
-        image: &Image<U8>,
-        threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    fn execute_to_buffer<S: viprs::pipeline::Commit>(
+      image: &InMemoryImage<U8>,
+      threads: usize,
+      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> (CompiledPipeline, Vec<u8>) {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
             image,
         )))
         .unwrap_or_else(|error| panic!("pipeline stage failed: {error:?}"))

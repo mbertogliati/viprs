@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         colorspace::{Hsv, SRgb},
@@ -52,7 +52,7 @@ fn bench_hsv(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<U8>::new(image_size, image_size, 3, srgb.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .then(Box::new(ColourConvertBridge::<SRgbToHsv, SRgb, Hsv>::new(
                             SRgbToHsv, 3,
                         )))
@@ -76,7 +76,7 @@ fn bench_hsv(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<F32>::new(image_size, image_size, 3, hsv.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .then(Box::new(ColourConvertBridge::<HsvToSRgb, Hsv, SRgb>::new(
                             HsvToSRgb, 3,
                         )))

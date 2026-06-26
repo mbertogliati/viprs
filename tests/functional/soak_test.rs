@@ -6,16 +6,16 @@ use std::{
 };
 
 use viprs::{
-    BuildError, CompiledPipeline, Image, Interpretation, U8,
-    adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+  BuildError, CompiledPipeline, InMemoryImage, Interpretation, U8,
+  adapters::{
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-    domain::{
+  domain::{
         kernel::InterpolationKernel,
         ops::resample::{Thumbnail, thumbnail::ThumbnailTarget},
     },
-    ports::scheduler::TileScheduler,
+  ports::scheduler::TileScheduler,
 };
 
 const FIXTURE_NAME: &str = "bench_2048x2048.jpg";
@@ -48,7 +48,7 @@ fn fixture_path(name: &str) -> PathBuf {
         .join(name)
 }
 
-fn load_fixture_image() -> Image<U8> {
+fn load_fixture_image() -> InMemoryImage<U8> {
     let path = fixture_path(FIXTURE_NAME);
     let bytes = fs::read(&path)
         .unwrap_or_else(|error| panic!("failed to read fixture {}: {error}", path.display()));
@@ -65,7 +65,7 @@ fn load_fixture_image() -> Image<U8> {
         .cycle()
         .take(expected_len)
         .collect::<Vec<_>>();
-    let image = Image::from_buffer(FIXTURE_WIDTH, FIXTURE_HEIGHT, FIXTURE_BANDS, pixels)
+    let image = InMemoryImage::from_buffer(FIXTURE_WIDTH, FIXTURE_HEIGHT, FIXTURE_BANDS, pixels)
         .unwrap_or_else(|error| {
             panic!(
                 "failed to build fixture-backed image {}: {error}",
@@ -79,7 +79,7 @@ fn load_fixture_image() -> Image<U8> {
     })
 }
 
-fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
     MemorySource::new(
         image.width(),
         image.height(),
@@ -90,8 +90,8 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
     .with_metadata(image.metadata().clone())
 }
 
-fn build_thumbnail_pipeline(image: &Image<U8>) -> CompiledPipeline {
-    PipelineBuilder::from_source(memory_source_from_image(image))
+fn build_thumbnail_pipeline(image: &InMemoryImage<U8>) -> CompiledPipeline {
+    ImagePipeline::from_source(memory_source_from_image(image))
         .thumbnail(thumbnail())
         .unwrap_or_else(|error: BuildError| panic!("pipeline stage failed: {error:?}"))
         .build()

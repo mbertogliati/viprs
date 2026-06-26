@@ -205,8 +205,8 @@ pub(super) fn probe_ifd_dimensions(src: &[u8], ifd_offset: u32) -> Result<(u32, 
 }
 
 pub(super) fn downsample_half<F: BandFormat>(
-    image: &Image<F>,
-) -> Result<Option<Image<F>>, ViprsError>
+  image: &InMemoryImage<F>,
+) -> Result<Option<InMemoryImage<F>>, ViprsError>
 where
     F::Sample: PyramidSample,
 {
@@ -257,15 +257,15 @@ where
         }
     }
 
-    Image::from_buffer(new_width, new_height, image.bands(), data)
+    InMemoryImage::from_buffer(new_width, new_height, image.bands(), data)
         .map(Some)
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 pub(super) fn pyramid_levels<F: BandFormat>(
-    image: &Image<F>,
-    tile: Option<(u32, u32)>,
-) -> Result<Vec<Image<F>>, ViprsError>
+  image: &InMemoryImage<F>,
+  tile: Option<(u32, u32)>,
+) -> Result<Vec<InMemoryImage<F>>, ViprsError>
 where
     F::Sample: PyramidSample,
 {

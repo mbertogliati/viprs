@@ -5,9 +5,9 @@ use std::marker::PhantomData;
 
 use viprs_core::shared_ops::gauss_kernel::gaussian_kernel_1d as libvips_gaussian_kernel_1d;
 use viprs_core::{
-    format::BandFormat,
-    image::{DemandHint, Image, Region},
-    op::{ViewBridge, ViewOp},
+  format::BandFormat,
+  image::{DemandHint, InMemoryImage, Region},
+  op::{ViewBridge, ViewOp},
 };
 
 /// libvips-style smartcrop strategy selection.
@@ -123,17 +123,17 @@ where
 {
     #[must_use]
     /// Returns or performs analyze.
-    pub fn analyze(image: &Image<F>, target_width: u32, target_height: u32) -> Self {
+    pub fn analyze(image: &InMemoryImage<F>, target_width: u32, target_height: u32) -> Self {
         Self::analyze_with_interesting(image, target_width, target_height, Interesting::Attention)
     }
 
     #[must_use]
     /// Returns or performs analyze with interesting.
     pub fn analyze_with_interesting(
-        image: &Image<F>,
-        target_width: u32,
-        target_height: u32,
-        interesting: Interesting,
+      image: &InMemoryImage<F>,
+      target_width: u32,
+      target_height: u32,
+      interesting: Interesting,
     ) -> Self {
         let source_width = image.width();
         let source_height = image.height();
@@ -826,14 +826,14 @@ mod tests {
 
     #[test]
     fn default_strategy_matches_libvips_attention_default() {
-        let image = Image::<U8>::from_buffer(8, 8, 1, vec![0u8; 64]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(8, 8, 1, vec![0u8; 64]).unwrap();
         let op = SmartcropOp::analyze(&image, 4, 4);
         assert_eq!(op.interesting(), Interesting::Attention);
     }
 
     #[test]
     fn uniform_image_yields_valid_crop() {
-        let image = Image::<U8>::from_buffer(8, 8, 1, vec![0u8; 64]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(8, 8, 1, vec![0u8; 64]).unwrap();
         let op = SmartcropOp::analyze(&image, 4, 4);
         assert!(op.crop_left() <= 4);
         assert!(op.crop_top() <= 4);
@@ -843,7 +843,7 @@ mod tests {
 
     #[test]
     fn specific_interest_clips_crop_around_requested_point() {
-        let image = Image::<U8>::from_buffer(10, 6, 1, vec![0u8; 60]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(10, 6, 1, vec![0u8; 60]).unwrap();
         let op = SmartcropOp::analyze_with_interesting(
             &image,
             4,
@@ -859,7 +859,7 @@ mod tests {
 
     #[test]
     fn all_interest_returns_full_image_extent() {
-        let image = Image::<U8>::from_buffer(7, 5, 1, vec![0u8; 35]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(7, 5, 1, vec![0u8; 35]).unwrap();
         let op = SmartcropOp::analyze_with_interesting(&image, 3, 2, Interesting::All);
         assert_eq!(op.output_width(image.width()), 7);
         assert_eq!(op.output_height(image.height()), 5);
@@ -893,7 +893,7 @@ mod tests {
             }
         }
 
-        let image = Image::<U8>::from_buffer(12, 4, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(12, 4, 3, pixels).unwrap();
         let attention = SmartcropOp::analyze_with_interesting(&image, 4, 4, Interesting::Attention);
         let entropy = SmartcropOp::analyze_with_interesting(&image, 4, 4, Interesting::Entropy);
 
@@ -914,7 +914,7 @@ mod tests {
             }
         }
 
-        let image = Image::<U8>::from_buffer(8, 8, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(8, 8, 1, pixels.clone()).unwrap();
         let op = SmartcropOp::analyze_with_interesting(&image, 4, 4, Interesting::Entropy);
 
         assert!(op.crop_left() <= 6);
@@ -925,7 +925,7 @@ mod tests {
 
     #[test]
     fn attention_crop_biases_towards_salient_patch() {
-        let image = Image::<U8>::from_buffer(96, 64, 3, attention_fixture(96, 64)).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(96, 64, 3, attention_fixture(96, 64)).unwrap();
         let op = SmartcropOp::analyze_with_interesting(&image, 20, 20, Interesting::Attention);
 
         assert!(op.crop_left() <= 82);
@@ -956,7 +956,7 @@ mod tests {
         let expected_attention_x = expected_left + crop_width / 2;
         let expected_attention_y = expected_top + crop_height / 2;
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
         let actual = SmartcropOp::analyze_with_interesting(
             &image,
             crop_width,
@@ -1001,7 +1001,7 @@ mod tests {
         let expected_attention_x = expected_left + crop_width / 2;
         let expected_attention_y = expected_top + crop_height / 2;
 
-        let image = Image::<U8>::from_buffer(width, height, 4, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 4, pixels).unwrap();
         let actual = SmartcropOp::analyze_with_interesting(
             &image,
             crop_width,

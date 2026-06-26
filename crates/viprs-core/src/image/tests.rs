@@ -130,13 +130,13 @@ fn image_metadata_remove_orientation_preserves_malformed_exif() {
 
 #[test]
 fn from_buffer_starts_with_default_metadata() {
-    let image = Image::<U8>::from_buffer(2, 1, 1, vec![1, 2]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![1, 2]).unwrap();
     assert_eq!(image.metadata(), &ImageMetadata::default());
 }
 
 #[test]
 fn from_buffer_rejects_dimension_overflow_before_length_check() {
-    let err = Image::<U8>::from_buffer(u32::MAX, u32::MAX, 4, Vec::new())
+    let err = InMemoryImage::<U8>::from_buffer(u32::MAX, u32::MAX, 4, Vec::new())
         .expect_err("oversized dimensions must be rejected before buffer length checks");
 
     assert!(matches!(
@@ -166,7 +166,7 @@ fn with_metadata_replaces_default_metadata() {
         ..ImageMetadata::default()
     };
 
-    let image = Image::<U8>::from_buffer(1, 1, 1, vec![7])
+    let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![7])
         .unwrap()
         .with_metadata(metadata.clone());
 
@@ -175,8 +175,8 @@ fn with_metadata_replaces_default_metadata() {
 
 #[test]
 fn with_frames_exposes_animation_sequence() {
-    let frame0 = Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap();
-    let frame1 = Image::<U8>::from_buffer(1, 1, 1, vec![2]).unwrap();
+    let frame0 = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap();
+    let frame1 = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![2]).unwrap();
     let animated = frame0
         .clone()
         .with_frames(vec![frame0.clone(), frame1.clone()]);
@@ -192,17 +192,17 @@ fn with_frames_exposes_animation_sequence() {
 #[test]
 fn from_frames_preserves_animation_metadata() {
     let frame0 = AnimationFrame::new(
-        Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+        InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
         40,
         FrameDisposal::Keep,
     );
     let frame1 = AnimationFrame::new(
-        Image::<U8>::from_buffer(1, 1, 1, vec![2]).unwrap(),
+        InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![2]).unwrap(),
         70,
         FrameDisposal::Background,
     );
 
-    let animated = Image::<U8>::from_frames(vec![frame0, frame1])
+    let animated = InMemoryImage::<U8>::from_frames(vec![frame0, frame1])
         .unwrap()
         .with_animation_loop_count(AnimationLoopCount::Infinite);
 

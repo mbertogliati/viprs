@@ -17,7 +17,7 @@ use spng::{
 
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::Image;
+use viprs_core::image::InMemoryImage;
 #[cfg(feature = "libspng")]
 use viprs_core::image::ImageMetadata;
 
@@ -460,7 +460,7 @@ pub(super) fn decode_png_with_box_shrink_u8<R: BufRead + Seek>(
 
 pub(super) fn decode_png_with_png_crate_reader<F: BandFormat, R>(
     src: R,
-) -> Result<Image<F>, ViprsError>
+) -> Result<InMemoryImage<F>, ViprsError>
 where
     R: BufRead + Seek,
 {
@@ -517,7 +517,7 @@ where
         }
     };
 
-    Image::from_buffer(width, height, bands, samples)
+    InMemoryImage::from_buffer(width, height, bands, samples)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
@@ -605,7 +605,7 @@ fn decode_libspng_rows<R>(
 #[cfg(feature = "libspng")]
 fn decode_png_with_libspng_reader<F: BandFormat, R: std::io::Read>(
     src: R,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let mut ctx = new_libspng_context()?;
     ctx.set_png_stream(src)
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
@@ -669,13 +669,13 @@ fn decode_png_with_libspng_reader<F: BandFormat, R: std::io::Read>(
         }
     };
 
-    Image::from_buffer(width, height, bands, samples)
+    InMemoryImage::from_buffer(width, height, bands, samples)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 #[cfg(feature = "libspng")]
-pub(super) fn decode_png_with_libspng<F: BandFormat>(src: &[u8]) -> Result<Image<F>, ViprsError> {
+pub(super) fn decode_png_with_libspng<F: BandFormat>(src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
     decode_png_with_libspng_reader::<F, _>(std::io::Cursor::new(src))
         .or_else(|_| decode_png_with_png_crate_reader(std::io::Cursor::new(src)))
 }

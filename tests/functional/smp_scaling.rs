@@ -7,16 +7,16 @@ use std::{
 use std::path::{Path, PathBuf};
 
 use viprs::{
-    BuildError, Image, ImageCodecExt, Interpretation, PipelineBuilder, U8,
-    adapters::{
+  BuildError, InMemoryImage, ImageCodecExt, Interpretation, ImagePipeline, U8,
+  adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-    domain::{
+  domain::{
         kernel::InterpolationKernel,
         ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
     },
-    ports::scheduler::TileScheduler,
+  ports::scheduler::TileScheduler,
 };
 
 const TARGET_WIDTH: u32 = 400;
@@ -47,20 +47,20 @@ fn fixture_path(name: &str) -> PathBuf {
 }
 
 #[cfg(feature = "jpeg")]
-fn load_u8_fixture(name: &str) -> Image<U8> {
+fn load_u8_fixture(name: &str) -> InMemoryImage<U8> {
     let path = fixture_path(name);
-    Image::<U8>::load(&path).unwrap_or_else(|error| {
+    InMemoryImage::<U8>::load(&path).unwrap_or_else(|error| {
         panic!("failed to load U8 fixture {}: {error}", path.display());
     })
 }
 
 #[cfg(feature = "jpeg")]
-fn benchmark_image() -> Image<U8> {
+fn benchmark_image() -> InMemoryImage<U8> {
     load_u8_fixture("bench_8192x8192.jpg")
 }
 
 #[cfg(not(feature = "jpeg"))]
-fn benchmark_image() -> Image<U8> {
+fn benchmark_image() -> InMemoryImage<U8> {
     let width = 8_192;
     let height = 8_192;
     let bands = 3;
@@ -74,11 +74,11 @@ fn benchmark_image() -> Image<U8> {
         pixel[2] = y.wrapping_mul(5).wrapping_add(91);
     }
 
-    Image::from_buffer(width, height, bands, pixels)
+    InMemoryImage::from_buffer(width, height, bands, pixels)
         .expect("failed to construct synthetic 8192x8192 benchmark image")
 }
 
-fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
     let mut metadata = image.metadata().clone();
     if metadata.interpretation.is_none() && image.bands() >= 3 {
         metadata.interpretation = Some(Interpretation::Srgb);
@@ -94,8 +94,8 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
     .with_metadata(metadata)
 }
 
-fn build_thumbnail_pipeline(image: &Image<U8>) -> Result<viprs::CompiledPipeline, BuildError> {
-    PipelineBuilder::from_source(memory_source_from_image(image))
+fn build_thumbnail_pipeline(image: &InMemoryImage<U8>) -> Result<viprs::CompiledPipeline, BuildError> {
+    ImagePipeline::from_source(memory_source_from_image(image))
         .thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
@@ -103,7 +103,7 @@ fn build_thumbnail_pipeline(image: &Image<U8>) -> Result<viprs::CompiledPipeline
         .build()
 }
 
-fn run_thumbnail_once(image: &Image<U8>, threads: usize) -> Duration {
+fn run_thumbnail_once(image: &InMemoryImage<U8>, threads: usize) -> Duration {
     let pipeline = build_thumbnail_pipeline(image).expect("thumbnail pipeline build failed");
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     let scheduler = RayonScheduler::new(threads).expect("scheduler construction failed");
@@ -135,9 +135,9 @@ fn median_duration(samples: &mut [Duration]) -> Duration {
 }
 
 fn measure_scaling(
-    image: &Image<U8>,
-    thread_counts: &[usize],
-    iterations: usize,
+  image: &InMemoryImage<U8>,
+  thread_counts: &[usize],
+  iterations: usize,
 ) -> Vec<ScalingMeasurement> {
     for &threads in thread_counts {
         for _ in 0..WARMUP_ITERATIONS {

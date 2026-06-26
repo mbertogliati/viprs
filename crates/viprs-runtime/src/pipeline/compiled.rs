@@ -5,7 +5,7 @@
 
 use super::{
     Arc, BandFormat, BandFormatId, BufferIdx, BuildError, DemandHint, DynImageSource, DynOperation,
-    DynViewOp, Image, ImageMetadata, LineCacheAccess, LineCacheConfig, MemorySink, NodeSpec,
+    DynViewOp, InMemoryImage, ImageMetadata, LineCacheAccess, LineCacheConfig, MemorySink, NodeSpec,
     OperationTileCache, Region, SourceReadPlan, TileScheduler, ViprsError,
 };
 
@@ -379,7 +379,7 @@ pub struct CompiledPipeline {
 }
 
 impl CompiledPipeline {
-    /// Run the compiled pipeline into an owned [`Image`].
+    /// Run the compiled pipeline into an owned [`InMemoryImage`].
     ///
     /// This solves in-memory execution for callers that need the fully rendered
     /// output image instead of a streaming sink.
@@ -393,7 +393,7 @@ impl CompiledPipeline {
     ///     let _ = pipeline.run_to_image::<U8, _>(scheduler);
     /// }
     /// ```
-    pub fn run_to_image<F, S>(&self, scheduler: &S) -> Result<Image<F>, ViprsError>
+    pub fn run_to_image<F, S>(&self, scheduler: &S) -> Result<InMemoryImage<F>, ViprsError>
     where
         F: BandFormat,
         S: TileScheduler<Self>,

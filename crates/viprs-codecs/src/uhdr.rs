@@ -15,7 +15,7 @@ use crate::jpeg::{extract_exif_orientation, orient_u8_image};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8};
-use viprs_core::image::{Image, UhdrGainMap, UhdrGainMapMetadata};
+use viprs_core::image::{InMemoryImage, UhdrGainMap, UhdrGainMapMetadata};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const JPEG_SOI: [u8; 2] = [0xFF, 0xD8];
@@ -425,7 +425,7 @@ fn parse_gainmap_xmp(xmp: &[u8]) -> Result<Option<ParsedGainMapMetadata>, ViprsE
     }))
 }
 
-fn parse_gainmap_metadata(image: &Image<U8>) -> Result<Option<ParsedGainMapMetadata>, ViprsError> {
+fn parse_gainmap_metadata(image: &InMemoryImage<U8>) -> Result<Option<ParsedGainMapMetadata>, ViprsError> {
     if let Some(xmp) = image.metadata().xmp.as_deref()
         && let Some(parsed) = parse_gainmap_xmp(xmp)?
     {
@@ -485,7 +485,7 @@ impl ImageDecoder for UhdrCodec {
         scan_markers(header).mpf_segments > 0
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -493,7 +493,7 @@ impl ImageDecoder for UhdrCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -559,16 +559,16 @@ impl ImageEncoder for UhdrCodec {
         "uhdr"
     }
 
-    fn encode<F: BandFormat>(&self, _image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, _image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         Err(ViprsError::Codec(
             "uhdr: encode is not implemented (decode-only codec)".into(),
         ))
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        _image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      _image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

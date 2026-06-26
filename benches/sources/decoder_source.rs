@@ -11,10 +11,10 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::{
     adapters::sources::decoder_source::DecoderSource,
     domain::{
-        codec_options::LoadOptions,
-        error::ViprsError,
-        format::{BandFormat, U8},
-        image::{Image, Region},
+      codec_options::LoadOptions,
+      error::ViprsError,
+      format::{BandFormat, U8},
+      image::{InMemoryImage, Region},
     },
     ports::{
         codec::{ImageDecoder, ImageMetadataProbe, TileImageDecoder},
@@ -50,7 +50,7 @@ impl ImageDecoder for BenchmarkTileDecoder {
         true
     }
 
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec(
             "benchmark tile decoder must not full-decode".into(),
         ))
@@ -60,7 +60,7 @@ impl ImageDecoder for BenchmarkTileDecoder {
         &self,
         src: &[u8],
         _: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode(src)
     }
 
@@ -149,9 +149,9 @@ fn bench_png_eager_vs_streaming_tile_read(c: &mut Criterion) {
     for &size in &[512u32, 2048, 8192] {
         let pixel_count = size as usize * size as usize;
         let image = must(
-            Image::<U8>::from_buffer(size, size, 1, vec![17u8; pixel_count])
+          InMemoryImage::<U8>::from_buffer(size, size, 1, vec![17u8; pixel_count])
                 .map_err(|err| ViprsError::Codec(err.to_string())),
-            "build PNG benchmark image",
+          "build PNG benchmark image",
         );
         let encoded = must(
             PngEncoder {

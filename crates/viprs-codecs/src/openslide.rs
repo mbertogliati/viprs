@@ -23,10 +23,10 @@ use std::{
 use openslide_rs::{Address, OpenSlide, Region as OpenSlideRegion, Size};
 
 use viprs_core::{
-    codec_options::LoadOptions,
-    error::{OpenSlideCodecError, ViprsError},
-    format::{BandFormat, BandFormatId},
-    image::{Image, ImageMetadata, Interpretation, Region},
+  codec_options::LoadOptions,
+  error::{OpenSlideCodecError, ViprsError},
+  format::{BandFormat, BandFormatId},
+  image::{InMemoryImage, ImageMetadata, Interpretation, Region},
 };
 use viprs_ports::codec::{ImageDecoder, ImageMetadataProbe, TileImageDecoder};
 
@@ -472,7 +472,7 @@ fn decode_region_from_slide(
 fn decode_slide_with_options<F: BandFormat>(
     slide: &OpenSlide,
     opts: &LoadOptions,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     require_u8::<F>()?;
     let selected = select_level(slide, opts)?;
     let region = Region::new(0, 0, selected.size.w, selected.size.h);
@@ -487,7 +487,7 @@ fn decode_slide_with_options<F: BandFormat>(
             ))
         })?;
     let metadata = metadata_from_slide(slide, selected)?;
-    Image::from_buffer(selected.size.w, selected.size.h, OPENSLIDE_BANDS, typed)
+    InMemoryImage::from_buffer(selected.size.w, selected.size.h, OPENSLIDE_BANDS, typed)
         .map(|image| image.with_metadata(metadata))
         .map_err(|err| ViprsError::Codec(format!("openslide: {err}")))
 }
@@ -554,7 +554,7 @@ impl ImageDecoder for OpenSlideDecoder {
         false
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -562,7 +562,7 @@ impl ImageDecoder for OpenSlideDecoder {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -574,7 +574,7 @@ impl ImageDecoder for OpenSlideDecoder {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {

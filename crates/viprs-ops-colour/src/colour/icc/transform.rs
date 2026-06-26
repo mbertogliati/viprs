@@ -2,8 +2,8 @@ use super::{IccImage, IccIntent, IccTransformOptions, Interpretation, ViprsError
 use lcms2::{ColorSpaceSignature, Flags, Intent, PixelFormat, Profile, Transform};
 use std::borrow::Cow;
 use viprs_core::{
-    format::{BandFormat, BandFormatId, F32, U8, U16},
-    image::{Image, ImageMetadata},
+  format::{BandFormat, BandFormatId, F32, U8, U16},
+  image::{InMemoryImage, ImageMetadata},
 };
 
 use super::profiles::{
@@ -60,7 +60,7 @@ pub(super) fn checked_icc_output_sizes(
     Ok((pixels, sample_count))
 }
 
-fn fallback_input_profile<F: BandFormat>(image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+fn fallback_input_profile<F: BandFormat>(image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
     match (image.metadata().interpretation, image.bands(), F::ID) {
         (Some(Interpretation::Lab), 3, BandFormatId::F32) => lab_profile_bytes(),
         (Some(Interpretation::Xyz), 3, BandFormatId::F32) => xyz_profile_bytes(),
@@ -136,8 +136,8 @@ fn output_spec(output_profile: &Profile, depth: Option<u8>) -> Result<OutputSpec
 }
 
 fn input_pixel_format<F: BandFormat>(
-    image: &Image<F>,
-    input_profile: &Profile,
+  image: &InMemoryImage<F>,
+  input_profile: &Profile,
 ) -> Result<PixelFormat, ViprsError> {
     input_pixel_format_for_layout(F::ID, input_profile.color_space(), image.bands())
 }
@@ -231,7 +231,7 @@ fn replace_embedded_profile(
     }
 }
 
-fn pcs_profile_for_export<F: BandFormat>(image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+fn pcs_profile_for_export<F: BandFormat>(image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
     match image.metadata().interpretation {
         Some(Interpretation::Lab) => lab_profile_bytes(),
         Some(Interpretation::Xyz) => xyz_profile_bytes(),
@@ -273,7 +273,7 @@ pub(super) fn transform_int_input(
         let mut output = vec![0u8; sample_count];
         transform.transform_pixels(src, &mut output);
         let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
-        Image::from_buffer(width, height, out_bands, output)
+        InMemoryImage::from_buffer(width, height, out_bands, output)
             .map(|img| IccImage::U8(img.with_metadata(metadata)))
             .map_err(|e| icc_error(e.to_string()))
     } else if let Some((out_fmt, out_bands)) = u16_output_format(spec) {
@@ -290,7 +290,7 @@ pub(super) fn transform_int_input(
         let mut output = vec![0u16; sample_count];
         transform.transform_pixels(src, bytemuck::cast_slice_mut(&mut output));
         let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
-        Image::from_buffer(width, height, out_bands, output)
+        InMemoryImage::from_buffer(width, height, out_bands, output)
             .map(|img| IccImage::U16(img.with_metadata(metadata)))
             .map_err(|e| icc_error(e.to_string()))
     } else if matches!(spec, OutputSpec::F32Lab) {
@@ -309,7 +309,7 @@ pub(super) fn transform_int_input(
         let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
             .map_err(|(_e, _b)| icc_error("f32 ICC output cast failed"))?;
         let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
-        Image::from_buffer(width, height, 3, output)
+        InMemoryImage::from_buffer(width, height, 3, output)
             .map(|img| IccImage::F32(img.with_metadata(metadata)))
             .map_err(|e| icc_error(e.to_string()))
     } else {
@@ -328,15 +328,15 @@ pub(super) fn transform_int_input(
         let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
             .map_err(|(_e, _b)| icc_error("f32 ICC output cast failed"))?;
         let metadata = metadata_with_profile(meta, output_bytes, Some(interp));
-        Image::from_buffer(width, height, 3, output)
+        InMemoryImage::from_buffer(width, height, 3, output)
             .map(|img| IccImage::F32(img.with_metadata(metadata)))
             .map_err(|e| icc_error(e.to_string()))
     }
 }
 
 fn resolve_input_profile_bytes<'a, F: BandFormat>(
-    image: &Image<F>,
-    options: &IccTransformOptions<'a>,
+  image: &InMemoryImage<F>,
+  options: &IccTransformOptions<'a>,
 ) -> Result<Cow<'a, [u8]>, ViprsError> {
     if let Some(profile) = options.input_profile {
         return Ok(Cow::Borrowed(profile));
@@ -348,13 +348,13 @@ fn resolve_input_profile_bytes<'a, F: BandFormat>(
 }
 
 fn transform_f32_pcs(
-    image: &Image<F32>,
-    input_profile: &Profile,
-    output_profile: &Profile,
-    output_bytes: &[u8],
-    intent: Intent,
-    flags: Flags<lcms2::DisallowCache>,
-    spec: OutputSpec,
+  image: &InMemoryImage<F32>,
+  input_profile: &Profile,
+  output_profile: &Profile,
+  output_bytes: &[u8],
+  intent: Intent,
+  flags: Flags<lcms2::DisallowCache>,
+  spec: OutputSpec,
 ) -> Result<IccImage, ViprsError> {
     let in_fmt = input_pixel_format(image, input_profile)?;
     let src = bytemuck::cast_slice::<f32, [f32; 3]>(image.pixels());
@@ -374,7 +374,7 @@ fn transform_f32_pcs(
         let mut output = vec![0u8; sample_count];
         transform.transform_pixels(src, &mut output);
         let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
-        Image::from_buffer(image.width(), image.height(), out_bands, output)
+        InMemoryImage::from_buffer(image.width(), image.height(), out_bands, output)
             .map(|img| IccImage::U8(img.with_metadata(metadata)))
             .map_err(|e| icc_error(e.to_string()))
     } else if let Some((out_fmt, out_bands)) = u16_output_format(spec) {
@@ -392,7 +392,7 @@ fn transform_f32_pcs(
         let mut output = vec![0u16; sample_count];
         transform.transform_pixels(src, bytemuck::cast_slice_mut(&mut output));
         let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
-        Image::from_buffer(image.width(), image.height(), out_bands, output)
+        InMemoryImage::from_buffer(image.width(), image.height(), out_bands, output)
             .map(|img| IccImage::U16(img.with_metadata(metadata)))
             .map_err(|e| icc_error(e.to_string()))
     } else if matches!(spec, OutputSpec::F32Lab) {
@@ -411,7 +411,7 @@ fn transform_f32_pcs(
         let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
             .map_err(|(_err, _buf)| icc_error("f32 ICC output cast failed"))?;
         let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
-        Image::from_buffer(image.width(), image.height(), 3, output)
+        InMemoryImage::from_buffer(image.width(), image.height(), 3, output)
             .map(|image| IccImage::F32(image.with_metadata(metadata)))
             .map_err(|err| icc_error(err.to_string()))
     } else {
@@ -430,14 +430,14 @@ fn transform_f32_pcs(
         let output = bytemuck::allocation::try_cast_vec::<[f32; 3], f32>(output)
             .map_err(|(_err, _buf)| icc_error("f32 ICC output cast failed"))?;
         let metadata = metadata_with_profile(image.metadata(), output_bytes, Some(interp));
-        Image::from_buffer(image.width(), image.height(), 3, output)
+        InMemoryImage::from_buffer(image.width(), image.height(), 3, output)
             .map(|image| IccImage::F32(image.with_metadata(metadata)))
             .map_err(|err| icc_error(err.to_string()))
     }
 }
 
 /// Imports an image into PCS (Lab) colour space using its embedded ICC profile.
-pub fn icc_import<F: BandFormat>(image: &Image<F>, profile: &[u8]) -> Result<IccImage, ViprsError> {
+pub fn icc_import<F: BandFormat>(image: &InMemoryImage<F>, profile: &[u8]) -> Result<IccImage, ViprsError> {
     let pcs_profile = lab_profile_bytes()?;
     let imported = icc_transform(
         image,
@@ -456,8 +456,8 @@ pub fn icc_import<F: BandFormat>(image: &Image<F>, profile: &[u8]) -> Result<Icc
 
 /// Exports an image from PCS back to an output ICC colour space.
 pub fn icc_export<F: BandFormat>(
-    image: &Image<F>,
-    profile: Option<&[u8]>,
+  image: &InMemoryImage<F>,
+  profile: Option<&[u8]>,
 ) -> Result<IccImage, ViprsError> {
     let output_profile = profile
         .or_else(|| image.metadata().icc_profile.as_deref())
@@ -475,9 +475,9 @@ pub fn icc_export<F: BandFormat>(
 
 /// Applies a full ICC colour transform between input and output profiles.
 pub fn icc_transform<F: BandFormat>(
-    image: &Image<F>,
-    output_profile_bytes: &[u8],
-    options: &IccTransformOptions<'_>,
+  image: &InMemoryImage<F>,
+  output_profile_bytes: &[u8],
+  options: &IccTransformOptions<'_>,
 ) -> Result<IccImage, ViprsError> {
     let input_profile_bytes = resolve_input_profile_bytes(image, options)?;
     let input_profile = open_profile(input_profile_bytes.as_ref(), "input")?;
@@ -496,7 +496,7 @@ pub fn icc_transform<F: BandFormat>(
                 bytemuck::allocation::try_cast_vec::<F::Sample, u8>(image.pixels().to_vec())
                     .map_err(|(_err, _buf)| icc_error("u8 ICC input cast failed"))?;
             let typed =
-                Image::<U8>::from_buffer(image.width(), image.height(), image.bands(), src_u8)
+                InMemoryImage::<U8>::from_buffer(image.width(), image.height(), image.bands(), src_u8)
                     .map_err(|err| icc_error(err.to_string()))?;
             let in_fmt = input_pixel_format(&typed, &input_profile)?;
             transform_int_input(
@@ -518,7 +518,7 @@ pub fn icc_transform<F: BandFormat>(
                 bytemuck::allocation::try_cast_vec::<F::Sample, u16>(image.pixels().to_vec())
                     .map_err(|(_err, _buf)| icc_error("u16 ICC input cast failed"))?;
             let typed =
-                Image::<U16>::from_buffer(image.width(), image.height(), image.bands(), src_u16)
+                InMemoryImage::<U16>::from_buffer(image.width(), image.height(), image.bands(), src_u16)
                     .map_err(|err| icc_error(err.to_string()))?;
             let in_fmt = input_pixel_format(&typed, &input_profile)?;
             let src_bytes: &[u8] = bytemuck::cast_slice(typed.pixels());
@@ -537,7 +537,7 @@ pub fn icc_transform<F: BandFormat>(
             )
         }
         BandFormatId::F32 => {
-            let typed = Image::<F32>::from_buffer(
+            let typed = InMemoryImage::<F32>::from_buffer(
                 image.width(),
                 image.height(),
                 image.bands(),

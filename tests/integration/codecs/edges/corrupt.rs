@@ -5,7 +5,7 @@ mod robustez_corrupt {
         path::{Path, PathBuf},
     };
 
-    use viprs::{Image, U8, ViprsError};
+    use viprs::{InMemoryImage, U8, ViprsError};
 
     fn project_root() -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR")).to_owned()
@@ -54,7 +54,7 @@ mod robustez_corrupt {
         use viprs::{adapters::codecs::JpegCodec, ports::codec::ImageEncoder};
 
         let image =
-            Image::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56]).expect("valid RGB test image");
+            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56]).expect("valid RGB test image");
         JpegCodec.encode(&image).expect("tiny JPEG fixture")
     }
 
@@ -230,7 +230,7 @@ mod robustez_corrupt {
         };
 
         let image =
-            Image::<U8>::from_buffer(1, 1, 3, vec![90, 40, 10]).expect("valid RGB test image");
+            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![90, 40, 10]).expect("valid RGB test image");
         let mut encoded = JpegCodec
             .encode(&image)
             .expect("tiny JPEG round-trip fixture");

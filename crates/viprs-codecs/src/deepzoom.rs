@@ -9,7 +9,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use viprs_core::{codec_options::SaveOptions, error::ViprsError, format::U8, image::Image};
+use viprs_core::{codec_options::SaveOptions, error::ViprsError, format::U8, image::InMemoryImage};
 
 const DEFAULT_TILE_SIZE: u32 = 254;
 const DEFAULT_OVERLAP: u32 = 1;
@@ -180,7 +180,7 @@ impl DeepZoomExporter {
     /// ```rust,no_run
     /// let _ = viprs_codecs::deepzoom::DeepZoomExporter::export;
     /// ```
-    pub fn export(&self, image: &Image<U8>, path: &Path) -> Result<(), ViprsError> {
+    pub fn export(&self, image: &InMemoryImage<U8>, path: &Path) -> Result<(), ViprsError> {
         let target = DeepZoomTarget::from_path(path)?;
         let descriptor = descriptor_xml(
             &target.base_name,

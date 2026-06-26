@@ -5,13 +5,13 @@ use super::PngCodec;
 #[cfg(feature = "webp")]
 use super::WebpCodec;
 use super::{
-    BandFormatId, F32, F64, ForeignRegistry, I16, I32, ImageApi, Path, U8, U16, U32, ViprsError,
+    BandFormatId, F32, F64, ForeignRegistry, I16, I32, ImagePipeline2, Path, U8, U16, U32, ViprsError,
     Write,
 };
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
 use super::{ImageEncoder, SaveOptions};
 
-impl ImageApi {
+impl ImagePipeline2 {
     /// Build, run, and encode the output as JPEG.
     ///
     /// This solves HTTP and background-job workflows that need encoded bytes
@@ -20,9 +20,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let jpeg = ImageApi::open("photo.png")?.flatten()?.encode_jpeg(85)?;
+    /// let jpeg = ImagePipeline2::open("photo.png")?.flatten()?.encode_jpeg(85)?;
     /// let _ = jpeg;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -62,10 +62,10 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
     /// let mut bytes = Vec::new();
-    /// ImageApi::open("photo.png")?.flatten()?.encode_jpeg_to(&mut bytes, 85)?;
+    /// ImagePipeline2::open("photo.png")?.flatten()?.encode_jpeg_to(&mut bytes, 85)?;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_jpeg_to<W: Write>(self, writer: &mut W, quality: u8) -> Result<(), ViprsError> {
@@ -106,9 +106,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let png = ImageApi::open("photo.jpg")?.encode_png()?;
+    /// let png = ImagePipeline2::open("photo.jpg")?.encode_png()?;
     /// let _ = png;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -141,10 +141,10 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
     /// let mut bytes = Vec::new();
-    /// ImageApi::open("photo.jpg")?.encode_png_to(&mut bytes)?;
+    /// ImagePipeline2::open("photo.jpg")?.encode_png_to(&mut bytes)?;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_png_to<W: Write>(self, writer: &mut W) -> Result<(), ViprsError> {
@@ -181,9 +181,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// let webp = ImageApi::open("photo.jpg")?.encode_webp(80)?;
+    /// let webp = ImagePipeline2::open("photo.jpg")?.encode_webp(80)?;
     /// let _ = webp;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
@@ -223,10 +223,10 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
     /// let mut bytes = Vec::new();
-    /// ImageApi::open("photo.jpg")?.encode_webp_to(&mut bytes, 80)?;
+    /// ImagePipeline2::open("photo.jpg")?.encode_webp_to(&mut bytes, 80)?;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn encode_webp_to<W: Write>(self, writer: &mut W, quality: u8) -> Result<(), ViprsError> {
@@ -267,9 +267,9 @@ impl ImageApi {
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_api::ImageApi;
+    /// use viprs_runtime::image_api::ImagePipeline2;
     ///
-    /// ImageApi::open("photo.jpg")?.thumbnail(400)?.save("thumb.webp")?;
+    /// ImagePipeline2::open("photo.jpg")?.thumbnail(400)?.save("thumb.webp")?;
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
     pub fn save(self, path: impl AsRef<Path>) -> Result<(), ViprsError> {

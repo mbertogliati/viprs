@@ -8,10 +8,10 @@
 //! Portable Float Map codec — decode and encode PF/Pf float images.
 
 use viprs_core::{
-    codec_options::{LoadOptions, SaveOptions},
-    error::ViprsError,
-    format::{BandFormat, BandFormatId},
-    image::{Image, ImageMetadata, Interpretation},
+  codec_options::{LoadOptions, SaveOptions},
+  error::ViprsError,
+  format::{BandFormat, BandFormatId},
+  image::{InMemoryImage, ImageMetadata, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
@@ -255,7 +255,7 @@ impl ImageDecoder for PfmCodec {
         header.starts_with(b"PF") || header.starts_with(b"Pf")
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -263,7 +263,7 @@ impl ImageDecoder for PfmCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -276,7 +276,7 @@ impl ImageDecoder for PfmCodec {
 
         let (header, pixels) = decode_pfm(src)?;
         let pixels = bytemuck::cast_vec::<f32, F::Sample>(pixels);
-        Image::from_buffer(header.width, header.height, header.kind.bands(), pixels)
+        InMemoryImage::from_buffer(header.width, header.height, header.kind.bands(), pixels)
             .map(|image| image.with_metadata(metadata_for_pfm(&header)))
             .map_err(|error| ViprsError::Codec(error.to_string()))
     }
@@ -295,14 +295,14 @@ impl ImageEncoder for PfmCodec {
         "pfm"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
-        &self,
-        image: &Image<F>,
-        _opts: &SaveOptions,
+      &self,
+      image: &InMemoryImage<F>,
+      _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

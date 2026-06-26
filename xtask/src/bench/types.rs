@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use viprs::domain::format::{F32, U8, U16};
-use viprs::domain::image::Image;
+use viprs::domain::image::InMemoryImage;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ScenarioSpec {
@@ -18,14 +18,14 @@ pub struct BenchFixtureSpec {
 }
 
 pub enum TiffSaveInput {
-    U8(Image<U8>),
-    U16(Image<U16>),
+    U8(InMemoryImage<U8>),
+    U16(InMemoryImage<U16>),
 }
 
 pub enum BenchImage {
-    U8(Image<U8>),
-    U16(Image<U16>),
-    F32(Image<F32>),
+    U8(InMemoryImage<U8>),
+    U16(InMemoryImage<U16>),
+    F32(InMemoryImage<F32>),
 }
 
 #[derive(Serialize, Deserialize)]

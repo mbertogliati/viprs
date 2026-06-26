@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+      sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::convolution::ConvaOp},
     ports::scheduler::TileScheduler,
@@ -52,7 +52,7 @@ fn bench_conva(c: &mut Criterion) {
                             MemorySource::<F32>::new(image_size, image_size, 1, pixels.clone())
                                 .unwrap();
                         let conva = ConvaOp::<F32>::new(kernel.clone()).unwrap();
-                        let pipeline = PipelineBuilder::from_source(source)
+                        let pipeline = ImagePipeline::from_source(source)
                             .then(Box::new(OperationBridge::new(conva, 1)))
                             .unwrap()
                             .build()
@@ -75,7 +75,7 @@ fn bench_conva(c: &mut Criterion) {
                         let source =
                             MemorySource::<F32>::new(image_size, image_size, 1, pixels.clone())
                                 .unwrap();
-                        let pipeline = PipelineBuilder::from_source(source)
+                        let pipeline = ImagePipeline::from_source(source)
                             .conv2d(kernel.clone())
                             .unwrap()
                             .build()

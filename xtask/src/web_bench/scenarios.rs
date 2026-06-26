@@ -7,7 +7,7 @@ use std::fs;
 use std::hint::black_box;
 use std::time::{Duration, Instant};
 
-use viprs::adapters::image_api::ImageApi;
+use viprs::adapters::image_api::ImagePipeline2;
 
 /// Result of a single scenario run (multiple iterations).
 pub struct ScenarioResult {
@@ -180,14 +180,14 @@ pub fn large_upload(input_bytes: &[u8], iterations: u32) -> ScenarioResult {
 // ─── Internal helpers ───────────────────────────────────────────────────────
 
 fn run_thumbnail_bytes(input_bytes: &[u8]) -> Vec<u8> {
-    ImageApi::from_bytes(input_bytes)
+    ImagePipeline2::from_bytes(input_bytes)
         .and_then(|api| api.thumbnail(400).map_err(Into::into))
         .and_then(|api| api.encode_webp(80))
         .unwrap_or_default()
 }
 
 fn run_pipeline_bytes(input_bytes: &[u8]) -> Vec<u8> {
-    ImageApi::from_bytes(input_bytes)
+    ImagePipeline2::from_bytes(input_bytes)
         .and_then(|api| api.thumbnail(800).map_err(Into::into))
         .and_then(|api| api.sharpen().map_err(Into::into))
         .and_then(|api| api.linear(1.1, 5.0).map_err(Into::into))
