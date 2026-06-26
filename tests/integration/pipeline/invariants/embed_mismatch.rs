@@ -1,12 +1,12 @@
 mod chaos_monkey_14 {
     use bytemuck::Pod;
     use viprs::{
-      BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8,
-      adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+        BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation, U8,
+        adapters::{
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
-      domain::ops::conversion::ExtendMode,
+        domain::ops::conversion::ExtendMode,
     };
 
     #[cfg(feature = "jpeg")]
@@ -61,8 +61,8 @@ mod chaos_monkey_14 {
     }
 
     fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<FIn>,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -70,12 +70,10 @@ mod chaos_monkey_14 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
         let output = pipeline
             .run_to_image::<FOut, _>(&RayonScheduler::new(2).map_err(|error| error.to_string())?)
             .map_err(|error| format!("pipeline execution failed: {error:?}"))?;

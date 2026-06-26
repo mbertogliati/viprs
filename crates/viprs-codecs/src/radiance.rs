@@ -8,10 +8,10 @@
 //! Radiance HDR codec — decode and encode RGBE `.hdr` files as F32 RGB images.
 
 use viprs_core::{
-  codec_options::{LoadOptions, SaveOptions},
-  error::ViprsError,
-  format::{BandFormat, BandFormatId},
-  image::{InMemoryImage, ImageMetadata, Interpretation},
+    codec_options::{LoadOptions, SaveOptions},
+    error::ViprsError,
+    format::{BandFormat, BandFormatId},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
@@ -473,9 +473,9 @@ impl ImageEncoder for RadianceCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -558,9 +558,13 @@ mod tests {
     #[test]
     fn radiance_round_trip_rgb_f32() {
         let codec = RadianceCodec;
-        let original =
-            Image::<F32>::from_buffer(8, 2, 3, (0..48).map(|index| index as f32 * 0.125).collect())
-                .unwrap();
+        let original = InMemoryImage::<F32>::from_buffer(
+            8,
+            2,
+            3,
+            (0..48).map(|index| index as f32 * 0.125).collect(),
+        )
+        .unwrap();
 
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F32>(&encoded).unwrap();
@@ -659,7 +663,7 @@ EXPOSURE=1.5
         let mut metadata = ImageMetadata::default();
         metadata.extra.insert(EXPOSURE_KEY.into(), "1.5".into());
         metadata.extra.insert(ASPECT_KEY.into(), "2".into());
-        let original = Image::<F32>::from_buffer(1, 1, 3, vec![0.5, 1.0, 1.5])
+        let original = InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![0.5, 1.0, 1.5])
             .unwrap()
             .with_metadata(metadata);
 
@@ -675,7 +679,7 @@ EXPOSURE=1.5
 
     #[test]
     fn radiance_encode_rejects_non_rgb_images() {
-        let image = Image::<F32>::from_buffer(1, 1, 1, vec![0.5]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![0.5]).unwrap();
         assert!(RadianceCodec.encode(&image).is_err());
     }
 

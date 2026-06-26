@@ -421,7 +421,8 @@ mod tests {
 
     #[test]
     fn image_avg_multi_band_image() {
-        let image = InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let avg = image_avg(&image).unwrap();
 
@@ -439,7 +440,8 @@ mod tests {
 
     #[test]
     fn image_min_multi_band_image() {
-        let image = InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let min = image_min(&image).unwrap();
 
@@ -457,7 +459,8 @@ mod tests {
 
     #[test]
     fn image_max_multi_band_image() {
-        let image = InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let max = image_max(&image).unwrap();
 
@@ -475,7 +478,8 @@ mod tests {
 
     #[test]
     fn image_deviate_multi_band_image() {
-        let image = InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let stddev = image_deviate(&image).unwrap();
 

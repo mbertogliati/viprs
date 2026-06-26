@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     ports::scheduler::TileScheduler,
@@ -29,8 +29,8 @@ fn bench_flip(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                  ImagePipeline::from_source(source).flip_horizontal(),
-                  "add horizontal flip operation",
+                    ImagePipeline::from_source(source).flip_horizontal(),
+                    "add horizontal flip operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -50,8 +50,8 @@ fn bench_flip(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                  ImagePipeline::from_source(source).flip_vertical(),
-                  "add vertical flip operation",
+                    ImagePipeline::from_source(source).flip_vertical(),
+                    "add vertical flip operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

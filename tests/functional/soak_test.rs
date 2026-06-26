@@ -6,16 +6,16 @@ use std::{
 };
 
 use viprs::{
-  BuildError, CompiledPipeline, InMemoryImage, Interpretation, U8,
-  adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+    BuildError, CompiledPipeline, InMemoryImage, Interpretation, U8,
+    adapters::{
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         kernel::InterpolationKernel,
         ops::resample::{Thumbnail, thumbnail::ThumbnailTarget},
     },
-  ports::scheduler::TileScheduler,
+    ports::scheduler::TileScheduler,
 };
 
 const FIXTURE_NAME: &str = "bench_2048x2048.jpg";
@@ -92,7 +92,7 @@ fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
 
 fn build_thumbnail_pipeline(image: &InMemoryImage<U8>) -> CompiledPipeline {
     ImagePipeline::from_source(memory_source_from_image(image))
-        .thumbnail(thumbnail())
+        .thumbnail_with(thumbnail())
         .unwrap_or_else(|error: BuildError| panic!("pipeline stage failed: {error:?}"))
         .build()
         .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"))

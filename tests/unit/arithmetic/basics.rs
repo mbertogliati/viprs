@@ -2,10 +2,10 @@ mod chaos_monkey {
     use bytemuck::Pod;
     use proptest::prelude::*;
     use viprs::{
-        BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
+        BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -71,12 +71,10 @@ mod chaos_monkey {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -104,12 +102,10 @@ mod chaos_monkey {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)

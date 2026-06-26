@@ -17,7 +17,7 @@ use crate::viprs_span;
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata};
+use viprs_core::image::{ImageMetadata, InMemoryImage};
 use viprs_ports::codec::ImageDecoder;
 
 fn scaled_dimension_for_factor(dimension: u32, factor: u8) -> u32 {

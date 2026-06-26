@@ -2,12 +2,12 @@ mod robustez_idempotencia {
     use std::num::NonZeroUsize;
 
     use viprs::{
-      InMemoryImage, ImageMetadata, Interpretation, U8,
-      adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+        ImageMetadata, InMemoryImage, Interpretation, U8,
+        adapters::{
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
-      domain::{
+        domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             kernel::InterpolationKernel,
             ops::resample::{Thumbnail, thumbnail::ThumbnailTarget},
@@ -52,9 +52,9 @@ mod robustez_idempotencia {
     }
 
     fn execute_pipeline<S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<U8>,
-      threads: usize,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, viprs::BuildError>,
+        image: &InMemoryImage<U8>,
+        threads: usize,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, viprs::BuildError>,
     ) -> InMemoryImage<U8> {
         let pipeline = configure(ImagePipeline::from_source(source_from_image(image)))
             .unwrap()
@@ -102,7 +102,7 @@ mod robustez_idempotencia {
     fn same_pipeline_twice_produces_identical_bytes() {
         let image = patterned_image(257, 193, 3);
         let pipeline = ImagePipeline::from_source(source_from_image(&image))
-            .thumbnail(Thumbnail::new(
+            .thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(91),
                 InterpolationKernel::Lanczos3,
             ))
@@ -148,7 +148,7 @@ mod robustez_idempotencia {
         let outputs: Vec<Vec<u8>> = (0..5)
             .map(|_| {
                 execute_pipeline(&image, 2, |builder| {
-                    builder.thumbnail(Thumbnail::new(
+                    builder.thumbnail_with(Thumbnail::new(
                         ThumbnailTarget::FitBox {
                             width: 80,
                             height: 60,
@@ -231,7 +231,7 @@ mod robustez_idempotencia {
 
         let uncached = execute_pipeline(&image, 2, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
@@ -239,7 +239,7 @@ mod robustez_idempotencia {
         });
         let cached = execute_pipeline(&image, 2, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
@@ -256,7 +256,7 @@ mod robustez_idempotencia {
 
         let single_thread = execute_pipeline(&image, 1, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
@@ -265,7 +265,7 @@ mod robustez_idempotencia {
         });
         let four_threads = execute_pipeline(&image, 4, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?

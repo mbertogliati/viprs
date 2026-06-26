@@ -7,8 +7,8 @@ use std::{
 use libc::{RUSAGE_SELF, getrusage, rusage};
 use viprs::{
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::BandFormatId,
     domain::{
@@ -70,12 +70,12 @@ fn build_thumbnail_sharpen(size: u32) -> viprs::adapters::pipeline::CompiledPipe
     let source = MemorySource::<U8>::new(size, size, 3, rgb_pixels(size)).unwrap();
     ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .build()
         .unwrap()
@@ -85,7 +85,7 @@ fn build_thumbnail_colourspace_cast(size: u32) -> viprs::adapters::pipeline::Com
     let source = MemorySource::<U8>::new(size, size, 3, rgb_pixels(size)).unwrap();
     ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))

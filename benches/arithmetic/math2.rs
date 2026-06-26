@@ -3,8 +3,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::arithmetic::math2::{Math2, Math2Mode};
 use viprs::{
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge},
     ports::scheduler::TileScheduler,

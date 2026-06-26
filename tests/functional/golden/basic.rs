@@ -4,12 +4,12 @@ use super::support as golden;
 use std::{any::Any, fs};
 
 use viprs::{
-  BuildError, DynOperation, Multiply, OperationBridge, ImagePipeline, TileScheduler,
-  adapters::{
+    BuildError, DynOperation, ImagePipeline, Multiply, OperationBridge, TileScheduler,
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         colorspace::{ColorspaceId, Lab},
         format::{BandFormat, BandFormatId, F32, U8},
         image::{DemandHint, Region},
@@ -156,11 +156,11 @@ fn structural_source() -> Vec<u8> {
 }
 
 fn run_pipeline_u8<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<u8>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(ImagePipeline::from_source(source))
@@ -177,11 +177,11 @@ fn run_pipeline_u8<S: viprs::pipeline::Commit>(
 }
 
 fn run_pipeline_f32<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<f32>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<f32>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(ImagePipeline::from_source(source))

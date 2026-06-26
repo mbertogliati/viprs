@@ -47,7 +47,7 @@ use viprs_core::codec_options::{LoadOptions, SaveOptions};
 pub use viprs_core::codec_options::{TiffCompression, TiffPredictor};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F32, U8, U16};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, ImageMetadataProbe, TileImageDecoder};
 
 const TIFF_LE_MAGIC: [u8; 4] = [0x49, 0x49, 0x2A, 0x00];
@@ -368,9 +368,9 @@ impl ImageEncoder for TiffEncoder {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -536,9 +536,9 @@ impl ImageEncoder for TiffCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

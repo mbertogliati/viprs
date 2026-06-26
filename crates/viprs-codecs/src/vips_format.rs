@@ -7,7 +7,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const VIPS_MAGIC_INTEL_BYTES: [u8; 4] = [0xB6, 0xA6, 0xF2, 0x08];
@@ -141,7 +141,10 @@ impl VipsCodec {
     /// ```rust,no_run
     /// let _ = viprs_codecs::vips_format::VipsCodec::encode_vips::<viprs_core::format::U8>;
     /// ```
-    pub fn encode_vips<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
+    pub fn encode_vips<F: BandFormat>(
+        &self,
+        image: &InMemoryImage<F>,
+    ) -> Result<Vec<u8>, ViprsError> {
         let sample_size = std::mem::size_of::<F::Sample>();
         let pixel_bytes = bytemuck::cast_slice::<F::Sample, u8>(image.pixels());
         let length_i32 = i32::try_from(pixel_bytes.len()).map_err(|_| {
@@ -253,9 +256,9 @@ impl ImageEncoder for VipsCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -486,7 +489,7 @@ mod tests {
         F::Sample: PartialEq + bytemuck::Pod,
     {
         let codec = VipsCodec;
-        let image = Image::<F>::from_buffer(width, height, bands, pixels.clone())
+        let image = InMemoryImage::<F>::from_buffer(width, height, bands, pixels.clone())
             .expect("test image should be valid");
         let encoded = codec.encode(&image).expect("encode should succeed");
         let decoded = codec.decode::<F>(&encoded).expect("decode should succeed");
@@ -548,7 +551,7 @@ mod tests {
             yres: Some(7.25),
             ..ImageMetadata::default()
         };
-        let image = Image::<U8>::from_buffer(2, 1, 3, vec![1, 2, 3, 4, 5, 6])
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![1, 2, 3, 4, 5, 6])
             .expect("test image")
             .with_metadata(metadata.clone());
 
@@ -563,7 +566,7 @@ mod tests {
     #[test]
     fn decode_errors_on_band_format_mismatch() {
         let codec = VipsCodec;
-        let image = Image::<U16>::from_buffer(2, 1, 1, vec![7, 9]).expect("image");
+        let image = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![7, 9]).expect("image");
         let encoded = codec.encode(&image).expect("encode");
         let err = codec.decode::<U8>(&encoded).expect_err("must fail");
         assert!(
@@ -575,7 +578,7 @@ mod tests {
     #[test]
     fn decode_errors_on_unsupported_coding() {
         let codec = VipsCodec;
-        let image = Image::<U8>::from_buffer(1, 1, 1, vec![42]).expect("image");
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![42]).expect("image");
         let mut encoded = codec.encode(&image).expect("encode");
         let endian = if encoded[0..4] == VIPS_MAGIC_INTEL_BYTES {
             HeaderEndianness::Little
@@ -597,7 +600,7 @@ mod tests {
         let path_vips = Path::new("target/foreign-registry-unit-tests/vips-native.vips");
         std::fs::create_dir_all("target/foreign-registry-unit-tests").expect("dir");
 
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![1, 2, 3, 4]).expect("image");
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![1, 2, 3, 4]).expect("image");
         let registry = crate::registry::ForeignRegistry::default();
         registry.save(&image, path_v).expect("save .v");
         let decoded = registry.load(path_v).expect("load .v");

@@ -53,8 +53,8 @@ mod robustez_corrupt {
     fn tiny_valid_jpeg() -> Vec<u8> {
         use viprs::{adapters::codecs::JpegCodec, ports::codec::ImageEncoder};
 
-        let image =
-            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56]).expect("valid RGB test image");
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56])
+            .expect("valid RGB test image");
         JpegCodec.encode(&image).expect("tiny JPEG fixture")
     }
 
@@ -229,8 +229,8 @@ mod robustez_corrupt {
             ports::codec::{ImageDecoder, ImageEncoder},
         };
 
-        let image =
-            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![90, 40, 10]).expect("valid RGB test image");
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![90, 40, 10])
+            .expect("valid RGB test image");
         let mut encoded = JpegCodec
             .encode(&image)
             .expect("tiny JPEG round-trip fixture");

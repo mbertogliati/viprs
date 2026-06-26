@@ -1,13 +1,13 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::{format::U8, op::OperationBridge, ops::conversion::Transpose3dOp},
-  pipeline::ImagePipeline,
-  ports::scheduler::TileScheduler,
+    domain::{format::U8, op::OperationBridge, ops::conversion::Transpose3dOp},
+    pipeline::ImagePipeline,
+    ports::scheduler::TileScheduler,
 };
 
 fn must<T, E: std::fmt::Display>(result: Result<T, E>, context: &str) -> T {
@@ -31,11 +31,11 @@ fn bench_transpose3d(c: &mut Criterion) {
                     "create memory source",
                 );
                 let pipeline = must(
-                  ImagePipeline::from_source(source).then(Box::new(OperationBridge::new(
+                    ImagePipeline::from_source(source).then(Box::new(OperationBridge::new(
                         Transpose3dOp::<U8>::new(size, page_height),
                         1,
                     ))),
-                  "add transpose3d operation",
+                    "add transpose3d operation",
                 )
                 .build()
                 .unwrap();

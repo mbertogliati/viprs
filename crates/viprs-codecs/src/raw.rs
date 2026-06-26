@@ -16,7 +16,7 @@ use viprs_core::{
     codec_options::{LoadOptions, RawEndianness, SaveOptions},
     error::ViprsError,
     format::{BandFormat, BandFormatId},
-    image::{InMemoryImage, ImageMetadata, Interpretation},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 

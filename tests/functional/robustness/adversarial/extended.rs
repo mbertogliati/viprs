@@ -40,7 +40,8 @@ mod robustez_adversarial {
     fn tiny_valid_jpeg() -> Vec<u8> {
         use viprs::{InMemoryImage, U8, adapters::codecs::JpegCodec, ports::codec::ImageEncoder};
 
-        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![0, 0, 0]).expect("valid RGB test image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![0, 0, 0]).expect("valid RGB test image");
         JpegCodec.encode(&image).expect("tiny JPEG fixture")
     }
 
@@ -239,8 +240,8 @@ mod robustez_adversarial {
     fn tiny_valid_png() -> Vec<u8> {
         use viprs::{InMemoryImage, U8, adapters::codecs::PngCodec, ports::codec::ImageEncoder};
 
-        let image =
-            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![200, 100, 50]).expect("valid RGB test image");
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![200, 100, 50])
+            .expect("valid RGB test image");
         PngCodec::default()
             .encode(&image)
             .expect("tiny PNG fixture")
@@ -293,8 +294,8 @@ mod robustez_adversarial {
     fn tiny_valid_webp() -> Vec<u8> {
         use viprs::{InMemoryImage, U8, adapters::codecs::WebpCodec, ports::codec::ImageEncoder};
 
-        let image =
-            InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![17, 34, 51]).expect("valid RGB test image");
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![17, 34, 51])
+            .expect("valid RGB test image");
         WebpCodec.encode(&image).expect("tiny WebP fixture")
     }
 

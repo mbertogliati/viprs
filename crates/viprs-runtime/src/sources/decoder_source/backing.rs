@@ -1,9 +1,9 @@
 use super::{
-    Arc, BandFormat, DecodeRegionFn, DecoderInput, InMemoryImage, ImageDecoder, ImageMetadata, LoadOptions,
-    OnceLock, Path, PhantomData, ProbeInputFn, StableDecoderInput, TileImageDecoder, ViprsError,
-    decode_region_with, eager_backing_shrink_factor, eager_backing_shrink_factor_from_path,
-    normalize_shrink_factor, normalize_streaming_options, probe_input_with,
-    retains_stable_input_for_thumbnail,
+    Arc, BandFormat, DecodeRegionFn, DecoderInput, ImageDecoder, ImageMetadata, InMemoryImage,
+    LoadOptions, OnceLock, Path, PhantomData, ProbeInputFn, StableDecoderInput, TileImageDecoder,
+    ViprsError, decode_region_with, eager_backing_shrink_factor,
+    eager_backing_shrink_factor_from_path, normalize_shrink_factor, normalize_streaming_options,
+    probe_input_with, retains_stable_input_for_thumbnail,
 };
 
 pub(super) enum DecoderBacking<'a, D: ImageDecoder, F: BandFormat> {
@@ -308,12 +308,6 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
 }
 
 impl<'a, D: ImageDecoder, F: BandFormat> DecoderSource<'a, D, F, RandomAccess> {
-    #[cfg(feature = "jpeg")]
-    pub(crate) const fn without_deferred_thumbnail_materialization(mut self) -> Self {
-        self.materialize_deferred_thumbnail_hints = false;
-        self
-    }
-
     /// Create a streaming source over borrowed compressed input.
     ///
     /// This is the lowest resident-memory path: no encoded copy and no decoded

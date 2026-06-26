@@ -2,10 +2,39 @@
 use super::build_normalize_to_srgb_op;
 use super::colour::interpretation_to_colorspace;
 use super::{
-    ArenaNodeOp, BandFormatId, BuildError, ColorspaceId, CompiledPipeline, DemandHint,
-    DynImageSource, DynOperation, Commit, Committed, ImageMetadata, Interpretation, LineCacheAccess,
+    ArenaNodeOp, BandFormatId, BuildError, ColorspaceId, Commit, Committed, CompiledPipeline,
+    DemandHint, DynImageSource, DynOperation, ImageMetadata, Interpretation, LineCacheAccess,
     LineCacheRequest, NodeIdx, NonZeroUsize, PipelineArena, PipelineOp, format_sample_size,
 };
+use crate::{
+    adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
+    domain::{
+        error::ViprsError,
+        format::{F32, F64, I16, I32, U8, U16, U32},
+        ops::conversion::SmartcropOp,
+    },
+};
+
+macro_rules! smartcrop_output_image {
+    ($pipeline:expr, $scheduler:expr, $format:ty, $width:expr, $height:expr) => {{
+        let image = $pipeline.run_to_image::<$format, _>($scheduler)?;
+        let crop = SmartcropOp::analyze(&image, $width, $height);
+        let crop_width = $width.min(image.width()).max(1);
+        let crop_height = $height.min(image.height()).max(1);
+        let metadata = image.metadata().clone();
+        let source = MemorySource::<$format>::new(
+            image.width(),
+            image.height(),
+            image.bands(),
+            image.into_buffer(),
+        )?
+        .with_metadata(metadata);
+
+        ImagePipeline::from_source(source)
+            .extract_area(crop.crop_left(), crop.crop_top(), crop_width, crop_height)
+            .map_err(ViprsError::from)
+    }};
+}
 
 /// Primary constructor is `from_source`.
 ///
@@ -81,6 +110,25 @@ impl ImagePipeline<Committed> {
     pub const fn with_colorspace(mut self, colorspace: ColorspaceId) -> Self {
         self.current_colorspace = Some(colorspace);
         self
+    }
+
+    /// Crop the current image to an attention-guided region of `width × height`.
+    ///
+    /// This materializes the current pipeline, analyzes the rendered image with the
+    /// smartcrop scorer, then rebuilds a new pipeline around the cropped pixels.
+    pub fn smartcrop(self, width: u32, height: u32) -> Result<Self, ViprsError> {
+        let pipeline = self.build()?;
+        let scheduler = RayonScheduler::new(RayonScheduler::default_threads())?;
+
+        match pipeline.output_format {
+            BandFormatId::U8 => smartcrop_output_image!(pipeline, &scheduler, U8, width, height),
+            BandFormatId::U16 => smartcrop_output_image!(pipeline, &scheduler, U16, width, height),
+            BandFormatId::I16 => smartcrop_output_image!(pipeline, &scheduler, I16, width, height),
+            BandFormatId::U32 => smartcrop_output_image!(pipeline, &scheduler, U32, width, height),
+            BandFormatId::I32 => smartcrop_output_image!(pipeline, &scheduler, I32, width, height),
+            BandFormatId::F32 => smartcrop_output_image!(pipeline, &scheduler, F32, width, height),
+            BandFormatId::F64 => smartcrop_output_image!(pipeline, &scheduler, F64, width, height),
+        }
     }
 }
 

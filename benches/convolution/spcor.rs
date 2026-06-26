@@ -1,14 +1,14 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::ops::convolution::SpcorOp,
-  domain::{format::F32, image::InMemoryImage},
-  pipeline::{OperationBridge, ImagePipeline},
-  ports::scheduler::TileScheduler,
+    domain::ops::convolution::SpcorOp,
+    domain::{format::F32, image::InMemoryImage},
+    pipeline::{ImagePipeline, OperationBridge},
+    ports::scheduler::TileScheduler,
 };
 
 fn make_pixels(size: u32) -> Vec<f32> {

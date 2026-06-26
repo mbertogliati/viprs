@@ -1,10 +1,10 @@
 mod chaos_monkey_5 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata, Interpretation, U8,
+        BuildError, CompiledPipeline, F32, ImageMetadata, InMemoryImage, Interpretation, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -93,12 +93,10 @@ mod chaos_monkey_5 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -137,7 +135,8 @@ mod chaos_monkey_5 {
     fn thumbnail_one_produces_one_by_one_for_rectangular_input() {
         let image = patterned_rgb_u8(7, 5);
         let (pipeline, output) =
-            execute_to_image(&image, |builder| builder.thumbnail(thumbnail(1))).expect("thumbnail");
+            execute_to_image(&image, |builder| builder.thumbnail_with(thumbnail(1)))
+                .expect("thumbnail");
 
         assert_eq!((pipeline.width, pipeline.height), (1, 1));
         assert_eq!((output.width(), output.height()), (1, 1));

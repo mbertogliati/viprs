@@ -46,7 +46,7 @@ fn run_thumbnail_pipeline_with_pixels(
 ) -> (u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(input_width, input_height, bands, pixels).unwrap();
     let pipeline = ImagePipeline::from_source(source)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::FitBox {
                 width: target_width,
                 height: target_height,

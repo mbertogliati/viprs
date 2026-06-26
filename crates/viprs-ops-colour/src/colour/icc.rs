@@ -1,7 +1,7 @@
 use viprs_core::{
-  error::ViprsError,
-  format::{F32, U8, U16},
-  image::InMemoryImage,
+    error::ViprsError,
+    format::{F32, U8, U16},
+    image::InMemoryImage,
 };
 
 #[cfg(feature = "icc")]

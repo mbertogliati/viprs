@@ -3,10 +3,11 @@ mod chaos_monkey_6 {
 
     use bytemuck::Pod;
     use viprs::{
-        BandFormatId, BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8,
+        BandFormatId, BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation,
+        U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab},
@@ -70,12 +71,10 @@ mod chaos_monkey_6 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -103,12 +102,10 @@ mod chaos_monkey_6 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -140,7 +137,7 @@ mod chaos_monkey_6 {
     fn sharpen_sigma_50_does_not_crash_or_fully_saturate() {
         let image = patterned_rgb_u8(31, 19);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
-            builder.with_colorspace(ColorspaceId::SRgb).sharpen(
+            builder.with_colorspace(ColorspaceId::SRgb).sharpen_with(
                 50.0, SHARPEN_X1, SHARPEN_Y2, SHARPEN_Y3, SHARPEN_M1, SHARPEN_M2,
             )
         })

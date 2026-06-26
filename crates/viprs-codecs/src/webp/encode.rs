@@ -293,9 +293,9 @@ fn encode_webp_advanced(
 impl WebpCodec {
     /// Encode with explicit WebP controls while still flowing through [`ImageEncoder`].
     pub fn encode_with_webp_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &WebpEncodeOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &WebpEncodeOptions,
     ) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::from(*opts))
     }
@@ -313,17 +313,17 @@ impl ImageEncoder for WebpCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
     {
         require_u8::<F>()?;
         let image = normalize_web_output_u8(
-          // SAFETY: `require_u8::<F>()` above guarantees `F::Sample == u8`.
-          unsafe { &*std::ptr::from_ref(image).cast::<InMemoryImage<U8>>() },
+            // SAFETY: `require_u8::<F>()` above guarantees `F::Sample == u8`.
+            unsafe { &*std::ptr::from_ref(image).cast::<InMemoryImage<U8>>() },
         )?;
         let image = image.as_ref();
 

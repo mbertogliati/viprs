@@ -2,10 +2,10 @@ mod chaos_monkey_3 {
     use bytemuck::Pod;
     use proptest::prelude::*;
     use viprs::{
-        BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8, ViprsError,
+        BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation, U8, ViprsError,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab, SRgb},
@@ -77,12 +77,10 @@ mod chaos_monkey_3 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -110,12 +108,10 @@ mod chaos_monkey_3 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -134,11 +130,9 @@ mod chaos_monkey_3 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))?
-        .build()
-        .map_err(Into::into)
+        configure(ImagePipeline::from_source(memory_source_from_image(image)))?
+            .build()
+            .map_err(Into::into)
     }
 
     fn assert_u8_pixels_within_tolerance(expected: &[u8], actual: &[u8], tolerance: u8) {
@@ -186,8 +180,8 @@ mod chaos_monkey_3 {
     }
 
     fn assert_identity_sizes<S: viprs::pipeline::Commit>(
-      configure: impl Copy + Fn(ImagePipeline, u32, u32) -> Result<ImagePipeline<S>, BuildError>,
-      tolerance: u8,
+        configure: impl Copy + Fn(ImagePipeline, u32, u32) -> Result<ImagePipeline<S>, BuildError>,
+        tolerance: u8,
     ) {
         for image in [
             patterned_rgb_u8(1, 1),

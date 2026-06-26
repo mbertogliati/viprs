@@ -6,10 +6,10 @@ use std::{
 
 use crate::{RawCodec, registry::ImageCodecExt};
 use viprs_core::{
-  codec_options::{LoadOptions, SaveOptions},
-  error::ViprsError,
-  format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-  image::InMemoryImage,
+    codec_options::{LoadOptions, SaveOptions},
+    error::ViprsError,
+    format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
+    image::InMemoryImage,
 };
 use viprs_ports::codec::{ImageCodec, ImageDecoder, ImageEncoder};
 
@@ -50,7 +50,8 @@ impl ImageCodec for ExtensionFallbackCodec {
         if band_format != BandFormatId::U8 {
             return Err(ViprsError::Codec("ext-fallback: only U8 supported".into()));
         }
-        let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![src.first().copied().unwrap_or(0)])?;
+        let image =
+            InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![src.first().copied().unwrap_or(0)])?;
         Ok(Box::new(image))
     }
 
@@ -112,7 +113,12 @@ impl ImageCodec for DirectoryPathCodec {
             ));
         }
         assert!(path.is_dir());
-        Ok(Box::new(InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![9])?))
+        Ok(Box::new(InMemoryImage::<U8>::from_buffer(
+            1,
+            1,
+            1,
+            vec![9],
+        )?))
     }
 
     fn encode_boxed(
@@ -151,7 +157,12 @@ impl ImageCodec for HeaderSniffCodec {
         if band_format != BandFormatId::U8 {
             return Err(ViprsError::Codec("header-sniff: only U8 supported".into()));
         }
-        Ok(Box::new(InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![2])?))
+        Ok(Box::new(InMemoryImage::<U8>::from_buffer(
+            1,
+            1,
+            1,
+            vec![2],
+        )?))
     }
 
     fn encode_boxed(
@@ -198,7 +209,12 @@ impl ImageCodec for PathExtensionCodec {
                 "path-extension: only U8 supported".into(),
             ));
         }
-        Ok(Box::new(InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1])?))
+        Ok(Box::new(InMemoryImage::<U8>::from_buffer(
+            1,
+            1,
+            1,
+            vec![1],
+        )?))
     }
 
     fn encode_boxed(
@@ -369,9 +385,9 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     assert!(ext_decode_err.to_string().contains("only U8 supported"));
     let ext_encode_err = ext
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::U8,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::U8,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(ext_encode_err.to_string().contains("decode-only"));
@@ -407,9 +423,9 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     );
     let directory_encode_err = directory
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::U8,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::U8,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(directory_encode_err.to_string().contains("decode-only"));
@@ -431,9 +447,9 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     assert!(sniff_err.to_string().contains("only U8 supported"));
     let sniff_encode_err = sniff
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::U8,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::U8,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(sniff_encode_err.to_string().contains("decode-only"));
@@ -456,9 +472,9 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     assert!(path_err.to_string().contains("only U8 supported"));
     let path_encode_err = path
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::U8,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::U8,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(path_encode_err.to_string().contains("decode-only"));
@@ -513,9 +529,9 @@ fn codec_bridge_dispatches_all_band_formats_and_type_mismatches() {
 
     let mismatch = codec
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::F32,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::F32,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(mismatch.to_string().contains("mismatched image type"));
@@ -564,9 +580,9 @@ fn decoder_bridges_cover_decode_only_and_extension_fallback_paths() {
 
     let decode_only_err = decoder
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::U8,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::U8,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(decode_only_err.to_string().contains("decode-only"));
@@ -590,9 +606,9 @@ fn decoder_bridges_cover_decode_only_and_extension_fallback_paths() {
     assert_eq!(decoded.pixels(), &[11]);
     let decode_only_err = extension_decoder
         .encode_boxed(
-          &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
-          BandFormatId::U8,
-          &SaveOptions::default(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            BandFormatId::U8,
+            &SaveOptions::default(),
         )
         .unwrap_err();
     assert!(decode_only_err.to_string().contains("decode-only"));
@@ -606,7 +622,8 @@ fn registry_and_image_convenience_apis_cover_path_and_error_edges() {
     let u8_input = test_output_path("shared-u8-input", "raw");
     let u8_output = test_output_path("shared-u8-output", "raw");
     fs::write(&u8_input, [5]).unwrap();
-    let u8_image = InMemoryImage::<U8>::load_with_options(&u8_input, &raw_load_options::<U8>()).unwrap();
+    let u8_image =
+        InMemoryImage::<U8>::load_with_options(&u8_input, &raw_load_options::<U8>()).unwrap();
     assert_eq!(u8_image.pixels(), &[5]);
     registry
         .save_with_options(&u8_image, &u8_output, &SaveOptions::default())

@@ -42,7 +42,7 @@ use std::sync::{Arc, OnceLock};
 use crate::domain::codec_options::LoadOptions;
 use crate::domain::error::ViprsError;
 use crate::domain::format::BandFormat;
-use crate::domain::image::{DemandHint, InMemoryImage, ImageMetadata, Region};
+use crate::domain::image::{DemandHint, ImageMetadata, InMemoryImage, Region};
 use crate::domain::ops::resample::shrinkh::ShrinkSample;
 use crate::ports::codec::{ImageDecoder, ImageMetadataProbe, TileImageDecoder};
 use crate::ports::source::ImageSource;

@@ -16,7 +16,7 @@ use viprs::adapters::sinks::{discard::DiscardSink, memory::MemorySink};
 use viprs::domain::codec_options::{LoadOptions, SaveOptions};
 use viprs::domain::draw::DrawOp;
 use viprs::domain::format::{BandFormat, BandFormatId, F32, U8, U16};
-use viprs::domain::image::{InMemoryImage, ImageMetadata, Region};
+use viprs::domain::image::{ImageMetadata, InMemoryImage, Region};
 use viprs::domain::kernel::InterpolationKernel;
 use viprs::domain::op::DynOperation;
 use viprs::domain::ops::conversion::BlendMode;
@@ -924,7 +924,10 @@ fn run_viprs_special_profile_only(input: &Path, op: &str, op_args: &[String], it
             None
         };
     let preloaded_u16 = if save_avif_format == Some("u16") {
-        Some(InMemoryImage::<U16>::load(input).expect("Failed to pre-load image for 16-bit AVIF encode"))
+        Some(
+            InMemoryImage::<U16>::load(input)
+                .expect("Failed to pre-load image for 16-bit AVIF encode"),
+        )
     } else {
         None
     };
@@ -1131,13 +1134,16 @@ pub fn run_viprs_bench(
         };
         let preloaded_u16 = if save_avif_format == Some("u16") && !e2e {
             Some(
-                InMemoryImage::<U16>::load(input).expect("Failed to pre-load image for 16-bit AVIF encode"),
+                InMemoryImage::<U16>::load(input)
+                    .expect("Failed to pre-load image for 16-bit AVIF encode"),
             )
         } else {
             None
         };
         let preloaded_f32 = if is_save_exr && !e2e {
-            Some(InMemoryImage::<F32>::load(input).expect("Failed to pre-load image for EXR encode"))
+            Some(
+                InMemoryImage::<F32>::load(input).expect("Failed to pre-load image for EXR encode"),
+            )
         } else {
             None
         };
@@ -1158,13 +1164,15 @@ pub fn run_viprs_bench(
                 } else {
                     match save_avif_format {
                         Some("u16") => {
-                            let image = InMemoryImage::<U16>::load(input).expect("Failed to load image");
+                            let image =
+                                InMemoryImage::<U16>::load(input).expect("Failed to load image");
                             let encoded =
                                 codec.encode(&image).expect("Failed to encode 16-bit AVIF");
                             black_box(encoded);
                         }
                         _ => {
-                            let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
+                            let image =
+                                InMemoryImage::<U8>::load(input).expect("Failed to load image");
                             let encoded = codec.encode(&image).expect("Failed to encode AVIF");
                             black_box(encoded);
                         }
@@ -1266,13 +1274,15 @@ pub fn run_viprs_bench(
                 } else {
                     match save_avif_format {
                         Some("u16") => {
-                            let image = InMemoryImage::<U16>::load(input).expect("Failed to load image");
+                            let image =
+                                InMemoryImage::<U16>::load(input).expect("Failed to load image");
                             let encoded =
                                 codec.encode(&image).expect("Failed to encode 16-bit AVIF");
                             black_box(encoded);
                         }
                         _ => {
-                            let image = InMemoryImage::<U8>::load(input).expect("Failed to load image");
+                            let image =
+                                InMemoryImage::<U8>::load(input).expect("Failed to load image");
                             let encoded = codec.encode(&image).expect("Failed to encode AVIF");
                             black_box(encoded);
                         }

@@ -1,13 +1,13 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::format::U32,
-  pipeline::ImagePipeline,
-  ports::scheduler::TileScheduler,
+    domain::format::U32,
+    pipeline::ImagePipeline,
+    ports::scheduler::TileScheduler,
 };
 
 fn must<T, E: std::fmt::Display>(result: Result<T, E>, context: &str) -> T {
@@ -32,8 +32,8 @@ fn bench_msb(c: &mut Criterion) {
                     "create memory source",
                 );
                 let pipeline = must(
-                  ImagePipeline::from_source(source).msb(),
-                  "add msb operation",
+                    ImagePipeline::from_source(source).msb(),
+                    "add msb operation",
                 )
                 .build()
                 .unwrap();

@@ -5,8 +5,8 @@
 
 use super::{
     Arc, BandFormat, BandFormatId, BufferIdx, BuildError, DemandHint, DynImageSource, DynOperation,
-    DynViewOp, InMemoryImage, ImageMetadata, LineCacheAccess, LineCacheConfig, MemorySink, NodeSpec,
-    OperationTileCache, Region, SourceReadPlan, TileScheduler, ViprsError,
+    DynViewOp, ImageMetadata, InMemoryImage, LineCacheAccess, LineCacheConfig, MemorySink,
+    NodeSpec, OperationTileCache, Region, SourceReadPlan, TileScheduler, ViprsError,
 };
 
 /// The operation stored in a `CompiledNode`.

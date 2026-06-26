@@ -6,10 +6,10 @@
 use bytemuck::Pod;
 
 use viprs_core::{
-  error::ViprsError,
-  format::{BandFormat, F32},
-  image::{DemandHint, InMemoryImage, Region, Tile, TileMut},
-  op::{NodeSpec, Op},
+    error::ViprsError,
+    format::{BandFormat, F32},
+    image::{DemandHint, InMemoryImage, Region, Tile, TileMut},
+    op::{NodeSpec, Op},
 };
 
 use super::common::ToF64;

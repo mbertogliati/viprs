@@ -1,10 +1,10 @@
 use super::{
-    Arc, BandFormat, DecoderBacking, DecoderSource, DemandHint, InMemoryImage, ImageDecoder, ImageMetadata,
-    ImageSource, LoadOptions, NonZeroU8, Region, ShrinkSample, ThumbnailPreShrinkMode, ViprsError,
-    checked_region_end, expected_output_len, materialize_residual_thumbnail_shrink,
-    normalize_shrink_factor, normalize_streaming_options, shrunk_dimension,
-    software_box_shrink_generic, streaming_backing_shrink_factor, streaming_eager_decode,
-    thumbnail_pre_shrink_mode,
+    Arc, BandFormat, DecoderBacking, DecoderSource, DemandHint, ImageDecoder, ImageMetadata,
+    ImageSource, InMemoryImage, LoadOptions, NonZeroU8, Region, ShrinkSample,
+    ThumbnailPreShrinkMode, ViprsError, checked_region_end, expected_output_len,
+    materialize_residual_thumbnail_shrink, normalize_shrink_factor, normalize_streaming_options,
+    shrunk_dimension, software_box_shrink_generic, streaming_backing_shrink_factor,
+    streaming_eager_decode, thumbnail_pre_shrink_mode,
 };
 
 impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
@@ -105,7 +105,10 @@ impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
         }
     }
 
-    fn eager_decode_with_shrink(&self, factor: NonZeroU8) -> Result<(InMemoryImage<F>, u8), ViprsError>
+    fn eager_decode_with_shrink(
+        &self,
+        factor: NonZeroU8,
+    ) -> Result<(InMemoryImage<F>, u8), ViprsError>
     where
         F::Sample: ShrinkSample,
     {

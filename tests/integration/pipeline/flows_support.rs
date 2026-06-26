@@ -1,18 +1,18 @@
 pub(crate) use proptest::prelude::*;
 use std::path::{Path, PathBuf};
 pub(crate) use viprs::{
-  BandFormatId, BuildError, CompiledPipeline, InMemoryImage, ImageCodecExt, ImageMetadata,
-  Interpretation, U8,
-  adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+    BandFormatId, BuildError, CompiledPipeline, ImageCodecExt, ImageMetadata, InMemoryImage,
+    Interpretation, U8,
+    adapters::{
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         colorspace::{Lab, SRgb},
         kernel::InterpolationKernel,
         ops::resample::{Resize, Thumbnail, thumbnail::ThumbnailTarget},
     },
-  ports::{
+    ports::{
         codec::{ImageDecoder, ImageEncoder},
         scheduler::TileScheduler,
     },
@@ -72,15 +72,13 @@ pub(crate) fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySourc
 }
 
 pub(crate) fn execute_u8_pipeline<S: viprs::pipeline::Commit>(
-  image: &InMemoryImage<U8>,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    image: &InMemoryImage<U8>,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (CompiledPipeline, MemorySink) {
-    let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-        image,
-    )))
-    .expect("pipeline stage failed")
-    .build()
-    .expect("pipeline build failed");
+    let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+        .expect("pipeline stage failed")
+        .build()
+        .expect("pipeline build failed");
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(2)
@@ -92,8 +90,8 @@ pub(crate) fn execute_u8_pipeline<S: viprs::pipeline::Commit>(
 }
 
 pub(crate) fn execute_u8_pipeline_to_buffer<S: viprs::pipeline::Commit>(
-  image: &InMemoryImage<U8>,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    image: &InMemoryImage<U8>,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (CompiledPipeline, Vec<u8>) {
     let (pipeline, sink) = execute_u8_pipeline(image, configure);
     let buffer = sink.into_buffer();
@@ -109,9 +107,9 @@ pub(crate) fn execute_u8_pipeline_to_buffer<S: viprs::pipeline::Commit>(
     feature = "avif"
 ))]
 pub(crate) fn output_image_from_buffer(
-  source_image: &InMemoryImage<U8>,
-  pipeline: &CompiledPipeline,
-  buffer: Vec<u8>,
+    source_image: &InMemoryImage<U8>,
+    pipeline: &CompiledPipeline,
+    buffer: Vec<u8>,
 ) -> InMemoryImage<U8> {
     assert_eq!(
         pipeline.output_format,
@@ -148,8 +146,8 @@ pub(crate) fn output_image_from_buffer(
     feature = "avif"
 ))]
 pub(crate) fn execute_u8_pipeline_to_image<S: viprs::pipeline::Commit>(
-  image: &InMemoryImage<U8>,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    image: &InMemoryImage<U8>,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (CompiledPipeline, InMemoryImage<U8>) {
     let (pipeline, buffer) = execute_u8_pipeline_to_buffer(image, configure);
     let output = output_image_from_buffer(image, &pipeline, buffer);
@@ -215,9 +213,9 @@ pub(crate) fn assert_valid_pipeline_buffer(pipeline: &CompiledPipeline, buffer: 
 }
 
 pub(crate) fn assert_thumbnail_dimensions(
-  pipeline: &CompiledPipeline,
-  image: &InMemoryImage<U8>,
-  width: u32,
+    pipeline: &CompiledPipeline,
+    image: &InMemoryImage<U8>,
+    width: u32,
 ) {
     let expected = expected_thumbnail_dimensions(image, width);
     assert_eq!(
@@ -230,7 +228,11 @@ pub(crate) fn assert_thumbnail_dimensions(
     );
 }
 
-pub(crate) fn assert_resize_dimensions(pipeline: &CompiledPipeline, image: &InMemoryImage<U8>, scale: f64) {
+pub(crate) fn assert_resize_dimensions(
+    pipeline: &CompiledPipeline,
+    image: &InMemoryImage<U8>,
+    scale: f64,
+) {
     let expected = expected_resize_dimensions(image, scale);
     assert_eq!(
         (pipeline.width, pipeline.height),
@@ -250,10 +252,10 @@ pub(crate) fn assert_resize_dimensions(pipeline: &CompiledPipeline, image: &InMe
     feature = "avif"
 ))]
 pub(crate) fn assert_codec_roundtrip<C: ImageEncoder + ImageDecoder>(
-  codec: &C,
-  image: &InMemoryImage<U8>,
-  expected_width: u32,
-  expected_height: u32,
+    codec: &C,
+    image: &InMemoryImage<U8>,
+    expected_width: u32,
+    expected_height: u32,
 ) {
     let encoded = codec.encode(image).expect("encode failed");
     assert!(

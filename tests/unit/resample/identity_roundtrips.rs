@@ -2,10 +2,10 @@ mod chaos_monkey {
     use bytemuck::Pod;
     use proptest::prelude::*;
     use viprs::{
-        BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
+        BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -71,12 +71,10 @@ mod chaos_monkey {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -104,12 +102,10 @@ mod chaos_monkey {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -154,14 +150,16 @@ mod chaos_monkey {
         let image = patterned_rgb_u8(777, 333);
 
         let (_first_pipeline, first) =
-            execute_to_image(&image, |builder| builder.thumbnail(thumbnail(100)))
+            execute_to_image(&image, |builder| builder.thumbnail_with(thumbnail(100)))
                 .expect("first thumbnail should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image(&first, |builder| builder.thumbnail(thumbnail(50)))
+            execute_to_image(&first, |builder| builder.thumbnail_with(thumbnail(50)))
                 .expect("second thumbnail should succeed");
 
         let (chained_pipeline, chained) = execute_to_image(&image, |builder| {
-            builder.thumbnail(thumbnail(100))?.thumbnail(thumbnail(50))
+            builder
+                .thumbnail_with(thumbnail(100))?
+                .thumbnail_with(thumbnail(50))
         })
         .expect("chained thumbnails should succeed");
 
@@ -203,21 +201,21 @@ mod chaos_monkey {
 
         let (_first_pipeline, first) = execute_to_image(&image, |builder| {
             builder
-                .thumbnail(thumbnail(400))?
+                .thumbnail_with(thumbnail(400))?
                 .colourspace::<Lab>()?
                 .colourspace::<SRgb>()
         })
         .expect("first thumbnail+colourspace+roundtrip should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image(&first, |builder| builder.thumbnail(thumbnail(200)))
+            execute_to_image(&first, |builder| builder.thumbnail_with(thumbnail(200)))
                 .expect("second thumbnail should succeed");
 
         let (chained_pipeline, chained) = execute_to_image(&image, |builder| {
             builder
-                .thumbnail(thumbnail(400))?
+                .thumbnail_with(thumbnail(400))?
                 .colourspace::<Lab>()?
                 .colourspace::<SRgb>()?
-                .thumbnail(thumbnail(200))
+                .thumbnail_with(thumbnail(200))
         })
         .expect("chained thumbnail+colourspace+roundtrip+thumbnail should succeed");
 

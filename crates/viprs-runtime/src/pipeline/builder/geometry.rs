@@ -1,8 +1,8 @@
 use super::state::validate_extract_area_bounds;
 use super::{
-    Angle, Angle45, BandFormatId, BuildError, DynOperation, DynViewOp, EmbedBridge, ExtendMode,
-    ExtractArea, F32, F64, Flip, Commit, Gravity, GridBridge, I16, I32, Committed,
-    InterpolationKernel, MsbOp, OperationBridge, ImagePipeline, ReplicateBridge, RotBridge,
+    Angle, Angle45, BandFormatId, BuildError, Commit, Committed, DynOperation, DynViewOp,
+    EmbedBridge, ExtendMode, ExtractArea, F32, F64, Flip, Gravity, GridBridge, I16, I32,
+    ImagePipeline, InterpolationKernel, MsbOp, OperationBridge, ReplicateBridge, RotBridge,
     SimilarityBridge, SubsampleBridge, U8, U16, U32, ViewBridge, Wrap, ZoomBridge,
 };
 
@@ -415,11 +415,6 @@ impl<Op: Commit> ImagePipeline<Op> {
         self.then(op)
     }
 
-    /// Alias for [`ImagePipeline::rot`].
-    pub fn rotate(self, angle: Angle) -> Result<ImagePipeline<Committed>, BuildError> {
-        self.rot(angle)
-    }
-
     /// Rotate the image 90° clockwise.
     ///
     /// Output dimensions are transposed: a W×H input becomes an H×W output.
@@ -440,11 +435,7 @@ impl<Op: Commit> ImagePipeline<Op> {
     }
 
     /// Tile the current image `across × down` times.
-    pub fn replicate(
-        self,
-        across: u32,
-        down: u32,
-    ) -> Result<ImagePipeline<Committed>, BuildError> {
+    pub fn replicate(self, across: u32, down: u32) -> Result<ImagePipeline<Committed>, BuildError> {
         if across == 0 || down == 0 {
             return Err(BuildError::SourceHint {
                 context: "replicate",

@@ -3,7 +3,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8, U16};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -428,9 +428,10 @@ fn decode_pnm_u8(src: &[u8]) -> Result<(ParsedPnm, InMemoryImage<U8>), ViprsErro
         decode_binary_samples_u8(&header, src)?
     };
     let metadata = image_metadata_for_pnm(header.magic, BandFormatId::U8);
-    let image = InMemoryImage::from_buffer(header.width, header.height, header.magic.bands(), pixels)
-        .map(|image| image.with_metadata(metadata))
-        .map_err(|error| ViprsError::Codec(error.to_string()))?;
+    let image =
+        InMemoryImage::from_buffer(header.width, header.height, header.magic.bands(), pixels)
+            .map(|image| image.with_metadata(metadata))
+            .map_err(|error| ViprsError::Codec(error.to_string()))?;
     Ok((header, image))
 }
 
@@ -447,9 +448,10 @@ fn decode_pnm_u16(src: &[u8]) -> Result<(ParsedPnm, InMemoryImage<U16>), ViprsEr
         decode_binary_samples_u16(&header, src)?
     };
     let metadata = image_metadata_for_pnm(header.magic, BandFormatId::U16);
-    let image = InMemoryImage::from_buffer(header.width, header.height, header.magic.bands(), pixels)
-        .map(|image| image.with_metadata(metadata))
-        .map_err(|error| ViprsError::Codec(error.to_string()))?;
+    let image =
+        InMemoryImage::from_buffer(header.width, header.height, header.magic.bands(), pixels)
+            .map(|image| image.with_metadata(metadata))
+            .map_err(|error| ViprsError::Codec(error.to_string()))?;
     Ok((header, image))
 }
 
@@ -508,8 +510,8 @@ impl PnmCodec {
 }
 
 fn select_pnm_magic_for_image<F: BandFormat>(
-  kind: PnmEncodeKind,
-  image: &InMemoryImage<F>,
+    kind: PnmEncodeKind,
+    image: &InMemoryImage<F>,
 ) -> Result<PnmMagic, ViprsError> {
     match kind {
         PnmEncodeKind::Pbm => {
@@ -609,7 +611,10 @@ fn encode_pbm_u16(image: &InMemoryImage<U16>) -> Vec<u8> {
     raster
 }
 
-fn encode_pnm<F: BandFormat>(kind: PnmEncodeKind, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
+fn encode_pnm<F: BandFormat>(
+    kind: PnmEncodeKind,
+    image: &InMemoryImage<F>,
+) -> Result<Vec<u8>, ViprsError> {
     let magic = select_pnm_magic_for_image(kind, image)?;
     let mut output = Vec::new();
     let magic_header = match magic {
@@ -642,16 +647,24 @@ fn encode_pnm<F: BandFormat>(kind: PnmEncodeKind, image: &InMemoryImage<F>) -> R
     match (magic, F::ID) {
         (PnmMagic::P4, BandFormatId::U8) => {
             let pixels = bytemuck::cast_slice::<F::Sample, u8>(image.pixels()).to_vec();
-            let image =
-                InMemoryImage::<U8>::from_buffer(image.width(), image.height(), image.bands(), pixels)
-                    .map_err(|error| ViprsError::Codec(error.to_string()))?;
+            let image = InMemoryImage::<U8>::from_buffer(
+                image.width(),
+                image.height(),
+                image.bands(),
+                pixels,
+            )
+            .map_err(|error| ViprsError::Codec(error.to_string()))?;
             output.extend_from_slice(&encode_pbm_u8(&image));
         }
         (PnmMagic::P4, BandFormatId::U16) => {
             let pixels = bytemuck::cast_slice::<F::Sample, u16>(image.pixels()).to_vec();
-            let image =
-                InMemoryImage::<U16>::from_buffer(image.width(), image.height(), image.bands(), pixels)
-                    .map_err(|error| ViprsError::Codec(error.to_string()))?;
+            let image = InMemoryImage::<U16>::from_buffer(
+                image.width(),
+                image.height(),
+                image.bands(),
+                pixels,
+            )
+            .map_err(|error| ViprsError::Codec(error.to_string()))?;
             output.extend_from_slice(&encode_pbm_u16(&image));
         }
         (_, BandFormatId::U8) => {
@@ -740,9 +753,9 @@ impl ImageEncoder for PnmCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -792,8 +805,8 @@ mod tests {
         let pgm = PnmCodec::pgm();
         let ppm = PnmCodec::ppm();
 
-        let grayscale = Image::<U8>::from_buffer(2, 2, 1, vec![0, 1, 2, 3]).unwrap();
-        let rgb = Image::<U8>::from_buffer(2, 1, 3, vec![255, 0, 0, 0, 255, 0]).unwrap();
+        let grayscale = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0, 1, 2, 3]).unwrap();
+        let rgb = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![255, 0, 0, 0, 255, 0]).unwrap();
 
         let encoded_gray = pgm.encode(&grayscale).unwrap();
         let decoded_gray = pgm.decode::<U8>(&encoded_gray).unwrap();
@@ -809,13 +822,13 @@ mod tests {
         let pbm = PnmCodec::pbm();
         let pnm = PnmCodec::pnm();
 
-        let bitmap = Image::<U8>::from_buffer(5, 1, 1, vec![255, 0, 255, 0, 255]).unwrap();
+        let bitmap = InMemoryImage::<U8>::from_buffer(5, 1, 1, vec![255, 0, 255, 0, 255]).unwrap();
         let encoded_bitmap = pbm.encode(&bitmap).unwrap();
         assert!(encoded_bitmap.starts_with(b"P4\n"));
         let decoded_bitmap = pbm.decode::<U8>(&encoded_bitmap).unwrap();
         assert_eq!(decoded_bitmap.pixels(), bitmap.pixels());
 
-        let gray16 = Image::<U16>::from_buffer(2, 1, 1, vec![0, u16::MAX]).unwrap();
+        let gray16 = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![0, u16::MAX]).unwrap();
         let encoded_gray16 = pnm.encode(&gray16).unwrap();
         assert!(encoded_gray16.starts_with(b"P5\n"));
         let decoded_gray16 = pnm.decode::<U16>(&encoded_gray16).unwrap();
@@ -910,7 +923,7 @@ mod tests {
         let ppm = PnmCodec::ppm();
         let pnm = PnmCodec::pnm();
 
-        let bitmap16 = Image::<U16>::from_buffer(
+        let bitmap16 = InMemoryImage::<U16>::from_buffer(
             9,
             1,
             1,
@@ -921,23 +934,23 @@ mod tests {
         assert!(encoded.starts_with(b"P4\n9 1\n"));
         assert_eq!(&encoded[7..], &[0xaa, 0x80]);
 
-        let gray = Image::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
+        let gray = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![10, 20]).unwrap();
         assert!(pgm.encode(&gray).unwrap().starts_with(b"P5\n"));
         assert!(pnm.encode(&gray).unwrap().starts_with(b"P5\n"));
 
-        let bitmap = Image::<U8>::from_buffer(2, 1, 1, vec![0, u8::MAX]).unwrap();
+        let bitmap = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, u8::MAX]).unwrap();
         assert!(pnm.encode(&bitmap).unwrap().starts_with(b"P4\n"));
 
-        let rgb = Image::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
+        let rgb = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
         assert!(ppm.encode(&rgb).unwrap().starts_with(b"P6\n"));
 
-        let two_band = Image::<U8>::from_buffer(1, 1, 2, vec![1, 2]).unwrap();
+        let two_band = InMemoryImage::<U8>::from_buffer(1, 1, 2, vec![1, 2]).unwrap();
         assert!(pbm.encode(&rgb).is_err());
         assert!(pgm.encode(&rgb).is_err());
         assert!(ppm.encode(&gray).is_err());
         assert!(pnm.encode(&two_band).is_err());
 
-        let float_gray = Image::<F32>::from_buffer(1, 1, 1, vec![1.0]).unwrap();
+        let float_gray = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![1.0]).unwrap();
         assert!(pgm.encode(&float_gray).is_err());
     }
 
@@ -952,16 +965,17 @@ mod tests {
             .unwrap();
         assert_eq!(decoded.pixels(), &[42]);
 
-        let rgb16 = Image::<U16>::from_buffer(1, 1, 3, vec![1, 258, u16::MAX]).unwrap();
+        let rgb16 = InMemoryImage::<U16>::from_buffer(1, 1, 3, vec![1, 258, u16::MAX]).unwrap();
         let encoded = codec.encode(&rgb16).unwrap();
         assert!(encoded.starts_with(b"P6\n1 1\n65535\n"));
         assert_eq!(&encoded[13..], &[0, 1, 1, 2, 255, 255]);
 
         let full_byte_u8 =
-            Image::<U8>::from_buffer(8, 1, 1, vec![0, 255, 0, 255, 0, 255, 0, 255]).unwrap();
+            InMemoryImage::<U8>::from_buffer(8, 1, 1, vec![0, 255, 0, 255, 0, 255, 0, 255])
+                .unwrap();
         assert_eq!(encode_pbm_u8(&full_byte_u8), vec![0b1010_1010]);
 
-        let full_byte_u16 = Image::<U16>::from_buffer(
+        let full_byte_u16 = InMemoryImage::<U16>::from_buffer(
             8,
             1,
             1,
@@ -971,7 +985,7 @@ mod tests {
         assert_eq!(encode_pbm_u16(&full_byte_u16), vec![0b1010_1010]);
         assert!(is_binary_bitmap(&full_byte_u16));
 
-        let float_gray = Image::<F32>::from_buffer(1, 1, 1, vec![0.0]).unwrap();
+        let float_gray = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![0.0]).unwrap();
         assert!(!is_binary_bitmap(&float_gray));
     }
 

@@ -1,9 +1,9 @@
 mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
-      BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
-      adapters::{pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler},
-      domain::{
+        BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
+        adapters::{pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler},
+        domain::{
             colorspace::{ColorspaceId, SRgb},
             kernel::InterpolationKernel,
             op::Op,
@@ -48,8 +48,8 @@ mod chaos_monkey_19 {
     }
 
     fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<FIn>,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,

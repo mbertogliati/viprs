@@ -359,10 +359,10 @@ mod tests {
     use super::*;
     use proptest::prelude::*;
     use viprs_core::{
-      error::ViprsError,
-      format::U8,
-      image::{InMemoryImage, Region, Tile, TileMut},
-      resample::ResampleOp,
+        error::ViprsError,
+        format::U8,
+        image::{InMemoryImage, Region, Tile, TileMut},
+        resample::ResampleOp,
     };
 
     fn read_region_with_edge_copy(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
@@ -404,7 +404,11 @@ mod tests {
         (out_region, output_data)
     }
 
-    fn run_reduce_reference(image: &InMemoryImage<U8>, h_factor: f64, v_factor: f64) -> (Region, Vec<u8>) {
+    fn run_reduce_reference(
+        image: &InMemoryImage<U8>,
+        h_factor: f64,
+        v_factor: f64,
+    ) -> (Region, Vec<u8>) {
         let h_op = ReduceH::<U8>::new(h_factor, InterpolationKernel::Bilinear).unwrap();
         let h_out_region = Region::new(0, 0, h_op.output_width(image.width()), image.height());
         let h_in_region = h_op.required_input_region(&h_out_region);
@@ -609,7 +613,13 @@ mod tests {
             height in 1u32..=8,
             value in any::<u8>(),
         ) {
-            let image = Image::<U8>::from_buffer(width, height, 1, vec![value; (width * height) as usize]).unwrap();
+            let image = InMemoryImage::<U8>::from_buffer(
+                width,
+                height,
+                1,
+                vec![value; (width * height) as usize],
+            )
+            .unwrap();
             let (_, output) = run_reduce(&image, 1.0, 1.0);
             prop_assert_eq!(output, image.pixels());
         }
@@ -620,7 +630,7 @@ mod tests {
         ) {
             prop_assume!(input.iter().any(|&value| value != input[0]));
 
-            let image = Image::<U8>::from_buffer(width, height, bands, input).unwrap();
+            let image = InMemoryImage::<U8>::from_buffer(width, height, bands, input).unwrap();
             let (region, output) = run_reduce(&image, h_factor, v_factor);
             let (expected_region, expected) = run_reduce_reference(&image, h_factor, v_factor);
 

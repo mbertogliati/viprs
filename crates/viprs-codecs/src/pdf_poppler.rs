@@ -18,7 +18,7 @@ use std::process::{Command, Stdio};
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::ImageDecoder;
 
 const DEFAULT_DPI: f64 = 72.0;
@@ -295,7 +295,10 @@ fn cast_u8_samples<F: BandFormat>(samples: Vec<u8>) -> Result<Vec<F::Sample>, Vi
     })
 }
 
-fn decode_pdf<F: BandFormat>(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<F>, ViprsError> {
+fn decode_pdf<F: BandFormat>(
+    src: &[u8],
+    opts: &LoadOptions,
+) -> Result<InMemoryImage<F>, ViprsError> {
     require_u8::<F>()?;
     let dpi = resolved_dpi(opts)?;
     let total_pages = parse_pdf_page_count(&run_poppler_tool("pdfinfo", &["-"], src)?)?;

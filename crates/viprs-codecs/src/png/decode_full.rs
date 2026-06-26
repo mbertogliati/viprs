@@ -17,9 +17,9 @@ use spng::{
 
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::InMemoryImage;
 #[cfg(feature = "libspng")]
 use viprs_core::image::ImageMetadata;
+use viprs_core::image::InMemoryImage;
 
 use super::encode::MAX_PNG_DECODED_IMAGE_BYTES;
 #[cfg(feature = "libspng")]
@@ -675,7 +675,9 @@ fn decode_png_with_libspng_reader<F: BandFormat, R: std::io::Read>(
 }
 
 #[cfg(feature = "libspng")]
-pub(super) fn decode_png_with_libspng<F: BandFormat>(src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
+pub(super) fn decode_png_with_libspng<F: BandFormat>(
+    src: &[u8],
+) -> Result<InMemoryImage<F>, ViprsError> {
     decode_png_with_libspng_reader::<F, _>(std::io::Cursor::new(src))
         .or_else(|_| decode_png_with_png_crate_reader(std::io::Cursor::new(src)))
 }

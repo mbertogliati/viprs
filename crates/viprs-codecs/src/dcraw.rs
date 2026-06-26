@@ -20,10 +20,10 @@ use std::{
 };
 
 use viprs_core::{
-  codec_options::LoadOptions,
-  error::ViprsError,
-  format::{BandFormat, BandFormatId},
-  image::{InMemoryImage, ImageMetadata, Interpretation},
+    codec_options::LoadOptions,
+    error::ViprsError,
+    format::{BandFormat, BandFormatId},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::ImageDecoder;
 

@@ -97,14 +97,14 @@ fn run_u8_profile(
             let target = ThumbnailTarget::Width(target_width);
             let thumbnail = Thumbnail::new(target, InterpolationKernel::Lanczos3);
             builder
-                .thumbnail(thumbnail)
+                .thumbnail_with(thumbnail)
                 .map_err(|err| render_error("failed to add thumbnail op", err))?
         }
         "sharpen" => {
             let sigma = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(0.5);
             let strength = op_args.get(1).and_then(|s| s.parse().ok()).unwrap_or(3.0);
             builder
-                .sharpen(sigma, 2.0, 10.0, 20.0, 0.0, strength)
+                .sharpen_with(sigma, 2.0, 10.0, 20.0, 0.0, strength)
                 .map_err(|err| render_error("failed to add sharpen op", err))?
         }
         other => {

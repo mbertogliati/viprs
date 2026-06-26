@@ -40,10 +40,8 @@ where
     F: viprs::BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-        image,
-    )))
-    .map_err(|err| format!("build failed: {err:?}"))?;
+    let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+        .map_err(|err| format!("build failed: {err:?}"))?;
     let mut sink =
         MemorySink::for_pipeline(&pipeline).map_err(|err| format!("sink failed: {err:?}"))?;
     RayonScheduler::new(2)

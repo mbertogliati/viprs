@@ -23,10 +23,10 @@ use std::{
 use openslide_rs::{Address, OpenSlide, Region as OpenSlideRegion, Size};
 
 use viprs_core::{
-  codec_options::LoadOptions,
-  error::{OpenSlideCodecError, ViprsError},
-  format::{BandFormat, BandFormatId},
-  image::{InMemoryImage, ImageMetadata, Interpretation, Region},
+    codec_options::LoadOptions,
+    error::{OpenSlideCodecError, ViprsError},
+    format::{BandFormat, BandFormatId},
+    image::{ImageMetadata, InMemoryImage, Interpretation, Region},
 };
 use viprs_ports::codec::{ImageDecoder, ImageMetadataProbe, TileImageDecoder};
 

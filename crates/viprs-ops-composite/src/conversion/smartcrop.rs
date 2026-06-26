@@ -5,9 +5,9 @@ use std::marker::PhantomData;
 
 use viprs_core::shared_ops::gauss_kernel::gaussian_kernel_1d as libvips_gaussian_kernel_1d;
 use viprs_core::{
-  format::BandFormat,
-  image::{DemandHint, InMemoryImage, Region},
-  op::{ViewBridge, ViewOp},
+    format::BandFormat,
+    image::{DemandHint, InMemoryImage, Region},
+    op::{ViewBridge, ViewOp},
 };
 
 /// libvips-style smartcrop strategy selection.
@@ -130,10 +130,10 @@ where
     #[must_use]
     /// Returns or performs analyze with interesting.
     pub fn analyze_with_interesting(
-      image: &InMemoryImage<F>,
-      target_width: u32,
-      target_height: u32,
-      interesting: Interesting,
+        image: &InMemoryImage<F>,
+        target_width: u32,
+        target_height: u32,
+        interesting: Interesting,
     ) -> Self {
         let source_width = image.width();
         let source_height = image.height();

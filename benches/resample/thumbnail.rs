@@ -5,8 +5,8 @@ mod common;
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         format::U8,
@@ -27,7 +27,7 @@ fn bench_thumbnail(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 4, pixels.clone()).unwrap();
                 let pipeline = ImagePipeline::from_source(source)
-                    .thumbnail(Thumbnail::new(
+                    .thumbnail_with(Thumbnail::new(
                         ThumbnailTarget::Width(target_width),
                         InterpolationKernel::Lanczos3,
                     ))
@@ -56,7 +56,7 @@ fn bench_thumbnail(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 3, pixels.clone()).unwrap();
                 let pipeline = ImagePipeline::from_source(source)
-                    .thumbnail(Thumbnail::new(
+                    .thumbnail_with(Thumbnail::new(
                         ThumbnailTarget::Width(target_width),
                         InterpolationKernel::Lanczos3,
                     ))

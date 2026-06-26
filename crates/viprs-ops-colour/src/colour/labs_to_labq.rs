@@ -151,7 +151,8 @@ mod tests {
     #[test]
     fn half_step_rounding_moves_away_from_zero_for_labs_quantization() {
         let input_image =
-            viprs_core::image::InMemoryImage::<I16>::from_buffer(1, 1, 3, vec![16, 16, -16]).unwrap();
+            viprs_core::image::InMemoryImage::<I16>::from_buffer(1, 1, 3, vec![16, 16, -16])
+                .unwrap();
         let region = make_region(1);
         let input = Tile::new(region, 3, input_image.pixels());
         let mut output_data = [0_u8; 4];

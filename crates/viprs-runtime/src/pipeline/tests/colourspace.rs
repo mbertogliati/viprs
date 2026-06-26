@@ -440,7 +440,7 @@ fn rgba_u16_thumbnail_builds_and_executes() {
     .with_metadata(image.metadata().clone());
 
     let pipeline = ImagePipeline::from_source(source)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(11),
             InterpolationKernel::Lanczos3,
         ))
@@ -482,7 +482,7 @@ fn colourspace_roundtrip_after_affine_and_before_thumbnail_preserves_rgba_alpha_
         .unwrap()
         .colourspace::<SRgb>()
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(11),
             InterpolationKernel::Lanczos3,
         ))
@@ -511,7 +511,7 @@ fn colourspace_roundtrip_after_thumbnail_and_affine_preserves_rgba_alpha_band() 
     .with_metadata(image.metadata().clone());
     let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(17),
             InterpolationKernel::Lanczos3,
         ))
@@ -547,7 +547,7 @@ fn sharpen_builder_preserves_rgba_identity_when_sigma_zero() {
     let source = MemorySource::<U8>::new(1, 1, 4, vec![128, 64, 32, 200]).unwrap();
     let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .sharpen(0.0, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .sharpen_with(0.0, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .build()
         .unwrap();

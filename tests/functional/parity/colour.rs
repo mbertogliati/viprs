@@ -16,7 +16,7 @@ fn libvips_parity_upstream_resample_thumbnail_fit_box() {
     let source = grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::FitBox {
                     width: 40,
                     height: 24,

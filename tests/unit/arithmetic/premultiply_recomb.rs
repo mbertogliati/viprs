@@ -1,7 +1,7 @@
 mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
+        BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
         adapters::{pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler},
         domain::{
             colorspace::{ColorspaceId, SRgb},

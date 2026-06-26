@@ -18,7 +18,7 @@ use super::{PngCodec, PngEncoder};
 use viprs_core::codec_options::{LoadOptions, PngFilterStrategy, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{U8, U16};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
 
 fn clamped_region_pixels_u8(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
@@ -494,24 +494,24 @@ fn encode_to_writer_matches_encode_with_options() {
 fn png_metadata_round_trip_preserves_color_type_mapping() {
     let cases = [
         (
-          InMemoryImage::<U8>::from_buffer(3, 2, 1, vec![5u8; 3 * 2])
+            InMemoryImage::<U8>::from_buffer(3, 2, 1, vec![5u8; 3 * 2])
                 .unwrap()
                 .with_metadata(ImageMetadata {
                     interpretation: Some(Interpretation::BW),
                     ..ImageMetadata::default()
                 }),
-          RawColorType::Grayscale,
-          Interpretation::BW,
+            RawColorType::Grayscale,
+            Interpretation::BW,
         ),
         (
-          InMemoryImage::<U8>::from_buffer(3, 2, 3, vec![9u8; 3 * 2 * 3])
+            InMemoryImage::<U8>::from_buffer(3, 2, 3, vec![9u8; 3 * 2 * 3])
                 .unwrap()
                 .with_metadata(ImageMetadata {
                     interpretation: Some(Interpretation::Srgb),
                     ..ImageMetadata::default()
                 }),
-          RawColorType::Rgb,
-          Interpretation::Srgb,
+            RawColorType::Rgb,
+            Interpretation::Srgb,
         ),
     ];
 
@@ -620,7 +620,8 @@ fn decode_path_with_shrink_keeps_partial_tail_blocks() {
             ]
         })
         .collect();
-    let image = InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 3, pixels.clone()).unwrap();
+    let image =
+        InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 3, pixels.clone()).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let path = png_test_output_path("decode-path-shrink-tail");
     std::fs::write(&path, &encoded).unwrap();
@@ -656,7 +657,8 @@ fn decode_path_with_shrink_preserves_grayscale_alpha_pairs() {
             ]
         })
         .collect();
-    let image = InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 2, pixels.clone()).unwrap();
+    let image =
+        InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 2, pixels.clone()).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let path = png_test_output_path("decode-path-shrink-ga");
     std::fs::write(&path, &encoded).unwrap();

@@ -1,15 +1,15 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::format::F32,
-  domain::ops::arithmetic::RecombOp,
-  domain::ops::arithmetic::recomb::Matrix,
-  pipeline::{OperationBridge, ImagePipeline},
-  ports::scheduler::TileScheduler,
+    domain::format::F32,
+    domain::ops::arithmetic::RecombOp,
+    domain::ops::arithmetic::recomb::Matrix,
+    pipeline::{ImagePipeline, OperationBridge},
+    ports::scheduler::TileScheduler,
 };
 
 fn bench_recomb(c: &mut Criterion) {

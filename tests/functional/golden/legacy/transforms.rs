@@ -157,7 +157,7 @@ fn thumbnail_width128_preserves_square_aspect_ratio_libvips() {
     let source = smooth_grayscale_source(width, height);
     let (output_width, output_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(128),
                 InterpolationKernel::Lanczos3,
             ))
@@ -197,7 +197,7 @@ fn thumbnail_width128_preserves_square_aspect_ratio_libvips_with_cache() {
     let source = smooth_grayscale_source(width, height);
     let (output_width, output_height, actual, _) =
         run_cached_pipeline_u8_twice(source.clone(), width, height, bands, |builder| {
-            let builder = builder.thumbnail(Thumbnail::new(
+            let builder = builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(128),
                 InterpolationKernel::Lanczos3,
             ))?;

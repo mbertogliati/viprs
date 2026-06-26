@@ -3,10 +3,10 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use std::num::NonZeroUsize;
 use viprs::{
     adapters::{
-      pipeline::{CompiledPipeline, ImagePipeline},
-      scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink,
-      sources::memory::MemorySource,
+        pipeline::{CompiledPipeline, ImagePipeline},
+        scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         format::U8,
@@ -27,7 +27,7 @@ fn thumbnail_pipeline(
 ) -> CompiledPipeline {
     let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
     let builder = ImagePipeline::from_source(source)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))

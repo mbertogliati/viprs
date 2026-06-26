@@ -47,7 +47,7 @@ use crate::{
         colour_dispatcher::ColourspaceDispatcher,
         error::{BuildError, ViprsError},
         format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-        image::{DemandHint, InMemoryImage, ImageMetadata, Interpretation, Region},
+        image::{DemandHint, ImageMetadata, InMemoryImage, Interpretation, Region},
         kernel::InterpolationKernel,
         op::{DynOperation, DynViewOp, NodeSpec, OperationBridge, SourceReadPlan, ViewBridge},
         reorder::{ReorderError, ReorderNode, reorder_dag},

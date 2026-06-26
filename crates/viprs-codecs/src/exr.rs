@@ -41,10 +41,10 @@ use exr::{
 };
 
 use viprs_core::{
-  codec_options::{LoadOptions, SaveOptions},
-  error::{ExrCodecError, ViprsError},
-  format::{BandFormat, BandFormatId, F32},
-  image::{InMemoryImage, ImageMetadata, Interpretation},
+    codec_options::{LoadOptions, SaveOptions},
+    error::{ExrCodecError, ViprsError},
+    format::{BandFormat, BandFormatId, F32},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
@@ -744,7 +744,9 @@ fn load_exr_layers(
     load_selected_exr_layers(src, 0, total_layers)
 }
 
-fn recast_image_from_f32<F: BandFormat>(image: InMemoryImage<F32>) -> Result<InMemoryImage<F>, ViprsError> {
+fn recast_image_from_f32<F: BandFormat>(
+    image: InMemoryImage<F32>,
+) -> Result<InMemoryImage<F>, ViprsError> {
     let width = image.width();
     let height = image.height();
     let bands = image.bands();
@@ -773,7 +775,10 @@ fn recast_image_from_f32<F: BandFormat>(image: InMemoryImage<F32>) -> Result<InM
     Ok(recast)
 }
 
-fn decode_exr<F: BandFormat>(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<F>, ViprsError> {
+fn decode_exr<F: BandFormat>(
+    src: &[u8],
+    opts: &LoadOptions,
+) -> Result<InMemoryImage<F>, ViprsError> {
     if F::ID != BandFormatId::F32 {
         return Err(ExrCodecError::UnsupportedFormat { format: F::ID }.into());
     }
@@ -852,10 +857,10 @@ fn pixels_per_mm_to_ppi(value: f64) -> Option<f32> {
 }
 
 fn exr_layer_from_image<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  index: usize,
-  total_layers: usize,
-  strip_metadata: bool,
+    image: &InMemoryImage<F>,
+    index: usize,
+    total_layers: usize,
+    strip_metadata: bool,
 ) -> ExrLayer<ExrAnyChannels<ExrFlatSamples>>
 where
     F::Sample: Clone,
@@ -894,10 +899,10 @@ fn layers_for_encode<F: BandFormat>(image: &InMemoryImage<F>) -> Vec<&InMemoryIm
 }
 
 fn exr_layer_attributes<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  index: usize,
-  total_layers: usize,
-  strip_metadata: bool,
+    image: &InMemoryImage<F>,
+    index: usize,
+    total_layers: usize,
+    strip_metadata: bool,
 ) -> ExrLayerAttributes {
     let layer_name = image
         .metadata()
@@ -1059,7 +1064,10 @@ fn encode_exr_single_layer_fast(
     Ok(output)
 }
 
-fn encode_exr<F: BandFormat>(image: &InMemoryImage<F>, opts: &SaveOptions) -> Result<Vec<u8>, ViprsError>
+fn encode_exr<F: BandFormat>(
+    image: &InMemoryImage<F>,
+    opts: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError>
 where
     F::Sample: Clone,
 {
@@ -1172,9 +1180,9 @@ impl ImageEncoder for ExrCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -1269,7 +1277,8 @@ mod tests {
     }
 
     fn luminance_alpha_image() -> InMemoryImage<F32> {
-        InMemoryImage::<F32>::from_buffer(2, 2, 2, vec![0.0, 1.0, 0.25, 0.75, 0.5, 0.5, 1.0, 0.0]).unwrap()
+        InMemoryImage::<F32>::from_buffer(2, 2, 2, vec![0.0, 1.0, 0.25, 0.75, 0.5, 0.5, 1.0, 0.0])
+            .unwrap()
     }
 
     fn luminance_image() -> InMemoryImage<F32> {

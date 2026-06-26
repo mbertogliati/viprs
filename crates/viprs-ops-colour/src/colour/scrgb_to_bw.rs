@@ -125,7 +125,8 @@ mod tests {
     fn run_process_region(input_data: Vec<f32>) -> Vec<f32> {
         let pixels = input_data.len() / 3;
         let input_image =
-            viprs_core::image::InMemoryImage::<F32>::from_buffer(pixels as u32, 1, 3, input_data).unwrap();
+            viprs_core::image::InMemoryImage::<F32>::from_buffer(pixels as u32, 1, 3, input_data)
+                .unwrap();
         let region = make_region(pixels);
         let input = Tile::new(region, 3, input_image.pixels());
         let mut output_data = vec![0.0_f32; pixels];
@@ -139,7 +140,8 @@ mod tests {
     fn run_convert_region(input_data: Vec<f32>) -> Vec<f32> {
         let pixels = input_data.len() / 3;
         let input_image =
-            viprs_core::image::InMemoryImage::<F32>::from_buffer(pixels as u32, 1, 3, input_data).unwrap();
+            viprs_core::image::InMemoryImage::<F32>::from_buffer(pixels as u32, 1, 3, input_data)
+                .unwrap();
         let region = make_region(pixels);
         let input = Tile::new(region, 3, input_image.pixels());
         let mut output_data = vec![0.0_f32; pixels];

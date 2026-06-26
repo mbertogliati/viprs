@@ -62,7 +62,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── File-level constants ───────────────────────────────────────────────────
@@ -888,9 +888,9 @@ impl ImageEncoder for MatCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

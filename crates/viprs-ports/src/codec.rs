@@ -27,7 +27,7 @@ use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Region};
 
 /// Header information needed to expose a decoded byte stream as an [`ImageSource`].
 ///

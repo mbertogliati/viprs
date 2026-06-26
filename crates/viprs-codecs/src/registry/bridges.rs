@@ -1,10 +1,10 @@
 use std::{any::Any, path::Path};
 
 use viprs_core::{
-  codec_options::{LoadOptions, SaveOptions},
-  error::ViprsError,
-  format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-  image::InMemoryImage,
+    codec_options::{LoadOptions, SaveOptions},
+    error::ViprsError,
+    format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
+    image::InMemoryImage,
 };
 use viprs_ports::codec::{ImageCodec, ImageDecoder, ImageEncoder};
 

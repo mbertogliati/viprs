@@ -1,6 +1,6 @@
 use super::{
-  BandFormat, BuildError, Concretize, DemandHint, DynOperation, InterpolationKernel, LineCacheOp,
-  ImagePipeline, SequentialOp, flush_concretize_chain,
+    BandFormat, BuildError, Concretize, DemandHint, DynOperation, ImagePipeline,
+    InterpolationKernel, LineCacheOp, SequentialOp, flush_concretize_chain,
 };
 
 /// Trait for anything that can be applied to a [`ImagePipeline`] via `.apply()`.
@@ -16,8 +16,8 @@ pub trait PipelineOp<State = Committed> {
 
     /// Applies this operation to the current builder state.
     fn apply_to_pipeline(
-      self,
-      builder: ImagePipeline<State>,
+        self,
+        builder: ImagePipeline<State>,
     ) -> Result<ImagePipeline<Self::NextState>, BuildError>;
 }
 
@@ -85,8 +85,8 @@ where
     type NextState = Fusing<(C, D)>;
 
     fn apply_to_pipeline(
-      self,
-      builder: ImagePipeline<Fusing<C>>,
+        self,
+        builder: ImagePipeline<Fusing<C>>,
     ) -> Result<ImagePipeline<Self::NextState>, BuildError> {
         let ImagePipeline {
             arena,
@@ -119,8 +119,8 @@ impl<S: Commit> PipelineOp<S> for Box<dyn DynOperation> {
     type NextState = Committed;
 
     fn apply_to_pipeline(
-      self,
-      builder: ImagePipeline<S>,
+        self,
+        builder: ImagePipeline<S>,
     ) -> Result<ImagePipeline<Self::NextState>, BuildError> {
         builder.then(self)
     }
@@ -130,8 +130,8 @@ impl<S: Commit> PipelineOp<S> for SequentialOp {
     type NextState = S;
 
     fn apply_to_pipeline(
-      self,
-      builder: ImagePipeline<S>,
+        self,
+        builder: ImagePipeline<S>,
     ) -> Result<ImagePipeline<Self::NextState>, BuildError> {
         Ok(builder.configure_sequential_streaming(self.lines_ahead()))
     }
@@ -141,8 +141,8 @@ impl<S: Commit> PipelineOp<S> for LineCacheOp {
     type NextState = S;
 
     fn apply_to_pipeline(
-      self,
-      builder: ImagePipeline<S>,
+        self,
+        builder: ImagePipeline<S>,
     ) -> Result<ImagePipeline<Self::NextState>, BuildError> {
         Ok(builder.configure_linecache(self.lines_ahead()))
     }

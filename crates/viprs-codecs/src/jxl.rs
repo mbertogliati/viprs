@@ -19,7 +19,7 @@ use jxl_oxide::{AuxBoxData, JxlImage};
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::ImageDecoder;
 
 const JXL_CODESTREAM_MAGIC: [u8; 2] = [0xFF, 0x0A];

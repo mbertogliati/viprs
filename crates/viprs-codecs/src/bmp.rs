@@ -11,7 +11,7 @@ use image::codecs::bmp::{BmpDecoder, BmpEncoder};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// BMP codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
@@ -133,9 +133,9 @@ impl ImageEncoder for BmpCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -165,7 +165,7 @@ mod tests {
     #[test]
     fn bmp_round_trip_rgb_u8() {
         let codec = BmpCodec;
-        let input = Image::<U8>::from_buffer(
+        let input = InMemoryImage::<U8>::from_buffer(
             2,
             2,
             3,

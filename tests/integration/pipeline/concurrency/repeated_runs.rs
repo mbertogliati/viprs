@@ -5,16 +5,16 @@ mod robustness_determinism {
     };
 
     use viprs::{
-      BuildError, CompiledPipeline, InMemoryImage, Interpretation, U8,
-      adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+        BuildError, CompiledPipeline, InMemoryImage, Interpretation, U8,
+        adapters::{
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
-      domain::{
+        domain::{
             kernel::InterpolationKernel,
             ops::resample::{Thumbnail, thumbnail::ThumbnailTarget},
         },
-      ports::scheduler::TileScheduler,
+        ports::scheduler::TileScheduler,
     };
 
     fn project_root() -> PathBuf {
@@ -40,8 +40,8 @@ mod robustness_determinism {
             bytes.iter().copied().cycle().take(expected_len).collect()
         };
 
-        let mut image =
-            InMemoryImage::from_buffer(width, height, bands, raw_pixels).unwrap_or_else(|error| {
+        let mut image = InMemoryImage::from_buffer(width, height, bands, raw_pixels)
+            .unwrap_or_else(|error| {
                 panic!(
                     "failed to build fixture-backed image {}: {error}",
                     path.display()
@@ -69,16 +69,14 @@ mod robustness_determinism {
     }
 
     fn execute_to_buffer<S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<U8>,
-      threads: usize,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<U8>,
+        threads: usize,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> (CompiledPipeline, Vec<u8>) {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .unwrap_or_else(|error| panic!("pipeline stage failed: {error:?}"))
-        .build()
-        .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"));
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .unwrap_or_else(|error| panic!("pipeline stage failed: {error:?}"))
+            .build()
+            .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"));
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(threads)
@@ -113,7 +111,7 @@ mod robustness_determinism {
 
         for run in 0..5 {
             let (_pipeline, output) =
-                execute_to_buffer(&image, 2, |builder| builder.thumbnail(thumbnail(200)));
+                execute_to_buffer(&image, 2, |builder| builder.thumbnail_with(thumbnail(200)));
             if let Some(expected) = &baseline {
                 assert_eq!(
                     output.as_slice(),
@@ -146,10 +144,10 @@ mod robustness_determinism {
         let image = load_fixture_image("bench_1024x1024.jpg", 256, 256, 3);
 
         let (_single_pipeline, single_thread) = execute_to_buffer(&image, 1, |builder| {
-            builder.thumbnail(thumbnail(256))?.invert()
+            builder.thumbnail_with(thumbnail(256))?.invert()
         });
         let (_multi_pipeline, four_threads) = execute_to_buffer(&image, 4, |builder| {
-            builder.thumbnail(thumbnail(256))?.invert()
+            builder.thumbnail_with(thumbnail(256))?.invert()
         });
 
         assert_eq!(

@@ -23,7 +23,7 @@ use rayon::prelude::*;
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const DEFAULT_QUALITY: u8 = 48;
@@ -1602,13 +1602,13 @@ fn openjpeg_thread_count() -> i32 {
 }
 
 fn pack_tile_component_data<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  bands_usize: usize,
-  tile_left: u32,
-  tile_top: u32,
-  tile_width: u32,
-  tile_height: u32,
-  output: &mut Vec<u8>,
+    image: &InMemoryImage<F>,
+    bands_usize: usize,
+    tile_left: u32,
+    tile_top: u32,
+    tile_width: u32,
+    tile_height: u32,
+    output: &mut Vec<u8>,
 ) -> Result<(), ViprsError> {
     let sample_size = std::mem::size_of::<F::Sample>();
     let tile_pixels = tile_width as usize * tile_height as usize;
@@ -1680,8 +1680,8 @@ fn pack_tile_component_data<F: BandFormat>(
 }
 
 fn encode_to_jp2_bytes<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  opts: &SaveOptions,
+    image: &InMemoryImage<F>,
+    opts: &SaveOptions,
 ) -> Result<Vec<u8>, ViprsError> {
     let bands = image.bands();
     if bands == 0 || bands as usize > MAX_COMPONENTS {
@@ -2016,9 +2016,9 @@ impl ImageEncoder for Jp2kCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -2100,7 +2100,8 @@ mod tests {
     fn round_trip_u16_preserves_samples() {
         let codec = Jp2kCodec;
         let image =
-            InMemoryImage::<U16>::from_buffer(2, 2, 1, vec![0u16, 1024u16, 4096u16, 65535u16]).unwrap();
+            InMemoryImage::<U16>::from_buffer(2, 2, 1, vec![0u16, 1024u16, 4096u16, 65535u16])
+                .unwrap();
 
         let encoded = codec
             .encode_with_options(&image, &SaveOptions::default().lossless())

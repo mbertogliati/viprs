@@ -13,8 +13,8 @@ fn memory_source_add_constant_end_to_end() {
     use viprs::{
         Add, OperationBridge,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -52,8 +52,8 @@ fn memory_source_clamp_to_edge_does_not_panic() {
     use viprs::{
         Add, OperationBridge,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -91,8 +91,8 @@ fn convenience_invert_end_to_end() {
     // PipelineBuilder::invert() builds correctly and produces inverted pixels.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -126,8 +126,8 @@ fn convenience_linear_end_to_end() {
     // cannot hide indexing or broadcast bugs.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::F32,
         ports::scheduler::TileScheduler,
@@ -166,8 +166,8 @@ fn convenience_cast_u8_to_f32_end_to_end() {
     use viprs::{
         BandFormatId,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -204,8 +204,8 @@ fn chained_invert_twice_is_identity() {
     // Two consecutive invert() calls must cancel out.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,

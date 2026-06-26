@@ -1,12 +1,13 @@
 use super::flows_support::*;
 use bytemuck::{cast_slice, cast_slice_mut};
 use viprs::{
-  BuildError, F32, F64, InMemoryImage, ImageMetadata, Interpretation, OperationBridge, Region, U8,
-  adapters::{
+    BuildError, F32, F64, ImageMetadata, InMemoryImage, Interpretation, OperationBridge, Region,
+    U8,
+    adapters::{
         pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         kernel::InterpolationKernel,
         op::{DynOperation, Op},
         ops::{
@@ -20,7 +21,7 @@ use viprs::{
             resample::{MapImOp, mapim::MapImExtend},
         },
     },
-  ports::scheduler::TileScheduler,
+    ports::scheduler::TileScheduler,
 };
 
 #[cfg(feature = "jpeg")]
@@ -59,11 +60,11 @@ fn to_rgba_u8(image: &InMemoryImage<U8>) -> InMemoryImage<U8> {
 }
 
 fn place_overlay_on_canvas(
-  base_width: u32,
-  base_height: u32,
-  overlay: &InMemoryImage<U8>,
-  x: u32,
-  y: u32,
+    base_width: u32,
+    base_height: u32,
+    overlay: &InMemoryImage<U8>,
+    x: u32,
+    y: u32,
 ) -> InMemoryImage<U8> {
     let mut pixels = vec![0u8; (base_width * base_height * overlay.bands()) as usize];
     let bands = overlay.bands() as usize;
@@ -156,10 +157,10 @@ where
 }
 
 fn apply_smartcrop(
-  image: &InMemoryImage<U8>,
-  target_width: u32,
-  target_height: u32,
-  interesting: Interesting,
+    image: &InMemoryImage<U8>,
+    target_width: u32,
+    target_height: u32,
+    interesting: Interesting,
 ) -> InMemoryImage<U8> {
     let op = SmartcropOp::analyze_with_interesting(image, target_width, target_height, interesting);
     let source = memory_source_from_image(image);
@@ -198,12 +199,12 @@ fn histogram_spread(image: &InMemoryImage<U8>) -> usize {
 }
 
 fn mean_rect_diff(
-  lhs: &InMemoryImage<U8>,
-  rhs: &InMemoryImage<U8>,
-  left: u32,
-  top: u32,
-  width: u32,
-  height: u32,
+    lhs: &InMemoryImage<U8>,
+    rhs: &InMemoryImage<U8>,
+    left: u32,
+    top: u32,
+    width: u32,
+    height: u32,
 ) -> f64 {
     assert_eq!(
         (lhs.width(), lhs.height()),
@@ -302,7 +303,8 @@ fn registration_fixture_f32(width: u32, height: u32) -> InMemoryImage<F32> {
             })
         })
         .collect();
-    InMemoryImage::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build registration image")
+    InMemoryImage::<F32>::from_buffer(width, height, 1, pixels)
+        .expect("failed to build registration image")
 }
 
 #[cfg(feature = "fft")]
@@ -356,7 +358,10 @@ fn to_f32_unit_rgba(image: &InMemoryImage<U8>) -> Vec<f32> {
         .collect()
 }
 
-fn run_composite_over_rgba(base: &InMemoryImage<U8>, overlay: &InMemoryImage<U8>) -> InMemoryImage<U8> {
+fn run_composite_over_rgba(
+    base: &InMemoryImage<U8>,
+    overlay: &InMemoryImage<U8>,
+) -> InMemoryImage<U8> {
     let base = to_rgba_u8(base);
     let overlay = to_rgba_u8(overlay);
     let base_f32 = to_f32_unit_rgba(&base);
@@ -397,16 +402,23 @@ fn flow1_full_thumbnail_pipeline_preserves_geometry_alpha_and_hashes() {
     let rgba = load_u8_fixture("bench_2048x2048_rgba.png");
     let small = load_u8_fixture("bench_512x512.jpg");
 
-    let (thumb_pipeline, thumb_output) =
-        execute_u8_pipeline_to_image(&jpeg, |builder| builder.thumbnail(thumbnail_config(400)));
-    let thumb_output_repeat =
-        execute_u8_pipeline_to_image(&jpeg, |builder| builder.thumbnail(thumbnail_config(400))).1;
-    let (rgba_pipeline, rgba_output) =
-        execute_u8_pipeline_to_image(&rgba, |builder| builder.thumbnail(thumbnail_config(256)));
-    let rgba_output_repeat =
-        execute_u8_pipeline_to_image(&rgba, |builder| builder.thumbnail(thumbnail_config(256))).1;
-    let (upscale_pipeline, upscale_output) =
-        execute_u8_pipeline_to_image(&small, |builder| builder.thumbnail(thumbnail_config(1600)));
+    let (thumb_pipeline, thumb_output) = execute_u8_pipeline_to_image(&jpeg, |builder| {
+        builder.thumbnail_with(thumbnail_config(400))
+    });
+    let thumb_output_repeat = execute_u8_pipeline_to_image(&jpeg, |builder| {
+        builder.thumbnail_with(thumbnail_config(400))
+    })
+    .1;
+    let (rgba_pipeline, rgba_output) = execute_u8_pipeline_to_image(&rgba, |builder| {
+        builder.thumbnail_with(thumbnail_config(256))
+    });
+    let rgba_output_repeat = execute_u8_pipeline_to_image(&rgba, |builder| {
+        builder.thumbnail_with(thumbnail_config(256))
+    })
+    .1;
+    let (upscale_pipeline, upscale_output) = execute_u8_pipeline_to_image(&small, |builder| {
+        builder.thumbnail_with(thumbnail_config(1600))
+    });
 
     assert_thumbnail_dimensions(&thumb_pipeline, &jpeg, 400);
     assert_thumbnail_dimensions(&rgba_pipeline, &rgba, 256);
@@ -892,7 +904,7 @@ fn flow10_composite_affine_icc_pipeline_keeps_output_visible_and_roundtrips_jpeg
         100,
     );
     let watermark_thumb = execute_u8_pipeline_to_image(&watermark, |builder| {
-        builder.thumbnail(thumbnail_config(64))
+        builder.thumbnail_with(thumbnail_config(64))
     })
     .1;
     let watermark_rgba = {

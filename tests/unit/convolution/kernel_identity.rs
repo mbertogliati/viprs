@@ -1,10 +1,10 @@
 mod chaos_monkey_5 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata, Interpretation, U8,
+        BuildError, CompiledPipeline, F32, ImageMetadata, InMemoryImage, Interpretation, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -93,12 +93,10 @@ mod chaos_monkey_5 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -147,7 +145,7 @@ mod chaos_monkey_5 {
         let (_pipeline, output) = execute_to_image(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .sharpen(0.5, SHARPEN_X1, SHARPEN_Y2, SHARPEN_Y3, 0.0, 0.0)
+                .sharpen_with(0.5, SHARPEN_X1, SHARPEN_Y2, SHARPEN_Y3, 0.0, 0.0)
         })
         .expect("sharpen should succeed");
 

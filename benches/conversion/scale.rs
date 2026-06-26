@@ -1,19 +1,19 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         format::{U8, U16},
         image::{DemandHint, Region, Tile, TileMut},
         op::{DynOperation, Op, OperationBridge},
         ops::conversion::{ScaleMode, ScaleOp},
         reducers::stats::StatsReducer,
     },
-  pipeline::ImagePipeline,
-  ports::scheduler::{ReducingScheduler, TileScheduler},
+    pipeline::ImagePipeline,
+    ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 
 fn must<T, E: std::fmt::Display>(result: Result<T, E>, context: &str) -> T {
@@ -69,9 +69,9 @@ fn bench_scale(c: &mut Criterion) {
                     "create memory source",
                 );
                 let input_pipeline = must(
-                  ImagePipeline::from_source(source)
+                    ImagePipeline::from_source(source)
                         .then(Box::new(OperationBridge::new(PassThroughU16, 1))),
-                  "add identity operation",
+                    "add identity operation",
                 )
                 .build()
                 .unwrap();
@@ -95,8 +95,8 @@ fn bench_scale(c: &mut Criterion) {
                     1,
                 ));
                 let scale_pipeline = must(
-                  ImagePipeline::from_source(scale_source).then(op),
-                  "add scale operation",
+                    ImagePipeline::from_source(scale_source).then(op),
+                    "add scale operation",
                 )
                 .build()
                 .unwrap();

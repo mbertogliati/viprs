@@ -30,7 +30,7 @@ use super::common::{
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::BandFormat;
-use viprs_core::image::{InMemoryImage, ImageMetadata, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Region};
 use viprs_ports::codec::{ImageDecoder, ImageMetadataProbe, TileImageDecoder};
 
 type WebpSamplerRowFunc = unsafe extern "C" fn(*const u8, *const u8, *const u8, *mut u8, c_int);

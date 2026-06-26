@@ -7,7 +7,18 @@ use std::fs;
 use std::hint::black_box;
 use std::time::{Duration, Instant};
 
-use viprs::adapters::image_api::ImagePipeline2;
+use viprs::{
+    ViprsError,
+    adapters::{
+        codecs::{JpegCodec, WebpCodec, registry::ForeignRegistry},
+        pipeline::ImagePipeline,
+        scheduler::rayon_scheduler::RayonScheduler,
+        sources::memory::MemorySource,
+    },
+    codecs::SaveOptions,
+    domain::{codec_options::LoadOptions, format::U8, image::InMemoryImage},
+    ports::codec::ImageEncoder,
+};
 
 /// Result of a single scenario run (multiple iterations).
 pub struct ScenarioResult {
@@ -180,19 +191,61 @@ pub fn large_upload(input_bytes: &[u8], iterations: u32) -> ScenarioResult {
 // ─── Internal helpers ───────────────────────────────────────────────────────
 
 fn run_thumbnail_bytes(input_bytes: &[u8]) -> Vec<u8> {
-    ImagePipeline2::from_bytes(input_bytes)
-        .and_then(|api| api.thumbnail(400).map_err(Into::into))
-        .and_then(|api| api.encode_webp(80))
-        .unwrap_or_default()
+    run_thumbnail_bytes_inner(input_bytes).unwrap_or_default()
 }
 
 fn run_pipeline_bytes(input_bytes: &[u8]) -> Vec<u8> {
-    ImagePipeline2::from_bytes(input_bytes)
-        .and_then(|api| api.thumbnail(800).map_err(Into::into))
-        .and_then(|api| api.sharpen().map_err(Into::into))
-        .and_then(|api| api.linear(1.1, 5.0).map_err(Into::into))
-        .and_then(|api| api.encode_jpeg(85))
-        .unwrap_or_default()
+    run_pipeline_bytes_inner(input_bytes).unwrap_or_default()
+}
+
+fn run_thumbnail_bytes_inner(input_bytes: &[u8]) -> Result<Vec<u8>, ViprsError> {
+    let image = decode_registry_image(input_bytes)?;
+    let scheduler = RayonScheduler::new(RayonScheduler::default_threads())?;
+    let pipeline = ImagePipeline::from_source(image_into_memory_source(image))
+        .thumbnail(400)?
+        .build()?;
+    let output = pipeline.run_to_image::<U8, _>(&scheduler)?;
+    WebpCodec.encode_with_options(
+        &output,
+        &SaveOptions {
+            quality: Some(80),
+            ..SaveOptions::default()
+        },
+    )
+}
+
+fn run_pipeline_bytes_inner(input_bytes: &[u8]) -> Result<Vec<u8>, ViprsError> {
+    let image = decode_registry_image(input_bytes)?;
+    let scheduler = RayonScheduler::new(RayonScheduler::default_threads())?;
+    let pipeline = ImagePipeline::from_source(image_into_memory_source(image))
+        .thumbnail(800)?
+        .sharpen()?
+        .linear(1.1, 5.0)?
+        .build()?;
+    let output = pipeline.run_to_image::<U8, _>(&scheduler)?;
+    JpegCodec.encode_with_options(
+        &output,
+        &SaveOptions {
+            quality: Some(85),
+            ..SaveOptions::default()
+        },
+    )
+}
+
+fn decode_registry_image(input_bytes: &[u8]) -> Result<InMemoryImage<U8>, ViprsError> {
+    ForeignRegistry::shared()
+        .load_from_memory_with_options(input_bytes, &LoadOptions::default())
+        .map(|(image, _)| image)
+}
+
+fn image_into_memory_source(image: InMemoryImage<U8>) -> MemorySource<U8> {
+    let width = image.width();
+    let height = image.height();
+    let bands = image.bands();
+    let metadata = image.metadata().clone();
+    MemorySource::<U8>::new(width, height, bands, image.into_buffer())
+        .expect("web bench memory source")
+        .with_metadata(metadata)
 }
 
 fn current_rss_kb() -> u64 {

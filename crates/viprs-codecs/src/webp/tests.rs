@@ -13,7 +13,7 @@ use viprs_core::codec_options::LoadOptions;
 use viprs_core::codec_options::SaveOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::U8;
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation, Region};
 #[cfg(all(feature = "icc", feature = "_integration"))]
 use viprs_ops_colour::colour::profile_load;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};

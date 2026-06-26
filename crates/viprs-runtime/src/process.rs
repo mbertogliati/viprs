@@ -54,12 +54,12 @@ use crate::domain::{format::F32, image::AnimationFrame, ops::conversion::cast::C
 use crate::{
     adapters::codecs::registry::ForeignRegistry,
     domain::{
-      cancel::CancellationToken,
-      codec_options::{LoadOptions, SaveOptions},
-      error::ViprsError,
-      format::U8,
-      image::{InMemoryImage, ImageMetadata},
-      limits::DecodeLimits,
+        cancel::CancellationToken,
+        codec_options::{LoadOptions, SaveOptions},
+        error::ViprsError,
+        format::U8,
+        image::{ImageMetadata, InMemoryImage},
+        limits::DecodeLimits,
     },
 };
 
@@ -321,9 +321,9 @@ fn check_cancelled(cancel_token: Option<&CancellationToken>) -> Result<(), Viprs
 }
 
 fn encode_image(
-  image: &InMemoryImage<U8>,
-  encode_opts: &EncodeOptions,
-  process_opts: &ProcessOptions,
+    image: &InMemoryImage<U8>,
+    encode_opts: &EncodeOptions,
+    process_opts: &ProcessOptions,
 ) -> Result<Vec<u8>, ViprsError> {
     let save_options = save_options(encode_opts, process_opts.strip_metadata);
     match *encode_opts {
@@ -385,7 +385,10 @@ impl EncodeOptions {
 
 /// Decode input bytes to `Image<U8>`, handling formats that only support higher
 /// bit-depth (e.g. EXR → F32 → U8 cast).
-fn decode_as_u8(input: &[u8], opts: &LoadOptions) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
+fn decode_as_u8(
+    input: &[u8],
+    opts: &LoadOptions,
+) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
     let registry = ForeignRegistry::shared();
 
     // Try U8 decode first (most formats support it).
@@ -427,7 +430,10 @@ fn encode_jpeg(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(not(feature = "jpeg"))]
-const fn encode_jpeg(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_jpeg(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: jpeg",
         details: "enable Cargo feature `jpeg` to use EncodeOptions::Jpeg",
@@ -440,7 +446,10 @@ fn encode_png(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(not(feature = "png"))]
-const fn encode_png(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_png(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: png",
         details: "enable Cargo feature `png` to use EncodeOptions::Png",
@@ -453,7 +462,10 @@ fn encode_webp(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(not(feature = "webp"))]
-const fn encode_webp(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_webp(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: webp",
         details: "enable Cargo feature `webp` to use EncodeOptions::WebP",
@@ -466,7 +478,10 @@ fn encode_tiff(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(not(feature = "tiff"))]
-const fn encode_tiff(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_tiff(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: tiff",
         details: "enable Cargo feature `tiff` to use EncodeOptions::Tiff",
@@ -479,7 +494,10 @@ fn encode_gif(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(not(feature = "gif"))]
-const fn encode_gif(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_gif(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: gif",
         details: "enable Cargo feature `gif` to use EncodeOptions::Gif",
@@ -492,7 +510,10 @@ fn encode_avif(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(not(feature = "avif"))]
-const fn encode_avif(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_avif(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: avif",
         details: "enable Cargo feature `avif` to use EncodeOptions::Avif",
@@ -505,7 +526,10 @@ fn encode_heif(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(not(feature = "heif"))]
-const fn encode_heif(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_heif(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: heif",
         details: "enable Cargo feature `heif` to use EncodeOptions::Heif",
@@ -518,7 +542,10 @@ fn encode_jp2k(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(not(feature = "jp2k"))]
-const fn encode_jp2k(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_jp2k(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: jp2k",
         details: "enable Cargo feature `jp2k` to use EncodeOptions::Jp2k",
@@ -531,7 +558,10 @@ fn encode_exr(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(not(feature = "exr"))]
-const fn encode_exr(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_exr(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: exr",
         details: "enable Cargo feature `exr` to use EncodeOptions::Exr",
@@ -585,7 +615,10 @@ fn encode_bmp(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(not(feature = "bmp"))]
-const fn encode_bmp(_image: &InMemoryImage<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_bmp(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: bmp",
         details: "enable Cargo feature `bmp` to use EncodeOptions::Bmp",
@@ -606,8 +639,8 @@ mod tests {
     use crate::{adapters::codecs::PngCodec, ports::codec::ImageEncoder};
     #[cfg(any(feature = "exr", feature = "png"))]
     use crate::{
-      domain::{format::U8, image::InMemoryImage},
-      ports::codec::ImageDecoder,
+        domain::{format::U8, image::InMemoryImage},
+        ports::codec::ImageDecoder,
     };
 
     #[cfg(feature = "png")]

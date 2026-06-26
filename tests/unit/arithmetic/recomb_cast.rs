@@ -1,10 +1,10 @@
 mod chaos_monkey_15 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8,
+        BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
         domain::{
             codec_options::SaveOptions,
@@ -76,12 +76,10 @@ mod chaos_monkey_15 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
             .run_to_image::<FOut, _>(

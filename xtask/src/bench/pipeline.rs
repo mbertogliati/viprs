@@ -9,7 +9,7 @@ use bytemuck::Pod;
 use mozjpeg::decompress::DecompressStarted;
 use mozjpeg::{ALL_MARKERS, ColorSpace, ColorSpaceExt, Decompress};
 use viprs::adapters::codecs::{PngCodec, TiffDecoder, WebpCodec};
-use viprs::adapters::pipeline::{CompiledPipeline, PipelineArena, ImagePipeline};
+use viprs::adapters::pipeline::{CompiledPipeline, ImagePipeline, PipelineArena};
 use viprs::adapters::sources::create::GreySource;
 use viprs::adapters::sources::decoder_source::DecoderSource;
 use viprs::adapters::sources::memory::MemorySource;
@@ -23,7 +23,7 @@ use viprs::domain::format::{
     BandFormat, BandFormatId, F32, F64, I16, I32, NumericBand, U8, U16, U32,
 };
 use viprs::domain::image::{
-  DemandHint, InMemoryImage, ImageMetadata, Interpretation, Region, Tile, TileMut,
+    DemandHint, ImageMetadata, InMemoryImage, Interpretation, Region, Tile, TileMut,
 };
 use viprs::domain::kernel::InterpolationKernel;
 use viprs::domain::op::{Op, OperationBridge, PixelLocalOp};
@@ -500,8 +500,8 @@ fn colourspace_route_from_args(
 }
 
 fn apply_colourspace_destination(
-  builder: ImagePipeline,
-  destination: ColorspaceId,
+    builder: ImagePipeline,
+    destination: ColorspaceId,
 ) -> Result<ImagePipeline, BuildError> {
     match destination {
         ColorspaceId::SRgb => builder.colourspace::<SRgb>(),
@@ -606,7 +606,7 @@ fn laplacian_3x3_kernel() -> Vec<Vec<f64>> {
 fn apply_thumbnail(builder: ImagePipeline, width: u32) -> Result<ImagePipeline, BuildError> {
     let target = ThumbnailTarget::Width(width);
     let thumbnail = Thumbnail::new(target, InterpolationKernel::Lanczos3);
-    builder.thumbnail(thumbnail)
+    builder.thumbnail_with(thumbnail)
 }
 
 fn apply_resize(builder: ImagePipeline, scale: f64) -> Result<ImagePipeline, BuildError> {
@@ -615,11 +615,11 @@ fn apply_resize(builder: ImagePipeline, scale: f64) -> Result<ImagePipeline, Bui
 }
 
 fn apply_sharpen(
-  builder: ImagePipeline,
-  sigma: f32,
-  strength: f32,
+    builder: ImagePipeline,
+    sigma: f32,
+    strength: f32,
 ) -> Result<ImagePipeline, BuildError> {
-    builder.sharpen(sigma, 2.0, 10.0, 20.0, 0.0, strength)
+    builder.sharpen_with(sigma, 2.0, 10.0, 20.0, 0.0, strength)
 }
 
 fn recomb_matrix() -> Matrix {
@@ -638,9 +638,9 @@ fn build_viprs_grey_pipeline(width: u32, height: u32) -> CompiledPipeline {
 }
 
 fn apply_gauss_blur<F>(
-  builder: ImagePipeline,
-  bands: u32,
-  sigma: f32,
+    builder: ImagePipeline,
+    bands: u32,
+    sigma: f32,
 ) -> Result<ImagePipeline, BuildError>
 where
     F: BandFormat + 'static,
@@ -2228,7 +2228,8 @@ mod tests {
 
     #[test]
     fn shared_memory_source_borrows_full_rows_for_zero_origin_region() {
-        let image = InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).expect("image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).expect("image");
         let source = SharedMemorySource::from_image(image);
 
         let borrowed = source
@@ -2240,7 +2241,8 @@ mod tests {
 
     #[test]
     fn shared_memory_source_rejects_non_contiguous_borrow() {
-        let image = InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).expect("image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).expect("image");
         let source = SharedMemorySource::from_image(image);
 
         assert!(source.borrow_region(Region::new(1, 0, 2, 2)).is_none());
@@ -2248,7 +2250,8 @@ mod tests {
 
     #[test]
     fn shared_memory_source_clamps_out_of_bounds_without_per_pixel_layout_changes() {
-        let image = InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).expect("image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).expect("image");
         let source = SharedMemorySource::from_image(image);
         let mut output = vec![0u8; 12];
 
@@ -2287,7 +2290,8 @@ mod tests {
 
     #[test]
     fn three_op_chain_accepts_sources_without_interpretation_metadata() {
-        let image = InMemoryImage::<U8>::from_buffer(32, 32, 3, vec![17; 32 * 32 * 3]).expect("image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(32, 32, 3, vec![17; 32 * 32 * 3]).expect("image");
         let source = SharedMemorySource::from_image(image);
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             build_viprs_pipeline_from_source::<U8, _>(source, "three_op_chain", &[])

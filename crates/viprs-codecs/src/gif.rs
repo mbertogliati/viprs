@@ -35,7 +35,9 @@ use gif::{
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{AnimationFrame, AnimationLoopCount, FrameDisposal, InMemoryImage, ImageMetadata};
+use viprs_core::image::{
+    AnimationFrame, AnimationLoopCount, FrameDisposal, ImageMetadata, InMemoryImage,
+};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// GIF codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
@@ -993,9 +995,9 @@ impl ImageEncoder for GifCodec {
     /// honours `colors` (2–256 palette entries) and `dither` (Floyd-Steinberg
     /// remap on/off). Other fields are ignored per the codec contract.
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -1098,9 +1100,9 @@ impl ImageEncoder for GifCodec {
 }
 
 fn validate_animation_frame_shape<F: BandFormat>(
-  frame: &InMemoryImage<F>,
-  reference: &InMemoryImage<F>,
-  frame_index: usize,
+    frame: &InMemoryImage<F>,
+    reference: &InMemoryImage<F>,
+    frame_index: usize,
 ) -> Result<(), ViprsError> {
     if frame.width() != reference.width()
         || frame.height() != reference.height()
@@ -1510,14 +1512,14 @@ mod tests {
         let codec = GifCodec::default();
         let animated = InMemoryImage::<U8>::from_frames(vec![
             AnimationFrame::new(
-              InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![255, 0, 0, 255, 0, 0]).unwrap(),
-              40,
-              FrameDisposal::Keep,
+                InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![255, 0, 0, 255, 0, 0]).unwrap(),
+                40,
+                FrameDisposal::Keep,
             ),
             AnimationFrame::new(
-              InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![0, 255, 0, 0, 255, 0]).unwrap(),
-              70,
-              FrameDisposal::Background,
+                InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![0, 255, 0, 0, 255, 0]).unwrap(),
+                70,
+                FrameDisposal::Background,
             ),
         ])
         .unwrap()
@@ -1569,9 +1571,9 @@ mod tests {
                     vec![0, 0, 255]
                 };
                 AnimationFrame::new(
-                  InMemoryImage::<U8>::from_buffer(1, 1, 3, rgb).unwrap(),
-                  10,
-                  FrameDisposal::Keep,
+                    InMemoryImage::<U8>::from_buffer(1, 1, 3, rgb).unwrap(),
+                    10,
+                    FrameDisposal::Keep,
                 )
             })
             .collect::<Vec<_>>();

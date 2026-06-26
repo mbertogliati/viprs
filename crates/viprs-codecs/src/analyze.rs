@@ -298,9 +298,9 @@ fn encode_analyze<F: BandFormat>(image: &InMemoryImage<F>) -> Result<Vec<u8>, Vi
 }
 
 fn encode_pixels_be<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  datatype: i16,
-  _bytes_per_sample: usize,
+    image: &InMemoryImage<F>,
+    datatype: i16,
+    _bytes_per_sample: usize,
 ) -> Result<Vec<u8>, ViprsError> {
     match datatype {
         DT_UNSIGNED_CHAR | DT_RGB => {
@@ -398,12 +398,15 @@ impl ImageDecoder for AnalyzeCodec {
         Self: Sized,
     {
         let boxed = decode_analyze(src, F::ID)?;
-        boxed.downcast::<InMemoryImage<F>>().map(|b| *b).map_err(|_| {
-            ViprsError::Codec(format!(
-                "analyze: decoded image type does not match requested format {:?}",
-                F::ID
-            ))
-        })
+        boxed
+            .downcast::<InMemoryImage<F>>()
+            .map(|b| *b)
+            .map_err(|_| {
+                ViprsError::Codec(format!(
+                    "analyze: decoded image type does not match requested format {:?}",
+                    F::ID
+                ))
+            })
     }
 
     fn probe(&self, src: &[u8]) -> Result<(u32, u32, u32), ViprsError>
@@ -425,9 +428,9 @@ impl ImageEncoder for AnalyzeCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

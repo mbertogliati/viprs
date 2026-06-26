@@ -4,10 +4,10 @@
 //! ergonomic functions over `Image` values rather than pipeline nodes.
 
 use crate::domain::{
-  error::{FreqfiltError, ViprsError},
-  format::{BandFormat, F64},
-  image::InMemoryImage,
-  ops::resample::sample_conv::ToF64,
+    error::{FreqfiltError, ViprsError},
+    format::{BandFormat, F64},
+    image::InMemoryImage,
+    ops::resample::sample_conv::ToF64,
 };
 use rustfft::{FftPlanner, num_complex::Complex};
 

@@ -3,10 +3,10 @@ mod chaos_monkey_16 {
 
     use bytemuck::Pod;
     use viprs::{
-        BandFormatId, BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
+        BandFormatId, BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{Cmyk, Lab, SRgb},
@@ -77,12 +77,10 @@ mod chaos_monkey_16 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
             .run_to_image::<FOut, _>(

@@ -2,12 +2,12 @@ mod robustness_recovery {
     use std::path::Path;
 
     use viprs::{
-      DemandHint, InMemoryImage, ImagePipeline, Region, U8, ViprsError,
-      adapters::{
+        DemandHint, ImagePipeline, InMemoryImage, Region, U8, ViprsError,
+        adapters::{
             scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
             sources::memory::MemorySource,
         },
-      ports::source::ImageSource,
+        ports::source::ImageSource,
     };
 
     const FIXTURE_ROW_WIDTH: u32 = 64;

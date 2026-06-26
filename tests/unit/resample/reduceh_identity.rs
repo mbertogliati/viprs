@@ -1,10 +1,10 @@
 mod chaos_monkey_9 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata, Interpretation, U8,
+        BuildError, CompiledPipeline, F32, ImageMetadata, InMemoryImage, Interpretation, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -83,12 +83,10 @@ mod chaos_monkey_9 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let scheduler = RayonScheduler::new(2).map_err(|error| error.to_string())?;
         let output = pipeline

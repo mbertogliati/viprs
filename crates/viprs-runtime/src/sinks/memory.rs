@@ -7,7 +7,7 @@ use crate::{
     domain::{
         error::ViprsError,
         format::{BandFormat, BandFormatId},
-        image::{InMemoryImage, ImageMetadata, Region},
+        image::{ImageMetadata, InMemoryImage, Region},
     },
     pipeline::CompiledPipeline,
     ports::sink::{ConcurrentSink, ImageSink},
@@ -148,7 +148,8 @@ impl MemorySink {
             .map(bytemuck::pod_read_unaligned::<F::Sample>)
             .collect();
 
-        InMemoryImage::from_buffer(width, height, bands, samples).map(|image| image.with_metadata(metadata))
+        InMemoryImage::from_buffer(width, height, bands, samples)
+            .map(|image| image.with_metadata(metadata))
     }
 
     /// Scatter `data` (a contiguous tile in row-major order) into the correct

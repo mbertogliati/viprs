@@ -7,16 +7,16 @@ use std::{
 };
 
 use viprs::{
-  BuildError, InMemoryImage, ImageMetadata, Interpretation, U8,
-  adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+    BuildError, ImageMetadata, InMemoryImage, Interpretation, U8,
+    adapters::{
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         kernel::InterpolationKernel,
         ops::resample::{Thumbnail, resize::Resize, thumbnail::ThumbnailTarget},
     },
-  ports::scheduler::TileScheduler,
+    ports::scheduler::TileScheduler,
 };
 
 const QUICK_ITERATIONS: usize = 500;
@@ -258,7 +258,11 @@ fn thumbnail_target_width(width: u32, rng: &mut Lcg) -> u32 {
     rng.range_u32(lower, upper)
 }
 
-fn random_extract(image: &InMemoryImage<U8>, rng: &mut Lcg, centered: bool) -> (u32, u32, u32, u32) {
+fn random_extract(
+    image: &InMemoryImage<U8>,
+    rng: &mut Lcg,
+    centered: bool,
+) -> (u32, u32, u32, u32) {
     let max_width = image.width();
     let max_height = image.height();
     let min_width = 1.max(max_width / 4);
@@ -292,15 +296,15 @@ fn random_resize(rng: &mut Lcg) -> Resize {
 }
 
 fn configure_pipeline(
-  builder: ImagePipeline,
-  image: &InMemoryImage<U8>,
-  pipeline_kind: PipelineKind,
-  rng: &mut Lcg,
+    builder: ImagePipeline,
+    image: &InMemoryImage<U8>,
+    pipeline_kind: PipelineKind,
+    rng: &mut Lcg,
 ) -> Result<ImagePipeline, BuildError> {
     match pipeline_kind {
         PipelineKind::Thumbnail => {
             let target = thumbnail_target_width(image.width(), rng);
-            builder.thumbnail(Thumbnail::new(
+            builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(target),
                 InterpolationKernel::Lanczos3,
             ))
@@ -320,7 +324,7 @@ fn configure_pipeline(
             builder
                 .extract_area(x, y, width, height)?
                 .resize(random_resize(rng))?
-                .thumbnail(Thumbnail::new(
+                .thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(target),
                     InterpolationKernel::Lanczos3,
                 ))

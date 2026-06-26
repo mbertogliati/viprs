@@ -12,7 +12,7 @@ use crate::viprs_span;
 use crate::web_colour::{normalize_web_output_u8, normalize_web_output_u16};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8, U16};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 
 use super::metadata::{bands_to_color_type, png_pixel_dims};
 use super::state::{PNG_XMP_KEYWORD, PngEncoder};
@@ -24,7 +24,9 @@ fn map_png_encoding_error(error: png::EncodingError) -> ViprsError {
     }
 }
 
-fn encode_pixels<F: BandFormat>(image: &InMemoryImage<F>) -> Result<(BitDepth, Cow<'_, [u8]>), ViprsError> {
+fn encode_pixels<F: BandFormat>(
+    image: &InMemoryImage<F>,
+) -> Result<(BitDepth, Cow<'_, [u8]>), ViprsError> {
     match F::ID {
         BandFormatId::U8 => {
             let bytes: &[u8] = bytemuck::cast_slice(image.pixels());
@@ -46,9 +48,9 @@ fn encode_pixels<F: BandFormat>(image: &InMemoryImage<F>) -> Result<(BitDepth, C
 }
 
 fn encode_png<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  encoder: PngEncoder,
-  strip_metadata: bool,
+    image: &InMemoryImage<F>,
+    encoder: PngEncoder,
+    strip_metadata: bool,
 ) -> Result<Vec<u8>, ViprsError> {
     viprs_span!(tracing::Level::INFO, "viprs.encode", format = "png");
     let mut output = Vec::new();
@@ -57,9 +59,9 @@ fn encode_png<F: BandFormat>(
 }
 
 pub(super) fn encode_png_web_ready<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  encoder: &PngEncoder,
-  strip_metadata: bool,
+    image: &InMemoryImage<F>,
+    encoder: &PngEncoder,
+    strip_metadata: bool,
 ) -> Result<Vec<u8>, ViprsError> {
     if !image.metadata().has_icc_profile() {
         return encode_png(image, *encoder, strip_metadata);
@@ -85,10 +87,10 @@ pub(super) fn encode_png_web_ready<F: BandFormat>(
 }
 
 pub(super) fn encode_png_to_writer_web_ready<F: BandFormat>(
-  image: &InMemoryImage<F>,
-  encoder: &PngEncoder,
-  strip_metadata: bool,
-  writer: &mut dyn Write,
+    image: &InMemoryImage<F>,
+    encoder: &PngEncoder,
+    strip_metadata: bool,
+    writer: &mut dyn Write,
 ) -> Result<(), ViprsError> {
     if !image.metadata().has_icc_profile() {
         return encode_png_to_writer(image, *encoder, strip_metadata, writer);
@@ -114,10 +116,10 @@ pub(super) fn encode_png_to_writer_web_ready<F: BandFormat>(
 }
 
 fn encode_png_to_writer<F: BandFormat, W: Write>(
-  image: &InMemoryImage<F>,
-  encoder: PngEncoder,
-  strip_metadata: bool,
-  output: W,
+    image: &InMemoryImage<F>,
+    encoder: PngEncoder,
+    strip_metadata: bool,
+    output: W,
 ) -> Result<(), ViprsError> {
     let color_type = bands_to_color_type(image.bands())?;
     let (bit_depth, pixel_bytes) = encode_pixels(image)?;

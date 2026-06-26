@@ -3,13 +3,13 @@ use super::super::support as golden;
 pub(crate) use bytemuck::cast_slice;
 use std::{fs, mem::size_of, process::Command};
 pub(crate) use viprs::{
-  Add, AvgOp, BuildError, DeviateOp, HistFindOp, Multiply, Op, OperationBridge, ImagePipeline,
-  Subtract, TileScheduler,
-  adapters::{
+    Add, AvgOp, BuildError, DeviateOp, HistFindOp, ImagePipeline, Multiply, Op, OperationBridge,
+    Subtract, TileScheduler,
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         colorspace::{ColorspaceId, Hsv, Lab, SRgb, Xyz},
         format::{F32, I32, U8},
         image::Region,
@@ -22,7 +22,7 @@ pub(crate) use viprs::{
             mosaicing::MergeH,
         },
     },
-  ports::scheduler::ReducingScheduler,
+    ports::scheduler::ReducingScheduler,
 };
 
 pub(crate) use golden::{ImageSpec, VipsBandFormat};
@@ -115,11 +115,11 @@ pub(crate) fn gauss_source() -> Vec<f32> {
 }
 
 pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<u8>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(ImagePipeline::from_source(source))
@@ -136,11 +136,11 @@ pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Commit>(
 }
 
 pub(crate) fn run_pipeline_f32<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<f32>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<f32>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(ImagePipeline::from_source(source))
@@ -157,11 +157,11 @@ pub(crate) fn run_pipeline_f32<S: viprs::pipeline::Commit>(
 }
 
 pub(crate) fn run_pipeline_i32<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<i32>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<i32>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<I32>::new(width, height, bands, source_pixels).unwrap();
     let pipeline = configure(ImagePipeline::from_source(source))

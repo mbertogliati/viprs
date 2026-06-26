@@ -5,16 +5,18 @@
 
 use super::*;
 use crate::{
-  domain::format::{F32, U8, U16},
-  domain::image::{DemandHint, InMemoryImage, ImageMetadata, Interpretation, Tile, TileMut},
-  domain::op::{
+    domain::colorspace::ColorspaceId,
+    domain::format::{F32, U8, U16},
+    domain::image::{DemandHint, ImageMetadata, InMemoryImage, Interpretation, Tile, TileMut},
+    domain::op::{
         CoordinateDrivenSourceSpec, DynOperation, NodeSpec, Op, OperationBridge, SourceReadPlan,
     },
-  domain::ops::resample::thumbnail::ThumbnailTarget,
-  pipeline::arena::source_region_for_scheduler_tile,
-  scheduler::rayon_scheduler::RayonScheduler,
-  sources::memory::MemorySource,
-  sources::zero::ZeroSource,
+    domain::ops::conversion::SmartcropOp,
+    domain::ops::resample::thumbnail::ThumbnailTarget,
+    pipeline::arena::source_region_for_scheduler_tile,
+    scheduler::rayon_scheduler::RayonScheduler,
+    sources::memory::MemorySource,
+    sources::zero::ZeroSource,
 };
 use proptest::prelude::*;
 use std::any::Any;
@@ -114,6 +116,16 @@ fn non_pixel_local_pass_op(bands: u32) -> Box<dyn DynOperation> {
 
 fn zero_band_source() -> MemorySource<U8> {
     MemorySource::<U8>::new(1, 1, 0, vec![]).unwrap()
+}
+
+fn image_to_memory_source<F: BandFormat>(image: InMemoryImage<F>) -> MemorySource<F> {
+    let width = image.width();
+    let height = image.height();
+    let bands = image.bands();
+    let metadata = image.metadata().clone();
+    MemorySource::<F>::new(width, height, bands, image.into_buffer())
+        .unwrap()
+        .with_metadata(metadata)
 }
 
 struct CoordinateDrivenSourceStub {

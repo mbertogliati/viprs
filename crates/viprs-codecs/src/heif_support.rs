@@ -11,7 +11,7 @@ use libheif_sys as lh;
 use viprs_core::codec_options::HeifSubsampling;
 use viprs_core::error::ViprsError;
 use viprs_core::format::BandFormat;
-use viprs_core::image::{InMemoryImage, ImageMetadata};
+use viprs_core::image::{ImageMetadata, InMemoryImage};
 
 static LIBHEIF: OnceLock<Result<LibHeif, String>> = OnceLock::new();
 const EXIF_SIGNATURE: &[u8] = b"Exif\0\0";
@@ -792,9 +792,9 @@ fn apply_orientation_to_pixels<T: Copy>(
 /// let _ = viprs_codecs::heif_support::normalize_decoded_image;
 /// ```
 pub fn normalize_decoded_image<F: BandFormat>(
-  image: InMemoryImage<F>,
-  no_rotate: bool,
-  context: &str,
+    image: InMemoryImage<F>,
+    no_rotate: bool,
+    context: &str,
 ) -> Result<InMemoryImage<F>, ViprsError>
 where
     F::Sample: Copy,
@@ -846,9 +846,9 @@ mod tests {
     use libheif_rs::CompressionFormat;
     use std::{ffi::c_void, ptr};
     use viprs_core::{
-      codec_options::HeifSubsampling,
-      format::U8,
-      image::{InMemoryImage, ImageMetadata},
+        codec_options::HeifSubsampling,
+        format::U8,
+        image::{ImageMetadata, InMemoryImage},
     };
 
     fn exif_blob(orientation: u16) -> Vec<u8> {

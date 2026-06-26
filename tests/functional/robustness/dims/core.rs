@@ -3,16 +3,16 @@ mod robustness_dims {
 
     use bytemuck::Pod;
     use viprs::{
-      BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8, ViprsError,
-      adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+        BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation, U8, ViprsError,
+        adapters::{
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
-      domain::{
+        domain::{
             kernel::InterpolationKernel,
             ops::resample::{Resize, Thumbnail, thumbnail::ThumbnailTarget},
         },
-      ports::scheduler::TileScheduler,
+        ports::scheduler::TileScheduler,
     };
 
     fn make_u8_image(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
@@ -47,13 +47,11 @@ mod robustness_dims {
     }
 
     fn execute_to_image<S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<U8>,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<U8>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, InMemoryImage<U8>), ViprsError> {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )?))?
-        .build()?;
+        let pipeline =
+            configure(ImagePipeline::from_source(memory_source_from_image(image)?))?.build()?;
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)?.run(&pipeline, &mut sink)?;
         let output = sink.into_image::<U8>(
@@ -66,9 +64,9 @@ mod robustness_dims {
     }
 
     fn execute_without_panicking<S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<U8>,
-      op_name: &str,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<U8>,
+        op_name: &str,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, InMemoryImage<U8>), ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| execute_to_image(image, configure)));
         assert!(
@@ -181,7 +179,7 @@ mod robustness_dims {
         for (width, height, thumbnail, expected_dims) in cases {
             let image = make_u8_image(width, height, 1);
             let (pipeline, output) = execute_without_panicking(&image, "thumbnail", |builder| {
-                builder.thumbnail(thumbnail)
+                builder.thumbnail_with(thumbnail)
             })
             .unwrap_or_else(|error| {
                 panic!("thumbnail should succeed for {width}x{height}: {error}")
@@ -261,7 +259,7 @@ mod robustness_dims {
                 (
                     "thumbnail",
                     execute_without_panicking(&image, "thumbnail", |builder| {
-                        builder.thumbnail(Thumbnail::new(
+                        builder.thumbnail_with(Thumbnail::new(
                             ThumbnailTarget::FitBox {
                                 width: 8,
                                 height: 8,

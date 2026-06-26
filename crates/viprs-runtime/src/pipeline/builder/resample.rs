@@ -1,11 +1,12 @@
 use super::state::{validate_reduce_factors, validate_reduce_kernel};
 use super::{
-    AffineBridge, BandFormatId, BuildError, ColorspaceId, CopyOp, DemandHint, DynOperation, F32,
-    F64, FlattenBridge, Commit, I16, I32, Committed, InterpolationKernel, Interpretation, NonZeroU8,
-    OperationBridge, ImagePipeline, Premultiply, ReduceBridge, ReduceHBridge, ReduceVBridge,
-    Resize, ResizeNode, ShrinkBridge, ShrinkHBridge, ShrinkVBridge, SimilarityBridge, Thumbnail,
-    ThumbnailNode, U8, U16, U32, Unpremultiply, flatten_has_alpha,
+    AffineBridge, BandFormatId, BuildError, ColorspaceId, Commit, Committed, CopyOp, DemandHint,
+    DynOperation, F32, F64, FlattenBridge, I16, I32, ImagePipeline, InterpolationKernel,
+    Interpretation, NonZeroU8, OperationBridge, Premultiply, ReduceBridge, ReduceHBridge,
+    ReduceVBridge, Resize, ResizeNode, ShrinkBridge, ShrinkHBridge, ShrinkVBridge,
+    SimilarityBridge, Thumbnail, ThumbnailNode, U8, U16, U32, Unpremultiply, flatten_has_alpha,
 };
+use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
 
 impl<Op: Commit> ImagePipeline<Op> {
     /// Reduce the image width by `factor` using `kernel` (horizontal downscale).
@@ -793,15 +794,35 @@ impl<Op: Commit> ImagePipeline<Op> {
         self.then(op)
     }
 
-    /// `flatten` exposes adapter behavior needed by the surrounding module.
+    /// Alpha-composite the image onto a white background and drop the alpha band.
+    ///
+    /// This is the ergonomic flattening entrypoint for RGB outputs such as JPEG.
+    pub fn flatten(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        self.flatten_with(255, 255, 255)
+    }
+
+    /// Alpha-composite the image onto an RGB background and drop the alpha band.
+    pub fn flatten_with(self, r: u8, g: u8, b: u8) -> Result<ImagePipeline<Committed>, BuildError> {
+        self.flatten_background([
+            f32::from(r) / 255.0,
+            f32::from(g) / 255.0,
+            f32::from(b) / 255.0,
+            1.0,
+        ])
+    }
+
+    /// `flatten_background` exposes adapter behavior needed by the surrounding module.
     /// Call it when you need the concrete operation implemented here.
     ///
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs_runtime::pipeline::builder::flatten;
+    /// let _ = viprs_runtime::pipeline::builder::flatten_background;
     /// ```
-    pub fn flatten(self, background: [f32; 4]) -> Result<ImagePipeline<Committed>, BuildError> {
+    pub fn flatten_background(
+        self,
+        background: [f32; 4],
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let input_bands = self.bands;
         if !flatten_has_alpha(input_bands) {
             let op: Box<dyn DynOperation> = match self.current_format {
@@ -858,17 +879,25 @@ impl<Op: Commit> ImagePipeline<Op> {
         self.then(op)
     }
 
-    /// `thumbnail` exposes adapter behavior needed by the surrounding module.
+    /// Resize to a thumbnail width using libvips-style defaults.
+    pub fn thumbnail(self, width: u32) -> Result<ImagePipeline<Committed>, BuildError> {
+        self.thumbnail_with(Thumbnail::new(
+            ThumbnailTarget::Width(width),
+            InterpolationKernel::Lanczos3,
+        ))
+    }
+
+    /// `thumbnail_with` exposes adapter behavior needed by the surrounding module.
     /// Call it when you need the concrete operation implemented here.
     ///
     /// # Examples
     ///
     /// ```ignore
-    /// let _ = viprs_runtime::pipeline::builder::thumbnail;
+    /// let _ = viprs_runtime::pipeline::builder::thumbnail_with;
     /// ```
     #[allow(clippy::needless_pass_by_value)]
     // REASON: public API stability for the builder-style `thumbnail` entry point.
-    pub fn thumbnail(
+    pub fn thumbnail_with(
         mut self,
         thumbnail: Thumbnail,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
@@ -960,7 +989,7 @@ impl<Op: Commit> ImagePipeline<Op> {
                     height,
                 } => builder.extract_area(x, y, width, height)?,
                 ThumbnailNode::Unpremultiply => builder.unpremultiply()?,
-                ThumbnailNode::Flatten { background } => builder.flatten(background)?,
+                ThumbnailNode::Flatten { background } => builder.flatten_background(background)?,
             };
         }
 

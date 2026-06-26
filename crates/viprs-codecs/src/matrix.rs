@@ -14,7 +14,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F64};
-use viprs_core::image::{InMemoryImage, ImageMetadata};
+use viprs_core::image::{ImageMetadata, InMemoryImage};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── Header parse ─────────────────────────────────────────────────────────────
@@ -369,9 +369,9 @@ impl ImageEncoder for MatrixCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -434,9 +434,10 @@ mod tests {
         metadata
             .extra
             .insert("offset".to_string(), "1.25".to_string());
-        let original = InMemoryImage::<F64>::from_buffer(3, 2, 1, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-            .unwrap()
-            .with_metadata(metadata);
+        let original =
+            InMemoryImage::<F64>::from_buffer(3, 2, 1, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+                .unwrap()
+                .with_metadata(metadata);
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F64>(&encoded).unwrap();
         assert_eq!(decoded.width(), 3);

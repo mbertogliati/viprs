@@ -1,11 +1,11 @@
 mod chaos_monkey_13 {
     use bytemuck::Pod;
     use viprs::{
-        BandFormat, BandFormatId, BuildError, CompiledPipeline, InMemoryImage, ImageMetadata,
+        BandFormat, BandFormatId, BuildError, CompiledPipeline, ImageMetadata, InMemoryImage,
         Interpretation, Tile, TileMut, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab},
@@ -54,8 +54,8 @@ mod chaos_monkey_13 {
             }
         }
 
-        let image =
-            InMemoryImage::from_buffer(width, height, bands, pixels).expect("pattern image must build");
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels)
+            .expect("pattern image must build");
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -79,8 +79,8 @@ mod chaos_monkey_13 {
     }
 
     fn run_builder_to_image<FOut, S: viprs::pipeline::Commit>(
-      builder: ImagePipeline<S>,
-      metadata: ImageMetadata,
+        builder: ImagePipeline<S>,
+        metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FOut: BandFormat,
@@ -118,10 +118,8 @@ mod chaos_monkey_13 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let builder = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?;
+        let builder = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
     }
 

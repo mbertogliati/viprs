@@ -8,10 +8,10 @@
 //! Portable Float Map codec — decode and encode PF/Pf float images.
 
 use viprs_core::{
-  codec_options::{LoadOptions, SaveOptions},
-  error::ViprsError,
-  format::{BandFormat, BandFormatId},
-  image::{InMemoryImage, ImageMetadata, Interpretation},
+    codec_options::{LoadOptions, SaveOptions},
+    error::ViprsError,
+    format::{BandFormat, BandFormatId},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
@@ -300,9 +300,9 @@ impl ImageEncoder for PfmCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -360,7 +360,7 @@ mod tests {
         pixels: Vec<f32>,
         scale: f32,
         little_endian: bool,
-    ) -> Image<F32> {
+    ) -> InMemoryImage<F32> {
         let mut metadata = ImageMetadata::default();
         metadata
             .extra
@@ -373,7 +373,7 @@ mod tests {
                 "big".into()
             },
         );
-        Image::<F32>::from_buffer(width, height, bands, pixels)
+        InMemoryImage::<F32>::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(metadata)
     }
@@ -486,7 +486,7 @@ mod tests {
 
     #[test]
     fn pfm_encode_rejects_invalid_band_count() {
-        let image = Image::<F32>::from_buffer(1, 1, 2, vec![0.0, 1.0]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 2, vec![0.0, 1.0]).unwrap();
         assert!(PfmCodec.encode(&image).is_err());
     }
 

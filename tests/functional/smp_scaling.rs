@@ -7,16 +7,16 @@ use std::{
 use std::path::{Path, PathBuf};
 
 use viprs::{
-  BuildError, InMemoryImage, ImageCodecExt, Interpretation, ImagePipeline, U8,
-  adapters::{
+    BuildError, ImageCodecExt, ImagePipeline, InMemoryImage, Interpretation, U8,
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         kernel::InterpolationKernel,
         ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
     },
-  ports::scheduler::TileScheduler,
+    ports::scheduler::TileScheduler,
 };
 
 const TARGET_WIDTH: u32 = 400;
@@ -94,9 +94,11 @@ fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
     .with_metadata(metadata)
 }
 
-fn build_thumbnail_pipeline(image: &InMemoryImage<U8>) -> Result<viprs::CompiledPipeline, BuildError> {
+fn build_thumbnail_pipeline(
+    image: &InMemoryImage<U8>,
+) -> Result<viprs::CompiledPipeline, BuildError> {
     ImagePipeline::from_source(memory_source_from_image(image))
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))?
@@ -135,9 +137,9 @@ fn median_duration(samples: &mut [Duration]) -> Duration {
 }
 
 fn measure_scaling(
-  image: &InMemoryImage<U8>,
-  thread_counts: &[usize],
-  iterations: usize,
+    image: &InMemoryImage<U8>,
+    thread_counts: &[usize],
+    iterations: usize,
 ) -> Vec<ScalingMeasurement> {
     for &threads in thread_counts {
         for _ in 0..WARMUP_ITERATIONS {

@@ -9,12 +9,12 @@ mod chaos_monkey_18 {
 
     use bytemuck::Pod;
     use viprs::{
-      BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
-      adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+        BuildError, CompiledPipeline, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
+        adapters::{
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
-      domain::{
+        domain::{
             kernel::InterpolationKernel,
             op::{Op, OperationBridge, PixelLocalOp},
             ops::{
@@ -26,7 +26,7 @@ mod chaos_monkey_18 {
             reducer::TileReducer,
             reducers::HistEqualReducer,
         },
-      ports::codec::{ImageDecoder, ImageEncoder},
+        ports::codec::{ImageDecoder, ImageEncoder},
     };
 
     #[cfg(feature = "png")]
@@ -135,8 +135,8 @@ mod chaos_monkey_18 {
     }
 
     fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<FIn>,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -144,12 +144,10 @@ mod chaos_monkey_18 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
             .run_to_image::<FOut, _>(

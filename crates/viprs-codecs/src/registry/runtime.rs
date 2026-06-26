@@ -207,7 +207,10 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::load_from_memory;
     /// ```
-    pub fn load_from_memory(&self, src: &[u8]) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
+    pub fn load_from_memory(
+        &self,
+        src: &[u8],
+    ) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
         self.load_from_memory_as_with_options(src, &LoadOptions::default())
     }
 
@@ -299,7 +302,11 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::save_as;
     /// ```
-    pub fn save_as<F: BandFormat>(&self, image: &InMemoryImage<F>, path: &Path) -> Result<(), ViprsError> {
+    pub fn save_as<F: BandFormat>(
+        &self,
+        image: &InMemoryImage<F>,
+        path: &Path,
+    ) -> Result<(), ViprsError> {
         self.save_as_with_options(image, path, &SaveOptions::default())
     }
 

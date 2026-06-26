@@ -858,9 +858,9 @@ pub fn apply_exif_orientation(
 /// ```
 #[cfg(feature = "uhdr")]
 pub fn orient_u8_image(
-  image: &InMemoryImage<U8>,
-  orientation: u8,
-  codec_name: &str,
+    image: &InMemoryImage<U8>,
+    orientation: u8,
+    codec_name: &str,
 ) -> Result<InMemoryImage<U8>, ViprsError> {
     if !(2..=8).contains(&orientation) {
         return Ok(image.clone());

@@ -4,10 +4,10 @@ use std::{
 };
 
 use viprs::{
-    BuildError, CompiledPipeline, InMemoryImage, ImageCodecExt, ImageMetadata, Interpretation, U8,
+    BuildError, CompiledPipeline, ImageCodecExt, ImageMetadata, InMemoryImage, Interpretation, U8,
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -71,12 +71,10 @@ fn execute_to_image<S: viprs::pipeline::Commit>(
     configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (CompiledPipeline, InMemoryImage<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
-        .build()
-        .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
+            .build()
+            .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
             .unwrap_or_else(|error| panic!("scheduler construction failed: {error}"))
@@ -129,8 +127,9 @@ fn thumbnail_smoke_handles_non_power_of_2_fixtures() {
 
         let thumbnail = thumbnail_config();
         let expected = thumbnail.into_pipeline_nodes(image.width(), image.height(), image.bands());
-        let (pipeline, output) =
-            execute_to_image(&image, "thumbnail", |builder| builder.thumbnail(thumbnail));
+        let (pipeline, output) = execute_to_image(&image, "thumbnail", |builder| {
+            builder.thumbnail_with(thumbnail)
+        });
 
         assert_eq!(
             (pipeline.width, pipeline.height),

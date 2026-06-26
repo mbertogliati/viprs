@@ -1,9 +1,16 @@
 use super::{
-  BandFormatId, BuildError, Cast, Colorspace, ColorspaceId, ColourspaceDispatcher, Conv2d,
-  DynOperation, F32, F64, Commit, GaussBlurH, GaussBlurV, GaussOutputFormat, I16, I32, Committed,
-  Interpretation, Lab, LabSSharpen, LabSToLab, LabToLabS, OperationBridge, ImagePipeline, U8,
-  U16, U32,
+    BandFormatId, BuildError, Cast, Colorspace, ColorspaceId, ColourspaceDispatcher, Commit,
+    Committed, Conv2d, DynOperation, F32, F64, GaussBlurH, GaussBlurV, GaussOutputFormat, I16, I32,
+    ImagePipeline, Interpretation, Lab, LabSSharpen, LabSToLab, LabToLabS, OperationBridge, U8,
+    U16, U32,
 };
+
+const DEFAULT_SHARPEN_SIGMA: f32 = 0.5;
+const DEFAULT_SHARPEN_X1: f32 = 2.0;
+const DEFAULT_SHARPEN_Y2: f32 = 10.0;
+const DEFAULT_SHARPEN_Y3: f32 = 20.0;
+const DEFAULT_SHARPEN_M1: f32 = 0.0;
+const DEFAULT_SHARPEN_M2: f32 = 3.0;
 
 impl<Op: Commit> ImagePipeline<Op> {
     /// Insert a `Cast` operation converting the current format to `target`.
@@ -200,7 +207,7 @@ impl<Op: Commit> ImagePipeline<Op> {
     ///
     /// The builder converts the current image to `Lab`, quantizes to `LabS`, sharpens only
     /// the `L` channel, converts back to `Lab`, then restores the original colorspace.
-    pub fn sharpen(
+    pub fn sharpen_with(
         self,
         sigma: f32,
         x1: f32,
@@ -272,6 +279,20 @@ impl<Op: Commit> ImagePipeline<Op> {
         }
 
         Ok(builder)
+    }
+}
+
+impl ImagePipeline<Committed> {
+    /// Apply libvips-compatible default sharpening parameters.
+    pub fn sharpen(self) -> Result<Self, BuildError> {
+        self.sharpen_with(
+            DEFAULT_SHARPEN_SIGMA,
+            DEFAULT_SHARPEN_X1,
+            DEFAULT_SHARPEN_Y2,
+            DEFAULT_SHARPEN_Y3,
+            DEFAULT_SHARPEN_M1,
+            DEFAULT_SHARPEN_M2,
+        )
     }
 }
 

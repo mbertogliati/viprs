@@ -103,7 +103,7 @@ fn flatten_rgb_is_noop() {
     let pixels = vec![19_u8, 7, 191, 36, 18, 196, 32, 36, 210, 49, 47, 215];
     let source = MemorySource::<U8>::new(2, 2, 3, pixels.clone()).unwrap();
     let pipeline = ImagePipeline::from_source(source)
-        .flatten([0.0, 0.0, 0.0, 1.0])
+        .flatten_background([0.0, 0.0, 0.0, 1.0])
         .unwrap()
         .build()
         .unwrap();
@@ -120,7 +120,7 @@ fn flatten_rgba_removes_alpha() {
     let pixels = vec![10_u8, 20, 30, 0, 40, 50, 60, 255];
     let source = MemorySource::<U8>::new(2, 1, 4, pixels).unwrap();
     let pipeline = ImagePipeline::from_source(source)
-        .flatten([0.0, 0.0, 0.0, 1.0])
+        .flatten_background([0.0, 0.0, 0.0, 1.0])
         .unwrap()
         .build()
         .unwrap();
@@ -130,6 +130,38 @@ fn flatten_rgba_removes_alpha() {
 
     assert_eq!(pipeline.output_bands, 3);
     assert_eq!(output.pixels(), &[0u8, 0, 0, 40, 50, 60]);
+}
+
+#[test]
+fn flatten_defaults_to_white_background() {
+    let source = MemorySource::<U8>::new(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
+    let pipeline = ImagePipeline::from_source(source)
+        .flatten()
+        .unwrap()
+        .build()
+        .unwrap();
+    let output = pipeline
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!(output.bands(), 3);
+    assert_eq!(output.pixels(), &[177, 202, 227]);
+}
+
+#[test]
+fn flatten_with_uses_custom_background() {
+    let source = MemorySource::<U8>::new(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
+    let pipeline = ImagePipeline::from_source(source)
+        .flatten_with(10, 20, 30)
+        .unwrap()
+        .build()
+        .unwrap();
+    let output = pipeline
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!(output.bands(), 3);
+    assert_eq!(output.pixels(), &[55, 85, 115]);
 }
 
 #[test]
@@ -149,6 +181,102 @@ fn premultiply_u16_rgb16_uses_interpretation_max_alpha() {
         .unwrap();
 
     assert_eq!(output.pixels(), &[32768, 16384, 8192, 32768]);
+}
+
+#[test]
+fn sharpen_defaults_match_explicit_parameters() {
+    let pixels = vec![
+        12, 30, 48, 64, 82, 100, 118, 136, 154, 45, 63, 81, 97, 115, 133, 149, 167, 185, 78, 96,
+        114, 130, 148, 166, 182, 200, 218,
+    ];
+    let actual =
+        ImagePipeline::from_source(MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap())
+            .with_colorspace(ColorspaceId::SRgb)
+            .sharpen()
+            .unwrap()
+            .build()
+            .unwrap()
+            .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+            .unwrap();
+    let expected = ImagePipeline::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
+        .with_colorspace(ColorspaceId::SRgb)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .unwrap()
+        .build()
+        .unwrap()
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!(actual.pixels(), expected.pixels());
+}
+
+#[test]
+fn smartcrop_crops_to_attention_region() {
+    let width = 96u32;
+    let height = 64u32;
+    let crop_width = 24u32;
+    let crop_height = 24u32;
+    let mut pixels = vec![0u8; width as usize * height as usize * 3];
+
+    for y in 0..height as usize {
+        for x in 0..width as usize {
+            let idx = (y * width as usize + x) * 3;
+            pixels[idx] = 14 + ((x * 3 + y * 2) % 5) as u8;
+            pixels[idx + 1] = 12 + ((x * 5 + y) % 5) as u8;
+            pixels[idx + 2] = 10 + ((x + y * 7) % 5) as u8;
+        }
+    }
+
+    for y in 18..42 {
+        for x in 56..82 {
+            let idx = (y * width as usize + x) * 3;
+            let border = x == 56 || x == 81 || y == 18 || y == 41 || x == 69 || y == 30;
+            if border {
+                pixels[idx..idx + 3].copy_from_slice(&[8, 8, 8]);
+            } else if (x + y) % 3 == 0 {
+                pixels[idx..idx + 3].copy_from_slice(&[230, 186, 150]);
+            } else {
+                pixels[idx..idx + 3].copy_from_slice(&[36, 232, 242]);
+            }
+        }
+    }
+
+    let input = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels.clone()).unwrap();
+    let crop = SmartcropOp::<U8>::analyze(&input, crop_width, crop_height);
+    let output =
+        ImagePipeline::from_source(MemorySource::<U8>::new(width, height, 3, pixels).unwrap())
+            .smartcrop(crop_width, crop_height)
+            .unwrap()
+            .build()
+            .unwrap()
+            .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+            .unwrap();
+
+    assert_eq!(
+        (output.width(), output.height(), output.bands()),
+        (crop_width, crop_height, 3)
+    );
+    let crop_base = ((crop.crop_top() * width + crop.crop_left()) * 3) as usize;
+    assert_eq!(
+        &output.pixels()[0..3],
+        &input.pixels()[crop_base..crop_base + 3]
+    );
+}
+
+#[test]
+fn smartcrop_clamps_zero_dimensions_to_one_pixel() {
+    let input =
+        InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+            .unwrap();
+    let output = ImagePipeline::from_source(image_to_memory_source(input))
+        .smartcrop(0, 0)
+        .unwrap()
+        .build()
+        .unwrap()
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!((output.width(), output.height()), (1, 1));
 }
 
 #[test]
@@ -265,18 +393,14 @@ fn pipeline_from_source_tracks_format() {
 #[test]
 fn gauss_blur_preserves_u8_output_format() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let builder = ImagePipeline::from_source(source)
-        .gauss_blur(1.5)
-        .unwrap();
+    let builder = ImagePipeline::from_source(source).gauss_blur(1.5).unwrap();
     assert_eq!(builder.current_format(), BandFormatId::U8);
 }
 
 #[test]
 fn gauss_blur_promotes_non_u8_output_format_to_f32() {
     let source = ZeroSource::<U16>::new(8, 8, 1);
-    let builder = ImagePipeline::from_source(source)
-        .gauss_blur(1.5)
-        .unwrap();
+    let builder = ImagePipeline::from_source(source).gauss_blur(1.5).unwrap();
     assert_eq!(builder.current_format(), BandFormatId::F32);
 }
 

@@ -18,8 +18,8 @@ use golden::{ImageSpec, VipsBandFormat};
 use viprs::{
     OperationBridge, Subtract,
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::F32,
     ports::scheduler::TileScheduler,

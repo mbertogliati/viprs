@@ -3,9 +3,9 @@
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
 #[cfg(feature = "avif")]
 use viprs::{
-  adapters::codecs::AvifCodec,
-  domain::{format::U8, image::InMemoryImage},
-  ports::codec::{ImageDecoder, ImageEncoder},
+    adapters::codecs::AvifCodec,
+    domain::{format::U8, image::InMemoryImage},
+    ports::codec::{ImageDecoder, ImageEncoder},
 };
 
 #[cfg(feature = "avif")]

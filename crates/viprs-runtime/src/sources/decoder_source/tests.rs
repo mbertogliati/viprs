@@ -217,8 +217,9 @@ impl ImageDecoder for TrackingDecoder {
         self.seen_factors.lock().unwrap().push(factor);
         let width = (8 / u32::from(factor)).max(1);
         let height = (8 / u32::from(factor)).max(1);
-        let image = InMemoryImage::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
-            .map_err(|e| ViprsError::Codec(e.to_string()))?;
+        let image =
+            InMemoryImage::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
+                .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
         let cast = {
             // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
@@ -293,8 +294,9 @@ fn set_thumbnail_shrink_on_load_reopens_jpeg_decoder_natively() {
             self.seen_factors.lock().unwrap().push(factor);
             let width = (8 / u32::from(factor)).max(1);
             let height = (8 / u32::from(factor)).max(1);
-            let image = InMemoryImage::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
-                .map_err(|e| ViprsError::Codec(e.to_string()))?;
+            let image =
+                InMemoryImage::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
+                    .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
             let cast = {
                 // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
@@ -547,7 +549,8 @@ impl ImageDecoder for Fixed4x4Decoder {
         } else {
             return Err(ViprsError::Codec("Fixed4x4Decoder only supports U8".into()));
         };
-        InMemoryImage::from_buffer(4, 4, 1, sample_data).map_err(|e| ViprsError::Codec(e.to_string()))
+        InMemoryImage::from_buffer(4, 4, 1, sample_data)
+            .map_err(|e| ViprsError::Codec(e.to_string()))
     }
     fn probe(&self, _: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
         Ok((4, 4, 1))

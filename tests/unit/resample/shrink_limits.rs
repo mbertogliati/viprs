@@ -1,9 +1,9 @@
 mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
-      BuildError, F32, InMemoryImage, ImageMetadata, Interpretation, U8, U16,
-      adapters::{pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler},
-      domain::{
+        BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
+        adapters::{pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler},
+        domain::{
             colorspace::{ColorspaceId, SRgb},
             kernel::InterpolationKernel,
             op::Op,
@@ -48,8 +48,8 @@ mod chaos_monkey_19 {
     }
 
     fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<FIn>,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(viprs::CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -101,7 +101,7 @@ mod chaos_monkey_19 {
     fn thumbnail_zero_band_image_returns_typed_error() {
         let image = make_u8_image(4, 4, 0, Vec::new());
         let result = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(2),
                 InterpolationKernel::Lanczos3,
             ))

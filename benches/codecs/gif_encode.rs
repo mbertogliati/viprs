@@ -3,9 +3,9 @@
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
 #[cfg(feature = "gif")]
 use viprs::{
-  adapters::codecs::GifCodec,
-  domain::{codec_options::SaveOptions, format::U8, image::InMemoryImage},
-  ports::codec::ImageEncoder,
+    adapters::codecs::GifCodec,
+    domain::{codec_options::SaveOptions, format::U8, image::InMemoryImage},
+    ports::codec::ImageEncoder,
 };
 
 #[cfg(feature = "gif")]

@@ -45,7 +45,7 @@ use std::path::Path;
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── NIfTI-1 datatype constants ─────────────────────────────────────────────
@@ -642,9 +642,9 @@ impl ImageEncoder for NiftiCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      _opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,
@@ -889,7 +889,7 @@ mod tests {
     #[test]
     fn round_trip_u8_greyscale() {
         let pixels: Vec<u8> = (0u8..64).collect();
-        let image = Image::<U8>::from_buffer(8, 8, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(8, 8, 1, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         assert!(NiftiCodec.sniff(&encoded));
         let decoded = NiftiCodec.decode::<U8>(&encoded).unwrap();
@@ -903,7 +903,7 @@ mod tests {
     #[test]
     fn round_trip_f32() {
         let pixels: Vec<f32> = (0..16).map(|i| i as f32 / 15.0).collect();
-        let image = Image::<F32>::from_buffer(4, 4, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(4, 4, 1, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         let decoded = NiftiCodec.decode::<F32>(&encoded).unwrap();
         assert_eq!(decoded.pixels(), pixels.as_slice());
@@ -912,7 +912,7 @@ mod tests {
     #[test]
     fn round_trip_u16() {
         let pixels: Vec<u16> = (0u16..16).collect();
-        let image = Image::<U16>::from_buffer(4, 4, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(4, 4, 1, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         let decoded = NiftiCodec.decode::<U16>(&encoded).unwrap();
         assert_eq!(decoded.pixels(), pixels.as_slice());
@@ -921,7 +921,7 @@ mod tests {
     #[test]
     fn round_trip_f64() {
         let pixels: Vec<f64> = (0..4).map(|i| i as f64 * 0.1).collect();
-        let image = Image::<F64>::from_buffer(2, 2, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<F64>::from_buffer(2, 2, 1, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         let decoded = NiftiCodec.decode::<F64>(&encoded).unwrap();
         assert_eq!(decoded.pixels(), pixels.as_slice());
@@ -930,7 +930,7 @@ mod tests {
     #[test]
     fn round_trip_i32() {
         let pixels: Vec<i32> = vec![-100, 0, 100, i32::MAX];
-        let image = Image::<I32>::from_buffer(2, 2, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<I32>::from_buffer(2, 2, 1, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         let decoded = NiftiCodec.decode::<I32>(&encoded).unwrap();
         assert_eq!(decoded.pixels(), pixels.as_slice());
@@ -939,7 +939,7 @@ mod tests {
     #[test]
     fn round_trip_rgb_u8() {
         let pixels: Vec<u8> = (0u8..48).collect(); // 4×4 RGB
-        let image = Image::<U8>::from_buffer(4, 4, 3, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 4, 3, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         let decoded = NiftiCodec.decode::<U8>(&encoded).unwrap();
         assert_eq!(decoded.bands(), 3);
@@ -949,7 +949,7 @@ mod tests {
     #[test]
     fn round_trip_rgba_u8() {
         let pixels: Vec<u8> = (0u8..64).collect(); // 4×4 RGBA
-        let image = Image::<U8>::from_buffer(4, 4, 4, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 4, 4, pixels.clone()).unwrap();
         let encoded = NiftiCodec.encode(&image).unwrap();
         let decoded = NiftiCodec.decode::<U8>(&encoded).unwrap();
         assert_eq!(decoded.bands(), 4);
@@ -961,7 +961,7 @@ mod tests {
         let dir = TestDir::new("nifti-single");
         let path = dir.path().join("single.nii");
         let pixels: Vec<f32> = (0..100).map(|i| i as f32 * 0.25).collect();
-        let image = Image::<F32>::from_buffer(10, 10, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(10, 10, 1, pixels.clone()).unwrap();
 
         fs::write(&path, NiftiCodec.encode(&image).unwrap())
             .unwrap_or_else(|err| panic!("write {} failed: {err}", path.display()));
@@ -1004,7 +1004,7 @@ mod tests {
 
     #[test]
     fn error_on_encode_u8_with_2_bands() {
-        let image = Image::<U8>::from_buffer(2, 2, 2, vec![0u8; 8]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 2, vec![0u8; 8]).unwrap();
         let err = NiftiCodec.encode(&image).unwrap_err();
         assert!(err.to_string().contains("bands"), "{err}");
     }
@@ -1021,7 +1021,7 @@ mod tests {
         ) {
             let count = (width as usize) * (height as usize);
             let pixels: Vec<u8> = (0..count).map(|i| (i % 256) as u8).collect();
-            let image = Image::<U8>::from_buffer(width as u32, height as u32, 1, pixels.clone()).unwrap();
+            let image = InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 1, pixels.clone()).unwrap();
             let encoded = NiftiCodec.encode(&image).unwrap();
             let decoded = NiftiCodec.decode::<U8>(&encoded).unwrap();
             prop_assert_eq!(decoded.width(), width as u32);
@@ -1033,7 +1033,7 @@ mod tests {
         fn prop_round_trip_f32(width in 1u16..=32, height in 1u16..=32) {
             let count = (width as usize) * (height as usize);
             let pixels: Vec<f32> = (0..count).map(|i| i as f32).collect();
-            let image = Image::<F32>::from_buffer(width as u32, height as u32, 1, pixels.clone()).unwrap();
+            let image = InMemoryImage::<F32>::from_buffer(width as u32, height as u32, 1, pixels.clone()).unwrap();
             let encoded = NiftiCodec.encode(&image).unwrap();
             let decoded = NiftiCodec.decode::<F32>(&encoded).unwrap();
             prop_assert_eq!(decoded.pixels(), pixels.as_slice());

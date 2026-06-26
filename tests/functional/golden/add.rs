@@ -10,8 +10,8 @@ use super::support as golden;
 use viprs::{
     Add, OperationBridge,
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     ports::scheduler::TileScheduler,

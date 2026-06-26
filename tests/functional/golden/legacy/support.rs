@@ -1,12 +1,12 @@
 use super::super::support as golden;
 
 pub(crate) use viprs::{
-  BuildError, ImagePipeline, TileScheduler,
-  adapters::{
+    BuildError, ImagePipeline, TileScheduler,
+    adapters::{
         pipeline::CompiledPipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         format::U8,
         image::{Region, Tile, TileMut},
         kernel::InterpolationKernel,
@@ -56,11 +56,11 @@ pub(crate) fn smooth_grayscale_source(width: u32, height: u32) -> Vec<u8> {
 }
 
 pub(crate) fn build_pipeline_u8<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<u8>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> CompiledPipeline {
     let source =
         MemorySource::<U8>::new(width, height, bands, source_pixels).expect("MemorySource");
@@ -80,11 +80,11 @@ pub(crate) fn run_pipeline_with_scheduler(
 }
 
 pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<u8>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let pipeline = build_pipeline_u8(source_pixels, width, height, bands, configure);
     let scheduler = RayonScheduler::new(1).expect("scheduler");
@@ -93,11 +93,11 @@ pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Commit>(
 }
 
 pub(crate) fn run_cached_pipeline_u8_twice<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<u8>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>, Vec<u8>) {
     let pipeline = build_pipeline_u8(source_pixels, width, height, bands, configure);
     let scheduler = RayonScheduler::new(1).expect("scheduler");

@@ -169,7 +169,8 @@ pub(super) fn image_from_u8_pixels<F: BandFormat>(
         bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels_u8).map_err(|(_e, _v)| {
             ViprsError::Codec("webp: sample cast failed (internal error)".into())
         })?;
-    InMemoryImage::from_buffer(width, height, bands, samples).map_err(|e| ViprsError::Codec(e.to_string()))
+    InMemoryImage::from_buffer(width, height, bands, samples)
+        .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 #[inline]

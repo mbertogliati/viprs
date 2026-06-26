@@ -7,8 +7,8 @@ fn extract_area_produces_correct_subregion() {
     // Expected pixels: (1,1)=5, (2,1)=6, (1,2)=9, (2,2)=10.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -52,8 +52,8 @@ fn flip_horizontal_reverses_columns() {
     // After horizontal flip: [4, 3, 2, 1].
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -85,8 +85,8 @@ fn flip_horizontal_twice_is_identity() {
     // Two consecutive flip_horizontal calls cancel out.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -120,8 +120,8 @@ fn flip_vertical_reverses_rows() {
     // After vertical flip: [40, 30, 20, 10].
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -153,8 +153,8 @@ fn flip_vertical_twice_is_identity() {
     // Two consecutive flip_vertical calls cancel out.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -192,8 +192,8 @@ fn flip_vertical_twice_is_identity() {
 fn conv2d_identity_kernel_end_to_end() {
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::F32,
         ports::scheduler::TileScheduler,
@@ -237,8 +237,8 @@ fn conv2d_box_filter_uniform_image_end_to_end() {
     // step edge; a uniform image would pass even if the kernel were ignored.
     use viprs::{
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::F32,
         ports::scheduler::TileScheduler,
@@ -304,8 +304,8 @@ fn any_source_u8_variant_works_end_to_end() {
     use viprs::{
         AnySource,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,

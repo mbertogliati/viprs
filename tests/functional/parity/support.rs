@@ -10,12 +10,12 @@ use std::{
     process::Command,
 };
 pub(crate) use viprs::{
-  Add, BuildError, Multiply, OperationBridge, ImagePipeline, Subtract, TileScheduler,
-  adapters::{
+    Add, BuildError, ImagePipeline, Multiply, OperationBridge, Subtract, TileScheduler,
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::{
+    domain::{
         colorspace::{ColorspaceId, Lab, SRgb},
         format::{F32, U8},
         kernel::InterpolationKernel,
@@ -42,11 +42,11 @@ fn fixture_metadata(upstream: &str, op: &str, case: &str) -> String {
 }
 
 pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<u8>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<u8>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let source =
         MemorySource::<U8>::new(width, height, bands, source_pixels).expect("MemorySource");
@@ -67,11 +67,11 @@ pub(crate) fn run_pipeline_u8<S: viprs::pipeline::Commit>(
 }
 
 pub(crate) fn run_pipeline_f32<S: viprs::pipeline::Commit>(
-  source_pixels: Vec<f32>,
-  width: u32,
-  height: u32,
-  bands: u32,
-  configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    source_pixels: Vec<f32>,
+    width: u32,
+    height: u32,
+    bands: u32,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let source =
         MemorySource::<F32>::new(width, height, bands, source_pixels).expect("MemorySource");

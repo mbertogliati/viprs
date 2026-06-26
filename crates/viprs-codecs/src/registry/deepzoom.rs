@@ -135,7 +135,9 @@ fn quantize_pixels_to_u8<T: DeepZoomQuantize + Copy>(pixels: &[T]) -> Vec<u8> {
 }
 
 #[cfg(feature = "deepzoom")]
-pub fn to_u8_image<F: BandFormat>(image: &InMemoryImage<F>) -> Result<InMemoryImage<U8>, ViprsError> {
+pub fn to_u8_image<F: BandFormat>(
+    image: &InMemoryImage<F>,
+) -> Result<InMemoryImage<U8>, ViprsError> {
     let quantized = match F::ID {
         BandFormatId::U8 => quantize_pixels_to_u8::<u8>(bytemuck::cast_slice(image.pixels())),
         BandFormatId::U16 => quantize_pixels_to_u8::<u16>(bytemuck::cast_slice(image.pixels())),

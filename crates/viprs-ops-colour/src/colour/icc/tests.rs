@@ -554,7 +554,8 @@ fn cmyk_u16_to_cmyk_u16_roundtrip() {
 fn icc_image_accessors_match_variants() {
     let u8_img = sample_u8_rgb();
     let u16_img = sample_u16_rgb();
-    let f32_img = InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![50.0, 0.0, 0.0]).expect("f32 image");
+    let f32_img =
+        InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![50.0, 0.0, 0.0]).expect("f32 image");
 
     let u8_variant = IccImage::U8(u8_img);
     assert!(u8_variant.as_u8().is_some());
@@ -611,19 +612,21 @@ fn transform_f32_to_rgb_lab_xyz_and_integer_depths() {
     let gray = profile_load("gray").expect("load gray");
     let cmyk = cmyk_profile_bytes();
 
-    let lab_image = InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![50.0, 0.0, 0.0, 80.0, -5.0, 15.0])
-        .expect("valid Lab f32 image")
-        .with_metadata(ImageMetadata {
-            interpretation: Some(Interpretation::Lab),
-            ..ImageMetadata::default()
-        });
+    let lab_image =
+        InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![50.0, 0.0, 0.0, 80.0, -5.0, 15.0])
+            .expect("valid Lab f32 image")
+            .with_metadata(ImageMetadata {
+                interpretation: Some(Interpretation::Lab),
+                ..ImageMetadata::default()
+            });
 
-    let xyz_image = InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![0.20, 0.30, 0.10, 0.40, 0.50, 0.25])
-        .expect("valid XYZ f32 image")
-        .with_metadata(ImageMetadata {
-            interpretation: Some(Interpretation::Xyz),
-            ..ImageMetadata::default()
-        });
+    let xyz_image =
+        InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![0.20, 0.30, 0.10, 0.40, 0.50, 0.25])
+            .expect("valid XYZ f32 image")
+            .with_metadata(ImageMetadata {
+                interpretation: Some(Interpretation::Xyz),
+                ..ImageMetadata::default()
+            });
 
     let rgb_u8 = icc_transform(
         &lab_image,
@@ -822,7 +825,8 @@ fn transform_rejects_unsupported_depth() {
 
 #[test]
 fn transform_rejects_rgb_input_with_wrong_band_count() {
-    let image = InMemoryImage::<U8>::from_buffer(1, 1, 2, vec![128u8, 64]).expect("valid 2-band image");
+    let image =
+        InMemoryImage::<U8>::from_buffer(1, 1, 2, vec![128u8, 64]).expect("valid 2-band image");
     let srgb = profile_load("srgb").expect("load srgb");
     let imported = with_icc_profile(&image, &srgb);
 

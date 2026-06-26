@@ -3,12 +3,12 @@ mod robustez_dims {
 
     use bytemuck::Pod;
     use viprs::{
-      BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8, ViprsError,
-      adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sources::memory::MemorySource,
+        BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation, U8, ViprsError,
+        adapters::{
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sources::memory::MemorySource,
         },
-      domain::{
+        domain::{
             colorspace::{Colorspace, ColorspaceId, Lab, ScRgb, Xyz},
             kernel::InterpolationKernel,
             op::OperationBridge,
@@ -57,9 +57,9 @@ mod robustez_dims {
     }
 
     fn execute_without_panicking<FIn, FOut, S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<FIn>,
-      op_name: &str,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<FIn>,
+        op_name: &str,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), ViprsError>
     where
         FIn: viprs::BandFormat,
@@ -68,10 +68,8 @@ mod robustez_dims {
         FOut::Sample: Pod,
     {
         let result = catch_unwind(AssertUnwindSafe(|| {
-            let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-                image,
-            )?))?
-            .build()?;
+            let pipeline =
+                configure(ImagePipeline::from_source(memory_source_from_image(image)?))?.build()?;
             let scheduler =
                 RayonScheduler::new(2).map_err(|error| ViprsError::Scheduler(error.to_string()))?;
             let output = pipeline.run_to_image::<FOut, _>(&scheduler)?;
@@ -89,15 +87,13 @@ mod robustez_dims {
     }
 
     fn configure_without_panicking<S: viprs::pipeline::Commit>(
-      image: &InMemoryImage<U8>,
-      op_name: &str,
-      configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+        image: &InMemoryImage<U8>,
+        op_name: &str,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<ImagePipeline<S>, ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| {
-            configure(ImagePipeline::from_source(memory_source_from_image(
-                image,
-            )?))
-            .map_err(Into::into)
+            configure(ImagePipeline::from_source(memory_source_from_image(image)?))
+                .map_err(Into::into)
         }));
 
         assert!(
@@ -120,7 +116,10 @@ mod robustez_dims {
         &image.pixels()[start..start + bands]
     }
 
-    fn assert_colour_request_is_typed_or_builds<To: Colorspace>(image: &InMemoryImage<U8>, label: &str) {
+    fn assert_colour_request_is_typed_or_builds<To: Colorspace>(
+        image: &InMemoryImage<U8>,
+        label: &str,
+    ) {
         match configure_without_panicking(image, label, |builder| {
             builder
                 .with_colorspace(ColorspaceId::Greyscale)
@@ -199,7 +198,7 @@ mod robustez_dims {
 
         let (_pipeline, thumbed) =
             execute_without_panicking::<U8, U8, _>(&grey, "thumbnail", |builder| {
-                builder.thumbnail(Thumbnail::new(
+                builder.thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(1),
                     InterpolationKernel::Lanczos3,
                 ))
@@ -223,7 +222,7 @@ mod robustez_dims {
 
         let (_pipeline, flattened) =
             execute_without_panicking::<U8, U8, _>(&rgba, "flatten", |builder| {
-                builder.flatten([0.0, 0.0, 0.0, 1.0])
+                builder.flatten_background([0.0, 0.0, 0.0, 1.0])
             })
             .unwrap_or_else(|error| panic!("flatten should succeed on 1x1 RGBA: {error:?}"));
         assert_eq!(
@@ -234,7 +233,7 @@ mod robustez_dims {
 
         let (_pipeline, rotated) =
             execute_without_panicking::<U8, U8, _>(&grey, "rotate", |builder| {
-                builder.rotate(Angle::D90)
+                builder.rot(Angle::D90)
             })
             .unwrap_or_else(|error| panic!("rotate should succeed on 1x1: {error:?}"));
         assert_eq!((rotated.width(), rotated.height()), (1, 1));
@@ -290,7 +289,7 @@ mod robustez_dims {
                 thumbnail.into_pipeline_nodes_without_shrink_hint(width, height, image.bands());
             let (_pipeline, thumbed) =
                 execute_without_panicking::<U8, U8, _>(&image, "thumbnail", |builder| {
-                    builder.thumbnail(thumbnail)
+                    builder.thumbnail_with(thumbnail)
                 })
                 .unwrap_or_else(|error| {
                     panic!("thumbnail should succeed for {width}x{height}: {error:?}")
@@ -360,7 +359,7 @@ mod robustez_dims {
                 thumbnail.into_pipeline_nodes_without_shrink_hint(width, height, image.bands());
             let (_pipeline, thumbed) =
                 execute_without_panicking::<U8, U8, _>(&image, "thumbnail", |builder| {
-                    builder.thumbnail(thumbnail)
+                    builder.thumbnail_with(thumbnail)
                 })
                 .unwrap_or_else(|error| {
                     panic!("thumbnail should succeed for {width}x{height}: {error:?}")
@@ -442,7 +441,7 @@ mod robustez_dims {
         );
         let (_pipeline, output) =
             execute_without_panicking::<U8, U8, _>(&image, "thumbnail", |builder| {
-                builder.thumbnail(thumbnail)
+                builder.thumbnail_with(thumbnail)
             })
             .unwrap_or_else(|error| panic!("thumbnail identity should succeed: {error:?}"));
 

@@ -6,10 +6,10 @@ mod chaos_monkey_7 {
 
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, InMemoryImage, ImageMetadata, Interpretation, U8,
+        BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb, Ucs},
@@ -77,12 +77,10 @@ mod chaos_monkey_7 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -191,7 +189,7 @@ mod chaos_monkey_7 {
             handles.push(thread::spawn(|| {
                 let image = patterned_rgb_u8(1024, 1024);
                 let (pipeline, output) =
-                    execute_same_format(&image, |builder| builder.thumbnail(thumbnail(400)))
+                    execute_same_format(&image, |builder| builder.thumbnail_with(thumbnail(400)))
                         .expect("thumbnail should succeed concurrently");
                 (pipeline.width, pipeline.height, output.pixels().to_vec())
             }));

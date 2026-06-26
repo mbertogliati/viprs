@@ -1,17 +1,17 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::format::{BandFormatId, F32, U8},
-  domain::{
+    domain::format::{BandFormatId, F32, U8},
+    domain::{
         ops::{arithmetic::Linear, histogram::HistIsMonotonicOp},
         reducers::histogram::HistFindReducer,
     },
-  pipeline::{OperationBridge, ImagePipeline},
-  ports::scheduler::{ReducingScheduler, TileScheduler},
+    pipeline::{ImagePipeline, OperationBridge},
+    ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 
 fn make_pixels(size: u32) -> Vec<u8> {

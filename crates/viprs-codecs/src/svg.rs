@@ -15,7 +15,7 @@ use resvg::{tiny_skia, usvg};
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{InMemoryImage, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::ImageDecoder;
 
 const DEFAULT_SVG_DPI: f64 = 72.0;

@@ -4,11 +4,11 @@ mod chaos_monkey_8 {
 
     use bytemuck::Pod;
     use viprs::{
-        BandFormat, BandFormatId, BuildError, CompiledPipeline, HistFindOp, InMemoryImage, ImageMetadata,
-        Interpretation, U8, ViprsError,
+        BandFormat, BandFormatId, BuildError, CompiledPipeline, HistFindOp, ImageMetadata,
+        InMemoryImage, Interpretation, U8, ViprsError,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, SRgb},
@@ -52,8 +52,8 @@ mod chaos_monkey_8 {
             }
         }
 
-        let image =
-            InMemoryImage::from_buffer(width, height, bands, pixels).expect("pattern image must build");
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels)
+            .expect("pattern image must build");
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -98,12 +98,10 @@ mod chaos_monkey_8 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -131,12 +129,10 @@ mod chaos_monkey_8 {
         F: BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -183,8 +179,8 @@ mod chaos_monkey_8 {
 
     #[test]
     fn resize_2x2_by_100_keeps_expected_corners() {
-        let image =
-            InMemoryImage::from_buffer(2, 2, 1, vec![11, 22, 33, 44]).expect("2x2 image must build");
+        let image = InMemoryImage::from_buffer(2, 2, 1, vec![11, 22, 33, 44])
+            .expect("2x2 image must build");
         let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder.resize(Resize::new(100.0, 100.0, InterpolationKernel::Nearest))
         })

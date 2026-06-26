@@ -2,8 +2,8 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-      pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-      sinks::memory::MemorySink, sources::memory::MemorySource,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
     ports::scheduler::TileScheduler,
@@ -33,8 +33,8 @@ fn bench_replicate(c: &mut Criterion) {
                         "create memory source",
                     );
                     let builder = must(
-                      ImagePipeline::from_source(source).replicate(2, 2),
-                      "add replicate operation",
+                        ImagePipeline::from_source(source).replicate(2, 2),
+                        "add replicate operation",
                     );
                     let pipeline = must(builder.build(), "build pipeline");
                     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

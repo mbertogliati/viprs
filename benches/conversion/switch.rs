@@ -1,14 +1,14 @@
 #![allow(missing_docs)]
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
-  adapters::{
+    adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
     },
-  domain::format::U8,
-  domain::ops::conversion::SwitchOp,
-  pipeline::ImagePipeline,
-  ports::scheduler::TileScheduler,
+    domain::format::U8,
+    domain::ops::conversion::SwitchOp,
+    pipeline::ImagePipeline,
+    ports::scheduler::TileScheduler,
 };
 
 const CHOICE_COUNT: u32 = 3;

@@ -19,7 +19,7 @@ use viprs_core::codec_options::{
 };
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8, U16};
-use viprs_core::image::{AnimationFrame, FrameDisposal, InMemoryImage, ImageMetadata};
+use viprs_core::image::{AnimationFrame, FrameDisposal, ImageMetadata, InMemoryImage};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// HEIF/HEIC codec.
@@ -231,8 +231,8 @@ fn select_heif_pages(
 }
 
 fn cast_decoded_frame<S: BandFormat, D: BandFormat>(
-  image: InMemoryImage<S>,
-  context: &str,
+    image: InMemoryImage<S>,
+    context: &str,
 ) -> Result<InMemoryImage<D>, ViprsError> {
     let width = image.width();
     let height = image.height();
@@ -246,8 +246,8 @@ fn cast_decoded_frame<S: BandFormat, D: BandFormat>(
 }
 
 fn cast_decoded_image<S: BandFormat, D: BandFormat>(
-  image: InMemoryImage<S>,
-  context: &str,
+    image: InMemoryImage<S>,
+    context: &str,
 ) -> Result<InMemoryImage<D>, ViprsError>
 where
     S::Sample: Clone,
@@ -432,7 +432,8 @@ fn decode_to_u8(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<U8>, Vip
     }
 
     let page_height = frames[0].image().height();
-    let mut image = InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut image =
+        InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut metadata = image.metadata().clone();
     metadata.n_pages = Some(selection.total_pages);
     metadata.page_height = (selection.total_pages > 1).then_some(page_height);
@@ -464,7 +465,8 @@ fn decode_to_u16(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<U16>, V
     }
 
     let page_height = frames[0].image().height();
-    let mut image = InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut image =
+        InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut metadata = image.metadata().clone();
     metadata.n_pages = Some(selection.total_pages);
     metadata.page_height = (selection.total_pages > 1).then_some(page_height);
@@ -713,9 +715,9 @@ impl ImageEncoder for HeifCodec {
     }
 
     fn encode_with_options<F: BandFormat>(
-      &self,
-      image: &InMemoryImage<F>,
-      opts: &SaveOptions,
+        &self,
+        image: &InMemoryImage<F>,
+        opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
         Self: Sized,

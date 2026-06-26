@@ -1,11 +1,11 @@
 mod chaos_monkey_12 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, F32, InMemoryImage, ImageMetadata, Interpretation, OperationBridge,
-        RecombOp, U8,
+        BuildError, CompiledPipeline, F32, ImageMetadata, InMemoryImage, Interpretation,
+        OperationBridge, RecombOp, U8,
         adapters::{
-          pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-          sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
+            sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             colorspace::Lab,
@@ -88,12 +88,10 @@ mod chaos_monkey_12 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
             .run_to_image::<F, _>(&RayonScheduler::new(2).map_err(|error| error.to_string())?)
@@ -111,12 +109,10 @@ mod chaos_monkey_12 {
         InputF::Sample: Pod,
         OutputF: viprs::BandFormat,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
             .run_to_image::<OutputF, _>(&RayonScheduler::new(2).map_err(|error| error.to_string())?)
@@ -133,12 +129,10 @@ mod chaos_monkey_12 {
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -155,10 +149,14 @@ mod chaos_monkey_12 {
 
     #[test]
     fn recomb_out_of_range_matrix_values_clamp_u8_output() {
-        let image =
-            InMemoryImage::<U8>::from_buffer(3, 1, 3, vec![200u8, 200, 200, 255, 1, 128, 0, 255, 42])
-                .unwrap()
-                .with_metadata(rgb_metadata());
+        let image = InMemoryImage::<U8>::from_buffer(
+            3,
+            1,
+            3,
+            vec![200u8, 200, 200, 255, 1, 128, 0, 255, 42],
+        )
+        .unwrap()
+        .with_metadata(rgb_metadata());
         let matrix = Matrix::new(3, 3, vec![2.0, 0.0, 0.0, 0.0, -2.0, 0.0, 0.0, 0.0, 1.0]);
 
         let (_pipeline, output) = execute_to_image(&image, |builder| {

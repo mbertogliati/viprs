@@ -1,6 +1,6 @@
 use super::*;
 use crate::adapters::{
-  pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
+    pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
 };
 use crate::domain::image::{DemandHint, ImageMetadata};
 use crate::domain::{error::BuildError, format::U16};
@@ -646,8 +646,8 @@ fn thin_strip_worker_budget_skips_small_sources() {
 #[test]
 fn large_thumbnail_sharpen_caps_strip_workers() {
     use crate::{
-      adapters::{pipeline::ImagePipeline, sources::zero::ZeroSource},
-      domain::{
+        adapters::{pipeline::ImagePipeline, sources::zero::ZeroSource},
+        domain::{
             colorspace::ColorspaceId,
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
@@ -657,12 +657,12 @@ fn large_thumbnail_sharpen_caps_strip_workers() {
     let scheduler = RayonScheduler::new(10).unwrap();
     let pipeline = ImagePipeline::from_source(ZeroSource::<U8>::new(8_192, 8_192, 3))
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .build()
         .unwrap();
@@ -685,8 +685,8 @@ fn large_thumbnail_sharpen_caps_strip_workers() {
 #[test]
 fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
     use crate::{
-      adapters::{pipeline::ImagePipeline, sources::zero::ZeroSource},
-      domain::{
+        adapters::{pipeline::ImagePipeline, sources::zero::ZeroSource},
+        domain::{
             colorspace::ColorspaceId,
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
@@ -696,12 +696,12 @@ fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
     let scheduler = RayonScheduler::new(10).unwrap();
     let pipeline = ImagePipeline::from_source(ZeroSource::<U8>::new(2_048, 2_048, 3))
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .build()
         .unwrap();
@@ -724,7 +724,7 @@ fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
 fn strip_scheduling_matches_single_tile_row_output() {
     use crate::{
         adapters::{
-          pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::op::OperationBridge,
     };
@@ -768,8 +768,8 @@ fn strip_scheduling_matches_single_tile_row_output() {
 #[test]
 fn run_concurrent_matches_run_output() {
     use crate::{
-      adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
-      domain::op::OperationBridge,
+        adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
+        domain::op::OperationBridge,
     };
 
     // 4x4 single-band image with non-zero, distinct pixel values.
@@ -941,8 +941,8 @@ fn scheduler_limits_max_concurrent_pipeline_runs() {
 #[test]
 fn run_with_reducer_returns_correct_sum_and_writes_sink() {
     use crate::{
-      adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
-      domain::{op::OperationBridge, reducer::TileReducer},
+        adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
+        domain::{op::OperationBridge, reducer::TileReducer},
     };
 
     // Sums every u8 sample across all tiles.
@@ -1156,8 +1156,8 @@ fn source_cache_plus_branch_point_op_cache_stays_within_four_locks_per_output_ti
 #[test]
 fn run_with_reducer_rejects_format_mismatch() {
     use crate::{
-      adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
-      domain::{format::U16, op::OperationBridge, reducer::TileReducer},
+        adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
+        domain::{format::U16, op::OperationBridge, reducer::TileReducer},
     };
 
     struct NoopReducer;
@@ -1381,8 +1381,8 @@ fn execute_tile_returns_error_when_transform_state_is_missing() {
 #[test]
 fn execute_tile_returns_error_when_later_transform_state_is_missing() {
     use crate::{
-      adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
-      domain::{
+        adapters::{pipeline::ImagePipeline, sources::memory::MemorySource},
+        domain::{
             format::U8,
             image::{DemandHint, Tile, TileMut},
             op::{Op, OperationBridge},
@@ -1457,7 +1457,7 @@ fn shrinkh_zero_band_u16_pipeline_returns_typed_error() {
 fn run_with_reducer_supports_bisource_reducer_side_input() {
     use crate::{
         adapters::{
-          pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -1571,7 +1571,7 @@ fn run_with_reducer_supports_bisource_reducer_side_input() {
 fn run_with_reducer_uses_accumulate_into_scratch_api() {
     use crate::{
         adapters::{
-          pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -1846,7 +1846,7 @@ fn multi_input_first_node_reuses_preallocated_input_refs_for_three_slots() {
 fn affine_identity_bilinear_runs_without_source_buffer_overflow() {
     use crate::{
         adapters::{
-          pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::ImagePipeline, sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{format::U8, kernel::InterpolationKernel},
         ports::scheduler::TileScheduler,

@@ -15,7 +15,7 @@ use super::common::{
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::BandFormat;
-use viprs_core::image::{InMemoryImage, ImageMetadata, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Region};
 
 pub(super) struct WebpDemux(*mut libwebp_sys::WebPDemuxer);
 

@@ -106,7 +106,12 @@ fn expected_crop_pixels(
     expected
 }
 
-fn run_extract_area(left: u32, top: u32, width: u32, height: u32) -> (InMemoryImage<U8>, InMemoryImage<U8>) {
+fn run_extract_area(
+    left: u32,
+    top: u32,
+    width: u32,
+    height: u32,
+) -> (InMemoryImage<U8>, InMemoryImage<U8>) {
     let (image, source) = patterned_extract_area_source(400, 300);
     let pipeline = ImagePipeline::from_source(source)
         .extract_area(left, top, width, height)

@@ -6,7 +6,6 @@ pub use viprs_runtime::cache;
 pub use viprs_runtime::foreign;
 #[cfg(feature = "fft")]
 pub use viprs_runtime::freqfilt;
-pub use viprs_runtime::image_api;
 pub use viprs_runtime::pipeline;
 pub use viprs_runtime::process;
 pub use viprs_runtime::scheduler;

@@ -10,11 +10,11 @@ use viprs_codecs::{
     webp::WebpCodec,
 };
 use viprs_core::{
-  codec_options::{LoadOptions, SaveOptions},
-  error::ViprsError,
-  format::{F32, U8, U16},
-  image::{DemandHint, InMemoryImage, Region},
-  op::{DynOperation, OperationBridge},
+    codec_options::{LoadOptions, SaveOptions},
+    error::ViprsError,
+    format::{F32, U8, U16},
+    image::{DemandHint, InMemoryImage, Region},
+    op::{DynOperation, OperationBridge},
 };
 use viprs_ops_colour::colour::DE00;
 use viprs_ops_composite::conversion::{
@@ -33,9 +33,8 @@ use viprs_ports::{
 };
 
 use crate::{
-  pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
-  sinks::memory::MemorySink, sources::decoder_source::DecoderSource,
-  sources::memory::MemorySource,
+    pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+    sources::decoder_source::DecoderSource, sources::memory::MemorySource,
 };
 
 fn run_u8_pipeline(
@@ -368,8 +367,9 @@ fn png_decoder_source_streams_regions_without_resident_frame() {
 
 #[test]
 fn png_decoder_source_streams_u16_region() {
-    let image = InMemoryImage::<U16>::from_buffer(3, 3, 3, (0u16..27).map(|sample| sample * 257).collect())
-        .unwrap();
+    let image =
+        InMemoryImage::<U16>::from_buffer(3, 3, 3, (0u16..27).map(|sample| sample * 257).collect())
+            .unwrap();
     let encoded = PngCodec::default().encode(&image).unwrap();
     let source =
         DecoderSource::<_, U16>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
@@ -386,7 +386,8 @@ fn png_decoder_source_streams_u16_region() {
 #[test]
 fn png_decoder_source_streams_interlaced_regions() {
     let image =
-        InMemoryImage::<U8>::from_buffer(8, 8, 3, (0u8..192).cycle().take(8 * 8 * 3).collect()).unwrap();
+        InMemoryImage::<U8>::from_buffer(8, 8, 3, (0u8..192).cycle().take(8 * 8 * 3).collect())
+            .unwrap();
     let encoded = PngCodec::default().encode(&image).unwrap();
     let eager = PngCodec::default().decode::<U8>(&encoded).unwrap();
     let source =
@@ -401,9 +402,13 @@ fn png_decoder_source_streams_interlaced_regions() {
 
 #[test]
 fn tiff_decoder_source_streams_path_regions() {
-    let image =
-        InMemoryImage::<U8>::from_buffer(8, 6, 3, (0..8 * 6 * 3).map(|v| (v % 251) as u8).collect())
-            .unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(
+        8,
+        6,
+        3,
+        (0..8 * 6 * 3).map(|v| (v % 251) as u8).collect(),
+    )
+    .unwrap();
     let encoded = TiffEncoder::default()
         .encode_with_options(
             &image,
