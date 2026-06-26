@@ -1,4 +1,9 @@
-use std::future::{Ready, ready};
+use std::{
+    fs::File,
+    future::{Ready, ready},
+    io::Write,
+    path::Path,
+};
 
 use crate::{
     pipeline::internal::PipelinePlan, ports::scheduler::TileScheduler, sinks::memory::MemorySink,
@@ -117,10 +122,35 @@ impl RawOutputPipeline {
         let Sink { kind } = sink;
         match kind {
             SinkKind::Memory => self.run_memory(config),
+            SinkKind::Writer(writer) => self.run_writer(config, writer),
+            SinkKind::Path(path) => self.run_path(config, &path),
         }
     }
 
     fn run_memory(self, config: ProcessingConfig) -> Result<PipelineOutput, ViprsError> {
+        self.render_raw(config)
+    }
+
+    fn run_writer(
+        self,
+        config: ProcessingConfig,
+        mut writer: Box<dyn Write + Send>,
+    ) -> Result<PipelineOutput, ViprsError> {
+        let output = self.render_raw(config)?;
+        writer.write_all(output.as_bytes())?;
+        writer.flush()?;
+        Ok(output)
+    }
+
+    fn run_path(self, config: ProcessingConfig, path: &Path) -> Result<PipelineOutput, ViprsError> {
+        let output = self.render_raw(config)?;
+        let mut file = File::create(path)?;
+        file.write_all(output.as_bytes())?;
+        file.flush()?;
+        Ok(output)
+    }
+
+    fn render_raw(self, config: ProcessingConfig) -> Result<PipelineOutput, ViprsError> {
         let pipeline = self.builder?.compile()?;
         config.validate_output(
             pipeline.width,

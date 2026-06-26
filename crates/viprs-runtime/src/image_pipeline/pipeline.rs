@@ -114,6 +114,24 @@ where
 impl ImagePipeline {
     /// Start a pipeline from a first-class input.
     ///
+    /// This is the ergonomic spelling for [`ImagePipeline::from_input`].
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use viprs_runtime::image_pipeline::{ImagePipeline, Input};
+    ///
+    /// let pipeline = ImagePipeline::load(Input::path("photo.jpg")?);
+    /// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
+    /// ```
+    #[must_use]
+    pub fn load(input: Input) -> Self {
+        Self::from_input(input)
+    }
+
+    /// Start a pipeline from a first-class input.
+    ///
     /// # Examples
     ///
     /// ```rust,no_run

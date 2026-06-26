@@ -1,4 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::{
+    io::Read,
+    path::{Path, PathBuf},
+};
 
 use crate::{
     image_api::ImageApi, pipeline::internal::PipelinePlan, ports::source::ImageSource,
@@ -11,7 +14,8 @@ use super::Format;
 /// Public input vocabulary for constructing an `ImagePipeline`.
 ///
 /// Path input is the primary API shape and delegates source selection to the
-/// existing loader. In-memory input is an explicit boundary for tests and
+/// existing loader. Encoded byte input stages compressed data before handing it
+/// to the same loader. In-memory input is an explicit boundary for tests and
 /// callers that already own pixels.
 ///
 /// # Examples
@@ -55,6 +59,62 @@ impl Input {
         let path = path.as_ref().to_path_buf();
         let builder = ImageApi::open(&path)?.into_pipeline_builder();
         Ok(Self::from_builder(builder, Some(path)))
+    }
+
+    /// Create an input from already-buffered encoded image bytes.
+    ///
+    /// This is an encoded input boundary for uploads, cache objects, and other
+    /// callers that already staged compressed bytes in memory. The existing
+    /// loader promotes memory-backed codec input into stable pipeline storage;
+    /// this constructor does not accept decoded raster pixels.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ViprsError`] when the existing loader cannot identify or plan a
+    /// decoder for the encoded bytes.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use viprs_runtime::image_pipeline::Input;
+    ///
+    /// let bytes = std::fs::read("photo.jpg")?;
+    /// let input = Input::bytes(bytes)?;
+    /// assert!(input.path_ref().is_none());
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
+    /// ```
+    pub fn bytes(bytes: impl AsRef<[u8]>) -> Result<Self, ViprsError> {
+        let builder = ImageApi::from_bytes(bytes.as_ref())?.into_pipeline_builder();
+        Ok(Self::from_builder(builder, None))
+    }
+
+    /// Create an input by fully buffering encoded bytes from a reader.
+    ///
+    /// This is not true streaming. The reader is drained into memory first, then
+    /// the staged encoded bytes are handed to the same loader used by
+    /// [`Input::bytes`]. Use it for APIs that expose `Read` boundaries while
+    /// keeping the buffering cost explicit in this contract.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ViprsError`] when reading fails or when the existing loader
+    /// cannot identify or plan a decoder for the encoded bytes.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use std::io::Cursor;
+    /// use viprs_runtime::image_pipeline::Input;
+    ///
+    /// let bytes = std::fs::read("photo.jpg")?;
+    /// let input = Input::reader(Cursor::new(bytes))?;
+    /// assert!(input.path_ref().is_none());
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
+    /// ```
+    pub fn reader<R: Read>(mut reader: R) -> Result<Self, ViprsError> {
+        let mut bytes = Vec::new();
+        reader.read_to_end(&mut bytes)?;
+        Self::bytes(&bytes)
     }
 
     /// Create an in-memory input from row-major interleaved samples.
@@ -192,5 +252,50 @@ impl Input {
             bands,
             format,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::io::Cursor;
+
+    use super::Input;
+
+    fn image_fixture(name: &str) -> std::path::PathBuf {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../tests/fixtures/images")
+            .join(name)
+    }
+
+    #[cfg(feature = "png")]
+    #[test]
+    fn bytes_input_uses_existing_encoded_decode_path() {
+        let path = image_fixture("sample.png");
+        let encoded = std::fs::read(&path).unwrap();
+        let expected = Input::path(path).unwrap();
+
+        let input = Input::bytes(encoded).unwrap();
+
+        assert!(input.path_ref().is_none());
+        assert_eq!(input.width(), expected.width());
+        assert_eq!(input.height(), expected.height());
+        assert_eq!(input.bands(), expected.bands());
+        assert_eq!(input.format(), expected.format());
+    }
+
+    #[cfg(feature = "png")]
+    #[test]
+    fn reader_input_buffers_encoded_bytes_before_decode_planning() {
+        let path = image_fixture("sample.png");
+        let encoded = std::fs::read(&path).unwrap();
+        let expected = Input::path(path).unwrap();
+
+        let input = Input::reader(Cursor::new(encoded)).unwrap();
+
+        assert!(input.path_ref().is_none());
+        assert_eq!(input.width(), expected.width());
+        assert_eq!(input.height(), expected.height());
+        assert_eq!(input.bands(), expected.bands());
+        assert_eq!(input.format(), expected.format());
     }
 }

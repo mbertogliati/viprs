@@ -3,7 +3,37 @@
 //! These tests exercise the first-class public vocabulary with in-memory inputs
 //! and an explicit raw-pixel output contract.
 
+use std::{
+    fs,
+    io::{self, Write},
+    path::PathBuf,
+    sync::{Arc, Mutex},
+    time::{SystemTime, UNIX_EPOCH},
+};
+
 use viprs::{BandFormatId, Format, ImagePipeline, Input, Sink, U8};
+
+#[derive(Clone, Default)]
+struct RecordingWriter {
+    bytes: Arc<Mutex<Vec<u8>>>,
+}
+
+impl RecordingWriter {
+    fn bytes(&self) -> Vec<u8> {
+        self.bytes.lock().unwrap().clone()
+    }
+}
+
+impl Write for RecordingWriter {
+    fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
+        self.bytes.lock().unwrap().extend_from_slice(buffer);
+        Ok(buffer.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
 
 fn run_u8_pipeline(
     pixels: Vec<u8>,
@@ -36,6 +66,38 @@ fn memory_input_raw_pixels_end_to_end() {
     assert_eq!(output.bands(), 1);
     assert_eq!(output.format(), Format::U8);
     assert_eq!(output.as_bytes(), &(0u8..16).collect::<Vec<_>>());
+}
+
+#[test]
+fn memory_input_raw_pixels_writer_sink_writes_unencoded_bytes() {
+    let writer = RecordingWriter::default();
+    let captured = writer.clone();
+
+    let output = ImagePipeline::from_input(Input::memory::<U8>(4, 1, 1, vec![1, 2, 3, 4]).unwrap())
+        .raw_pixels()
+        .run_blocking(Sink::writer(writer))
+        .unwrap();
+
+    assert_eq!(output.width(), 4);
+    assert_eq!(output.height(), 1);
+    assert_eq!(output.bands(), 1);
+    assert_eq!(output.format(), Format::U8);
+    assert_eq!(output.as_bytes(), &[1, 2, 3, 4]);
+    assert_eq!(captured.bytes(), &[1, 2, 3, 4]);
+}
+
+#[test]
+fn memory_input_raw_pixels_path_sink_writes_unencoded_bytes() {
+    let path = unique_raw_sink_path();
+
+    let output = ImagePipeline::from_input(Input::memory::<U8>(4, 1, 1, vec![9, 8, 7, 6]).unwrap())
+        .raw_pixels()
+        .run_blocking(Sink::path(&path))
+        .unwrap();
+
+    assert_eq!(output.as_bytes(), &[9, 8, 7, 6]);
+    assert_eq!(fs::read(&path).unwrap(), &[9, 8, 7, 6]);
+    fs::remove_file(path).unwrap();
 }
 
 #[test]
@@ -91,4 +153,12 @@ fn chained_invert_twice_is_identity() {
     });
 
     assert_eq!(output, input, "Double-invert must be identity");
+}
+
+fn unique_raw_sink_path() -> PathBuf {
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    std::env::temp_dir().join(format!("viprs-raw-sink-{}-{nanos}.raw", std::process::id()))
 }
