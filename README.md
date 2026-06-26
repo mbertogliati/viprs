@@ -18,14 +18,32 @@
 ## Quick start
 
 ```rust,no_run
-use viprs::prelude::*;
+# #[cfg(feature = "jpeg")]
+use viprs::{
+    ViprsError,
+    adapters::{
+        codecs::JpegCodec,
+        pipeline::ImagePipeline,
+        scheduler::rayon_scheduler::RayonScheduler,
+    },
+    domain::{codec_options::SaveOptions, format::U8},
+    ports::codec::{ImageDecoder, ImageEncoder},
+    sources::decoder_source::DecoderSource,
+};
 
+# #[cfg(feature = "jpeg")]
 fn main() -> Result<(), ViprsError> {
-    ImageApi::open("input.jpg")?
-        .thumbnail(400)?
-        .save("thumb.jpg")?;
+    let input_bytes = std::fs::read("input.jpg")?;
+    let source = DecoderSource::<_, U8>::new(JpegCodec, &input_bytes)?;
+    let pipeline = ImagePipeline::from_source(source).thumbnail(400)?.build()?;
+    let scheduler = RayonScheduler::new(RayonScheduler::default_threads())?;
+    let image = pipeline.run_to_image::<U8, _>(&scheduler)?;
+    let encoded = JpegCodec.encode_with_options(&image, &SaveOptions::default())?;
+    std::fs::write("thumb.jpg", encoded)?;
     Ok(())
 }
+# #[cfg(not(feature = "jpeg"))]
+# fn main() {}
 ```
 
 ## Runnable examples
