@@ -1,0 +1,5 @@
+error[E0432]: unresolved import `viprs::PipelineBuilder`
+ --> tests/ui/pipeline_builder_root_not_public_dsl.rs:1:5
+  |
+1 | use viprs::PipelineBuilder;
+  |     ^^^^^^^^^^^^^^^^^^^^^^ no `PipelineBuilder` in the root

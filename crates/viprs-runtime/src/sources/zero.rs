@@ -16,8 +16,8 @@ use crate::{
 
 /// Synthetic source that always produces zero samples.
 ///
-/// Used in tests that do not require real pixel data, and as the backing store for
-/// `PipelineBuilder::new`. Generic over `F: BandFormat` so that `ImageSource::Format`
+/// Used in tests that do not require real pixel data, and as a backing store for
+/// synthetic planner inputs. Generic over `F: BandFormat` so that `ImageSource::Format`
 /// is known at compile time.
 ///
 /// The `dyn DynImageSource` path used by `PipelineArena` erases the `F` parameter

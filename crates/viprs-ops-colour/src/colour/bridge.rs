@@ -10,7 +10,7 @@
 //! `DynOperation` is reused directly (no separate `DynColourOperation` trait).
 //! Colorspace propagation is handled by the new `output_colorspace()` method on
 //! `DynOperation`, which has a default of `None`. The bridge overrides it to return
-//! `Some(To::ID)`, allowing `PipelineBuilder` to track the current colorspace
+//! `Some(To::ID)`, allowing the runtime planner to track the current colorspace
 //! without a separate trait object hierarchy.
 
 use std::any::Any;
@@ -142,7 +142,7 @@ where
         NodeSpec::identity(tile_w, tile_h)
     }
 
-    /// Returns the destination colorspace so that `PipelineBuilder` can update its
+    /// Returns the destination colorspace so that the runtime planner can update its
     /// tracked `current_colorspace` after inserting this node.
     fn output_colorspace(&self) -> Option<ColorspaceId> {
         Some(To::ID)

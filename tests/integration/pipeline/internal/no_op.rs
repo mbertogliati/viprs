@@ -2,10 +2,7 @@ mod chaos_monkey_9 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, CompiledPipeline, F32, Image, ImageMetadata, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             kernel::InterpolationKernel,
@@ -22,8 +19,8 @@ mod chaos_monkey_9 {
     use viprs::adapters::codecs::JpegCodec;
     #[cfg(feature = "jpeg")]
     use viprs::ports::codec::ImageEncoder;
-    #[cfg(feature = "png")]
     use viprs::{adapters::codecs::PngCodec, ports::codec::ImageDecoder};
+    #[cfg(feature = "png")]
 
     fn rgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -75,17 +72,20 @@ mod chaos_monkey_9 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_pipeline<F, S: viprs::pipeline::Flush>(
+    fn run_pipeline<F, S: viprs_runtime::pipeline::Flush>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            memory_source_from_image(image),
+        ))
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -115,7 +115,9 @@ mod chaos_monkey_9 {
     fn no_op_pipeline_builds_identity_output() {
         let image = patterned_rgb_u8(4, 3);
         let source = memory_source_from_image(&image);
-        let pipeline = PipelineBuilder::from_source(source).build().unwrap();
+        let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+            .build()
+            .unwrap();
         let output = pipeline
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
             .unwrap();
@@ -157,14 +159,15 @@ mod chaos_monkey_9 {
         }
 
         let image = patterned_rgb_u8(512, 512);
-        let pipeline = PipelineBuilder::from_source(memory_source_from_image(&image))
-            .then(Box::new(viprs::OperationBridge::new(
-                FullImagePass,
-                image.bands(),
-            )))
-            .unwrap()
-            .build()
-            .unwrap();
+        let pipeline =
+            viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
+                .then(Box::new(viprs::OperationBridge::new(
+                    FullImagePass,
+                    image.bands(),
+                )))
+                .unwrap()
+                .build()
+                .unwrap();
         let output = pipeline
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
             .unwrap();

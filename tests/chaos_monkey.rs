@@ -6,8 +6,8 @@ use bytemuck::Pod;
 use viprs::{
     BuildError, CompiledPipeline, Image, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{kernel::InterpolationKernel, ops::resample::Resize},
     ports::scheduler::TileScheduler,
@@ -34,15 +34,17 @@ where
 
 fn execute_pipeline<F>(
     image: &Image<F>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<CompiledPipeline, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<CompiledPipeline, BuildError>,
 ) -> Result<Vec<u8>, String>
 where
     F: viprs::BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-        image,
-    )))
+    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+        memory_source_from_image(image),
+    ))
     .map_err(|err| format!("build failed: {err:?}"))?;
     let mut sink =
         MemorySink::for_pipeline(&pipeline).map_err(|err| format!("sink failed: {err:?}"))?;
@@ -55,7 +57,9 @@ where
 
 fn assert_zero_band_pipeline_is_rejected(
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<CompiledPipeline, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<CompiledPipeline, BuildError>,
 ) {
     let image = zero_band_image();
     let result = catch_unwind(AssertUnwindSafe(|| execute_pipeline(&image, configure)));

@@ -9,8 +9,8 @@ use std::{
 use viprs::{
     BuildError, Image, ImageMetadata, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -292,11 +292,11 @@ fn random_resize(rng: &mut Lcg) -> Resize {
 }
 
 fn configure_pipeline(
-    builder: PipelineBuilder,
+    builder: viprs_runtime::pipeline::PipelineBuilder,
     image: &Image<U8>,
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
-) -> Result<PipelineBuilder, BuildError> {
+) -> Result<viprs_runtime::pipeline::PipelineBuilder, BuildError> {
     match pipeline_kind {
         PipelineKind::Thumbnail => {
             let target = thumbnail_target_width(image.width(), rng);
@@ -333,7 +333,9 @@ fn execute_iteration(
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
 ) -> (u32, u32, usize) {
-    let builder = PipelineBuilder::from_source(memory_source_from_image(&fixture.image));
+    let builder = viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(
+        &fixture.image,
+    ));
     let pipeline = configure_pipeline(builder, &fixture.image, pipeline_kind, rng)
         .unwrap_or_else(|error| {
             panic!(

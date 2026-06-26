@@ -4,10 +4,7 @@ mod chaos_monkey_16 {
     use bytemuck::Pod;
     use viprs::{
         BandFormatId, BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             colorspace::{Cmyk, Lab, SRgb},
             kernel::InterpolationKernel,
@@ -67,19 +64,22 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            memory_source_from_image(image),
+        ))
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -142,7 +142,9 @@ mod chaos_monkey_16 {
         )
     }
 
-    fn append_recomb(builder: PipelineBuilder) -> Result<PipelineBuilder, BuildError> {
+    fn append_recomb(
+        builder: viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<viprs_runtime::pipeline::PipelineBuilder, BuildError> {
         builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
             RecombOp::<U8>::new(recomb_matrix()),
             3,

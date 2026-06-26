@@ -2,7 +2,7 @@ mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler},
+        adapters::scheduler::rayon_scheduler::RayonScheduler,
         domain::{
             colorspace::{ColorspaceId, SRgb},
             kernel::InterpolationKernel,
@@ -47,17 +47,20 @@ mod chaos_monkey_19 {
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
             viprs::adapters::sources::memory::MemorySource::<FIn>::new(
                 image.width(),
                 image.height(),

@@ -101,6 +101,7 @@ iai-callgrind = "0.16"
 dhat = "0.3"
 libc = "0.2"
 crc32fast = "1"
+trybuild = "1"
 
 [features]
 # Default runtime features: rayon scheduler, mmap-backed sources, and SIMD dispatch.

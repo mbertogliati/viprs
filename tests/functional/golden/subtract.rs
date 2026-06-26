@@ -18,8 +18,8 @@ use golden::{ImageSpec, VipsBandFormat};
 use viprs::{
     OperationBridge, Subtract,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::format::F32,
     ports::scheduler::TileScheduler,
@@ -37,7 +37,7 @@ fn run_subtract(source_pixels: Vec<f32>, rhs: Vec<f32>) -> Vec<u8> {
     let sub_op = Subtract::<F32>::new(rhs);
     let dyn_op = Box::new(OperationBridge::new(sub_op, 1u32));
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()

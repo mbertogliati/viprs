@@ -2,7 +2,7 @@ mod robustness_recovery {
     use std::path::Path;
 
     use viprs::{
-        DemandHint, Image, PipelineBuilder, Region, U8, ViprsError,
+        DemandHint, Image, Region, U8, ViprsError,
         adapters::{
             scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
             sources::memory::MemorySource,
@@ -77,7 +77,7 @@ mod robustness_recovery {
         image.pixels().iter().map(|pixel| 255u8 - *pixel).collect()
     }
 
-    fn build_valid_pipeline(image: &Image<U8>) -> viprs::CompiledPipeline {
+    fn build_valid_pipeline(image: &Image<U8>) -> viprs_runtime::pipeline::CompiledPipeline {
         let source = MemorySource::<U8>::new(
             image.width(),
             image.height(),
@@ -86,17 +86,17 @@ mod robustness_recovery {
         )
         .expect("fixture image should have a valid in-memory buffer");
 
-        PipelineBuilder::from_source(source)
+        viprs_runtime::pipeline::PipelineBuilder::from_source(source)
             .invert()
             .expect("invert should build for U8 fixture images")
             .build()
             .expect("valid recovery pipeline should compile")
     }
 
-    fn build_failing_pipeline(image: &Image<U8>) -> viprs::CompiledPipeline {
+    fn build_failing_pipeline(image: &Image<U8>) -> viprs_runtime::pipeline::CompiledPipeline {
         let source = FailingSource::from_image(image);
 
-        PipelineBuilder::from_source(source)
+        viprs_runtime::pipeline::PipelineBuilder::from_source(source)
             .invert()
             .expect("invert should build for failing U8 sources")
             .build()

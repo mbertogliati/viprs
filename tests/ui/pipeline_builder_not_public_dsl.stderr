@@ -1,0 +1,5 @@
+error[E0432]: unresolved import `viprs::adapters::pipeline`
+ --> tests/ui/pipeline_builder_not_public_dsl.rs:1:22
+  |
+1 | use viprs::adapters::pipeline::PipelineBuilder;
+  |                      ^^^^^^^^ could not find `pipeline` in `adapters`

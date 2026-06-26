@@ -7,7 +7,7 @@ use std::{
 use std::path::{Path, PathBuf};
 
 use viprs::{
-    BuildError, Image, ImageCodecExt, Interpretation, PipelineBuilder, U8,
+    BuildError, Image, ImageCodecExt, Interpretation, U8,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -94,8 +94,10 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
     .with_metadata(metadata)
 }
 
-fn build_thumbnail_pipeline(image: &Image<U8>) -> Result<viprs::CompiledPipeline, BuildError> {
-    PipelineBuilder::from_source(memory_source_from_image(image))
+fn build_thumbnail_pipeline(
+    image: &Image<U8>,
+) -> Result<viprs_runtime::pipeline::CompiledPipeline, BuildError> {
+    viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(image))
         .thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,

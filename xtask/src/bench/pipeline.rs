@@ -9,7 +9,6 @@ use bytemuck::Pod;
 use mozjpeg::decompress::DecompressStarted;
 use mozjpeg::{ALL_MARKERS, ColorSpace, ColorSpaceExt, Decompress};
 use viprs::adapters::codecs::{PngCodec, TiffDecoder, WebpCodec};
-use viprs::adapters::pipeline::{CompiledPipeline, PipelineArena, PipelineBuilder};
 use viprs::adapters::sources::create::GreySource;
 use viprs::adapters::sources::decoder_source::DecoderSource;
 use viprs::adapters::sources::memory::MemorySource;
@@ -47,6 +46,7 @@ use viprs::domain::ops::resample::Resize;
 use viprs::domain::ops::resample::thumbnail::{Thumbnail, ThumbnailTarget};
 use viprs::ports::codec::TileImageDecoder;
 use viprs::ports::source::{ImageSource, RandomAccessSource};
+use viprs_runtime::pipeline::{CompiledPipeline, PipelineArena, PipelineBuilder};
 
 use super::helpers::load_bench_image;
 use super::types::BenchImage;

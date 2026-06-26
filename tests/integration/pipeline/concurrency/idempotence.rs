@@ -3,10 +3,7 @@ mod robustez_idempotencia {
 
     use viprs::{
         Image, ImageMetadata, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             kernel::InterpolationKernel,
@@ -18,10 +15,10 @@ mod robustez_idempotencia {
     use viprs::domain::codec_options::SaveOptions;
     #[cfg(any(feature = "jpeg", feature = "png"))]
     use viprs::ports::codec::ImageEncoder;
-    #[cfg(feature = "jpeg")]
     use viprs::{adapters::codecs::JpegCodec, domain::codec_options::JpegSubsampling};
-    #[cfg(feature = "png")]
     use viprs::{adapters::codecs::PngCodec, domain::codec_options::PngFilterStrategy};
+    #[cfg(feature = "jpeg")]
+    #[cfg(feature = "png")]
 
     fn patterned_image(width: u32, height: u32, bands: u32) -> Image<U8> {
         let len = width as usize * height as usize * bands as usize;
@@ -51,15 +48,20 @@ mod robustez_idempotencia {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline<S: viprs::pipeline::Flush>(
+    fn execute_pipeline<S: viprs_runtime::pipeline::Flush>(
         image: &Image<U8>,
         threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, viprs::BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, viprs::BuildError>,
     ) -> Image<U8> {
-        let pipeline = configure(PipelineBuilder::from_source(source_from_image(image)))
-            .unwrap()
-            .build()
-            .unwrap();
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            source_from_image(image),
+        ))
+        .unwrap()
+        .build()
+        .unwrap();
         let scheduler = RayonScheduler::new(threads).unwrap();
         pipeline.run_to_image::<U8, _>(&scheduler).unwrap()
     }
@@ -101,16 +103,17 @@ mod robustez_idempotencia {
     #[test]
     fn same_pipeline_twice_produces_identical_bytes() {
         let image = patterned_image(257, 193, 3);
-        let pipeline = PipelineBuilder::from_source(source_from_image(&image))
-            .thumbnail(Thumbnail::new(
-                ThumbnailTarget::Width(91),
-                InterpolationKernel::Lanczos3,
-            ))
-            .unwrap()
-            .invert()
-            .unwrap()
-            .build()
-            .unwrap();
+        let pipeline =
+            viprs_runtime::pipeline::PipelineBuilder::from_source(source_from_image(&image))
+                .thumbnail(Thumbnail::new(
+                    ThumbnailTarget::Width(91),
+                    InterpolationKernel::Lanczos3,
+                ))
+                .unwrap()
+                .invert()
+                .unwrap()
+                .build()
+                .unwrap();
         let scheduler = RayonScheduler::new(2).unwrap();
 
         let first = pipeline.run_to_image::<U8, _>(&scheduler).unwrap();

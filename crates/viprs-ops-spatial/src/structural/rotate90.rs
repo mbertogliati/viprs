@@ -109,7 +109,7 @@ where
 /// implementation in `DynOperation`. Rotate90 changes image dimensions, so we need a
 /// wrapper that stores the pre-rotation dimensions and overrides those two methods.
 ///
-/// `pub(crate)` — callers use `PipelineBuilder::rotate90`, not this type directly.
+/// `pub(crate)` — callers use `ImagePipeline::rotate90`, not this type directly.
 pub(crate) struct Rotate90Bridge<F: BandFormat>
 where
     F::Sample: bytemuck::Pod + Copy,

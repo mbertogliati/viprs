@@ -320,7 +320,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.build()?),
+            |builder| Ok(builder),
             &EncodeOptions::Jpeg { quality: 85 },
             &ProcessOptions::default(),
         )
@@ -342,7 +342,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.invert()?.build()?),
+            |builder| builder.invert().map_err(Into::into),
             &EncodeOptions::Jpeg { quality: 85 },
             &ProcessOptions::default(),
         )
@@ -361,7 +361,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.linear(1.5, 10.0)?.build()?),
+            |builder| builder.linear(1.5, 10.0).map_err(Into::into),
             &EncodeOptions::Jpeg { quality: 85 },
             &ProcessOptions::default(),
         )
@@ -387,7 +387,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.build()?),
+            |builder| Ok(builder),
             &EncodeOptions::Jpeg { quality: 85 },
             &opts,
         );
@@ -412,7 +412,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.build()?),
+            |builder| Ok(builder),
             &EncodeOptions::Jpeg { quality: 85 },
             &opts,
         );
@@ -433,7 +433,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.build()?),
+            |builder| Ok(builder),
             &EncodeOptions::Jpeg { quality: 85 },
             &opts,
         )
@@ -457,7 +457,7 @@ mod pipeline_png {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.build()?),
+            |builder| Ok(builder),
             &EncodeOptions::Png { compression: 6 },
             &ProcessOptions::default(),
         )
@@ -477,7 +477,7 @@ mod pipeline_png {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.invert()?.build()?),
+            |builder| builder.invert().map_err(Into::into),
             &EncodeOptions::Png { compression: 6 },
             &ProcessOptions::default(),
         )
@@ -501,7 +501,7 @@ mod pipeline_cross_format {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| Ok(builder.build()?),
+            |builder| Ok(builder),
             &EncodeOptions::Png { compression: 6 },
             &ProcessOptions::default(),
         )

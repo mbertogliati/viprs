@@ -12,10 +12,10 @@
 //!
 //! ```rust,ignore
 //! let blur = GaussBlur::new(3.0);
-//! let pipeline = PipelineBuilder::from_source(source)
-//!     .then_op(blur.h)
-//!     .then_op(blur.v)
-//!     .build()?;
+//! let output = ImagePipeline::from_input(input)
+//!     .gauss_blur(3.0)?
+//!     .raw_pixels()
+//!     .run_blocking(Sink::memory())?;
 //! ```
 //!
 //! `F32` inputs keep the current floating-point pipeline. `U8` inputs switch to

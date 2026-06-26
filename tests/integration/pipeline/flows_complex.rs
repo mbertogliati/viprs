@@ -1,10 +1,11 @@
 use super::flows_support::*;
 use bytemuck::{cast_slice, cast_slice_mut};
 use viprs::{
-    BuildError, F32, F64, Image, ImageMetadata, Interpretation, OperationBridge, Region, U8,
+    BuildError, F32, F64, Image, ImageMetadata, Interpretation, OperationBridge, PipelineArena,
+    Region, U8,
     adapters::{
-        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -32,8 +33,8 @@ use viprs::ports::codec::{ImageDecoder, ImageEncoder};
 use viprs::domain::ops::colour::{IccTransformOptions, icc_transform, profile_load};
 #[cfg(feature = "fft")]
 use viprs::domain::ops::freqfilt::{COMPLEX_BANDS, FreqMultOp, PhasecorOp};
-#[cfg(feature = "fft")]
 use viprs::{fwfft, invfft};
+#[cfg(feature = "fft")]
 
 fn fnv1a64(bytes: &[u8]) -> u64 {
     bytes.iter().fold(0xcbf2_9ce4_8422_2325_u64, |acc, byte| {
@@ -501,14 +502,16 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
     .1;
     assert_eq!((tiny.width(), tiny.height()), (1, 1));
 
-    let degenerate = PipelineBuilder::from_source(memory_source_from_image(&image)).affine(
-        [1.0, 2.0, 2.0, 4.0],
-        0.0,
-        0.0,
-        image.width(),
-        image.height(),
-        InterpolationKernel::Bilinear,
-    );
+    let degenerate =
+        viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
+            .affine(
+                [1.0, 2.0, 2.0, 4.0],
+                0.0,
+                0.0,
+                image.width(),
+                image.height(),
+                InterpolationKernel::Bilinear,
+            );
     assert!(matches!(
         degenerate,
         Err(BuildError::DegenerateAffineTransform { .. })

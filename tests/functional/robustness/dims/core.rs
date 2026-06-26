@@ -5,8 +5,8 @@ mod robustness_dims {
     use viprs::{
         BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8, ViprsError,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             kernel::InterpolationKernel,
@@ -46,13 +46,16 @@ mod robustness_dims {
         .map(|source| source.with_metadata(image.metadata().clone()))
     }
 
-    fn execute_to_image<S: viprs::pipeline::Flush>(
+    fn execute_to_image<S: viprs_runtime::pipeline::Flush>(
         image: &Image<U8>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )?))?
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            memory_source_from_image(image)?,
+        ))?
         .build()?;
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)?.run(&pipeline, &mut sink)?;
@@ -65,10 +68,13 @@ mod robustness_dims {
         Ok((pipeline, output))
     }
 
-    fn execute_without_panicking<S: viprs::pipeline::Flush>(
+    fn execute_without_panicking<S: viprs_runtime::pipeline::Flush>(
         image: &Image<U8>,
         op_name: &str,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| execute_to_image(image, configure)));
         assert!(

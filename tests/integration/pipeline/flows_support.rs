@@ -4,8 +4,8 @@ pub(crate) use viprs::{
     BandFormatId, BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata,
     Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         colorspace::{Lab, SRgb},
@@ -71,13 +71,15 @@ pub(crate) fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
     .with_metadata(metadata)
 }
 
-pub(crate) fn execute_u8_pipeline<S: viprs::pipeline::Flush>(
+pub(crate) fn execute_u8_pipeline<S: viprs_runtime::pipeline::Flush>(
     image: &Image<U8>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, MemorySink) {
-    let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-        image,
-    )))
+    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+        memory_source_from_image(image),
+    ))
     .expect("pipeline stage failed")
     .build()
     .expect("pipeline build failed");
@@ -91,9 +93,11 @@ pub(crate) fn execute_u8_pipeline<S: viprs::pipeline::Flush>(
     (pipeline, sink)
 }
 
-pub(crate) fn execute_u8_pipeline_to_buffer<S: viprs::pipeline::Flush>(
+pub(crate) fn execute_u8_pipeline_to_buffer<S: viprs_runtime::pipeline::Flush>(
     image: &Image<U8>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Vec<u8>) {
     let (pipeline, sink) = execute_u8_pipeline(image, configure);
     let buffer = sink.into_buffer();
@@ -147,9 +151,11 @@ pub(crate) fn output_image_from_buffer(
     feature = "tiff",
     feature = "avif"
 ))]
-pub(crate) fn execute_u8_pipeline_to_image<S: viprs::pipeline::Flush>(
+pub(crate) fn execute_u8_pipeline_to_image<S: viprs_runtime::pipeline::Flush>(
     image: &Image<U8>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Image<U8>) {
     let (pipeline, buffer) = execute_u8_pipeline_to_buffer(image, configure);
     let output = output_image_from_buffer(image, &pipeline, buffer);

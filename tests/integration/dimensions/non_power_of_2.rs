@@ -6,8 +6,8 @@ use std::{
 use viprs::{
     BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -65,15 +65,17 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 #[cfg(feature = "jpeg")]
-fn execute_to_image<S: viprs::pipeline::Flush>(
+fn execute_to_image<S: viprs_runtime::pipeline::Flush>(
     image: &Image<U8>,
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::PipelineBuilder,
+    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Image<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            memory_source_from_image(image),
+        ))
         .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
         .build()
         .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));

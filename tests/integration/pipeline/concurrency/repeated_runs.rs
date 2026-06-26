@@ -7,8 +7,8 @@ mod robustness_determinism {
     use viprs::{
         BuildError, CompiledPipeline, Image, Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             kernel::InterpolationKernel,
@@ -68,14 +68,17 @@ mod robustness_determinism {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_buffer<S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<S: viprs_runtime::pipeline::Flush>(
         image: &Image<U8>,
         threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
     ) -> (CompiledPipeline, Vec<u8>) {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            memory_source_from_image(image),
+        ))
         .unwrap_or_else(|error| panic!("pipeline stage failed: {error:?}"))
         .build()
         .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"));

@@ -1,7 +1,6 @@
 use crate::pipeline::PipelineBuilder;
-use viprs_core::error::BuildError;
 
-use super::{Format, Input, RawOutputPipeline};
+use super::{DemandHint, Format, Input, RawOutputPipeline};
 
 /// Public image pipeline builder and execution object.
 ///
@@ -27,7 +26,7 @@ use super::{Format, Input, RawOutputPipeline};
 /// let _ = pipeline.run_blocking(Sink::memory());
 /// ```
 pub struct ImagePipeline {
-    builder: PipelineBuilder,
+    pub(super) builder: PipelineBuilder,
 }
 
 impl ImagePipeline {
@@ -49,31 +48,58 @@ impl ImagePipeline {
         }
     }
 
-    /// Apply sample inversion to the pipeline.
-    ///
-    /// This is the first operation method on the new public surface; later
-    /// issues migrate the rest of the operation vocabulary here.
-    ///
-    /// # Errors
-    ///
-    /// Returns [`BuildError`] when the current pipeline shape cannot accept the operation.
+    /// Declare the colorspace of the current pipeline stage.
     ///
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use viprs_runtime::image_pipeline::{ImagePipeline, Input, Sink};
+    /// use viprs_runtime::image_pipeline::{ColorspaceId, ImagePipeline, Input};
     ///
-    /// let output = ImagePipeline::from_input(Input::path("photo.jpg")?)
-    ///     .invert()?
-    ///     .raw_pixels()
-    ///     .run_blocking(Sink::memory())?;
-    /// assert!(!output.as_bytes().is_empty());
+    /// let pipeline = ImagePipeline::from_input(Input::path("photo.jpg")?)
+    ///     .with_colorspace(ColorspaceId::SRgb);
+    /// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn invert(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.invert()?.flush_into_identity()?,
-        })
+    #[must_use]
+    pub fn with_colorspace(mut self, colorspace: viprs_core::colorspace::ColorspaceId) -> Self {
+        self.builder = self.builder.with_colorspace(colorspace);
+        self
+    }
+
+    /// Enable sequential access for the internal planner.
+    ///
+    /// This is a scheduling hint, not an image operation.
+    #[must_use]
+    pub fn with_sequential_access(mut self, sequential: bool) -> Self {
+        self.builder = self.builder.with_sequential_access(sequential);
+        self
+    }
+
+    /// Enable libvips-style sequential streaming.
+    ///
+    /// This is a scheduling hint, not an image operation.
+    #[must_use]
+    pub fn sequential(mut self, lines_ahead: usize) -> Self {
+        self.builder = self.builder.sequential(lines_ahead);
+        self
+    }
+
+    /// Enable a bounded scanline cache.
+    ///
+    /// This is a scheduling hint, not an image operation.
+    #[must_use]
+    pub fn linecache(mut self, lines_ahead: usize) -> Self {
+        self.builder = self.builder.linecache(lines_ahead);
+        self
+    }
+
+    /// Override demand hint selection for the internal planner.
+    ///
+    /// This is a scheduling hint, not an image operation.
+    #[must_use]
+    pub fn with_demand_hint_override(mut self, demand_hint: DemandHint) -> Self {
+        self.builder = self.builder.with_demand_hint_override(demand_hint);
+        self
     }
 
     /// Select raw interleaved pixels as the pipeline output contract.

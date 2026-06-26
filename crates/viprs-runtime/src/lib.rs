@@ -15,6 +15,7 @@ pub mod instrumentation;
 mod integration_tests;
 /// Optional lock profiling helpers for scheduler contention analysis.
 pub mod lock_instrumentation;
+#[doc(hidden)]
 pub mod pipeline;
 pub mod process;
 pub mod scheduler;
@@ -33,7 +34,7 @@ pub mod adapters {
     pub use crate::image_pipeline;
     pub use crate::instrumentation;
     pub use crate::lock_instrumentation;
-    pub use crate::pipeline;
+    pub(crate) use crate::pipeline;
     pub use crate::process;
     pub use crate::scheduler;
     pub use crate::sinks;

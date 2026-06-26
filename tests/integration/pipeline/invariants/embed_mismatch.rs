@@ -2,20 +2,17 @@ mod chaos_monkey_14 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::ops::conversion::ExtendMode,
     };
 
     #[cfg(feature = "jpeg")]
     use viprs::adapters::codecs::JpegCodec;
-    #[cfg(feature = "jpeg")]
     use viprs::{
         domain::codec_options::SaveOptions,
         ports::codec::{ImageDecoder, ImageEncoder},
     };
+    #[cfg(feature = "jpeg")]
 
     fn srgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -60,9 +57,12 @@ mod chaos_monkey_14 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::PipelineBuilder,
+        )
+            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -70,9 +70,9 @@ mod chaos_monkey_14 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
+            memory_source_from_image(image),
+        ))
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -86,15 +86,17 @@ mod chaos_monkey_14 {
     #[ignore = "BUG: embed() accepts src_width/src_height that do not match the current stage"]
     fn embed_with_mismatched_source_dimensions_returns_typed_error() {
         let image = patterned_u8(5, 4, 4);
-        let result = PipelineBuilder::from_source(memory_source_from_image(&image)).embed(
-            8,
-            8,
-            1,
-            1,
-            image.width() - 1,
-            image.height(),
-            ExtendMode::Black,
-        );
+        let result =
+            viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
+                .embed(
+                    8,
+                    8,
+                    1,
+                    1,
+                    image.width() - 1,
+                    image.height(),
+                    ExtendMode::Black,
+                );
 
         assert!(matches!(
             result,

@@ -8,7 +8,6 @@ pub use viprs_runtime::foreign;
 pub use viprs_runtime::freqfilt;
 pub use viprs_runtime::image_api;
 pub use viprs_runtime::image_pipeline;
-pub use viprs_runtime::pipeline;
 pub use viprs_runtime::process;
 pub use viprs_runtime::scheduler;
 /// Concrete image sinks for files, memory buffers, and concurrent writers.

@@ -268,8 +268,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
 
     /// Create a streaming source from shared compressed input.
     ///
-    /// The returned source is `'static`, so it can be inserted into
-    /// [`PipelineBuilder::from_source`](crate::pipeline::PipelineBuilder::from_source).
+    /// The returned source is `'static`, so it can back an image pipeline input.
     ///
     /// # Errors
     ///
