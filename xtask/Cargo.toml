@@ -12,6 +12,7 @@ count-alloc = []
 [dependencies]
 # Keep libspng enabled so PNG E2E benches use the same C-backed decoder family as libvips.
 viprs = { path = "..", version = "0.1.4", features = ["rayon", "jpeg", "png", "webp", "tiff", "heif", "avif", "gif", "jp2k", "fft", "exr"] }
+viprs-runtime = { path = "../crates/viprs-runtime", version = "0.1.4", features = ["rayon", "jpeg", "png", "webp", "tiff", "heif", "avif", "gif", "jp2k", "fft", "exr"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 libc = "0.2"

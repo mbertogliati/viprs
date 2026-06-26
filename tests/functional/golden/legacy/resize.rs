@@ -147,7 +147,7 @@ fn resize_bilinear_small_image_libvips_with_cache() {
     let source = smooth_grayscale_source(width, height);
     let (_, _, actual, _) =
         run_cached_pipeline_u8_twice(source.clone(), width, height, 1, |builder| {
-            let builder = builder.resize(Resize::new(scale, scale, kernel))?;
+            let builder = builder.plan_resize(Resize::new(scale, scale, kernel))?;
             builder.cache_last_op(NonZeroUsize::new(64).unwrap())
         });
     let input = write_u8_input_spec(
@@ -241,7 +241,7 @@ fn reduce_factor2_lanczos3_libvips() {
     let case = "smooth_grayscale_factor2_lanczos3";
     let source = smooth_grayscale_source(width, height);
     let (_, _, actual) = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
+        builder.plan_reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
     });
     let input = write_u8_input_spec(
         "reduce_libvips",
@@ -275,9 +275,9 @@ fn assert_axis_reduce_matches_libvips(
     let source = grayscale_source(width, height);
     let (_, _, actual) = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
         if reduce_h {
-            builder.reduce_h(1.5, InterpolationKernel::Bicubic)
+            builder.plan_reduce_h(1.5, InterpolationKernel::Bicubic)
         } else {
-            builder.reduce_v(1.5, InterpolationKernel::Bicubic)
+            builder.plan_reduce_v(1.5, InterpolationKernel::Bicubic)
         }
     });
     let input = write_u8_input_spec(
@@ -329,7 +329,7 @@ fn subsample_non_point_3x2_libvips() {
     let case = "grayscale_3x2";
     let source = grayscale_source(width, height);
     let (_, _, actual) = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.subsample(3, 2)
+        builder.plan_subsample(3, 2)
     });
     let input = write_u8_input_spec(
         "subsample_libvips",

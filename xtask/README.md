@@ -161,11 +161,11 @@ Add a match arm in `run_viprs_pipeline`:
 ```rust
 "new_op" => {
     // parse op_args as needed
-    builder.new_op(params).expect("new_op failed")
+    pipeline.new_op(params).expect("new_op failed")
 }
 ```
 
-Current encode-only ops that bypass the pipeline builder and benchmark the codec directly:
+Current encode-only ops that bypass the image pipeline and benchmark the codec directly:
 `save-avif`, `save-exr`, `save-gif`, `save-heif`, `save-jp2k`.
 
 `save-exr` uses `tools/bench-vs-libvips/openexr-runner` for the baseline side because

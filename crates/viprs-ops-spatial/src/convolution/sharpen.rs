@@ -13,7 +13,7 @@ use super::{common::ToF64, gauss_blur::sharpen_kernel_1d};
 /// Legacy per-band unsharp mask.
 ///
 /// This keeps the existing single-op API for grayscale and format-agnostic callers.
-/// `PipelineBuilder::sharpen` composes the Lab → `LabS` → Lab path for libvips-style
+/// `ImagePipeline::sharpen` composes the Lab → `LabS` → Lab path for libvips-style
 /// colourspace-aware sharpening.
 pub struct Sharpen<F: BandFormat> {
     kernel: Vec<f64>,

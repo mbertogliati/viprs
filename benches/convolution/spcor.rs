@@ -7,9 +7,10 @@ use viprs::{
     },
     domain::ops::convolution::SpcorOp,
     domain::{format::F32, image::Image},
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::OperationBridge,
     ports::scheduler::TileScheduler,
 };
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 fn make_pixels(size: u32) -> Vec<f32> {
     let pixel_count = size as usize * size as usize;
@@ -42,10 +43,10 @@ fn bench_spcor(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = SpcorOp::<F32>::new(reference.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new(op, 1)))
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new(op, 1)))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

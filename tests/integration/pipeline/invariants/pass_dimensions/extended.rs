@@ -5,8 +5,8 @@ mod chaos_monkey_2 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, F32, Image, ImageMetadata,
         Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab, SRgb},
@@ -65,19 +65,24 @@ mod chaos_monkey_2 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs::pipeline::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -98,19 +103,24 @@ mod chaos_monkey_2 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -217,7 +227,7 @@ mod chaos_monkey_2 {
         let image = patterned_u8_image(777, 333, 4);
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
             builder
-                .embed(
+                .plan_embed(
                     1024,
                     768,
                     123,
@@ -226,7 +236,7 @@ mod chaos_monkey_2 {
                     image.height(),
                     ExtendMode::Black,
                 )?
-                .extract_area(123, 77, image.width(), image.height())
+                .plan_extract_area(123, 77, image.width(), image.height())
         })
         .expect("embed/extract pipeline should succeed");
 
@@ -242,7 +252,7 @@ mod chaos_monkey_2 {
     fn pass2_extract_then_embed_restores_canvas_dimensions() {
         let image = patterned_u8_image(512, 512, 3);
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
-            builder.extract_area(10, 20, 100, 80)?.embed(
+            builder.plan_extract_area(10, 20, 100, 80)?.plan_embed(
                 512,
                 512,
                 10,
@@ -264,7 +274,7 @@ mod chaos_monkey_2 {
         let output_w = 913;
         let output_h = 271;
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
-            builder.affine(
+            builder.plan_affine(
                 [1.0, 0.2, -0.1, 1.0],
                 3.5,
                 7.25,
@@ -283,7 +293,7 @@ mod chaos_monkey_2 {
     fn pass2_similarity_declares_auto_canvas_consistently() {
         let image = patterned_u8_image(257, 129, 3);
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
-            builder.similarity(1.25, 17.0, InterpolationKernel::Bilinear)
+            builder.plan_similarity(1.25, 17.0, InterpolationKernel::Bilinear)
         })
         .expect("similarity should succeed");
 
@@ -297,7 +307,7 @@ mod chaos_monkey_2 {
         let image = patterned_u8_image(777, 333, 3);
         for factor in [1.5, 2.7, 3.14, 7.5] {
             let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
-                builder.reduce(factor, factor, InterpolationKernel::Lanczos3)
+                builder.plan_reduce(factor, factor, InterpolationKernel::Lanczos3)
             })
             .unwrap_or_else(|error| {
                 panic!("fractional reduce should succeed for factor {factor}: {error}")
@@ -314,9 +324,10 @@ mod chaos_monkey_2 {
         for size in [5, 11] {
             let image = patterned_u8_image(size, size, 3);
             let (pipeline, buffer) =
-                execute_to_buffer(&image, |builder| builder.rot45(Angle45::D45)).unwrap_or_else(
-                    |error| panic!("rot45 should succeed on odd {size}x{size}: {error}"),
-                );
+                execute_to_buffer(&image, |builder| builder.plan_rot45(Angle45::D45))
+                    .unwrap_or_else(|error| {
+                        panic!("rot45 should succeed on odd {size}x{size}: {error}")
+                    });
 
             assert!(pipeline.width > 0);
             assert!(pipeline.height > 0);
@@ -329,7 +340,7 @@ mod chaos_monkey_2 {
         for bands in [1, 2, 3, 4] {
             let image = patterned_u8_image(9, 7, bands);
             let (_pipeline, output) = execute_same_format(&image, |builder| {
-                builder.affine(
+                builder.plan_affine(
                     [1.0, 0.0, 0.0, 1.0],
                     0.0,
                     0.0,
@@ -350,7 +361,7 @@ mod chaos_monkey_2 {
             let image = patterned_u8_image(11, 9, bands);
             let (_pipeline, output) = execute_same_format(&image, |builder| {
                 builder
-                    .embed(
+                    .plan_embed(
                         17,
                         15,
                         3,
@@ -359,7 +370,7 @@ mod chaos_monkey_2 {
                         image.height(),
                         ExtendMode::Black,
                     )?
-                    .extract_area(3, 2, image.width(), image.height())
+                    .plan_extract_area(3, 2, image.width(), image.height())
             })
             .expect("band-count embed/extract should succeed");
 
@@ -373,9 +384,9 @@ mod chaos_monkey_2 {
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Hsv>()?
-                .similarity(1.0, 0.0, InterpolationKernel::Nearest)?
-                .colourspace::<SRgb>()
+                .plan_colourspace::<Hsv>()?
+                .plan_similarity(1.0, 0.0, InterpolationKernel::Nearest)?
+                .plan_colourspace::<SRgb>()
         })
         .expect("HSV similarity roundtrip should succeed");
 
@@ -392,7 +403,7 @@ mod chaos_monkey_2 {
             Image::from_buffer(2, 1, 3, vec![0.25f32, -0.5, 1.0, 0.0, 0.5, -1.0]).unwrap();
         let matrix = Matrix::identity(3);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
-            builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                 RecombOp::<F32>::new(matrix.clone()),
                 3,
                 3,
@@ -407,7 +418,7 @@ mod chaos_monkey_2 {
     fn pass5_sobel_pipeline_reports_f32_output_length_correctly() {
         let image = patterned_u8_image(9, 7, 3);
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
-            builder.then(Box::new(OperationBridge::new(
+            builder.append_dyn_op(Box::new(OperationBridge::new(
                 Sobel::<U8>::new(),
                 image.bands(),
             )))

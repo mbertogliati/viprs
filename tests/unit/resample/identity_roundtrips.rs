@@ -4,8 +4,8 @@ mod chaos_monkey {
     use viprs::{
         BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -63,19 +63,24 @@ mod chaos_monkey {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs::pipeline::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<F>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -96,19 +101,24 @@ mod chaos_monkey {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Vec<u8>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -140,7 +150,11 @@ mod chaos_monkey {
     fn pass1_rotate90_four_times_is_identity_for_rectangular_rgb_u8() {
         let image = patterned_rgb_u8(7, 5);
         let (_pipeline, output) = execute_to_image(&image, |builder| {
-            builder.rotate90()?.rotate90()?.rotate90()?.rotate90()
+            builder
+                .plan_rotate90()?
+                .plan_rotate90()?
+                .plan_rotate90()?
+                .plan_rotate90()
         })
         .expect("rotate90 x4 should behave as identity");
 
@@ -154,14 +168,16 @@ mod chaos_monkey {
         let image = patterned_rgb_u8(777, 333);
 
         let (_first_pipeline, first) =
-            execute_to_image(&image, |builder| builder.thumbnail(thumbnail(100)))
+            execute_to_image(&image, |builder| builder.plan_thumbnail(thumbnail(100)))
                 .expect("first thumbnail should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image(&first, |builder| builder.thumbnail(thumbnail(50)))
+            execute_to_image(&first, |builder| builder.plan_thumbnail(thumbnail(50)))
                 .expect("second thumbnail should succeed");
 
         let (chained_pipeline, chained) = execute_to_image(&image, |builder| {
-            builder.thumbnail(thumbnail(100))?.thumbnail(thumbnail(50))
+            builder
+                .plan_thumbnail(thumbnail(100))?
+                .plan_thumbnail(thumbnail(50))
         })
         .expect("chained thumbnails should succeed");
 
@@ -179,15 +195,17 @@ mod chaos_monkey {
         let half = Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3);
         let double = Resize::new(2.0, 2.0, InterpolationKernel::Lanczos3);
 
-        let (_first_pipeline, first) = execute_to_image(&image, |builder| builder.resize(half))
-            .expect("first resize should succeed");
+        let (_first_pipeline, first) =
+            execute_to_image(&image, |builder| builder.plan_resize(half))
+                .expect("first resize should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image(&first, |builder| builder.resize(double))
+            execute_to_image(&first, |builder| builder.plan_resize(double))
                 .expect("second resize should succeed");
 
-        let (chained_pipeline, chained) =
-            execute_to_image(&image, |builder| builder.resize(half)?.resize(double))
-                .expect("chained resizes should succeed");
+        let (chained_pipeline, chained) = execute_to_image(&image, |builder| {
+            builder.plan_resize(half)?.plan_resize(double)
+        })
+        .expect("chained resizes should succeed");
 
         assert_eq!(
             (chained_pipeline.width, chained_pipeline.height),
@@ -203,21 +221,21 @@ mod chaos_monkey {
 
         let (_first_pipeline, first) = execute_to_image(&image, |builder| {
             builder
-                .thumbnail(thumbnail(400))?
-                .colourspace::<Lab>()?
-                .colourspace::<SRgb>()
+                .plan_thumbnail(thumbnail(400))?
+                .plan_colourspace::<Lab>()?
+                .plan_colourspace::<SRgb>()
         })
         .expect("first thumbnail+colourspace+roundtrip should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image(&first, |builder| builder.thumbnail(thumbnail(200)))
+            execute_to_image(&first, |builder| builder.plan_thumbnail(thumbnail(200)))
                 .expect("second thumbnail should succeed");
 
         let (chained_pipeline, chained) = execute_to_image(&image, |builder| {
             builder
-                .thumbnail(thumbnail(400))?
-                .colourspace::<Lab>()?
-                .colourspace::<SRgb>()?
-                .thumbnail(thumbnail(200))
+                .plan_thumbnail(thumbnail(400))?
+                .plan_colourspace::<Lab>()?
+                .plan_colourspace::<SRgb>()?
+                .plan_thumbnail(thumbnail(200))
         })
         .expect("chained thumbnail+colourspace+roundtrip+thumbnail should succeed");
 

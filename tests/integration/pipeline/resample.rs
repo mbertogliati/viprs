@@ -4,8 +4,8 @@
 fn rotate90_pipeline_changes_dimensions() {
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::format::U8,
         ports::scheduler::TileScheduler,
@@ -17,10 +17,10 @@ fn rotate90_pipeline_changes_dimensions() {
     // Output (row-major, 2 wide × 4 tall):
     //   [5, 1, 6, 2, 7, 3, 8, 4]
     let source = MemorySource::<U8>::new(4, 2, 1, vec![1, 2, 3, 4, 5, 6, 7, 8]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .rotate90()
+    let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+        .plan_rotate90()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(
@@ -43,10 +43,10 @@ fn rotate90_pipeline_changes_dimensions() {
     // out(ox,oy) = in(x=oy, y=H-1-ox) = in(x=oy, y=3-ox) with H=4.
     // Expected (row-major): [13,9,5,1, 14,10,6,2, 15,11,7,3, 16,12,8,4]
     let source4 = MemorySource::<U8>::new(4, 4, 1, (1u8..=16).collect()).unwrap();
-    let pipeline4 = PipelineBuilder::from_source(source4)
-        .rotate90()
+    let pipeline4 = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source4)
+        .plan_rotate90()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline4.width, 4);
@@ -69,8 +69,8 @@ fn thumbnail_width_only_end_to_end_sets_expected_dimensions() {
     // the test fails for zero-filled output buffers as well as wrong geometry.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -92,10 +92,10 @@ fn thumbnail_width_only_end_to_end_sets_expected_dimensions() {
         MemorySource::<U8>::new(input_width as u32, input_height as u32, 1, pixels).unwrap();
     let thumbnail = Thumbnail::new(ThumbnailTarget::Width(256), InterpolationKernel::Lanczos3);
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(thumbnail)
+    let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+        .plan_thumbnail(thumbnail)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.width, 256);
@@ -140,7 +140,7 @@ fn thumbnail_width_only_end_to_end_sets_expected_dimensions() {
 fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: u32) {
     use std::num::NonZeroU8;
     use viprs::{
-        PipelineBuilder, ViprsError,
+        ViprsError,
         adapters::{
             scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
             sources::decoder_source::DecoderSource,
@@ -212,16 +212,16 @@ fn run_thumbnail_sharpen_with_native_jpeg_shrink(input_size: u32, target_width: 
 
     let source =
         DecoderSource::<_, U8>::new(NativeShrinkRoundingDecoder { input_size }, b"jpeg").unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(target_width),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.width, target_width);

@@ -1,234 +1,164 @@
-//! Integration tests: dynamic pipeline (PipelineBuilder) connected to real sources.
+//! Integration tests for the public `ImagePipeline` operation DSL.
 //!
-//! All tests use `MemorySource` with known pixel data to verify the full
-//! Source → Op → Sink contract. See ADR-011 for the rationale behind removing the
-//! static pipeline API.
+//! These tests exercise the first-class public vocabulary with in-memory inputs
+//! and an explicit raw-pixel output contract.
 
-// ── from_source without explicit Box::new ────────────────────────────────────
+use std::{
+    fs,
+    io::{self, Write},
+    path::PathBuf,
+    sync::{Arc, Mutex},
+    time::{SystemTime, UNIX_EPOCH},
+};
 
-#[test]
-fn memory_source_add_constant_end_to_end() {
-    // Verifies that PipelineBuilder::from_source accepts a concrete type directly
-    // (no Box::new at the call site) and that the full pipeline produces correct output.
-    use viprs::{
-        Add, OperationBridge,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        domain::format::U8,
-        ports::scheduler::TileScheduler,
-    };
+use viprs::{BandFormatId, Format, ImagePipeline, Input, Sink, U8};
 
-    // 4x4 single-band image where every pixel is 10.
-    let source = MemorySource::<U8>::new(4, 4, 1, vec![10u8; 16]).unwrap();
-    let add_op = Add::<U8>::new(vec![5u8; 16]);
-    let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
-
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(dyn_op)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    let mut sink = MemorySink::new(4, 4, 1, 1).unwrap();
-    RayonScheduler::new(2)
-        .unwrap()
-        .run(&pipeline, &mut sink)
-        .unwrap();
-
-    let output = sink.into_buffer();
-    assert!(
-        output.iter().all(|&b| b == 15),
-        "Expected all 15s (10 + 5), got: {:?}",
-        output
-    );
+#[derive(Clone, Default)]
+struct RecordingWriter {
+    bytes: Arc<Mutex<Vec<u8>>>,
 }
 
-#[test]
-fn memory_source_clamp_to_edge_does_not_panic() {
-    // Verify that MemorySource handles clamp-to-edge correctly when the scheduler
-    // requests a region that exactly matches the image boundary.
-    use viprs::{
-        Add, OperationBridge,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        domain::format::U8,
-        ports::scheduler::TileScheduler,
-    };
-
-    // 4x4 image with distinct pixel values to catch any coordinate confusion.
-    let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-    let add_op = Add::<U8>::new(vec![0u8; 16]); // identity (add zero)
-    let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
-
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(dyn_op)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    let mut sink = MemorySink::new(4, 4, 1, 1).unwrap();
-    RayonScheduler::new(1)
-        .unwrap()
-        .run(&pipeline, &mut sink)
-        .unwrap();
-
-    let output = sink.into_buffer();
-    let expected: Vec<u8> = (0u8..16).collect();
-    assert_eq!(
-        output, expected,
-        "Source pixels were not reproduced correctly"
-    );
-}
-
-// ── Convenience methods ───────────────────────────────────────────────────────
-
-#[test]
-fn convenience_invert_end_to_end() {
-    // PipelineBuilder::invert() builds correctly and produces inverted pixels.
-    use viprs::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        domain::format::U8,
-        ports::scheduler::TileScheduler,
-    };
-
-    // 4x4 single-band: all pixels = 0, inverted → 255.
-    let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .invert()
-        .unwrap()
-        .build()
-        .unwrap();
-
-    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-    RayonScheduler::new(1)
-        .unwrap()
-        .run(&pipeline, &mut sink)
-        .unwrap();
-
-    let output = sink.into_buffer();
-    assert!(
-        output.iter().all(|&b| b == 255),
-        "Invert(0) = 255, got: {:?}",
-        output
-    );
-}
-
-#[test]
-fn convenience_linear_end_to_end() {
-    // Validates per-pixel linear math across distinct samples so a constant-filled buffer
-    // cannot hide indexing or broadcast bugs.
-    use viprs::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        domain::format::F32,
-        ports::scheduler::TileScheduler,
-    };
-
-    let input = [1.0f32, 2.0, 3.0, 4.0];
-    let expected = [4.0f32, 7.0, 10.0, 13.0];
-    let source = MemorySource::<F32>::new(4, 1, 1, input.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .linear(3.0, 1.0)
-        .unwrap()
-        .build()
-        .unwrap();
-
-    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-    RayonScheduler::new(1)
-        .unwrap()
-        .run(&pipeline, &mut sink)
-        .unwrap();
-
-    let output = sink.into_buffer();
-    let floats: &[f32] = bytemuck::cast_slice(&output);
-    assert_eq!(floats.len(), expected.len());
-    for (i, (&got, &expected)) in floats.iter().zip(expected.iter()).enumerate() {
-        assert!(
-            (got - expected).abs() < 1e-5,
-            "pixel {i}: expected {expected}, got {got}"
-        );
+impl RecordingWriter {
+    fn bytes(&self) -> Vec<u8> {
+        self.bytes.lock().unwrap().clone()
     }
 }
 
-#[test]
-fn convenience_cast_u8_to_f32_end_to_end() {
-    // Validates normalization across multiple U8 samples so the cast path must handle
-    // low, mid, and max values correctly instead of a single white pixel.
-    use viprs::{
-        BandFormatId,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        domain::format::U8,
-        ports::scheduler::TileScheduler,
-    };
+impl Write for RecordingWriter {
+    fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
+        self.bytes.lock().unwrap().extend_from_slice(buffer);
+        Ok(buffer.len())
+    }
 
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+fn run_u8_pipeline(
+    pixels: Vec<u8>,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline, viprs::BuildError>,
+) -> Vec<u8> {
+    let input = Input::memory::<U8>(4, 4, 1, pixels).unwrap();
+    let output = configure(ImagePipeline::from_input(input))
+        .unwrap()
+        .raw_pixels()
+        .run_blocking(Sink::memory())
+        .unwrap();
+
+    assert_eq!(output.width(), 4);
+    assert_eq!(output.height(), 4);
+    assert_eq!(output.bands(), 1);
+    assert_eq!(output.format(), Format::U8);
+    output.as_bytes().to_vec()
+}
+
+#[test]
+fn memory_input_raw_pixels_end_to_end() {
+    let output =
+        ImagePipeline::from_input(Input::memory::<U8>(4, 4, 1, (0u8..16).collect()).unwrap())
+            .raw_pixels()
+            .run_blocking(Sink::memory())
+            .unwrap();
+
+    assert_eq!(output.width(), 4);
+    assert_eq!(output.height(), 4);
+    assert_eq!(output.bands(), 1);
+    assert_eq!(output.format(), Format::U8);
+    assert_eq!(output.as_bytes(), &(0u8..16).collect::<Vec<_>>());
+}
+
+#[test]
+fn memory_input_raw_pixels_writer_sink_writes_unencoded_bytes() {
+    let writer = RecordingWriter::default();
+    let captured = writer.clone();
+
+    let output = ImagePipeline::from_input(Input::memory::<U8>(4, 1, 1, vec![1, 2, 3, 4]).unwrap())
+        .raw_pixels()
+        .run_blocking(Sink::writer(writer))
+        .unwrap();
+
+    assert_eq!(output.width(), 4);
+    assert_eq!(output.height(), 1);
+    assert_eq!(output.bands(), 1);
+    assert_eq!(output.format(), Format::U8);
+    assert_eq!(output.as_bytes(), &[1, 2, 3, 4]);
+    assert_eq!(captured.bytes(), &[1, 2, 3, 4]);
+}
+
+#[test]
+fn memory_input_raw_pixels_path_sink_writes_unencoded_bytes() {
+    let path = unique_raw_sink_path();
+
+    let output = ImagePipeline::from_input(Input::memory::<U8>(4, 1, 1, vec![9, 8, 7, 6]).unwrap())
+        .raw_pixels()
+        .run_blocking(Sink::path(&path))
+        .unwrap();
+
+    assert_eq!(output.as_bytes(), &[9, 8, 7, 6]);
+    assert_eq!(fs::read(&path).unwrap(), &[9, 8, 7, 6]);
+    fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn fluent_invert_end_to_end() {
+    let output = run_u8_pipeline(vec![0u8; 16], |pipeline| pipeline.invert()?.commit());
+
+    assert!(
+        output.iter().all(|&sample| sample == 255),
+        "Invert(0) must be 255, got: {output:?}"
+    );
+}
+
+#[test]
+fn fluent_linear_end_to_end() {
+    let input = Input::memory::<viprs::F32>(4, 1, 1, vec![1.0f32, 2.0, 3.0, 4.0]).unwrap();
+    let output = ImagePipeline::from_input(input)
+        .linear(3.0, 1.0)
+        .unwrap()
+        .raw_pixels()
+        .run_blocking(Sink::memory())
+        .unwrap();
+
+    let floats: &[f32] = bytemuck::cast_slice(output.as_bytes());
+    assert_eq!(floats, &[4.0, 7.0, 10.0, 13.0]);
+}
+
+#[test]
+fn fluent_cast_u8_to_f32_end_to_end() {
     let input = [0u8, 64, 127, 255];
     let expected = [0.0f32, 64.0 / 255.0, 127.0 / 255.0, 1.0];
-    let source = MemorySource::<U8>::new(4, 1, 1, input.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let output = ImagePipeline::from_input(Input::memory::<U8>(4, 1, 1, input.to_vec()).unwrap())
         .cast(BandFormatId::F32)
         .unwrap()
-        .build()
+        .raw_pixels()
+        .run_blocking(Sink::memory())
         .unwrap();
 
-    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-    RayonScheduler::new(1)
-        .unwrap()
-        .run(&pipeline, &mut sink)
-        .unwrap();
-
-    let output = sink.into_buffer();
-    let floats: &[f32] = bytemuck::cast_slice(&output);
-    assert_eq!(floats.len(), expected.len());
-    for (i, (&got, &expected)) in floats.iter().zip(expected.iter()).enumerate() {
+    assert_eq!(output.format(), Format::F32);
+    let floats: &[f32] = bytemuck::cast_slice(output.as_bytes());
+    for (index, (&got, &expected)) in floats.iter().zip(expected.iter()).enumerate() {
         assert!(
             (got - expected).abs() < 1e-6,
-            "pixel {i}: expected {expected}, got {got}"
+            "pixel {index}: expected {expected}, got {got}"
         );
     }
 }
 
 #[test]
 fn chained_invert_twice_is_identity() {
-    // Two consecutive invert() calls must cancel out.
-    use viprs::{
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
-        },
-        domain::format::U8,
-        ports::scheduler::TileScheduler,
-    };
+    let input: Vec<u8> = (0u8..16).collect();
+    let output = run_u8_pipeline(input.clone(), |pipeline| {
+        pipeline.invert()?.invert()?.commit()
+    });
 
-    let source_data: Vec<u8> = (0u8..16).collect();
-    let expected = source_data.clone();
-    let source = MemorySource::<U8>::new(4, 4, 1, source_data).unwrap();
+    assert_eq!(output, input, "Double-invert must be identity");
+}
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .invert()
+fn unique_raw_sink_path() -> PathBuf {
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
         .unwrap()
-        .invert()
-        .unwrap()
-        .build()
-        .unwrap();
-
-    let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-    RayonScheduler::new(2)
-        .unwrap()
-        .run(&pipeline, &mut sink)
-        .unwrap();
-
-    let output = sink.into_buffer();
-    assert_eq!(output, expected, "Double-invert must be identity");
+        .as_nanos();
+    std::env::temp_dir().join(format!("viprs-raw-sink-{}-{nanos}.raw", std::process::id()))
 }

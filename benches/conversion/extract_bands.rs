@@ -5,7 +5,7 @@ mod common;
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, ops::conversion::extract_bands::ExtractBands},
@@ -21,10 +21,10 @@ fn bench_extract_bands(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(ExtractBands::<U8>::new(0, 2, 3).into_bridge()))
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(ExtractBands::<U8>::new(0, 2, 3).into_bridge()))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

@@ -2,8 +2,8 @@
 //! horizontally-threaded pipeline architecture.
 //!
 //! For common application workflows, the crate exposes a small façade via
-//! [`prelude`]: [`ImageApi`] + [`ViprsError`]. Power users can opt into the
-//! explicit advanced surfaces under [`pipeline`], [`ops`], and [`codecs`].
+//! [`prelude`]: [`ImageApi`] + [`ViprsError`]. Power users can opt into direct
+//! operation and codec surfaces under [`ops`] and [`codecs`].
 //!
 //! # Quick start
 //!
@@ -25,7 +25,6 @@
 //! # Advanced surfaces
 //!
 //! - [`prelude`] for the fluent end-user API
-//! - [`pipeline`] for explicit pipeline construction and execution internals
 //! - [`ops`] for direct operation imports
 //! - [`codecs`] for advanced encode/decode control
 //!
@@ -64,27 +63,6 @@ pub mod prelude {
     };
 }
 
-/// Explicit advanced pipeline surface for manual graph construction and execution.
-pub mod pipeline {
-    pub use crate::adapters::pipeline::Flush;
-    pub use crate::adapters::pipeline::{
-        CompiledNode, CompiledOp, CompiledPipeline, InputSlicePtr, LineCacheConfig, PipelineArena,
-        PipelineBuilder, PipelineOp, ThreadBufferPool,
-    };
-    pub use crate::adapters::scheduler::rayon_scheduler::RayonScheduler;
-    pub use crate::adapters::sinks::discard::DiscardSink;
-    pub use crate::adapters::sinks::memory::MemorySink;
-    pub use crate::adapters::sources::{memory::MemorySource, zero::ZeroSource};
-    pub use crate::domain::error::BuildError;
-    pub use crate::domain::image::DemandHint;
-    pub use crate::domain::op::{
-        DynOperation, DynViewOp, NodeSpec, OperationBridge, SourceReadPlan, ViewBridge,
-    };
-    pub use crate::ports::scheduler::{ReducingScheduler, TileScheduler};
-    pub use crate::ports::sink::{ConcurrentSink, ImageSink};
-    pub use crate::ports::source::{DynImageSource, ImageSource};
-}
-
 /// Direct operation namespace mirroring `domain::ops` for explicit composition.
 pub mod ops {
     pub use crate::domain::ops::*;
@@ -101,7 +79,9 @@ pub mod codecs {
 /// First-class public image pipeline API.
 pub mod image_pipeline {
     pub use crate::adapters::image_pipeline::{
-        Format, ImagePipeline, Input, PipelineOutput, ProcessingConfig, Sink,
+        Angle, Angle45, BandFormatId, Colorspace, ColorspaceId, DemandHint, ExtendMode, Format,
+        Gravity, ImagePipeline, Input, InterpolationKernel, PipelineOutput, ProcessingConfig,
+        Resize, Sink, Thumbnail,
     };
 }
 
@@ -114,10 +94,13 @@ pub use adapters::image_pipeline::{
 };
 pub use domain::error::ViprsError;
 pub use domain::limits::{DecodeLimits, ResourceLimits};
+#[doc(hidden)]
+pub use viprs_runtime::pipeline::CompiledPipeline;
+#[doc(hidden)]
+pub use viprs_runtime::pipeline::PipelineArena;
 
 #[cfg(feature = "fft")]
 pub use adapters::freqfilt::{fwfft, invfft};
-pub use adapters::pipeline::{CompiledPipeline, PipelineBuilder};
 pub use adapters::sources::{BlackSource, any::AnySource};
 pub use domain::error::BuildError;
 pub use domain::format::{BandFormat, BandFormatId, F32, F64, U8, U16};
@@ -139,7 +122,7 @@ pub use ports::source::ImageSource;
 mod public_api_tests {
     use std::any::TypeId;
 
-    use super::{adapters, codecs, domain, ops, pipeline, prelude};
+    use super::{adapters, codecs, domain, ops, prelude};
 
     #[test]
     fn prelude_reexports_simple_api_surface() {
@@ -150,30 +133,6 @@ mod public_api_tests {
         assert_eq!(
             TypeId::of::<prelude::ViprsError>(),
             TypeId::of::<crate::ViprsError>()
-        );
-    }
-
-    #[test]
-    fn pipeline_reexports_advanced_pipeline_types() {
-        assert_eq!(
-            TypeId::of::<pipeline::PipelineBuilder>(),
-            TypeId::of::<adapters::pipeline::PipelineBuilder>(),
-        );
-        assert_eq!(
-            TypeId::of::<pipeline::PipelineArena>(),
-            TypeId::of::<adapters::pipeline::PipelineArena>(),
-        );
-        assert_eq!(
-            TypeId::of::<pipeline::CompiledPipeline>(),
-            TypeId::of::<adapters::pipeline::CompiledPipeline>(),
-        );
-        assert_eq!(
-            TypeId::of::<pipeline::NodeSpec>(),
-            TypeId::of::<domain::op::NodeSpec>()
-        );
-        assert_eq!(
-            TypeId::of::<pipeline::BuildError>(),
-            TypeId::of::<domain::error::BuildError>(),
         );
     }
 

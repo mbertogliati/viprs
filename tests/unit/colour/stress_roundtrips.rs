@@ -4,8 +4,8 @@ mod chaos_monkey_3 {
     use viprs::{
         BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8, ViprsError,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab, SRgb},
@@ -69,19 +69,24 @@ mod chaos_monkey_3 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs::pipeline::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -102,19 +107,24 @@ mod chaos_monkey_3 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -126,18 +136,23 @@ mod chaos_monkey_3 {
         Ok((pipeline, sink.into_buffer()))
     }
 
-    fn build_pipeline_only<F, S: viprs::pipeline::Flush>(
+    fn build_pipeline_only<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<CompiledPipeline, ViprsError>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))?
-        .build()
+        configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )?
+        .compile()
         .map_err(Into::into)
     }
 
@@ -185,8 +200,14 @@ mod chaos_monkey_3 {
         flipped
     }
 
-    fn assert_identity_sizes<S: viprs::pipeline::Flush>(
-        configure: impl Copy + Fn(PipelineBuilder, u32, u32) -> Result<PipelineBuilder<S>, BuildError>,
+    fn assert_identity_sizes<S: viprs_runtime::pipeline::internal::CommitPlan>(
+        configure: impl Copy
+        + Fn(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+            u32,
+            u32,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
         tolerance: u8,
     ) {
         for image in [
@@ -213,8 +234,8 @@ mod chaos_monkey_3 {
             |builder, _width, _height| {
                 builder
                     .with_colorspace(ColorspaceId::SRgb)
-                    .colourspace::<Lab>()?
-                    .colourspace::<SRgb>()
+                    .plan_colourspace::<Lab>()?
+                    .plan_colourspace::<SRgb>()
             },
             2,
         );
@@ -226,8 +247,8 @@ mod chaos_monkey_3 {
             |builder, _width, _height| {
                 builder
                     .with_colorspace(ColorspaceId::SRgb)
-                    .colourspace::<Hsv>()?
-                    .colourspace::<SRgb>()
+                    .plan_colourspace::<Hsv>()?
+                    .plan_colourspace::<SRgb>()
             },
             2,
         );
@@ -249,8 +270,8 @@ mod chaos_monkey_3 {
             let (_pipeline, output) = execute_to_image(&image, |builder| {
                 builder
                     .with_colorspace(ColorspaceId::SRgb)
-                    .colourspace::<Lab>()?
-                    .colourspace::<SRgb>()
+                    .plan_colourspace::<Lab>()?
+                    .plan_colourspace::<SRgb>()
             })
             .map_err(TestCaseError::fail)?;
 
@@ -266,11 +287,11 @@ mod chaos_monkey_3 {
         let (_pipeline, output) = execute_to_image(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Hsv>()?
-                .colourspace::<SRgb>()?
-                .gauss_blur(0.0)?
-                .linear(1.0, 0.0)?
-                .resize(Resize::new(1.0, 1.0, InterpolationKernel::Lanczos3))
+                .plan_colourspace::<Hsv>()?
+                .plan_colourspace::<SRgb>()?
+                .plan_gauss_blur(0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_resize(Resize::new(1.0, 1.0, InterpolationKernel::Lanczos3))
         })
         .expect("chained colourspace pipeline should succeed");
 

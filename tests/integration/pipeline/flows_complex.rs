@@ -1,10 +1,11 @@
 use super::flows_support::*;
 use bytemuck::{cast_slice, cast_slice_mut};
 use viprs::{
-    BuildError, F32, F64, Image, ImageMetadata, Interpretation, OperationBridge, Region, U8,
+    BuildError, F32, F64, Image, ImageMetadata, Interpretation, OperationBridge, PipelineArena,
+    Region, U8,
     adapters::{
-        pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -32,8 +33,8 @@ use viprs::ports::codec::{ImageDecoder, ImageEncoder};
 use viprs::domain::ops::colour::{IccTransformOptions, icc_transform, profile_load};
 #[cfg(feature = "fft")]
 use viprs::domain::ops::freqfilt::{COMPLEX_BANDS, FreqMultOp, PhasecorOp};
-#[cfg(feature = "fft")]
 use viprs::{fwfft, invfft};
+#[cfg(feature = "fft")]
 
 fn fnv1a64(bytes: &[u8]) -> u64 {
     bytes.iter().fold(0xcbf2_9ce4_8422_2325_u64, |acc, byte| {
@@ -397,16 +398,23 @@ fn flow1_full_thumbnail_pipeline_preserves_geometry_alpha_and_hashes() {
     let rgba = load_u8_fixture("bench_2048x2048_rgba.png");
     let small = load_u8_fixture("bench_512x512.jpg");
 
-    let (thumb_pipeline, thumb_output) =
-        execute_u8_pipeline_to_image(&jpeg, |builder| builder.thumbnail(thumbnail_config(400)));
-    let thumb_output_repeat =
-        execute_u8_pipeline_to_image(&jpeg, |builder| builder.thumbnail(thumbnail_config(400))).1;
-    let (rgba_pipeline, rgba_output) =
-        execute_u8_pipeline_to_image(&rgba, |builder| builder.thumbnail(thumbnail_config(256)));
-    let rgba_output_repeat =
-        execute_u8_pipeline_to_image(&rgba, |builder| builder.thumbnail(thumbnail_config(256))).1;
-    let (upscale_pipeline, upscale_output) =
-        execute_u8_pipeline_to_image(&small, |builder| builder.thumbnail(thumbnail_config(1600)));
+    let (thumb_pipeline, thumb_output) = execute_u8_pipeline_to_image(&jpeg, |builder| {
+        builder.plan_thumbnail(thumbnail_config(400))
+    });
+    let thumb_output_repeat = execute_u8_pipeline_to_image(&jpeg, |builder| {
+        builder.plan_thumbnail(thumbnail_config(400))
+    })
+    .1;
+    let (rgba_pipeline, rgba_output) = execute_u8_pipeline_to_image(&rgba, |builder| {
+        builder.plan_thumbnail(thumbnail_config(256))
+    });
+    let rgba_output_repeat = execute_u8_pipeline_to_image(&rgba, |builder| {
+        builder.plan_thumbnail(thumbnail_config(256))
+    })
+    .1;
+    let (upscale_pipeline, upscale_output) = execute_u8_pipeline_to_image(&small, |builder| {
+        builder.plan_thumbnail(thumbnail_config(1600))
+    });
 
     assert_thumbnail_dimensions(&thumb_pipeline, &jpeg, 400);
     assert_thumbnail_dimensions(&rgba_pipeline, &rgba, 256);
@@ -444,7 +452,7 @@ fn flow1_full_thumbnail_pipeline_preserves_geometry_alpha_and_hashes() {
 fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() {
     let image = load_u8_fixture("bench_512x512.jpg");
     let identity = execute_u8_pipeline_to_image(&image, |builder| {
-        builder.affine(
+        builder.plan_affine(
             [1.0, 0.0, 0.0, 1.0],
             0.0,
             0.0,
@@ -461,18 +469,18 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
     );
 
     let rotated = execute_u8_pipeline_to_image(&image, |builder| {
-        builder.similarity(1.0, 45.0, InterpolationKernel::Bicubic)
+        builder.plan_similarity(1.0, 45.0, InterpolationKernel::Bicubic)
     })
     .1;
     let rotated_repeat = execute_u8_pipeline_to_image(&image, |builder| {
-        builder.similarity(1.0, 45.0, InterpolationKernel::Bicubic)
+        builder.plan_similarity(1.0, 45.0, InterpolationKernel::Bicubic)
     })
     .1;
     assert_ne!(fnv1a64(rotated.pixels()), 0);
     assert_eq!(fnv1a64(rotated.pixels()), fnv1a64(rotated_repeat.pixels()));
 
     let background_fill = execute_u8_pipeline_to_image(&image, |builder| {
-        builder.affine(
+        builder.plan_affine(
             [1.0, 0.0, 0.0, 1.0],
             200.0,
             150.0,
@@ -489,7 +497,7 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
     );
 
     let tiny = execute_u8_pipeline_to_image(&image, |builder| {
-        builder.affine(
+        builder.plan_affine(
             [100.0, 0.0, 0.0, 100.0],
             0.0,
             0.0,
@@ -501,7 +509,10 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
     .1;
     assert_eq!((tiny.width(), tiny.height()), (1, 1));
 
-    let degenerate = PipelineBuilder::from_source(memory_source_from_image(&image)).affine(
+    let degenerate = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+        memory_source_from_image(&image),
+    )
+    .plan_affine(
         [1.0, 2.0, 2.0, 4.0],
         0.0,
         0.0,
@@ -881,7 +892,7 @@ fn flow10_composite_affine_icc_pipeline_keeps_output_visible_and_roundtrips_jpeg
         .expect("srgb output")
         .clone();
     let transformed_overlay = execute_u8_pipeline_to_image(&overlay, |builder| {
-        builder.similarity(0.5, 15.0, InterpolationKernel::Bilinear)
+        builder.plan_similarity(0.5, 15.0, InterpolationKernel::Bilinear)
     })
     .1;
     let overlay_canvas = place_overlay_on_canvas(
@@ -892,7 +903,7 @@ fn flow10_composite_affine_icc_pipeline_keeps_output_visible_and_roundtrips_jpeg
         100,
     );
     let watermark_thumb = execute_u8_pipeline_to_image(&watermark, |builder| {
-        builder.thumbnail(thumbnail_config(64))
+        builder.plan_thumbnail(thumbnail_config(64))
     })
     .1;
     let watermark_rgba = {

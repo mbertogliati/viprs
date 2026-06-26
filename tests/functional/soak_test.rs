@@ -8,8 +8,8 @@ use std::{
 use viprs::{
     BuildError, CompiledPipeline, Image, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -91,10 +91,10 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 fn build_thumbnail_pipeline(image: &Image<U8>) -> CompiledPipeline {
-    PipelineBuilder::from_source(memory_source_from_image(image))
-        .thumbnail(thumbnail())
+    viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(image))
+        .plan_thumbnail(thumbnail())
         .unwrap_or_else(|error: BuildError| panic!("pipeline stage failed: {error:?}"))
-        .build()
+        .compile()
         .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"))
 }
 

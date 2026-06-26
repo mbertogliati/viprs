@@ -4,7 +4,7 @@ use super::support as golden;
 use bytemuck::cast_slice;
 use std::{mem::size_of, process::Command};
 use viprs::{
-    BuildError, OperationBridge, PipelineBuilder, TileScheduler,
+    BuildError, OperationBridge, TileScheduler,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -20,17 +20,20 @@ use viprs::{
 
 use golden::{ImageSpec, VipsBandFormat};
 
-fn run_pipeline_u8<S: viprs::pipeline::Flush>(
+fn run_pipeline_u8<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -41,17 +44,20 @@ fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     sink.into_buffer()
 }
 
-fn run_pipeline_f32<S: viprs::pipeline::Flush>(
+fn run_pipeline_f32<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -320,7 +326,7 @@ fn sharpen_libvips_gradient_rgb_center_crop() {
     let case = "rgb_gradient_center_crop";
     let source = rgb_gray_gradient_source(width, height);
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.then(Box::new(OperationBridge::new(
+        builder.append_dyn_op(Box::new(OperationBridge::new(
             Sharpen::<U8>::new(0.5, 3.0),
             bands,
         )))
@@ -355,7 +361,7 @@ fn sobel_libvips_step_edge() {
     let case = "step_edge_u8";
     let source = step_edge_source(width, height, width / 2);
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Sobel::<U8>::new(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Sobel::<U8>::new(), 1)))
     });
     let input = write_u8_input("sobel_libvips", case, "input", &source, width, height);
     let expected = golden::generate_vips_golden(
@@ -380,7 +386,7 @@ fn canny_libvips_step_edge_sigma_1_4() {
     let case = "step_edge_sigma_1_4";
     let source = step_edge_source(width, height, width / 2);
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Canny::<U8>::new(1.4), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Canny::<U8>::new(1.4), 1)))
     });
     let input = write_u8_input("canny_libvips", case, "input", &source, width, height);
     let expected = golden::generate_vips_golden(
@@ -405,8 +411,8 @@ fn convsep_libvips_matches_gaussblur() {
     let convsep = ConvSep::new(gaussian_kernel_1d(1.0)).unwrap();
     let actual = run_pipeline_f32(source.clone(), width, height, 1, |builder| {
         builder
-            .then(Box::new(OperationBridge::new(convsep.h, 1)))?
-            .then(Box::new(OperationBridge::new(convsep.v, 1)))
+            .append_dyn_op(Box::new(OperationBridge::new(convsep.h, 1)))?
+            .append_dyn_op(Box::new(OperationBridge::new(convsep.v, 1)))
     });
     let input = write_f32_input("convsep_libvips", case, "input", &source, width, height);
     let _mask = write_gaussmat_mask("convsep_libvips", case, 1.0);
@@ -431,7 +437,7 @@ fn dilate_libvips_rect_3x3() {
     let source = morphology_source();
     let mask = [255u8; 9];
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Dilate::rect(3).unwrap(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Dilate::rect(3).unwrap(), 1)))
     });
     let input = write_u8_input("dilate_libvips", case, "input", &source, width, height);
     let mask_path = write_u8_input_spec(
@@ -464,7 +470,7 @@ fn erode_libvips_rect_3x3() {
     let source = morphology_source();
     let mask = [255u8; 9];
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Erode::rect(3).unwrap(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Erode::rect(3).unwrap(), 1)))
     });
     let input = write_u8_input("erode_libvips", case, "input", &source, width, height);
     let mask_path = write_u8_input_spec(
@@ -496,7 +502,7 @@ fn rank_libvips_median_rect_3x3() {
     let case = "median_3x3_rank_4";
     let source = rank_source();
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(
+        builder.append_dyn_op(Box::new(OperationBridge::new(
             RankOp::<U8>::new(3, 3, 4).unwrap(),
             1,
         )))
@@ -518,7 +524,7 @@ fn labelregions_libvips_binary_components() {
     let case = "binary_components";
     let source = labelregions_source();
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(LabelRegionsOp::new(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(LabelRegionsOp::new(), 1)))
     });
     let input = write_u8_input(
         "labelregions_libvips",

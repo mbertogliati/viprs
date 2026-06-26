@@ -8,7 +8,7 @@ fn embed_then_extract_area_executes_end_to_end() {
     let image = load_u8_fixture("bench_512x512.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
         builder
-            .embed(
+            .plan_embed(
                 800,
                 600,
                 0,
@@ -17,7 +17,7 @@ fn embed_then_extract_area_executes_end_to_end() {
                 image.height(),
                 ExtendMode::Black,
             )?
-            .extract_area(100, 100, 400, 300)
+            .plan_extract_area(100, 100, 400, 300)
     });
 
     assert_eq!(
@@ -33,9 +33,9 @@ fn thumbnail_then_rotate90_then_flip_horizontal_executes_end_to_end() {
     let image = load_u8_fixture("bench_777x333.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
         builder
-            .thumbnail(thumbnail_config(400))?
-            .rotate90()?
-            .flip_horizontal()
+            .plan_thumbnail(thumbnail_config(400))?
+            .plan_rotate90()?
+            .plan_flip_horizontal()
     });
 
     let (thumb_width, thumb_height) = expected_thumbnail_dimensions(&image, 400);
@@ -52,8 +52,8 @@ fn thumbnail_then_sharpen_then_gauss_blur_then_thumbnail_executes_end_to_end() {
     let image = load_u8_fixture("bench_2048x2048.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
         builder
-            .thumbnail(thumbnail_config(400))?
-            .sharpen(
+            .plan_thumbnail(thumbnail_config(400))?
+            .plan_sharpen(
                 SHARPEN_SIGMA,
                 SHARPEN_X1,
                 SHARPEN_Y2,
@@ -61,8 +61,8 @@ fn thumbnail_then_sharpen_then_gauss_blur_then_thumbnail_executes_end_to_end() {
                 SHARPEN_M1,
                 SHARPEN_M2,
             )?
-            .gauss_blur(1.0)?
-            .thumbnail(thumbnail_config(200))
+            .plan_gauss_blur(1.0)?
+            .plan_thumbnail(thumbnail_config(200))
     });
 
     assert_eq!(
@@ -78,9 +78,9 @@ fn thumbnail_then_colourspace_lab_then_srgb_keeps_geometry() {
     let image = load_u8_fixture("bench_2048x2048.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
         builder
-            .thumbnail(thumbnail_config(400))?
-            .colourspace::<Lab>()?
-            .colourspace::<SRgb>()
+            .plan_thumbnail(thumbnail_config(400))?
+            .plan_colourspace::<Lab>()?
+            .plan_colourspace::<SRgb>()
     });
 
     assert_thumbnail_dimensions(&pipeline, &image, 400);
@@ -91,7 +91,7 @@ fn thumbnail_then_colourspace_lab_then_srgb_keeps_geometry() {
 fn invert_then_thumbnail_keeps_geometry() {
     let image = load_u8_fixture("bench_2048x2048.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
-        builder.invert()?.thumbnail(thumbnail_config(400))
+        builder.plan_invert()?.plan_thumbnail(thumbnail_config(400))
     });
 
     assert_thumbnail_dimensions(&pipeline, &image, 400);
@@ -104,7 +104,7 @@ fn load_format_then_thumbnail_then_encode_roundtrips() {
     {
         let image = load_u8_fixture("bench_2048x2048.jpg");
         let (pipeline, output) = execute_u8_pipeline_to_image(&image, |builder| {
-            builder.thumbnail(thumbnail_config(400))
+            builder.plan_thumbnail(thumbnail_config(400))
         });
         assert_thumbnail_dimensions(&pipeline, &image, 400);
         assert_codec_roundtrip(&JpegCodec, &output, pipeline.width, pipeline.height);
@@ -114,7 +114,7 @@ fn load_format_then_thumbnail_then_encode_roundtrips() {
     {
         let image = load_u8_fixture("bench_2048x2048.png");
         let (pipeline, output) = execute_u8_pipeline_to_image(&image, |builder| {
-            builder.thumbnail(thumbnail_config(400))
+            builder.plan_thumbnail(thumbnail_config(400))
         });
         assert_thumbnail_dimensions(&pipeline, &image, 400);
         assert_codec_roundtrip(
@@ -129,7 +129,7 @@ fn load_format_then_thumbnail_then_encode_roundtrips() {
     {
         let image = load_u8_fixture("bench_2048x2048.webp");
         let (pipeline, output) = execute_u8_pipeline_to_image(&image, |builder| {
-            builder.thumbnail(thumbnail_config(400))
+            builder.plan_thumbnail(thumbnail_config(400))
         });
         assert_thumbnail_dimensions(&pipeline, &image, 400);
         assert_codec_roundtrip(&WebpCodec, &output, pipeline.width, pipeline.height);
@@ -139,7 +139,7 @@ fn load_format_then_thumbnail_then_encode_roundtrips() {
     {
         let image = load_u8_fixture("bench_2048x2048.tif");
         let (pipeline, output) = execute_u8_pipeline_to_image(&image, |builder| {
-            builder.thumbnail(thumbnail_config(400))
+            builder.plan_thumbnail(thumbnail_config(400))
         });
         assert_thumbnail_dimensions(&pipeline, &image, 400);
         assert_codec_roundtrip(
@@ -156,7 +156,7 @@ fn load_format_then_thumbnail_then_encode_roundtrips() {
 fn thumbnail_then_sharpen_handles_odd_dimensions() {
     let image = load_u8_fixture("bench_777x333.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
-        builder.thumbnail(thumbnail_config(400))?.sharpen(
+        builder.plan_thumbnail(thumbnail_config(400))?.plan_sharpen(
             SHARPEN_SIGMA,
             SHARPEN_X1,
             SHARPEN_Y2,

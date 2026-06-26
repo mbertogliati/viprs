@@ -15,7 +15,7 @@ use crate::adapters::codecs::PngCodec;
 #[cfg(feature = "webp")]
 use crate::adapters::codecs::WebpCodec;
 use crate::adapters::{
-    pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+    pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
     sources::memory::MemorySource,
 };
 use crate::domain::colorspace::ColorspaceId;
@@ -400,7 +400,7 @@ fn image_api_sharpen_matches_pipeline_builder_defaults() {
     ];
 
     let actual = ImageApi {
-        builder: PipelineBuilder::from_source(
+        builder: PipelinePlan::from_source(
             MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap(),
         )
         .with_colorspace(ColorspaceId::SRgb),
@@ -409,16 +409,16 @@ fn image_api_sharpen_matches_pipeline_builder_defaults() {
     .sharpen()
     .unwrap()
     .builder
-    .build()
+    .compile()
     .unwrap()
     .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
     .unwrap();
 
-    let expected = PipelineBuilder::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
+    let expected = PipelinePlan::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
         .with_colorspace(ColorspaceId::SRgb)
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap()
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
         .unwrap();
@@ -445,7 +445,7 @@ fn image_api_sharpen_with_forwards_custom_parameters() {
     let m2 = 2.5;
 
     let actual = ImageApi {
-        builder: PipelineBuilder::from_source(
+        builder: PipelinePlan::from_source(
             MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap(),
         )
         .with_colorspace(ColorspaceId::SRgb),
@@ -454,16 +454,16 @@ fn image_api_sharpen_with_forwards_custom_parameters() {
     .sharpen_with(sigma, x1, y2, y3, m1, m2)
     .unwrap()
     .builder
-    .build()
+    .compile()
     .unwrap()
     .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
     .unwrap();
 
-    let expected = PipelineBuilder::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
+    let expected = PipelinePlan::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
         .with_colorspace(ColorspaceId::SRgb)
-        .sharpen(sigma, x1, y2, y3, m1, m2)
+        .plan_sharpen(sigma, x1, y2, y3, m1, m2)
         .unwrap()
-        .build()
+        .compile()
         .unwrap()
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
         .unwrap();
@@ -707,7 +707,7 @@ fn image_api_chaos_sharpen_accepts_zero_negative_nan_and_large_sigma_without_pan
     for sigma in [0.0, -1.0, f32::NAN, 64.0] {
         let result = catch_unwind(AssertUnwindSafe(|| {
             ImageApi {
-                builder: PipelineBuilder::from_source(
+                builder: PipelinePlan::from_source(
                     MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap(),
                 )
                 .with_colorspace(ColorspaceId::SRgb),
@@ -716,7 +716,7 @@ fn image_api_chaos_sharpen_accepts_zero_negative_nan_and_large_sigma_without_pan
             .sharpen_with(sigma, 2.0, 10.0, 20.0, 0.0, 3.0)
             .unwrap()
             .builder
-            .build()
+            .compile()
             .unwrap()
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
             .unwrap()
@@ -924,7 +924,7 @@ fn image_api_chaos_unpremultiply_panics_on_single_band_grayscale() {
 #[test]
 fn image_api_chaos_flatten_with_rejects_u16_rgba() {
     let err = ImageApi {
-        builder: PipelineBuilder::from_source(
+        builder: PipelinePlan::from_source(
             MemorySource::<U16>::new(1, 1, 4, vec![1000, 2000, 3000, 40000]).unwrap(),
         )
         .with_colorspace(ColorspaceId::SRgb),

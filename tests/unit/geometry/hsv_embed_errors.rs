@@ -7,8 +7,8 @@ mod chaos_monkey_8 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, HistFindOp, Image, ImageMetadata,
         Interpretation, U8, ViprsError,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, SRgb},
@@ -23,11 +23,11 @@ mod chaos_monkey_8 {
         ports::scheduler::TileScheduler,
     };
 
-    #[cfg(feature = "png")]
     use viprs::{
         adapters::codecs::PngCodec,
         ports::codec::{ImageDecoder, ImageEncoder},
     };
+    #[cfg(feature = "png")]
 
     fn srgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -88,9 +88,12 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -98,11 +101,13 @@ mod chaos_monkey_8 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -123,19 +128,24 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -168,9 +178,11 @@ mod chaos_monkey_8 {
     #[test]
     fn resize_then_extract_area_overlap_edge_returns_typed_error() {
         let image = patterned_u8(2, 2, 3);
-        let result = PipelineBuilder::from_source(memory_source_from_image(&image))
-            .resize(Resize::new(50.0, 50.0, InterpolationKernel::Nearest))
-            .and_then(|builder| builder.extract_area(99, 99, 10, 10));
+        let result = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+            memory_source_from_image(&image),
+        )
+        .plan_resize(Resize::new(50.0, 50.0, InterpolationKernel::Nearest))
+        .and_then(|builder| builder.plan_extract_area(99, 99, 10, 10));
 
         assert!(matches!(
             result,
@@ -182,7 +194,7 @@ mod chaos_monkey_8 {
     fn embed_negative_offsets_succeed_when_source_overlaps_canvas() {
         let image = patterned_u8(4, 4, 1);
         let (pipeline, _output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
-            builder.embed_signed(4, 4, -1, -1, 4, 4, ExtendMode::Black)
+            builder.plan_embed_signed(4, 4, -1, -1, 4, 4, ExtendMode::Black)
         })
         .expect("embed_signed with negative offsets must succeed when source overlaps canvas");
 
@@ -194,7 +206,7 @@ mod chaos_monkey_8 {
     fn embed_negative_offsets_return_error_when_source_outside_canvas() {
         let image = patterned_u8(4, 4, 1);
         let result = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
-            builder.embed_signed(4, 4, -4, -4, 4, 4, ExtendMode::Black)
+            builder.plan_embed_signed(4, 4, -4, -4, 4, 4, ExtendMode::Black)
         });
 
         assert!(

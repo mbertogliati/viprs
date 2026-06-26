@@ -8,8 +8,8 @@ mod chaos_monkey_7 {
     use viprs::{
         BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb, Ucs},
@@ -69,19 +69,24 @@ mod chaos_monkey_7 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs::pipeline::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -122,7 +127,7 @@ mod chaos_monkey_7 {
         let image = patterned_rgb_u8(11, 9);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
             builder
-                .embed(
+                .plan_embed(
                     21,
                     19,
                     5,
@@ -132,7 +137,7 @@ mod chaos_monkey_7 {
                     ExtendMode::Background(vec![0.0, 0.0, 0.0]),
                 )?
                 .with_colorspace(ColorspaceId::SRgb)
-                .sharpen(
+                .plan_sharpen(
                     1.5, SHARPEN_X1, SHARPEN_Y2, SHARPEN_Y3, SHARPEN_M1, SHARPEN_M2,
                 )
         })
@@ -147,7 +152,7 @@ mod chaos_monkey_7 {
         let image = patterned_rgb_u8(17, 13);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
             builder
-                .embed(
+                .plan_embed(
                     21,
                     17,
                     2,
@@ -156,7 +161,7 @@ mod chaos_monkey_7 {
                     image.height(),
                     ExtendMode::Background(vec![3.0, 5.0, 7.0]),
                 )?
-                .resize(Resize::new(1.0, 1.0, InterpolationKernel::Lanczos3))
+                .plan_resize(Resize::new(1.0, 1.0, InterpolationKernel::Lanczos3))
         })
         .expect("resize(1.0) after embed should succeed");
 

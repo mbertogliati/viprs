@@ -19,7 +19,7 @@
 //!   sequential source.
 //!
 //! `Thumbnail::into_pipeline_nodes()` computes this decomposition as a pure plan.
-//! The adapter layer (`PipelineBuilder::thumbnail`) materialises the plan into
+//! The image pipeline adapter materialises the plan into
 //! concrete `DynOperation` nodes and may pass `shrink_factor` back to the
 //! source when shrink-on-load is available, without importing adapter types here.
 
@@ -214,7 +214,7 @@ impl Thumbnail {
     /// instead of relying on any loader shrink-on-load hint.
     ///
     /// This is used by tooling that needs to inspect the in-memory pipeline shape
-    /// exactly as `PipelineBuilder::thumbnail` will materialize it for sources
+    /// exactly as `ImagePipeline::thumbnail` will materialize it for sources
     /// that do not support loader-side pre-shrink.
     #[must_use]
     pub fn into_pipeline_nodes_without_shrink_hint(

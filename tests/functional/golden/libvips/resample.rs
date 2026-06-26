@@ -14,8 +14,8 @@ fn gauss_blur_libvips() {
     let blur = GaussBlur::new(1.0);
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
         builder
-            .then(Box::new(OperationBridge::new(blur.h, 1)))?
-            .then(Box::new(OperationBridge::new(blur.v, 1)))
+            .append_dyn_op(Box::new(OperationBridge::new(blur.h, 1)))?
+            .append_dyn_op(Box::new(OperationBridge::new(blur.v, 1)))
     });
     let input = write_f32_input("gauss_blur_libvips", case, "input", &source);
     let cmd = ["gaussblur", input.as_str(), "{output}", "1.0"];
@@ -38,8 +38,8 @@ fn gauss_blur_libvips_nonuniform_non_square() {
     let blur = GaussBlur::new(1.0);
     let actual = run_pipeline_f32(source.clone(), width, height, 1, |builder| {
         builder
-            .then(Box::new(OperationBridge::new(blur.h, 1)))?
-            .then(Box::new(OperationBridge::new(blur.v, 1)))
+            .append_dyn_op(Box::new(OperationBridge::new(blur.h, 1)))?
+            .append_dyn_op(Box::new(OperationBridge::new(blur.v, 1)))
     });
     let input = write_f32_input_spec(
         "gauss_blur_libvips",
@@ -65,7 +65,7 @@ fn reduceh_linear_factor2_libvips() {
     let case = "rgb_factor2_linear";
     let source = rgb_source(width, height);
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.reduce_h(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)
+        builder.plan_reduce_h(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)
     });
     let input = write_u8_input_spec(
         "reduceh_libvips",
@@ -98,7 +98,7 @@ fn reducev_linear_factor2_libvips() {
     let case = "rgb_factor2_linear";
     let source = rgb_source(width, height);
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.reduce_v(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)
+        builder.plan_reduce_v(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)
     });
     let input = write_u8_input_spec(
         "reducev_libvips",
@@ -131,7 +131,7 @@ fn reduceh_lanczos3_factor1_5_libvips() {
     let case = "grayscale_factor1_5_lanczos3";
     let source = grayscale_source()[..(width * height) as usize].to_vec();
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.reduce_h(1.5, viprs::domain::kernel::InterpolationKernel::Lanczos3)
+        builder.plan_reduce_h(1.5, viprs::domain::kernel::InterpolationKernel::Lanczos3)
     });
     let input = write_u8_input_spec(
         "reduceh_libvips",
@@ -164,7 +164,7 @@ fn reducev_lanczos3_factor1_5_libvips() {
     let case = "grayscale_factor1_5_lanczos3";
     let source = grayscale_source()[..(width * height) as usize].to_vec();
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.reduce_v(1.5, viprs::domain::kernel::InterpolationKernel::Lanczos3)
+        builder.plan_reduce_v(1.5, viprs::domain::kernel::InterpolationKernel::Lanczos3)
     });
     let input = write_u8_input_spec(
         "reducev_libvips",
@@ -197,7 +197,7 @@ fn shrink_factor4_libvips() {
     let case = "rgb_factor4";
     let source = rgb_source(width, height);
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.shrink_v(4)?.shrink_h(4)
+        builder.plan_shrink_v(4)?.plan_shrink_h(4)
     });
     let input = write_u8_input_spec(
         "shrink_libvips",
@@ -224,8 +224,8 @@ fn reduce_4x4_edge_pixels_match_libvips() {
     let source: Vec<u8> = (0..(width * height) as u8).collect();
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
         builder
-            .reduce_v(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)?
-            .reduce_h(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)
+            .plan_reduce_v(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)?
+            .plan_reduce_h(2.0, viprs::domain::kernel::InterpolationKernel::Bilinear)
     });
     let input = write_u8_input_spec(
         "reduce_libvips",

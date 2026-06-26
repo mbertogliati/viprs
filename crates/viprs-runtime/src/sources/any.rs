@@ -19,7 +19,7 @@ use std::num::NonZeroU8;
 /// Allows callers to construct an in-memory source without committing to a specific
 /// `BandFormat` type parameter at compile time. The format is chosen at runtime based
 /// on the variant. `AnySource` implements `DynImageSource` via a match on each method,
-/// so it can be passed directly to `PipelineBuilder::from_source` without `Box::new`.
+/// so it can be consumed by the runtime pipeline planner without `Box::new`.
 ///
 /// This is the bridge between the `ImageSource` static-dispatch world and the dynamic
 /// pipeline builder. It is not intended as a general-purpose type — it covers the

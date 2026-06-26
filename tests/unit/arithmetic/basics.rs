@@ -4,8 +4,8 @@ mod chaos_monkey {
     use viprs::{
         BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -63,19 +63,24 @@ mod chaos_monkey {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs::pipeline::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<F>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -96,19 +101,24 @@ mod chaos_monkey {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Vec<u8>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -142,7 +152,7 @@ mod chaos_monkey {
             pixels in prop::collection::vec(any::<u8>(), 100 * 100 * 3)
         ) {
             let image = make_u8_image(100, 100, 3, pixels);
-            let (_pipeline, output) = execute_to_image(&image, |builder| builder.invert()?.invert())
+            let (_pipeline, output) = execute_to_image(&image, |builder| builder.plan_invert()?.plan_invert())
                 .map_err(TestCaseError::fail)?;
 
             prop_assert_eq!(output.width(), image.width());
@@ -154,7 +164,7 @@ mod chaos_monkey {
     #[test]
     fn pass4_linear_clamps_u8_boundary_values() {
         let image = make_u8_image(1, 1, 1, vec![200]);
-        let (_pipeline, output) = execute_to_image(&image, |builder| builder.linear(2.0, 0.0))
+        let (_pipeline, output) = execute_to_image(&image, |builder| builder.plan_linear(2.0, 0.0))
             .expect("linear should execute on U8");
 
         assert_eq!(output.pixels(), &[255]);
@@ -163,7 +173,7 @@ mod chaos_monkey {
     #[test]
     fn pass4_invert_u16_max_maps_to_zero() {
         let image = make_u16_image(1, 1, 1, vec![u16::MAX]);
-        let (_pipeline, output) = execute_to_image(&image, |builder| builder.invert())
+        let (_pipeline, output) = execute_to_image(&image, |builder| builder.plan_invert())
             .expect("invert should execute on U16");
 
         assert_eq!(output.pixels(), &[0]);
@@ -172,7 +182,7 @@ mod chaos_monkey {
     #[test]
     fn pass4_invert_f32_nan_preserves_nan_without_panicking() {
         let image = make_f32_image(1, 1, 1, vec![f32::NAN], ImageMetadata::default());
-        let (_pipeline, output) = execute_to_image(&image, |builder| builder.invert())
+        let (_pipeline, output) = execute_to_image(&image, |builder| builder.plan_invert())
             .expect("invert should not panic on NaN");
 
         assert!(output.pixels()[0].is_nan());

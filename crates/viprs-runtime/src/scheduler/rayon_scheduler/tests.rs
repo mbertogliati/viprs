@@ -1,6 +1,6 @@
 use super::*;
 use crate::adapters::{
-    pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+    pipeline::internal::PipelinePlan, sinks::memory::MemorySink, sources::memory::MemorySource,
 };
 use crate::domain::image::{DemandHint, ImageMetadata};
 use crate::domain::{error::BuildError, format::U16};
@@ -162,10 +162,10 @@ fn make_profile_pipeline(width: u32, height: u32) -> CompiledPipeline {
         .map(|value| (value % (u8::MAX as usize + 1)) as u8)
         .collect();
     let source = MemorySource::<U8>::new(width, height, 1, pixels).unwrap();
-    let mut pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let mut pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     pipeline.demand_hint = DemandHint::ThinStrip;
     pipeline
@@ -331,10 +331,10 @@ fn make_pipeline(width: u32, height: u32, hint: DemandHint) -> CompiledPipeline 
         }
     }
 
-    let mut pipeline = PipelineBuilder::new(width, height)
-        .then(Box::new(OperationBridge::new(Noop, 1u32)))
+    let mut pipeline = PipelinePlan::new(width, height)
+        .append_dyn_op(Box::new(OperationBridge::new(Noop, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     // Override demand_hint to match what we're testing.
     pipeline.demand_hint = hint;
@@ -342,13 +342,13 @@ fn make_pipeline(width: u32, height: u32, hint: DemandHint) -> CompiledPipeline 
 }
 
 fn make_borrow_pipeline(source: BorrowTrackingSource, pass_count: usize) -> CompiledPipeline {
-    let mut builder = PipelineBuilder::from_source(source);
+    let mut builder = PipelinePlan::from_source(source);
     for _ in 0..pass_count {
         builder = builder
-            .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+            .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
             .unwrap();
     }
-    let mut pipeline = builder.build().unwrap();
+    let mut pipeline = builder.compile().unwrap();
     pipeline.demand_hint = DemandHint::ThinStrip;
     pipeline
 }
@@ -646,7 +646,7 @@ fn thin_strip_worker_budget_skips_small_sources() {
 #[test]
 fn large_thumbnail_sharpen_caps_strip_workers() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::zero::ZeroSource},
+        adapters::{pipeline::internal::PipelinePlan, sources::zero::ZeroSource},
         domain::{
             colorspace::ColorspaceId,
             kernel::InterpolationKernel,
@@ -655,16 +655,16 @@ fn large_thumbnail_sharpen_caps_strip_workers() {
     };
 
     let scheduler = RayonScheduler::new(10).unwrap();
-    let pipeline = PipelineBuilder::from_source(ZeroSource::<U8>::new(8_192, 8_192, 3))
+    let pipeline = PipelinePlan::from_source(ZeroSource::<U8>::new(8_192, 8_192, 3))
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let strips = scheduler
         .generate_tile_strips_for_execution(
@@ -685,7 +685,7 @@ fn large_thumbnail_sharpen_caps_strip_workers() {
 #[test]
 fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::zero::ZeroSource},
+        adapters::{pipeline::internal::PipelinePlan, sources::zero::ZeroSource},
         domain::{
             colorspace::ColorspaceId,
             kernel::InterpolationKernel,
@@ -694,16 +694,16 @@ fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
     };
 
     let scheduler = RayonScheduler::new(10).unwrap();
-    let pipeline = PipelineBuilder::from_source(ZeroSource::<U8>::new(2_048, 2_048, 3))
+    let pipeline = PipelinePlan::from_source(ZeroSource::<U8>::new(2_048, 2_048, 3))
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let strips = scheduler
         .generate_tile_strips_for_execution(
@@ -724,7 +724,8 @@ fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
 fn strip_scheduling_matches_single_tile_row_output() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelinePlan, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::op::OperationBridge,
     };
@@ -733,15 +734,15 @@ fn strip_scheduling_matches_single_tile_row_output() {
     let source_a = MemorySource::<U8>::new(8, 8, 1, pixels.clone()).unwrap();
     let source_b = MemorySource::<U8>::new(8, 8, 1, pixels.clone()).unwrap();
 
-    let pipeline_a = PipelineBuilder::from_source(source_a)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline_a = PipelinePlan::from_source(source_a)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
-    let pipeline_b = PipelineBuilder::from_source(source_b)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline_b = PipelinePlan::from_source(source_b)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler_a = RayonScheduler::new(2).unwrap().with_strip_height_tiles(1);
@@ -768,7 +769,7 @@ fn strip_scheduling_matches_single_tile_row_output() {
 #[test]
 fn run_concurrent_matches_run_output() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelinePlan, sources::memory::MemorySource},
         domain::op::OperationBridge,
     };
 
@@ -776,17 +777,17 @@ fn run_concurrent_matches_run_output() {
     let pixels: Vec<u8> = (1u8..=16).collect();
 
     let source_run = MemorySource::<U8>::new(4, 4, 1, pixels.clone()).unwrap();
-    let pipeline_run = PipelineBuilder::from_source(source_run)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline_run = PipelinePlan::from_source(source_run)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let source_conc = MemorySource::<U8>::new(4, 4, 1, pixels).unwrap();
-    let pipeline_conc = PipelineBuilder::from_source(source_conc)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline_conc = PipelinePlan::from_source(source_conc)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     // Path A: run (with Mutex)
@@ -819,15 +820,15 @@ fn run_concurrent_returns_typed_error_for_worker_panic_payload() {
     let pixels: Vec<u8> = (0..(8 * 32)).map(|value| (value % 251) as u8).collect();
     let source = MemorySource::<U8>::new(8, 32, 1, pixels).unwrap();
     let panic_state = Arc::new(AtomicBool::new(false));
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(
             TypedPanicOnceOp {
                 triggered: panic_state,
             },
             1u32,
         )))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(2).unwrap().with_strip_height_tiles(1);
@@ -845,15 +846,15 @@ fn run_concurrent_wraps_worker_panics_and_pool_recovers() {
     let pixels: Vec<u8> = (0..(8 * 32)).map(|value| (value % 251) as u8).collect();
     let panic_state = Arc::new(AtomicBool::new(false));
     let panic_pipeline =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(8, 32, 1, pixels.clone()).unwrap())
-            .then(Box::new(OperationBridge::new(
+        PipelinePlan::from_source(MemorySource::<U8>::new(8, 32, 1, pixels.clone()).unwrap())
+            .append_dyn_op(Box::new(OperationBridge::new(
                 PanicOnceOp {
                     triggered: Arc::clone(&panic_state),
                 },
                 1u32,
             )))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
 
     let scheduler = RayonScheduler::new(2).unwrap().with_strip_height_tiles(1);
@@ -867,10 +868,10 @@ fn run_concurrent_wraps_worker_panics_and_pool_recovers() {
     );
 
     let recovery_pipeline =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(8, 32, 1, pixels.clone()).unwrap())
-            .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+        PipelinePlan::from_source(MemorySource::<U8>::new(8, 32, 1, pixels.clone()).unwrap())
+            .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
     let recovery_sink = MemorySink::for_pipeline(&recovery_pipeline).unwrap();
     scheduler
@@ -895,8 +896,8 @@ fn scheduler_limits_max_concurrent_pipeline_runs() {
     let max_seen = Arc::new(AtomicUsize::new(0));
 
     let make_pipeline = || {
-        PipelineBuilder::from_source(MemorySource::<U8>::new(1, 1, 1, vec![7]).unwrap())
-            .then(Box::new(OperationBridge::new(
+        PipelinePlan::from_source(MemorySource::<U8>::new(1, 1, 1, vec![7]).unwrap())
+            .append_dyn_op(Box::new(OperationBridge::new(
                 BlockingOp {
                     current: Arc::clone(&current),
                     max_seen: Arc::clone(&max_seen),
@@ -904,7 +905,7 @@ fn scheduler_limits_max_concurrent_pipeline_runs() {
                 1u32,
             )))
             .unwrap()
-            .build()
+            .compile()
             .unwrap()
     };
 
@@ -941,7 +942,7 @@ fn scheduler_limits_max_concurrent_pipeline_runs() {
 #[test]
 fn run_with_reducer_returns_correct_sum_and_writes_sink() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelinePlan, sources::memory::MemorySource},
         domain::{op::OperationBridge, reducer::TileReducer},
     };
 
@@ -968,10 +969,10 @@ fn run_with_reducer_returns_correct_sum_and_writes_sink() {
     // 4x4 single-band image with pixel values 1..=16. Sum = 136.
     let pixels: Vec<u8> = (1u8..=16).collect();
     let source = MemorySource::<U8>::new(4, 4, 1, pixels.clone()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -1021,7 +1022,7 @@ fn run_with_profile_reduces_serial_sink_to_one_lock_per_tile() {
 
 #[test]
 fn view_only_pipeline_direct_writes_into_memory_sink() {
-    use crate::{pipeline::PipelineBuilder, sources::memory::MemorySource};
+    use crate::{pipeline::internal::PipelinePlan, sources::memory::MemorySource};
 
     let width = 128;
     let height = 96;
@@ -1030,10 +1031,10 @@ fn view_only_pipeline_direct_writes_into_memory_sink() {
         .map(|value| (value % 251) as u8)
         .collect();
     let source = MemorySource::<U8>::new(width, height, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .extract_area(8, 4, width - 16, height - 8)
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_extract_area(8, 4, width - 16, height - 8)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(4).unwrap();
@@ -1156,7 +1157,7 @@ fn source_cache_plus_branch_point_op_cache_stays_within_four_locks_per_output_ti
 #[test]
 fn run_with_reducer_rejects_format_mismatch() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelinePlan, sources::memory::MemorySource},
         domain::{format::U16, op::OperationBridge, reducer::TileReducer},
     };
 
@@ -1178,10 +1179,10 @@ fn run_with_reducer_rejects_format_mismatch() {
 
     let pixels: Vec<u8> = vec![0u8; 4];
     let source = MemorySource::<U8>::new(2, 2, 1, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -1195,15 +1196,15 @@ fn run_with_reducer_rejects_format_mismatch() {
 
 #[test]
 fn sequential_access_runs_tiles_in_row_major_order() {
-    use crate::{domain::op::OperationBridge, pipeline::PipelineBuilder};
+    use crate::{domain::op::OperationBridge, pipeline::internal::PipelinePlan};
 
     let state = Arc::new(TrackingSourceState::default());
     let source = TrackingSource::new(32, 256, Arc::clone(&state));
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .sequential(0)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let expected = generate_tiles(&pipeline).unwrap();
@@ -1225,23 +1226,23 @@ fn sequential_access_runs_tiles_in_row_major_order() {
 
 #[test]
 fn sequential_access_reduces_in_flight_tile_memory() {
-    use crate::{domain::op::OperationBridge, pipeline::PipelineBuilder};
+    use crate::{domain::op::OperationBridge, pipeline::internal::PipelinePlan};
 
     let parallel_state = Arc::new(TrackingSourceState::default());
     let parallel_source = TrackingSource::new(64, 256, Arc::clone(&parallel_state));
-    let parallel_pipeline = PipelineBuilder::from_source(parallel_source)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let parallel_pipeline = PipelinePlan::from_source(parallel_source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let sequential_state = Arc::new(TrackingSourceState::default());
     let sequential_source = TrackingSource::new(64, 256, Arc::clone(&sequential_state));
-    let sequential_pipeline = PipelineBuilder::from_source(sequential_source)
+    let sequential_pipeline = PipelinePlan::from_source(sequential_source)
         .sequential(0)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(4).unwrap();
@@ -1381,7 +1382,7 @@ fn execute_tile_returns_error_when_transform_state_is_missing() {
 #[test]
 fn execute_tile_returns_error_when_later_transform_state_is_missing() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelinePlan, sources::memory::MemorySource},
         domain::{
             format::U8,
             image::{DemandHint, Tile, TileMut},
@@ -1412,12 +1413,12 @@ fn execute_tile_returns_error_when_later_transform_state_is_missing() {
     }
 
     let source = MemorySource::<U8>::new(4, 4, 1, (1u8..=16).collect()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(CopyOp, 1u32)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(CopyOp, 1u32)))
         .unwrap()
-        .then(Box::new(OperationBridge::new(CopyOp, 1u32)))
+        .append_dyn_op(Box::new(OperationBridge::new(CopyOp, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut pool = ThreadBufferPool::new(&pipeline);
@@ -1442,7 +1443,7 @@ fn execute_tile_returns_error_when_later_transform_state_is_missing() {
 #[test]
 fn shrinkh_zero_band_u16_pipeline_returns_typed_error() {
     let source = MemorySource::<U16>::new(4, 2, 0, vec![]).unwrap();
-    let result = PipelineBuilder::from_source(source).shrink_h(2);
+    let result = PipelinePlan::from_source(source).plan_shrink_h(2);
 
     assert!(matches!(
         result,
@@ -1457,7 +1458,8 @@ fn shrinkh_zero_band_u16_pipeline_returns_typed_error() {
 fn run_with_reducer_supports_bisource_reducer_side_input() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelinePlan, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -1546,10 +1548,10 @@ fn run_with_reducer_supports_bisource_reducer_side_input() {
 
     let pixels = vec![1u8, 2, 3, 4, 5, 6];
     let source = MemorySource::<U8>::new(3, 2, 1, pixels.clone()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -1571,7 +1573,8 @@ fn run_with_reducer_supports_bisource_reducer_side_input() {
 fn run_with_reducer_uses_accumulate_into_scratch_api() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelinePlan, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -1632,10 +1635,10 @@ fn run_with_reducer_uses_accumulate_into_scratch_api() {
 
     let pixels: Vec<u8> = (1u8..=16).collect();
     let source = MemorySource::<U8>::new(4, 4, 1, pixels.clone()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(PassThrough, 1u32)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 1u32)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -1846,7 +1849,8 @@ fn multi_input_first_node_reuses_preallocated_input_refs_for_three_slots() {
 fn affine_identity_bilinear_runs_without_source_buffer_overflow() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelinePlan, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{format::U8, kernel::InterpolationKernel},
         ports::scheduler::TileScheduler,
@@ -1854,8 +1858,8 @@ fn affine_identity_bilinear_runs_without_source_buffer_overflow() {
 
     let pixels = vec![128u8; 512 * 512];
     let source = MemorySource::<U8>::new(512, 512, 1, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .affine(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_affine(
             [1.0, 0.0, 0.0, 1.0],
             0.0,
             0.0,
@@ -1864,7 +1868,7 @@ fn affine_identity_bilinear_runs_without_source_buffer_overflow() {
             InterpolationKernel::Bilinear,
         )
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();

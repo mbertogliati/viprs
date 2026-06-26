@@ -2,10 +2,7 @@ mod chaos_monkey_9 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, CompiledPipeline, F32, Image, ImageMetadata, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             kernel::InterpolationKernel,
@@ -22,8 +19,8 @@ mod chaos_monkey_9 {
     use viprs::adapters::codecs::JpegCodec;
     #[cfg(feature = "jpeg")]
     use viprs::ports::codec::ImageEncoder;
-    #[cfg(feature = "png")]
     use viprs::{adapters::codecs::PngCodec, ports::codec::ImageDecoder};
+    #[cfg(feature = "png")]
 
     fn rgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -75,19 +72,24 @@ mod chaos_monkey_9 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_pipeline<F, S: viprs::pipeline::Flush>(
+    fn run_pipeline<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let scheduler = RayonScheduler::new(2).map_err(|error| error.to_string())?;
@@ -115,7 +117,7 @@ mod chaos_monkey_9 {
     fn conv2d_one_by_one_kernel_is_identity() {
         let image = patterned_rgb_f32(5, 3);
         let (_pipeline, output) =
-            run_pipeline(&image, |builder| builder.conv2d(vec![vec![1.0]])).unwrap();
+            run_pipeline(&image, |builder| builder.plan_conv2d(vec![vec![1.0]])).unwrap();
 
         assert_eq!(output.pixels(), image.pixels());
     }

@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::create::ZoneOp},
@@ -18,13 +18,13 @@ fn bench_zone(c: &mut Criterion) {
             let pixels = vec![0.0f32; size as usize * size as usize];
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new_pixel_local(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                         ZoneOp::<F32>::new(size, size).unwrap(),
                         1,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();

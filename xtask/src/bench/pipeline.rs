@@ -4,12 +4,12 @@ use std::num::{NonZeroU8, NonZeroUsize};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::{Arc, Mutex, OnceLock};
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 use bytemuck::Pod;
 use mozjpeg::decompress::DecompressStarted;
 use mozjpeg::{ALL_MARKERS, ColorSpace, ColorSpaceExt, Decompress};
 use viprs::adapters::codecs::{PngCodec, TiffDecoder, WebpCodec};
-use viprs::adapters::pipeline::{CompiledPipeline, PipelineArena, PipelineBuilder};
 use viprs::adapters::sources::create::GreySource;
 use viprs::adapters::sources::decoder_source::DecoderSource;
 use viprs::adapters::sources::memory::MemorySource;
@@ -47,6 +47,7 @@ use viprs::domain::ops::resample::Resize;
 use viprs::domain::ops::resample::thumbnail::{Thumbnail, ThumbnailTarget};
 use viprs::ports::codec::TileImageDecoder;
 use viprs::ports::source::{ImageSource, RandomAccessSource};
+use viprs_runtime::pipeline::{CompiledPipeline, PipelineArena};
 
 use super::helpers::load_bench_image;
 use super::types::BenchImage;
@@ -500,23 +501,23 @@ fn colourspace_route_from_args(
 }
 
 fn apply_colourspace_destination(
-    builder: PipelineBuilder,
+    builder: PipelinePlan,
     destination: ColorspaceId,
-) -> Result<PipelineBuilder, BuildError> {
+) -> Result<PipelinePlan, BuildError> {
     match destination {
-        ColorspaceId::SRgb => builder.colourspace::<SRgb>(),
-        ColorspaceId::Lab => builder.colourspace::<Lab>(),
-        ColorspaceId::Xyz => builder.colourspace::<Xyz>(),
-        ColorspaceId::Yxy => builder.colourspace::<Yxy>(),
-        ColorspaceId::Hsv => builder.colourspace::<Hsv>(),
-        ColorspaceId::Lch => builder.colourspace::<Lch>(),
-        ColorspaceId::Ucs => builder.colourspace::<Ucs>(),
-        ColorspaceId::Oklab => builder.colourspace::<Oklab>(),
-        ColorspaceId::Oklch => builder.colourspace::<Oklch>(),
-        ColorspaceId::Cmyk => builder.colourspace::<Cmyk>(),
-        ColorspaceId::Greyscale => builder.colourspace::<Greyscale>(),
-        ColorspaceId::ScRgb => builder.colourspace::<ScRgb>(),
-        ColorspaceId::Rgb16 => builder.colourspace::<Rgb16>(),
+        ColorspaceId::SRgb => builder.plan_colourspace::<SRgb>(),
+        ColorspaceId::Lab => builder.plan_colourspace::<Lab>(),
+        ColorspaceId::Xyz => builder.plan_colourspace::<Xyz>(),
+        ColorspaceId::Yxy => builder.plan_colourspace::<Yxy>(),
+        ColorspaceId::Hsv => builder.plan_colourspace::<Hsv>(),
+        ColorspaceId::Lch => builder.plan_colourspace::<Lch>(),
+        ColorspaceId::Ucs => builder.plan_colourspace::<Ucs>(),
+        ColorspaceId::Oklab => builder.plan_colourspace::<Oklab>(),
+        ColorspaceId::Oklch => builder.plan_colourspace::<Oklch>(),
+        ColorspaceId::Cmyk => builder.plan_colourspace::<Cmyk>(),
+        ColorspaceId::Greyscale => builder.plan_colourspace::<Greyscale>(),
+        ColorspaceId::ScRgb => builder.plan_colourspace::<ScRgb>(),
+        ColorspaceId::Rgb16 => builder.plan_colourspace::<Rgb16>(),
         unsupported => {
             eprintln!("Unsupported benchmark colourspace destination: {unsupported:?}");
             std::process::exit(1);
@@ -603,23 +604,23 @@ fn laplacian_3x3_kernel() -> Vec<Vec<f64>> {
     ]
 }
 
-fn apply_thumbnail(builder: PipelineBuilder, width: u32) -> Result<PipelineBuilder, BuildError> {
+fn apply_thumbnail(builder: PipelinePlan, width: u32) -> Result<PipelinePlan, BuildError> {
     let target = ThumbnailTarget::Width(width);
     let thumbnail = Thumbnail::new(target, InterpolationKernel::Lanczos3);
-    builder.thumbnail(thumbnail)
+    builder.plan_thumbnail(thumbnail)
 }
 
-fn apply_resize(builder: PipelineBuilder, scale: f64) -> Result<PipelineBuilder, BuildError> {
+fn apply_resize(builder: PipelinePlan, scale: f64) -> Result<PipelinePlan, BuildError> {
     let resize = Resize::new(scale, scale, InterpolationKernel::Lanczos3);
-    builder.resize(resize)
+    builder.plan_resize(resize)
 }
 
 fn apply_sharpen(
-    builder: PipelineBuilder,
+    builder: PipelinePlan,
     sigma: f32,
     strength: f32,
-) -> Result<PipelineBuilder, BuildError> {
-    builder.sharpen(sigma, 2.0, 10.0, 20.0, 0.0, strength)
+) -> Result<PipelinePlan, BuildError> {
+    builder.plan_sharpen(sigma, 2.0, 10.0, 20.0, 0.0, strength)
 }
 
 fn recomb_matrix() -> Matrix {
@@ -632,29 +633,29 @@ fn recomb_matrix() -> Matrix {
 }
 
 fn build_viprs_grey_pipeline(width: u32, height: u32) -> CompiledPipeline {
-    PipelineBuilder::from_source(GreySource::<F32>::new(width, height))
-        .build()
+    PipelinePlan::from_source(GreySource::<F32>::new(width, height))
+        .compile()
         .expect("grey pipeline build failed")
 }
 
 fn apply_gauss_blur<F>(
-    builder: PipelineBuilder,
+    builder: PipelinePlan,
     bands: u32,
     sigma: f32,
-) -> Result<PipelineBuilder, BuildError>
+) -> Result<PipelinePlan, BuildError>
 where
     F: BandFormat + 'static,
     F::Sample: Pod + ToF32,
     GaussBlurH<F>: Op,
     GaussBlurV<F32>: Op,
 {
-    let builder = builder.then(Box::new(OperationBridge::new(
+    let builder = builder.append_dyn_op(Box::new(OperationBridge::new(
         GaussBlurH::<F>::new(sigma),
         bands,
     )))?;
 
     match F::ID {
-        BandFormatId::U8 => builder.then(Box::new(OperationBridge::new(
+        BandFormatId::U8 => builder.append_dyn_op(Box::new(OperationBridge::new(
             GaussBlurV::<U8>::new(sigma),
             bands,
         ))),
@@ -663,7 +664,7 @@ where
         | BandFormatId::U32
         | BandFormatId::I32
         | BandFormatId::F32
-        | BandFormatId::F64 => builder.then(Box::new(OperationBridge::new(
+        | BandFormatId::F64 => builder.append_dyn_op(Box::new(OperationBridge::new(
             GaussBlurV::<F32>::new(sigma),
             bands,
         ))),
@@ -680,29 +681,29 @@ where
 {
     let bands = source.bands();
     let kernel_size = parse_morphology_kernel_size(op_args);
-    let builder = PipelineBuilder::from_source(source);
+    let builder = PipelinePlan::from_source(source);
 
     let builder = match op {
         "dilate" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 Dilate::rect(kernel_size).expect("dilate kernel"),
                 bands,
             )))
             .expect("dilate failed"),
         "erode" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 Erode::rect(kernel_size).expect("erode kernel"),
                 bands,
             )))
             .expect("erode failed"),
         "open" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 Open::rect(kernel_size).expect("open kernel"),
                 bands,
             )))
             .expect("open failed"),
         "close" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 Close::rect(kernel_size).expect("close kernel"),
                 bands,
             )))
@@ -717,7 +718,7 @@ where
         .cache_last_op(default_viprs_cache_bytes())
         .expect("cache_last_op failed");
 
-    builder.build().expect("pipeline build failed")
+    builder.compile().expect("pipeline build failed")
 }
 
 struct DrawLinePipelineOp<F: BandFormat> {
@@ -1241,14 +1242,14 @@ pub fn build_viprs_composite_pipeline_from_preloaded(
 
 pub fn build_viprs_source_only_pipeline_from_image(image: BenchImage) -> CompiledPipeline {
     match image {
-        BenchImage::U8(image) => PipelineBuilder::from_source(image_into_memory_source(image))
-            .build()
+        BenchImage::U8(image) => PipelinePlan::from_source(image_into_memory_source(image))
+            .compile()
             .expect("source-only pipeline build failed"),
-        BenchImage::U16(image) => PipelineBuilder::from_source(image_into_memory_source(image))
-            .build()
+        BenchImage::U16(image) => PipelinePlan::from_source(image_into_memory_source(image))
+            .compile()
             .expect("source-only pipeline build failed"),
-        BenchImage::F32(image) => PipelineBuilder::from_source(image_into_memory_source(image))
-            .build()
+        BenchImage::F32(image) => PipelinePlan::from_source(image_into_memory_source(image))
+            .compile()
             .expect("source-only pipeline build failed"),
     }
 }
@@ -1266,9 +1267,9 @@ pub fn build_viprs_jpeg_source_only_pipeline(input: &Path) -> CompiledPipeline {
         }
     };
 
-    match PipelineBuilder::from_source(source)
+    match PipelinePlan::from_source(source)
         .with_sequential_access(true)
-        .build()
+        .compile()
     {
         Ok(pipeline) => pipeline,
         Err(err) => {
@@ -1282,14 +1283,14 @@ pub fn build_viprs_source_only_pipeline_from_preloaded(
     source: &PreloadedBenchSource,
 ) -> CompiledPipeline {
     match source {
-        PreloadedBenchSource::U8(source) => PipelineBuilder::from_source(source.clone())
-            .build()
+        PreloadedBenchSource::U8(source) => PipelinePlan::from_source(source.clone())
+            .compile()
             .expect("source-only pipeline build failed"),
-        PreloadedBenchSource::U16(source) => PipelineBuilder::from_source(source.clone())
-            .build()
+        PreloadedBenchSource::U16(source) => PipelinePlan::from_source(source.clone())
+            .compile()
             .expect("source-only pipeline build failed"),
-        PreloadedBenchSource::F32(source) => PipelineBuilder::from_source(source.clone())
-            .build()
+        PreloadedBenchSource::F32(source) => PipelinePlan::from_source(source.clone())
+            .compile()
             .expect("source-only pipeline build failed"),
     }
 }
@@ -1583,7 +1584,7 @@ where
         .interpretation
         .and_then(interpretation_to_bench_colorspace)
         .unwrap_or(ColorspaceId::SRgb);
-    let builder = PipelineBuilder::from_source(source).with_sequential_access(sequential);
+    let builder = PipelinePlan::from_source(source).with_sequential_access(sequential);
     let builder = if let Some(demand_hint) = demand_hint_override {
         builder.with_demand_hint_override(demand_hint)
     } else {
@@ -1592,12 +1593,12 @@ where
 
     let builder = match op {
         "invert" => builder
-            .invert()
+            .plan_invert()
             .expect("invert failed")
-            .flush_into_identity()
+            .commit_plan()
             .expect("flush failed"),
         "abs" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => {
                     Box::new(OperationBridge::new_pixel_local(Abs::<U8>::new(), bands))
                 }
@@ -1622,7 +1623,7 @@ where
             })
             .expect("abs failed"),
         "sign" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => {
                     Box::new(OperationBridge::new_pixel_local(Sign::<U8>::new(), bands))
                 }
@@ -1647,10 +1648,10 @@ where
             })
             .expect("sign failed"),
         "bandmean" => builder
-            .then(Box::new(BandMean::<F>::new(bands as usize).into_bridge()))
+            .append_dyn_op(Box::new(BandMean::<F>::new(bands as usize).into_bridge()))
             .expect("bandmean failed"),
         "add" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => Box::new(OperationBridge::new(Add::<U8>::new(vec![5]), bands)),
                 BandFormatId::U16 => {
                     Box::new(OperationBridge::new(Add::<U16>::new(vec![5]), bands))
@@ -1665,7 +1666,7 @@ where
             })
             .expect("add failed"),
         "multiply" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => {
                     Box::new(OperationBridge::new(Multiply::<U8>::new(vec![2]), bands))
                 }
@@ -1682,7 +1683,7 @@ where
             })
             .expect("multiply failed"),
         "subtract" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => {
                     Box::new(OperationBridge::new(Subtract::<U8>::new(vec![5]), bands))
                 }
@@ -1699,7 +1700,7 @@ where
             })
             .expect("subtract failed"),
         "and" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => Box::new(OperationBridge::new(And::<U8>::new(0xF0u8), bands)),
                 BandFormatId::U16 => {
                     Box::new(OperationBridge::new(And::<U16>::new(0x00F0u16), bands))
@@ -1714,7 +1715,7 @@ where
             })
             .expect("and failed"),
         "equal" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => Box::new(OperationBridge::new_pixel_local(
                     Equal::<U8>::new(128u8),
                     bands,
@@ -1737,13 +1738,13 @@ where
             let scale: f64 = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(2.0);
             let offset: f64 = op_args.get(1).and_then(|s| s.parse().ok()).unwrap_or(5.0);
             builder
-                .linear(scale, offset)
+                .plan_linear(scale, offset)
                 .expect("linear failed")
-                .flush_into_identity()
+                .commit_plan()
                 .expect("flush failed")
         }
         "round" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::F32 => {
                     Box::new(OperationBridge::new_pixel_local(Round::<F32>::new(), bands))
                 }
@@ -1757,7 +1758,7 @@ where
             })
             .expect("round failed"),
         "floor" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::F32 => {
                     Box::new(OperationBridge::new_pixel_local(Floor::<F32>::new(), bands))
                 }
@@ -1771,7 +1772,7 @@ where
             })
             .expect("floor failed"),
         "ceil" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::F32 => {
                     Box::new(OperationBridge::new_pixel_local(Ceil::<F32>::new(), bands))
                 }
@@ -1785,10 +1786,10 @@ where
             })
             .expect("ceil failed"),
         "cast" => builder
-            .cast(parse_cast_target(F::ID, op_args))
+            .plan_cast(parse_cast_target(F::ID, op_args))
             .expect("cast failed"),
         "flip" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 match parse_flip_direction(op_args) {
                     FlipDirection::Horizontal => Flip::<F>::horizontal(source_width),
                     FlipDirection::Vertical => Flip::<F>::vertical(source_height),
@@ -1797,37 +1798,37 @@ where
             )))
             .expect("flip failed"),
         "gamma" => builder
-            .then(Box::new(OperationBridge::new_pixel_local(
+            .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 GammaOp::<F>::new(parse_gamma_exponent(op_args)),
                 bands,
             )))
             .expect("gamma failed"),
         "convolve" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 ConvOp::<F>::new(box_3x3_kernel()).expect("convolve kernel"),
                 bands,
             )))
             .expect("convolve failed"),
         "conv_sharpen3" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 ConvOp::<F>::new(sharpen_3x3_kernel()).expect("conv_sharpen3 kernel"),
                 bands,
             )))
             .expect("conv_sharpen3 failed"),
         "conv_sobel3" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 ConvOp::<F>::new(sobel_x_3x3_kernel()).expect("conv_sobel3 kernel"),
                 bands,
             )))
             .expect("conv_sobel3 failed"),
         "sobel" => builder
-            .then(Box::new(OperationBridge::new(Sobel::<F>::new(), bands)))
+            .append_dyn_op(Box::new(OperationBridge::new(Sobel::<F>::new(), bands)))
             .expect("sobel failed"),
         "prewitt" => builder
-            .then(Box::new(OperationBridge::new(Prewitt::<F>::new(), bands)))
+            .append_dyn_op(Box::new(OperationBridge::new(Prewitt::<F>::new(), bands)))
             .expect("prewitt failed"),
         "laplacian" => builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 ConvOp::<F>::new(laplacian_3x3_kernel()).expect("laplacian kernel"),
                 bands,
             )))
@@ -1835,7 +1836,7 @@ where
         "median_blur" => {
             let kernel_size = parse_median_kernel_size(op_args);
             builder
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     Median::<F>::new(kernel_size, kernel_size).expect("median_blur kernel"),
                     bands,
                 )))
@@ -1845,7 +1846,7 @@ where
             let sigma: f32 = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(0.5);
             let strength: f32 = op_args.get(1).and_then(|s| s.parse().ok()).unwrap_or(3.0);
             builder
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     Sharpen::<F>::new(sigma, strength),
                     bands,
                 )))
@@ -1857,7 +1858,7 @@ where
                 std::process::exit(1);
             }
             builder
-                .then(match F::ID {
+                .append_dyn_op(match F::ID {
                     BandFormatId::U8 => Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                         RecombOp::<U8>::new(recomb_matrix()),
                         bands,
@@ -1876,16 +1877,16 @@ where
                 .expect("recomb failed")
         }
         "freqfilt" => builder
-            .then(Box::new(BandMean::<F>::new(bands as usize).into_bridge()))
+            .append_dyn_op(Box::new(BandMean::<F>::new(bands as usize).into_bridge()))
             .and_then(|b| {
-                b.then(Box::new(OperationBridge::new(
+                b.append_dyn_op(Box::new(OperationBridge::new(
                     FwFftOp::<F>::new(source_width, source_height)
                         .expect("FwFftOp should construct"),
                     1,
                 )))
             })
             .and_then(|b| {
-                b.then(Box::new(OperationBridge::new(
+                b.append_dyn_op(Box::new(OperationBridge::new(
                     InvFftOp::<F32>::new(source_width, source_height)
                         .expect("InvFftOp should construct"),
                     2,
@@ -1899,12 +1900,12 @@ where
         "zoom" => {
             let xfac: u32 = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(2);
             let yfac: u32 = op_args.get(1).and_then(|s| s.parse().ok()).unwrap_or(xfac);
-            builder.zoom(xfac, yfac).expect("zoom failed")
+            builder.plan_zoom(xfac, yfac).expect("zoom failed")
         }
         "affine" => {
             let inverse = invert_affine_forward_matrix(parse_affine_forward_matrix(op_args));
             builder
-                .affine(
+                .plan_affine(
                     inverse,
                     0.0,
                     0.0,
@@ -1924,7 +1925,7 @@ where
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(DEFAULT_SIMILARITY_ANGLE);
             builder
-                .similarity(scale, angle, InterpolationKernel::Bilinear)
+                .plan_similarity(scale, angle, InterpolationKernel::Bilinear)
                 .expect("similarity failed")
         }
         "shrink" => {
@@ -1933,15 +1934,17 @@ where
                 .get(1)
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(h_factor);
-            builder.shrink(h_factor, v_factor).expect("shrink failed")
+            builder
+                .plan_shrink(h_factor, v_factor)
+                .expect("shrink failed")
         }
         "shrinkh" => {
             let factor: u32 = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(2);
-            builder.shrink_h(factor).expect("shrinkh failed")
+            builder.plan_shrink_h(factor).expect("shrinkh failed")
         }
         "shrinkv" => {
             let factor: u32 = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(2);
-            builder.shrink_v(factor).expect("shrinkv failed")
+            builder.plan_shrink_v(factor).expect("shrinkv failed")
         }
         "thumbnail" => {
             let tw: u32 = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(800);
@@ -1955,7 +1958,7 @@ where
             apply_sharpen(builder, sigma, strength).expect("sharpen failed")
         }
         "draw_line" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => Box::new(OperationBridge::new_pixel_local(
                     DrawLinePipelineOp::<U8>::new(
                         source_width,
@@ -1987,7 +1990,7 @@ where
             })
             .expect("draw_line failed"),
         "draw_rect" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => Box::new(OperationBridge::new_pixel_local(
                     DrawRectPipelineOp::<U8>::new(
                         source_width,
@@ -2019,7 +2022,7 @@ where
             })
             .expect("draw_rect failed"),
         "draw_circle" => builder
-            .then(match F::ID {
+            .append_dyn_op(match F::ID {
                 BandFormatId::U8 => Box::new(OperationBridge::new_pixel_local(
                     DrawCirclePipelineOp::<U8>::new(
                         source_width,
@@ -2060,7 +2063,7 @@ where
                 && F::ID == BandFormatId::U8
             {
                 builder
-                    .then(Box::new(OperationBridge::new_pixel_local(
+                    .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                         SRgbLabRoundtrip,
                         bands,
                     )))
@@ -2076,7 +2079,7 @@ where
         }
         "srgb_to_lab" => builder
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
             .expect("srgb_to_lab failed"),
         // workflow: thumbnail → sharpen → encode (encode step is handled in runner, not the pipeline)
         "workflow" => {
@@ -2086,31 +2089,31 @@ where
                 .expect("workflow pipeline failed")
         }
         "invert_invert" => builder
-            .invert()
-            .and_then(PipelineBuilder::invert)
-            .and_then(|b| b.flush_into_identity())
+            .plan_invert()
+            .and_then(PipelinePlan::plan_invert)
+            .and_then(|b| b.commit_plan())
             .expect("invert_invert pipeline failed"),
         "thumbnail_sharpen" => apply_thumbnail(builder.with_colorspace(source_colorspace), 400)
             .and_then(|b| apply_sharpen(b, 0.5, 3.0))
             .expect("thumbnail_sharpen pipeline failed"),
         "thumbnail_colourspace_cast" => {
             apply_thumbnail(builder.with_colorspace(source_colorspace), 400)
-                .and_then(|b| b.colourspace::<Lab>())
-                .and_then(|b| b.cast(BandFormatId::U8))
+                .and_then(|b| b.plan_colourspace::<Lab>())
+                .and_then(|b| b.plan_cast(BandFormatId::U8))
                 .expect("thumbnail_colourspace_cast pipeline failed")
         }
         "thumbnail_gauss_blur" => apply_thumbnail(builder, 400)
             .and_then(|b| apply_gauss_blur::<F>(b, bands, 2.0))
             .expect("thumbnail_gauss_blur pipeline failed"),
         "thumbnail_linear" => apply_thumbnail(builder, 400)
-            .and_then(|b| b.linear(1.2, 0.0))
-            .and_then(|b| b.flush_into_identity())
+            .and_then(|b| b.plan_linear(1.2, 0.0))
+            .and_then(|b| b.commit_plan())
             .expect("thumbnail_linear pipeline failed"),
         "resize_colourspace" => apply_resize(builder.with_colorspace(source_colorspace), 0.5)
-            .and_then(|b| b.colourspace::<Lab>())
+            .and_then(|b| b.plan_colourspace::<Lab>())
             .expect("resize_colourspace pipeline failed"),
         "embed" => builder
-            .embed(
+            .plan_embed(
                 source_width + EMBED_PAD_WIDTH,
                 source_height + EMBED_PAD_HEIGHT,
                 EMBED_OFFSET_X,
@@ -2121,7 +2124,7 @@ where
             )
             .expect("embed pipeline failed"),
         "extract-area" => builder
-            .extract_area(
+            .plan_extract_area(
                 EXTRACT_OFFSET_X,
                 EXTRACT_OFFSET_Y,
                 source_width - EXTRACT_TRIM_WIDTH,
@@ -2134,7 +2137,7 @@ where
             let embed_width = source_width.max(2048);
             let embed_height = source_height.max(2048);
             builder
-                .embed(
+                .plan_embed(
                     embed_width,
                     embed_height,
                     0,
@@ -2143,7 +2146,7 @@ where
                     source_height,
                     ExtendMode::Copy,
                 )
-                .and_then(|b| b.extract_area(100, 100, 800, 600))
+                .and_then(|b| b.plan_extract_area(100, 100, 800, 600))
                 .expect("embed_extract pipeline failed")
         }
         "three_op_chain" => apply_thumbnail(builder.with_colorspace(source_colorspace), 400)
@@ -2164,15 +2167,15 @@ where
             let tw: u32 = op_args.get(1).and_then(|s| s.parse().ok()).unwrap_or(800);
             apply_thumbnail(builder.with_colorspace(ColorspaceId::SRgb), tw)
                 .and_then(|b| {
-                    b.then(Box::new(OperationBridge::new_pixel_local(
+                    b.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                         cached_perceptual_lab_adjust()?,
                         3,
                     )))
                 })
                 .and_then(|b| apply_sharpen(b, 0.5, 3.0))
-                .and_then(|b| b.cast(BandFormatId::U8))
+                .and_then(|b| b.plan_cast(BandFormatId::U8))
                 .and_then(|b| {
-                    b.then(Box::new(OperationBridge::new_pixel_local(
+                    b.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                         GammaOp::<U8>::new(0.95),
                         3,
                     )))
@@ -2189,7 +2192,7 @@ where
         .cache_last_op(default_viprs_cache_bytes())
         .expect("cache_last_op failed");
 
-    builder.build().expect("pipeline build failed")
+    builder.compile().expect("pipeline build failed")
 }
 
 #[cfg(test)]

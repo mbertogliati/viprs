@@ -6,8 +6,8 @@ use std::{
 use viprs::{
     BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -65,17 +65,22 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 #[cfg(feature = "jpeg")]
-fn execute_to_image<S: viprs::pipeline::Flush>(
+fn execute_to_image<S: viprs_runtime::pipeline::internal::CommitPlan>(
     image: &Image<U8>,
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> (CompiledPipeline, Image<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
-        .build()
+        .compile()
         .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -129,8 +134,9 @@ fn thumbnail_smoke_handles_non_power_of_2_fixtures() {
 
         let thumbnail = thumbnail_config();
         let expected = thumbnail.into_pipeline_nodes(image.width(), image.height(), image.bands());
-        let (pipeline, output) =
-            execute_to_image(&image, "thumbnail", |builder| builder.thumbnail(thumbnail));
+        let (pipeline, output) = execute_to_image(&image, "thumbnail", |builder| {
+            builder.plan_thumbnail(thumbnail)
+        });
 
         assert_eq!(
             (pipeline.width, pipeline.height),
@@ -159,7 +165,7 @@ fn resize_smoke_handles_non_power_of_2_fixtures() {
         let resize = Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3);
         let expected = resize.into_pipeline_nodes(image.width(), image.height());
         let (pipeline, output) =
-            execute_to_image(&image, "resize", |builder| builder.resize(resize));
+            execute_to_image(&image, "resize", |builder| builder.plan_resize(resize));
 
         assert_eq!(
             (pipeline.width, pipeline.height),
@@ -193,7 +199,7 @@ fn affine_smoke_handles_non_power_of_2_fixtures() {
             image.height() as f64 / output_height as f64,
         ];
         let (pipeline, output) = execute_to_image(&image, "affine", |builder| {
-            builder.affine(
+            builder.plan_affine(
                 matrix,
                 0.0,
                 0.0,

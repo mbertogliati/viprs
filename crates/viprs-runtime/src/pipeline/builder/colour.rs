@@ -1,16 +1,19 @@
 use super::{
-    BandFormatId, BuildError, Cast, Colorspace, ColorspaceId, ColourspaceDispatcher, Conv2d,
-    DynOperation, F32, F64, Flush, GaussBlurH, GaussBlurV, GaussOutputFormat, I16, I32, Identity,
-    Interpretation, Lab, LabSSharpen, LabSToLab, LabToLabS, OperationBridge, PipelineBuilder, U8,
+    BandFormatId, BuildError, Cast, Colorspace, ColorspaceId, ColourspaceDispatcher, CommitPlan,
+    CommittedPlan, Conv2d, DynOperation, F32, F64, GaussBlurH, GaussBlurV, GaussOutputFormat, I16,
+    I32, Interpretation, Lab, LabSSharpen, LabSToLab, LabToLabS, OperationBridge, PipelinePlan, U8,
     U16, U32,
 };
 
-impl<Op: Flush> PipelineBuilder<Op> {
+impl<Op: CommitPlan> PipelinePlan<Op> {
     /// Insert a `Cast` operation converting the current format to `target`.
     ///
     /// Only combinations with a `CastSample` impl are supported. Unsupported pairs
     /// return `BuildError::UnsupportedFormat`.
-    pub fn cast(self, target: BandFormatId) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_cast(
+        self,
+        target: BandFormatId,
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         // TODO(fusion): integrate cast into Concretize chain.
         let bands = self.bands;
         let source_fmt = self.current_format;
@@ -48,7 +51,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                     });
                 }
             };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Apply a 2D convolution with `kernel` to the image.
@@ -59,7 +62,10 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// Only F32 input is supported in this MVP. For other input formats, cast to F32
     /// first with `cast(BandFormatId::F32)`. Returns `BuildError::UnsupportedFormat`
     /// for unsupported input formats.
-    pub fn conv2d(self, kernel: Vec<Vec<f64>>) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_conv2d(
+        self,
+        kernel: Vec<Vec<f64>>,
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let source_fmt = self.current_format;
         let op: Box<dyn DynOperation> = match source_fmt {
@@ -120,76 +126,76 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 Box::new(OperationBridge::new(conv, bands))
             }
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Apply a separable Gaussian blur with the library-selected intermediate format.
     ///
     /// `U8` stays on the fixed-point path for both passes. All other formats use an
     /// `F32` intermediate selected by [`GaussOutputFormat`].
-    pub fn gauss_blur(self, sigma: f32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_gauss_blur(self, sigma: f32) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         match self.current_format {
             BandFormatId::U8 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<U8>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<U8>::new(sigma),
                     bands,
                 ))),
             BandFormatId::U16 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<U16>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<GaussOutputFormat<U16>>::new(sigma),
                     bands,
                 ))),
             BandFormatId::I16 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<I16>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<GaussOutputFormat<I16>>::new(sigma),
                     bands,
                 ))),
             BandFormatId::U32 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<U32>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<GaussOutputFormat<U32>>::new(sigma),
                     bands,
                 ))),
             BandFormatId::I32 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<I32>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<GaussOutputFormat<I32>>::new(sigma),
                     bands,
                 ))),
             BandFormatId::F32 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<F32>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<GaussOutputFormat<F32>>::new(sigma),
                     bands,
                 ))),
             BandFormatId::F64 => self
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<F64>::new(sigma),
                     bands,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<GaussOutputFormat<F64>>::new(sigma),
                     bands,
                 ))),
@@ -200,7 +206,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// The builder converts the current image to `Lab`, quantizes to `LabS`, sharpens only
     /// the `L` channel, converts back to `Lab`, then restores the original colorspace.
-    pub fn sharpen(
+    pub fn plan_sharpen(
         self,
         sigma: f32,
         x1: f32,
@@ -208,8 +214,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
         y3: f32,
         m1: f32,
         m2: f32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
-        let builder = self.flush_into_identity()?;
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        let builder = self.commit_plan()?;
         let original_colorspace = builder
             .current_colorspace
             .ok_or(BuildError::UnknownColorspace)?;
@@ -217,16 +223,18 @@ impl<Op: Flush> PipelineBuilder<Op> {
         let mut builder = if original_colorspace == ColorspaceId::Lab {
             builder
         } else {
-            builder.colourspace::<Lab>()?
+            builder.plan_colourspace::<Lab>()?
         };
 
         let bands = builder.bands;
-        builder = builder.then(Box::new(OperationBridge::new_pixel_local(LabToLabS, bands)))?;
-        builder = builder.then(Box::new(OperationBridge::new(
+        builder =
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(LabToLabS, bands)))?;
+        builder = builder.append_dyn_op(Box::new(OperationBridge::new(
             LabSSharpen::new(sigma, x1, y2, y3, m1, m2),
             bands,
         )))?;
-        builder = builder.then(Box::new(OperationBridge::new_pixel_local(LabSToLab, bands)))?;
+        builder =
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(LabSToLab, bands)))?;
 
         if original_colorspace == ColorspaceId::Lab {
             Ok(builder)
@@ -245,17 +253,19 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// # Example
     ///
     /// ```rust,ignore
-    /// let pipeline = PipelineBuilder::from_source(source)
+    /// let pipeline = PipelinePlan::from_source(source)
     ///     .with_colorspace(ColorspaceId::SRgb)
-    ///     .colourspace::<Lab>()?
-    ///     .build()?;
+    ///     .plan_colourspace::<Lab>()?
+    ///     .compile()?;
     /// ```
-    pub fn colourspace<To: Colorspace>(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_colourspace<To: Colorspace>(
+        self,
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         self.colourspace_to(To::ID)
     }
 
-    fn colourspace_to(self, to: ColorspaceId) -> Result<PipelineBuilder<Identity>, BuildError> {
-        let builder = self.flush_into_identity()?;
+    fn colourspace_to(self, to: ColorspaceId) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        let builder = self.commit_plan()?;
         let from = builder
             .current_colorspace
             .ok_or(BuildError::UnknownColorspace)?;
@@ -268,7 +278,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
             .ok_or(BuildError::UnsupportedColourConversion { from, to })?;
         let mut builder = builder;
         for op in ops {
-            builder = builder.then(op)?;
+            builder = builder.append_dyn_op(op)?;
         }
 
         Ok(builder)

@@ -33,7 +33,7 @@ use viprs_ports::{
 };
 
 use crate::{
-    pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+    pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
     sinks::memory::MemorySink, sources::decoder_source::DecoderSource,
     sources::memory::MemorySource,
 };
@@ -46,10 +46,10 @@ fn run_u8_pipeline(
     op: Box<dyn DynOperation>,
 ) -> (u32, u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(width, height, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(op)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(op)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(1)
@@ -153,8 +153,8 @@ fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
 fn de00_pipeline_rejects_three_band_input() {
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.0, 0.0, 0.0]).unwrap();
     assert!(
-        PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(DE00, 3)))
+        PipelinePlan::from_source(source)
+            .append_dyn_op(Box::new(OperationBridge::new_pixel_local(DE00, 3)))
             .is_err()
     );
 }
@@ -163,10 +163,10 @@ fn de00_pipeline_rejects_three_band_input() {
 fn de00_pipeline_emits_single_distance_band() {
     let source =
         MemorySource::<F32>::new(1, 1, 6, vec![50.0, 10.0, 20.0, 40.0, -20.0, 10.0]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new_pixel_local(DE00, 6)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new_pixel_local(DE00, 6)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let image = pipeline
         .run_to_image::<F32, _>(&RayonScheduler::new(1).unwrap())
@@ -258,12 +258,12 @@ fn subsample_point_mode_pipeline_reads_single_source_pixels() {
     let source = RecordingSource {
         reads: Arc::clone(&reads),
     };
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(
             SubsampleBridge::<U8>::with_point(12, 5, 1, true).unwrap(),
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
 
@@ -304,17 +304,17 @@ fn subsample_point_mode_pipeline_after_invert_reads_single_source_pixels() {
     let source = RecordingSource {
         reads: Arc::clone(&reads),
     };
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new_pixel_local(
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Invert::<U8>::new(),
             1,
         )))
         .unwrap()
-        .then(Box::new(
+        .append_dyn_op(Box::new(
             SubsampleBridge::<U8>::with_point(12, 5, 1, true).unwrap(),
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
 

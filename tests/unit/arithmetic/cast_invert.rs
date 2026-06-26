@@ -7,8 +7,8 @@ mod chaos_monkey_8 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, HistFindOp, Image, ImageMetadata,
         Interpretation, U8, ViprsError,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, SRgb},
@@ -23,11 +23,11 @@ mod chaos_monkey_8 {
         ports::scheduler::TileScheduler,
     };
 
-    #[cfg(feature = "png")]
     use viprs::{
         adapters::codecs::PngCodec,
         ports::codec::{ImageDecoder, ImageEncoder},
     };
+    #[cfg(feature = "png")]
 
     fn srgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -88,9 +88,12 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -98,11 +101,13 @@ mod chaos_monkey_8 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -123,19 +128,24 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -170,9 +180,9 @@ mod chaos_monkey_8 {
         let image = patterned_u8(11, 7, 3);
         let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder
-                .cast(BandFormatId::F32)?
-                .invert()?
-                .cast(BandFormatId::U8)
+                .plan_cast(BandFormatId::F32)?
+                .plan_invert()?
+                .plan_cast(BandFormatId::U8)
         })
         .expect("cast/invert pipeline should succeed");
 

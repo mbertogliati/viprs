@@ -1,4 +1,175 @@
-use super::Format;
+use std::{
+    fs::File,
+    future::{Ready, ready},
+    io::Write,
+    path::Path,
+};
+
+use crate::{
+    pipeline::internal::PipelinePlan, ports::scheduler::TileScheduler, sinks::memory::MemorySink,
+};
+use viprs_core::error::{BuildError, ViprsError};
+
+use super::{Format, ProcessingConfig, Sink, sink::SinkKind};
+
+/// Output-ready pipeline whose contract is raw interleaved pixels.
+///
+/// This type is returned by [`crate::image_pipeline::ImagePipeline::raw_pixels`].
+/// It owns the terminal raw-pixel execution methods so an uncontracted pipeline
+/// cannot be run directly.
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// use viprs_runtime::image_pipeline::{ImagePipeline, Input, Sink};
+///
+/// let output = ImagePipeline::from_input(Input::path("photo.jpg")?)
+///     .raw_pixels()
+///     .run_blocking(Sink::memory())?;
+/// assert!(!output.as_bytes().is_empty());
+/// # Ok::<(), viprs_core::error::ViprsError>(())
+/// ```
+pub struct RawOutputPipeline {
+    builder: Result<PipelinePlan, BuildError>,
+}
+
+impl RawOutputPipeline {
+    pub(in crate::image_pipeline) const fn from_builder(
+        builder: Result<PipelinePlan, BuildError>,
+    ) -> Self {
+        Self { builder }
+    }
+
+    /// Execute the raw-pixel output contract with the default processing config.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ViprsError`] when building, scheduling, or writing output fails.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # async fn example() -> Result<(), viprs_core::error::ViprsError> {
+    /// use viprs_runtime::image_pipeline::{ImagePipeline, Input, Sink};
+    ///
+    /// let output = ImagePipeline::from_input(Input::path("photo.jpg")?)
+    ///     .raw_pixels()
+    ///     .run(Sink::memory())
+    ///     .await?;
+    /// assert!(!output.as_bytes().is_empty());
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn run(self, sink: Sink) -> Ready<Result<PipelineOutput, ViprsError>> {
+        ready(self.run_blocking(sink))
+    }
+
+    /// Execute the raw-pixel output contract with explicit processing config.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ViprsError`] when config validation, building, scheduling, or
+    /// writing output fails.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # async fn example() -> Result<(), viprs_core::error::ViprsError> {
+    /// use viprs_runtime::image_pipeline::{ImagePipeline, Input, ProcessingConfig, Sink};
+    ///
+    /// let output = ImagePipeline::from_input(Input::path("photo.jpg")?)
+    ///     .raw_pixels()
+    ///     .run_with(ProcessingConfig::default().with_threads(1), Sink::memory())
+    ///     .await?;
+    /// assert!(!output.as_bytes().is_empty());
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn run_with(
+        self,
+        config: ProcessingConfig,
+        sink: Sink,
+    ) -> Ready<Result<PipelineOutput, ViprsError>> {
+        ready(self.run_with_blocking(config, sink))
+    }
+
+    /// Execute the raw-pixel output contract synchronously.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ViprsError`] when building, scheduling, or writing output fails.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use viprs_runtime::image_pipeline::{ImagePipeline, Input, Sink};
+    ///
+    /// let output = ImagePipeline::from_input(Input::path("photo.jpg")?)
+    ///     .raw_pixels()
+    ///     .run_blocking(Sink::memory())?;
+    /// assert!(!output.as_bytes().is_empty());
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
+    /// ```
+    pub fn run_blocking(self, sink: Sink) -> Result<PipelineOutput, ViprsError> {
+        self.run_with_blocking(ProcessingConfig::default(), sink)
+    }
+
+    pub(in crate::image_pipeline) fn run_with_blocking(
+        self,
+        config: ProcessingConfig,
+        sink: Sink,
+    ) -> Result<PipelineOutput, ViprsError> {
+        let Sink { kind } = sink;
+        match kind {
+            SinkKind::Memory => self.run_memory(config),
+            SinkKind::Writer(writer) => self.run_writer(config, writer),
+            SinkKind::Path(path) => self.run_path(config, &path),
+        }
+    }
+
+    fn run_memory(self, config: ProcessingConfig) -> Result<PipelineOutput, ViprsError> {
+        self.render_raw(config)
+    }
+
+    fn run_writer(
+        self,
+        config: ProcessingConfig,
+        mut writer: Box<dyn Write + Send>,
+    ) -> Result<PipelineOutput, ViprsError> {
+        let output = self.render_raw(config)?;
+        writer.write_all(output.as_bytes())?;
+        writer.flush()?;
+        Ok(output)
+    }
+
+    fn run_path(self, config: ProcessingConfig, path: &Path) -> Result<PipelineOutput, ViprsError> {
+        let output = self.render_raw(config)?;
+        let mut file = File::create(path)?;
+        file.write_all(output.as_bytes())?;
+        file.flush()?;
+        Ok(output)
+    }
+
+    fn render_raw(self, config: ProcessingConfig) -> Result<PipelineOutput, ViprsError> {
+        let pipeline = self.builder?.compile()?;
+        config.validate_output(
+            pipeline.width,
+            pipeline.height,
+            pipeline.output_bands,
+            Format::from(pipeline.output_format).bytes_per_sample() as u32,
+        )?;
+        let scheduler = config.into_scheduler()?;
+        let mut memory_sink = MemorySink::for_pipeline(&pipeline)?;
+        scheduler.run(&pipeline, &mut memory_sink)?;
+        Ok(PipelineOutput::from_parts(
+            pipeline.width,
+            pipeline.height,
+            pipeline.output_bands,
+            Format::from(pipeline.output_format),
+            memory_sink.into_buffer(),
+        ))
+    }
+}
 
 /// Bytes produced by a completed pipeline run.
 ///

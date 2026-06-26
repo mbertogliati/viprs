@@ -10,10 +10,7 @@ mod chaos_monkey_18 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, CompiledPipeline, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             kernel::InterpolationKernel,
             op::{Op, OperationBridge, PixelLocalOp},
@@ -134,9 +131,12 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -144,11 +144,13 @@ mod chaos_monkey_18 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -214,7 +216,7 @@ mod chaos_monkey_18 {
         let image = grayscale_pattern(32, 16);
         let equalized = apply_hist_equal(&image);
         let (_pipeline, inverted) =
-            execute_to_image::<U8, U8, _>(&equalized, |builder| builder.invert())
+            execute_to_image::<U8, U8, _>(&equalized, |builder| builder.plan_invert())
                 .expect("histequal then invert should succeed");
 
         assert_eq!(
@@ -230,7 +232,7 @@ mod chaos_monkey_18 {
         let image = rgb_pattern(4, 3);
         let matrix = Matrix::new(0, 3, vec![]);
         let result = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                 RecombOp::<U8>::new(matrix.clone()),
                 3,
                 0,

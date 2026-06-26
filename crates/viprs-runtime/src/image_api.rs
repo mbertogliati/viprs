@@ -18,10 +18,8 @@ use std::sync::Arc;
 use crate::domain::codec_options::SaveOptions;
 use crate::{
     adapters::{
-        codecs::ForeignRegistry,
-        pipeline::{CompiledPipeline, PipelineBuilder, PipelineOp},
-        scheduler::rayon_scheduler::RayonScheduler,
-        sources::memory::MemorySource,
+        codecs::ForeignRegistry, pipeline::CompiledPipeline,
+        scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource,
     },
     domain::{
         codec_options::LoadOptions,
@@ -41,6 +39,7 @@ use crate::adapters::codecs::JpegCodec;
 use crate::adapters::codecs::PngCodec;
 #[cfg(feature = "webp")]
 use crate::adapters::codecs::WebpCodec;
+use crate::pipeline::internal::PipelineOp;
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
 use crate::ports::codec::ImageEncoder;
 

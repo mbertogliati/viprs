@@ -5,8 +5,8 @@ mod chaos_monkey_6 {
     use viprs::{
         BandFormatId, BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab},
@@ -62,19 +62,24 @@ mod chaos_monkey_6 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs::pipeline::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -95,19 +100,24 @@ mod chaos_monkey_6 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -140,7 +150,7 @@ mod chaos_monkey_6 {
     fn affine_identity_matrix_matches_input_pixels() {
         let image = patterned_rgb_u8(7, 5);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
-            builder.affine(
+            builder.plan_affine(
                 [1.0, 0.0, 0.0, 1.0],
                 0.0,
                 0.0,
@@ -160,7 +170,7 @@ mod chaos_monkey_6 {
     fn rot45_expands_canvas_for_square_input() {
         let image = patterned_rgb_u8(5, 5);
         let (pipeline, _output) =
-            execute_same_format(&image, |builder| builder.rot45(Angle45::D45))
+            execute_same_format(&image, |builder| builder.plan_rot45(Angle45::D45))
                 .expect("rot45 should succeed for odd square inputs");
 
         let minimum_diagonal = ((image.width() as f64) * std::f64::consts::SQRT_2).floor() as u32;
@@ -183,7 +193,7 @@ mod chaos_monkey_6 {
         let image = patterned_rgb_u8(1, 1);
         let outcome = catch_unwind(AssertUnwindSafe(|| {
             execute_same_format(&image, |builder| {
-                builder.reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
+                builder.plan_reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
             })
         }));
 
@@ -202,7 +212,7 @@ mod chaos_monkey_6 {
     fn reduce_identity_on_one_by_one_succeeds() {
         let image = patterned_rgb_u8(1, 1);
         let (pipeline, output) = execute_same_format(&image, |builder| {
-            builder.reduce(1.0, 1.0, InterpolationKernel::Lanczos3)
+            builder.plan_reduce(1.0, 1.0, InterpolationKernel::Lanczos3)
         })
         .expect("reduce(1.0, 1.0) on a 1x1 image should succeed");
 

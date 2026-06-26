@@ -163,7 +163,7 @@ where
 /// needed that stores dst dimensions and overrides those two methods. Same pattern as
 /// `Rotate90Bridge`.
 ///
-/// `pub(crate)` — callers use `PipelineBuilder::embed`, not this type directly.
+/// `pub(crate)` — callers use `ImagePipeline::embed`, not this type directly.
 pub(crate) struct EmbedBridge<F: BandFormat>
 where
     F::Sample: bytemuck::Pod + Zeroable,

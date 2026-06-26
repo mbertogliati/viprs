@@ -5,8 +5,8 @@ mod chaos_monkey_2 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, F32, Image, ImageMetadata,
         Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab, SRgb},
@@ -65,19 +65,24 @@ mod chaos_monkey_2 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs::pipeline::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -98,19 +103,24 @@ mod chaos_monkey_2 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -229,8 +239,8 @@ mod chaos_monkey_2 {
             let (_pipeline, output) = execute_same_format(&image, |builder| {
                 builder
                     .with_colorspace(ColorspaceId::SRgb)
-                    .colourspace::<Hsv>()?
-                    .colourspace::<SRgb>()
+                    .plan_colourspace::<Hsv>()?
+                    .plan_colourspace::<SRgb>()
             })
             .map_err(TestCaseError::fail)?;
 
@@ -246,8 +256,8 @@ mod chaos_monkey_2 {
         let (_pipeline, output) = execute_same_format(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Lab>()?
-                .colourspace::<SRgb>()
+                .plan_colourspace::<Lab>()?
+                .plan_colourspace::<SRgb>()
         })
         .expect("RGBA roundtrip should succeed");
 
@@ -269,9 +279,9 @@ mod chaos_monkey_2 {
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Lab>()?
-                .invert()?
-                .colourspace::<SRgb>()
+                .plan_colourspace::<Lab>()?
+                .plan_invert()?
+                .plan_colourspace::<SRgb>()
         })
         .expect("Lab invert roundtrip should succeed");
 

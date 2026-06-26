@@ -4,8 +4,8 @@ mod chaos_monkey_13 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, Image, ImageMetadata,
         Interpretation, Tile, TileMut, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab},
@@ -25,11 +25,11 @@ mod chaos_monkey_13 {
 
     #[cfg(all(feature = "png", feature = "jpeg", feature = "webp"))]
     use std::{sync::Arc, thread};
-    #[cfg(all(feature = "png", feature = "jpeg", feature = "webp"))]
     use viprs::{
         adapters::codecs::{JpegCodec, PngCodec, WebpCodec},
         ports::codec::ImageEncoder,
     };
+    #[cfg(all(feature = "png", feature = "jpeg", feature = "webp"))]
 
     fn srgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut, S: viprs::pipeline::Flush>(
-        builder: PipelineBuilder<S>,
+    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
+        builder: viprs_runtime::pipeline::internal::PipelinePlan<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -87,7 +87,7 @@ mod chaos_monkey_13 {
         FOut::Sample: Pod,
     {
         let pipeline = builder
-            .build()
+            .compile()
             .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -108,9 +108,12 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -118,9 +121,11 @@ mod chaos_monkey_13 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let builder = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let builder = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
     }
@@ -146,18 +151,20 @@ mod chaos_monkey_13 {
         let image = patterned_u8(12, 8, 3);
         let matrix = Matrix::new(2, 3, vec![1.0, 0.0, 0.0, 0.0, 1.0, 0.0]);
 
-        let builder = PipelineBuilder::from_source(memory_source_from_image(&image))
-            .then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
-                RecombOp::<U8>::new(matrix),
-                3,
-                2,
-            )))
-            .and_then(|builder| {
-                builder.thumbnail(Thumbnail::new(
-                    ThumbnailTarget::Width(6),
-                    InterpolationKernel::Lanczos3,
-                ))
-            });
+        let builder = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+            memory_source_from_image(&image),
+        )
+        .append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+            RecombOp::<U8>::new(matrix),
+            3,
+            2,
+        )))
+        .and_then(|builder| {
+            builder.plan_thumbnail(Thumbnail::new(
+                ThumbnailTarget::Width(6),
+                InterpolationKernel::Lanczos3,
+            ))
+        });
 
         match builder {
             Err(_) => {}

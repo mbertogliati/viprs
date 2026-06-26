@@ -10,8 +10,8 @@ use super::support as golden;
 use viprs::{
     Add, OperationBridge,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::format::U8,
     ports::scheduler::TileScheduler,
@@ -26,10 +26,10 @@ fn run_add(source_pixels: Vec<u8>, rhs: Vec<u8>) -> Vec<u8> {
     let add_op = Add::<U8>::new(rhs);
     let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(dyn_op)
+    let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+        .append_dyn_op(dyn_op)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

@@ -4,10 +4,7 @@ mod chaos_monkey_16 {
     use bytemuck::Pod;
     use viprs::{
         BandFormatId, BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             colorspace::{Cmyk, Lab, SRgb},
             kernel::InterpolationKernel,
@@ -67,21 +64,26 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -142,8 +144,10 @@ mod chaos_monkey_16 {
         )
     }
 
-    fn append_recomb(builder: PipelineBuilder) -> Result<PipelineBuilder, BuildError> {
-        builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+    fn append_recomb(
+        builder: viprs_runtime::pipeline::internal::PipelinePlan,
+    ) -> Result<viprs_runtime::pipeline::internal::PipelinePlan, BuildError> {
+        builder.append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
             RecombOp::<U8>::new(recomb_matrix()),
             3,
             3,
@@ -179,7 +183,9 @@ mod chaos_monkey_16 {
     fn srgb_cmyk_srgb_roundtrip_stays_within_tolerance() {
         let image = patterned_rgb(17, 11);
         let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.colourspace::<Cmyk>()?.colourspace::<SRgb>()
+            builder
+                .plan_colourspace::<Cmyk>()?
+                .plan_colourspace::<SRgb>()
         })
         .expect("sRGB -> CMYK -> sRGB should succeed");
 

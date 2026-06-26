@@ -7,7 +7,7 @@ use viprs::{
     },
     domain::format::U8,
     domain::ops::conversion::SwitchOp,
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelinePlan,
     ports::scheduler::TileScheduler,
 };
 
@@ -43,10 +43,10 @@ fn bench_switch(c: &mut Criterion) {
                 let source =
                     MemorySource::<U8>::new(size, size, op.combined_bands(), pixels.clone())
                         .unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(op))
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(op))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

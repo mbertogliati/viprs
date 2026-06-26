@@ -1,8 +1,8 @@
 use super::state::validate_extract_area_bounds;
 use super::{
-    Angle, Angle45, BandFormatId, BuildError, DynOperation, DynViewOp, EmbedBridge, ExtendMode,
-    ExtractArea, F32, F64, Flip, Flush, Gravity, GridBridge, I16, I32, Identity,
-    InterpolationKernel, MsbOp, OperationBridge, PipelineBuilder, ReplicateBridge, RotBridge,
+    Angle, Angle45, BandFormatId, BuildError, CommitPlan, CommittedPlan, DynOperation, DynViewOp,
+    EmbedBridge, ExtendMode, ExtractArea, F32, F64, Flip, Gravity, GridBridge, I16, I32,
+    InterpolationKernel, MsbOp, OperationBridge, PipelinePlan, ReplicateBridge, RotBridge,
     SimilarityBridge, SubsampleBridge, U8, U16, U32, ViewBridge, Wrap, ZoomBridge,
 };
 
@@ -31,19 +31,19 @@ const fn rot45_to_degrees(angle: Angle45) -> f64 {
     }
 }
 
-impl<Op: Flush> PipelineBuilder<Op> {
+impl<Op: CommitPlan> PipelinePlan<Op> {
     /// Crop the image to the rectangle `(x, y, width, height)` in source coordinates.
     ///
     /// Updates the pipeline output dimensions to `width × height`. Dispatches over
     /// the current format. This is a zero-copy operation: the coordinate shift is
     /// encoded in `required_input_region`; no `process_region` is called.
-    pub fn extract_area(
+    pub fn plan_extract_area(
         mut self,
         x: u32,
         y: u32,
         width: u32,
         height: u32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         self.flush_pending()?;
         let (image_width, image_height) = self.current_dimensions();
         validate_extract_area_bounds(x, y, width, height, image_width, image_height)?;
@@ -86,7 +86,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         self.last_node = Some(idx);
         // Dimension propagation is handled automatically by compile() via
         // output_width/output_height. No manual set_dimensions call needed.
-        Ok(self.into_state(Identity))
+        Ok(self.into_state(CommittedPlan))
     }
 
     /// Embed the image in a larger canvas of `dst_width × dst_height`, placing its
@@ -104,7 +104,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::embed;
     /// ```
-    pub fn embed(
+    pub fn plan_embed(
         self,
         dst_width: u32,
         dst_height: u32,
@@ -113,14 +113,14 @@ impl<Op: Flush> PipelineBuilder<Op> {
         src_width: u32,
         src_height: u32,
         extend: ExtendMode,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let x_off = i32::try_from(x_off).map_err(|_| BuildError::InvalidEmbedParameters {
             message: "unsigned embed offsets must fit within i32",
         })?;
         let y_off = i32::try_from(y_off).map_err(|_| BuildError::InvalidEmbedParameters {
             message: "unsigned embed offsets must fit within i32",
         })?;
-        self.embed_signed(
+        self.plan_embed_signed(
             dst_width, dst_height, x_off, y_off, src_width, src_height, extend,
         )
     }
@@ -136,7 +136,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::embed_signed;
     /// ```
-    pub fn embed_signed(
+    pub fn plan_embed_signed(
         self,
         dst_width: u32,
         dst_height: u32,
@@ -145,7 +145,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         src_width: u32,
         src_height: u32,
         extend: ExtendMode,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(EmbedBridge::<U8>::try_new(
@@ -170,13 +170,13 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 dst_width, dst_height, x_off, y_off, src_width, src_height, extend, bands,
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Embed the image within a canvas using libvips-style compass gravity.
     ///
     /// `src_width` and `src_height` must match the current pipeline output dimensions.
-    pub fn embed_with_gravity(
+    pub fn plan_embed_with_gravity(
         self,
         dst_width: u32,
         dst_height: u32,
@@ -184,7 +184,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         src_width: u32,
         src_height: u32,
         extend: ExtendMode,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(EmbedBridge::<U8>::try_with_gravity(
@@ -209,13 +209,13 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 dst_width, dst_height, gravity, src_width, src_height, extend, bands,
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Flip the image horizontally (mirror left-right).
     ///
     /// Output dimensions are unchanged. Dispatches over the current format.
-    pub fn flip_horizontal(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_flip_horizontal(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let (image_width, _) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -248,13 +248,13 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Flip the image vertically (mirror top-bottom).
     ///
     /// Output dimensions are unchanged. Dispatches over the current format.
-    pub fn flip_vertical(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_flip_vertical(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let (_, image_height) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -287,11 +287,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Rotate the image by a multiple of 90 degrees clockwise.
-    pub fn rot(self, angle: Angle) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_rot(self, angle: Angle) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let (image_width, image_height) = self.current_dimensions();
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -338,16 +338,16 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Rotate the image by a multiple of 45 degrees.
     ///
-    /// Right-angle rotations keep the exact integer mapping from [`PipelineBuilder::rot`].
+    /// Right-angle rotations keep the exact integer mapping from [`PipelinePlan::rot`].
     /// Diagonal rotations expand the canvas automatically to cover the rotated image.
-    pub fn rot45(self, angle: Angle45) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_rot45(self, angle: Angle45) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         if let Some(right_angle) = rot45_to_right_angle(angle) {
-            return self.rot(right_angle);
+            return self.plan_rot(right_angle);
         }
 
         let bands = self.bands;
@@ -412,12 +412,12 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
-    /// Alias for [`PipelineBuilder::rot`].
-    pub fn rotate(self, angle: Angle) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.rot(angle)
+    /// Alias for [`PipelinePlan::rot`].
+    pub fn plan_rotate(self, angle: Angle) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        self.plan_rot(angle)
     }
 
     /// Rotate the image 90° clockwise.
@@ -425,26 +425,26 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// Output dimensions are transposed: a W×H input becomes an H×W output.
     /// `compile()` propagates the new dimensions automatically via `output_width`/`output_height`
     /// declared by `Rotate90Bridge` — no manual `set_dimensions` call is needed.
-    pub fn rotate90(self) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.rot(Angle::D90)
+    pub fn plan_rotate90(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        self.plan_rot(Angle::D90)
     }
 
     /// Rotate the image 180°.
-    pub fn rotate180(self) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.rot(Angle::D180)
+    pub fn plan_rotate180(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        self.plan_rot(Angle::D180)
     }
 
     /// Rotate the image 270° clockwise (90° counter-clockwise).
-    pub fn rotate270(self) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.rot(Angle::D270)
+    pub fn plan_rotate270(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        self.plan_rot(Angle::D270)
     }
 
     /// Tile the current image `across × down` times.
-    pub fn replicate(
+    pub fn plan_replicate(
         self,
         across: u32,
         down: u32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         if across == 0 || down == 0 {
             return Err(BuildError::SourceHint {
                 context: "replicate",
@@ -506,11 +506,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Extract the most-significant byte from each integer band.
-    pub fn msb(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_msb(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         // TODO(fusion): integrate msb into Concretize chain.
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -533,15 +533,15 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 return Err(BuildError::UnsupportedFormat { op: "msb", format });
             }
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Rearrange a vertical strip of `tile_height`-tall frames into a grid.
-    pub fn grid(
+    pub fn plan_grid(
         self,
         tile_height: u32,
         across: u32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let image_width = self.arena.width;
         let image_height = self.arena.height;
@@ -596,11 +596,15 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Decimate by integer factors, taking every `xfac`-th / `yfac`-th pixel.
-    pub fn subsample(self, xfac: u32, yfac: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_subsample(
+        self,
+        xfac: u32,
+        yfac: u32,
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(SubsampleBridge::<U8>::new(xfac, yfac, bands)?),
@@ -611,11 +615,15 @@ impl<Op: Flush> PipelineBuilder<Op> {
             BandFormatId::F32 => Box::new(SubsampleBridge::<F32>::new(xfac, yfac, bands)?),
             BandFormatId::F64 => Box::new(SubsampleBridge::<F64>::new(xfac, yfac, bands)?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Integer nearest-neighbour upscale.
-    pub fn zoom(self, xfac: u32, yfac: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_zoom(
+        self,
+        xfac: u32,
+        yfac: u32,
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         if xfac == 0 || yfac == 0 {
             return Err(BuildError::SourceHint {
                 context: "zoom",
@@ -639,11 +647,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
             BandFormatId::F32 => Box::new(ZoomBridge::<F32>::new(xfac, yfac, bands)),
             BandFormatId::F64 => Box::new(ZoomBridge::<F64>::new(xfac, yfac, bands)),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Wrap image origin so input pixel `(0, 0)` appears at `(x, y)`.
-    pub fn wrap(self, x: i32, y: i32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_wrap(self, x: i32, y: i32) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let image_width = self.arena.width;
         let image_height = self.arena.height;
@@ -685,6 +693,6 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 }

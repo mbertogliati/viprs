@@ -8,7 +8,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -26,12 +26,12 @@ fn bench_pipeline(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
                 // Two-stage pipeline: linear(1, 10) then invert.
-                let pipeline = PipelineBuilder::from_source(source)
-                    .linear(1.0, 10.0)
+                let pipeline = PipelinePlan::from_source(source)
+                    .plan_linear(1.0, 10.0)
                     .unwrap()
-                    .invert()
+                    .plan_invert()
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

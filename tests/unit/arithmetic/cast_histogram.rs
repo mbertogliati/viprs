@@ -4,8 +4,8 @@ mod chaos_monkey_13 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, Image, ImageMetadata,
         Interpretation, Tile, TileMut, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab},
@@ -25,11 +25,11 @@ mod chaos_monkey_13 {
 
     #[cfg(all(feature = "png", feature = "jpeg", feature = "webp"))]
     use std::{sync::Arc, thread};
-    #[cfg(all(feature = "png", feature = "jpeg", feature = "webp"))]
     use viprs::{
         adapters::codecs::{JpegCodec, PngCodec, WebpCodec},
         ports::codec::ImageEncoder,
     };
+    #[cfg(all(feature = "png", feature = "jpeg", feature = "webp"))]
 
     fn srgb_metadata() -> ImageMetadata {
         ImageMetadata {
@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut, S: viprs::pipeline::Flush>(
-        builder: PipelineBuilder<S>,
+    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
+        builder: viprs_runtime::pipeline::internal::PipelinePlan<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -87,7 +87,7 @@ mod chaos_monkey_13 {
         FOut::Sample: Pod,
     {
         let pipeline = builder
-            .build()
+            .compile()
             .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -108,9 +108,12 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -118,9 +121,11 @@ mod chaos_monkey_13 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let builder = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let builder = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
     }
@@ -144,7 +149,9 @@ mod chaos_monkey_13 {
     fn cast_u8_f32_u8_roundtrip_is_lossless() {
         let image = patterned_u8(17, 9, 3);
         let (pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
-            builder.cast(BandFormatId::F32)?.cast(BandFormatId::U8)
+            builder
+                .plan_cast(BandFormatId::F32)?
+                .plan_cast(BandFormatId::U8)
         })
         .expect("U8 -> F32 -> U8 roundtrip should succeed");
 
@@ -156,8 +163,10 @@ mod chaos_monkey_13 {
     #[ignore = "BUG: flatten() on RGB silently drops a colour band instead of erroring or acting as a no-op"]
     fn flatten_on_rgb_is_typed_error_or_noop() {
         let image = patterned_u8(6, 4, 3);
-        let builder = PipelineBuilder::from_source(memory_source_from_image(&image))
-            .flatten([0.0, 0.0, 0.0, 1.0]);
+        let builder = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+            memory_source_from_image(&image),
+        )
+        .plan_flatten([0.0, 0.0, 0.0, 1.0]);
 
         match builder {
             Err(_) => {}
@@ -217,9 +226,10 @@ mod chaos_monkey_13 {
     fn linear_with_large_positive_offset_clamps_u8() {
         let image =
             Image::from_buffer(3, 1, 1, vec![0u8, 10, 255]).expect("input image must build");
-        let (_pipeline, output) =
-            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.linear(1.0, 1000.0))
-                .expect("linear with large positive offset should not panic");
+        let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
+            builder.plan_linear(1.0, 1000.0)
+        })
+        .expect("linear with large positive offset should not panic");
 
         assert_eq!(output.pixels(), &[255, 255, 255]);
     }

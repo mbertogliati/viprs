@@ -4,7 +4,7 @@ use super::support as golden;
 use std::{any::Any, fs};
 
 use viprs::{
-    BuildError, DynOperation, Multiply, OperationBridge, PipelineBuilder, TileScheduler,
+    BuildError, DynOperation, Multiply, OperationBridge, TileScheduler,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -155,17 +155,20 @@ fn structural_source() -> Vec<u8> {
     pixels
 }
 
-fn run_pipeline_u8<S: viprs::pipeline::Flush>(
+fn run_pipeline_u8<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -176,17 +179,20 @@ fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     sink.into_buffer()
 }
 
-fn run_pipeline_f32<S: viprs::pipeline::Flush>(
+fn run_pipeline_f32<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -246,7 +252,7 @@ fn multiply_matches_libvips_fixture() {
         ARITHMETIC_HEIGHT,
         1,
         move |builder| {
-            builder.then(Box::new(OperationBridge::new_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Multiply::<F32>::new(rhs),
                 1,
             )))
@@ -267,7 +273,7 @@ fn divide_matches_libvips_fixture() {
         ARITHMETIC_HEIGHT,
         1,
         move |builder| {
-            builder.then(Box::new(OperationBridge::new_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Divide::<F32>::new(rhs, ARITHMETIC_WIDTH, 1),
                 1,
             )))
@@ -282,7 +288,7 @@ fn abs_matches_libvips_fixture() {
     let source = arithmetic_source();
 
     let output = run_pipeline_f32(source, ARITHMETIC_WIDTH, ARITHMETIC_HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Abs::<F32>::new(),
             1,
         )))
@@ -298,7 +304,7 @@ fn srgb_to_lab_matches_libvips_fixture() {
     let output = run_pipeline_u8(source, COLOUR_WIDTH, COLOUR_HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
     });
 
     assert_f32_fixture("srgb_to_lab", "rgb_gradient", &output, 3e-2);
@@ -311,8 +317,8 @@ fn gauss_blur_matches_libvips_fixture() {
 
     let output = run_pipeline_f32(source, GAUSS_WIDTH, GAUSS_HEIGHT, 1, |builder| {
         builder
-            .then(Box::new(OperationBridge::new(blur.h, 1)))?
-            .then(Box::new(OperationBridge::new(blur.v, 1)))
+            .append_dyn_op(Box::new(OperationBridge::new(blur.h, 1)))?
+            .append_dyn_op(Box::new(OperationBridge::new(blur.v, 1)))
     });
 
     assert_f32_fixture("gauss_blur", "uniform_sigma_1_5", &output, 1e-3);
@@ -323,7 +329,7 @@ fn flip_horizontal_matches_libvips_fixture() {
     let source = structural_source();
 
     let output = run_pipeline_u8(source, STRUCTURAL_WIDTH, STRUCTURAL_HEIGHT, 1, |builder| {
-        builder.flip_horizontal()
+        builder.plan_flip_horizontal()
     });
 
     assert_exact_fixture("flip_horizontal", "grayscale_gradient", &output);
@@ -334,7 +340,7 @@ fn rotate90_matches_libvips_fixture() {
     let source = structural_source();
 
     let output = run_pipeline_u8(source, STRUCTURAL_WIDTH, STRUCTURAL_HEIGHT, 1, |builder| {
-        builder.rotate90()
+        builder.plan_rotate90()
     });
 
     assert_exact_fixture("rotate90", "grayscale_gradient", &output);
@@ -345,7 +351,7 @@ fn embed_matches_libvips_fixture() {
     let source = structural_source();
 
     let output = run_pipeline_u8(source, STRUCTURAL_WIDTH, STRUCTURAL_HEIGHT, 1, |builder| {
-        builder.embed(
+        builder.plan_embed(
             14,
             18,
             2,
@@ -364,7 +370,7 @@ fn shrinkh_matches_libvips_fixture() {
     let source = structural_source();
 
     let output = run_pipeline_u8(source, STRUCTURAL_WIDTH, STRUCTURAL_HEIGHT, 1, |builder| {
-        builder.then(Box::new(TestResampleBridge::new(
+        builder.append_dyn_op(Box::new(TestResampleBridge::new(
             ShrinkH::<U8>::new(2).unwrap(),
             1,
         )))
@@ -378,7 +384,7 @@ fn shrinkv_matches_libvips_fixture() {
     let source = structural_source();
 
     let output = run_pipeline_u8(source, STRUCTURAL_WIDTH, STRUCTURAL_HEIGHT, 1, |builder| {
-        builder.then(Box::new(TestResampleBridge::new(
+        builder.append_dyn_op(Box::new(TestResampleBridge::new(
             ShrinkV::<U8>::new(2).unwrap(),
             1,
         )))

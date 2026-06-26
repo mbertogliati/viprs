@@ -955,7 +955,7 @@ pub enum BuildError {
         /// Image height associated with this error condition.
         image_height: u32,
     },
-    /// `PipelineBuilder::colourspace` was called when the current colorspace is
+    /// `PipelinePlan::colourspace` was called when the current colorspace is
     /// `Unknown`. The caller must resolve the colorspace (e.g. with
     /// `with_colorspace`) before inserting a colour conversion.
     #[error(
@@ -963,7 +963,7 @@ pub enum BuildError {
          current colorspace is Unknown — call with_colorspace() first"
     )]
     UnknownColorspace,
-    /// `PipelineBuilder::colourspace` was called with a `(from, to)` pair that has
+    /// `PipelinePlan::colourspace` was called with a `(from, to)` pair that has
     /// no registered `ColourConvert` implementation.
     #[error("no colour conversion registered for {from:?} → {to:?}")]
     UnsupportedColourConversion {

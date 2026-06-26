@@ -7,7 +7,7 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::conversion::bandsplit::BandSplit;
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -29,10 +29,10 @@ fn bench_bandsplit(c: &mut Criterion) {
                 let dyn_op = Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                     op, 4u32, 1u32,
                 ));
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(dyn_op)
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(dyn_op)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

@@ -6,18 +6,10 @@ use std::{
 
 use libc::{RUSAGE_SELF, getrusage, rusage};
 use viprs::{
-    adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+    domain::{colorspace::Lab, format::U8, ops::resample::thumbnail::ThumbnailTarget},
+    image_pipeline::{
+        BandFormatId, ColorspaceId, ImagePipeline, Input, InterpolationKernel, Sink, Thumbnail,
     },
-    domain::format::BandFormatId,
-    domain::{
-        colorspace::{ColorspaceId, Lab},
-        format::U8,
-        kernel::InterpolationKernel,
-        ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
-    },
-    ports::scheduler::TileScheduler,
 };
 
 const SUMMARY_SAMPLES: usize = 21;
@@ -25,7 +17,7 @@ const WARMUP_SAMPLES: usize = 3;
 const TARGET_WIDTH: u32 = 400;
 const STANDARD_SIZES: [u32; 3] = [512, 2048, 8192];
 
-type PipelineFactory = fn(u32) -> viprs::adapters::pipeline::CompiledPipeline;
+type PipelineFactory = fn(u32) -> viprs::PipelineOutput;
 
 fn current_rusage() -> rusage {
     // SAFETY: `rusage` is plain old data and `getrusage(RUSAGE_SELF, ...)` fully initializes it.
@@ -55,68 +47,64 @@ fn grayscale_pixels(size: u32) -> Vec<u8> {
         .collect()
 }
 
-fn build_invert_invert(size: u32) -> viprs::adapters::pipeline::CompiledPipeline {
-    let source = MemorySource::<U8>::new(size, size, 1, grayscale_pixels(size)).unwrap();
-    PipelineBuilder::from_source(source)
-        .invert()
+fn build_invert_invert(size: u32) -> viprs::PipelineOutput {
+    let input = Input::memory::<U8>(size, size, 1, grayscale_pixels(size)).unwrap();
+    ImagePipeline::from_input(input)
+        .plan_invert()
         .unwrap()
-        .invert()
+        .plan_invert()
         .unwrap()
-        .build()
+        .raw_pixels()
+        .run_blocking(Sink::memory())
         .unwrap()
 }
 
-fn build_thumbnail_sharpen(size: u32) -> viprs::adapters::pipeline::CompiledPipeline {
-    let source = MemorySource::<U8>::new(size, size, 3, rgb_pixels(size)).unwrap();
-    PipelineBuilder::from_source(source)
+fn build_thumbnail_sharpen(size: u32) -> viprs::PipelineOutput {
+    let input = Input::memory::<U8>(size, size, 3, rgb_pixels(size)).unwrap();
+    ImagePipeline::from_input(input)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .raw_pixels()
+        .run_blocking(Sink::memory())
         .unwrap()
 }
 
-fn build_thumbnail_colourspace_cast(size: u32) -> viprs::adapters::pipeline::CompiledPipeline {
-    let source = MemorySource::<U8>::new(size, size, 3, rgb_pixels(size)).unwrap();
-    PipelineBuilder::from_source(source)
+fn build_thumbnail_colourspace_cast(size: u32) -> viprs::PipelineOutput {
+    let input = Input::memory::<U8>(size, size, 3, rgb_pixels(size)).unwrap();
+    ImagePipeline::from_input(input)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .cast(BandFormatId::U8)
+        .plan_cast(BandFormatId::U8)
         .unwrap()
-        .build()
+        .raw_pixels()
+        .run_blocking(Sink::memory())
         .unwrap()
 }
 
 fn measure_summary(name: &str, size: u32, build: PipelineFactory) {
-    let scheduler = RayonScheduler::new(RayonScheduler::default_threads()).unwrap();
     let before = current_rusage();
     let mut samples = Vec::with_capacity(SUMMARY_SAMPLES);
 
     for _ in 0..WARMUP_SAMPLES {
-        let pipeline = build(size);
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
-        scheduler.run(&pipeline, &mut sink).unwrap();
-        let _ = sink.into_buffer();
+        let _ = build(size);
     }
 
     for _ in 0..SUMMARY_SAMPLES {
-        let pipeline = build(size);
-        let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         let started = Instant::now();
-        scheduler.run(&pipeline, &mut sink).unwrap();
-        let buffer = sink.into_buffer();
-        std::hint::black_box(buffer);
+        let output = build(size);
+        std::hint::black_box(output);
         samples.push(started.elapsed());
     }
 

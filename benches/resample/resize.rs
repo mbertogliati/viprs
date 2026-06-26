@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, kernel::InterpolationKernel, ops::resample::resize::Resize},
@@ -23,10 +23,10 @@ fn bench_resize(c: &mut Criterion) {
                     let source =
                         MemorySource::<U8>::new(src_size, src_size, 1, pixels.clone()).unwrap();
                     let scale = dst_size as f64 / src_size as f64;
-                    let pipeline = PipelineBuilder::from_source(source)
-                        .resize(Resize::new(scale, scale, InterpolationKernel::Lanczos3))
+                    let pipeline = PipelinePlan::from_source(source)
+                        .plan_resize(Resize::new(scale, scale, InterpolationKernel::Lanczos3))
                         .unwrap()
-                        .build()
+                        .compile()
                         .unwrap();
                     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
@@ -51,10 +51,10 @@ fn bench_resize(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 3, pixels.clone()).unwrap();
                 let scale = dst_size as f64 / size as f64;
-                let pipeline = PipelineBuilder::from_source(source)
-                    .resize(Resize::new(scale, scale, InterpolationKernel::Lanczos3))
+                let pipeline = PipelinePlan::from_source(source)
+                    .plan_resize(Resize::new(scale, scale, InterpolationKernel::Lanczos3))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

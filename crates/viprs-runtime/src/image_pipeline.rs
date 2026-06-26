@@ -6,13 +6,24 @@
 mod config;
 mod format;
 mod input;
+mod ops;
 mod output;
 mod pipeline;
 mod sink;
 
+pub use crate::domain::{
+    colorspace::{Colorspace, ColorspaceId},
+    format::BandFormatId,
+    image::DemandHint,
+    kernel::InterpolationKernel,
+    ops::{
+        conversion::{Angle, Angle45, ExtendMode, Gravity},
+        resample::{Resize, Thumbnail},
+    },
+};
 pub use config::ProcessingConfig;
 pub use format::Format;
 pub use input::Input;
-pub use output::PipelineOutput;
-pub use pipeline::ImagePipeline;
+pub use output::{PipelineOutput, RawOutputPipeline};
+pub use pipeline::{CommitState, Committed, Fusing, ImagePipeline};
 pub use sink::Sink;

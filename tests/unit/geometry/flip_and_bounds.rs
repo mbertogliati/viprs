@@ -3,8 +3,8 @@ mod chaos_monkey_5 {
     use viprs::{
         BuildError, CompiledPipeline, F32, Image, ImageMetadata, Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
@@ -85,19 +85,24 @@ mod chaos_monkey_5 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs::pipeline::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -137,7 +142,7 @@ mod chaos_monkey_5 {
     fn embed_background_outside_u8_range_clamps() {
         let image = patterned_rgb_u8(1, 1);
         let (_pipeline, output) = execute_to_image(&image, |builder| {
-            builder.embed(
+            builder.plan_embed(
                 3,
                 3,
                 1,
@@ -158,7 +163,7 @@ mod chaos_monkey_5 {
         for (width, height) in [(7, 5), (1, 8192), (8192, 1)] {
             let image = patterned_rgb_u8(width, height);
             let (_pipeline, output) = execute_to_image(&image, |builder| {
-                builder.flip_horizontal()?.flip_horizontal()
+                builder.plan_flip_horizontal()?.plan_flip_horizontal()
             })
             .expect("double flip should succeed");
 
@@ -170,7 +175,7 @@ mod chaos_monkey_5 {
     fn extract_area_full_boundary_is_identity() {
         let image = patterned_rgb_u8(7, 5);
         let (_pipeline, output) = execute_to_image(&image, |builder| {
-            builder.extract_area(0, 0, image.width(), image.height())
+            builder.plan_extract_area(0, 0, image.width(), image.height())
         })
         .expect("full extract_area should succeed");
 

@@ -6,7 +6,7 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::arithmetic::abs::Abs;
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::F32,
@@ -21,10 +21,10 @@ fn bench_abs(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = Box::new(OperationBridge::new_pixel_local(Abs::<F32>::new(), 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(op)
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(op)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)

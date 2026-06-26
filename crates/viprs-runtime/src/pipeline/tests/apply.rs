@@ -12,10 +12,10 @@ fn apply_single_invert_u8() {
     use crate::domain::ops::point::Invert as ConcretizeInvert;
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 100, 200, 255]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply(ConcretizeInvert)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op(ConcretizeInvert)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -37,10 +37,10 @@ fn apply_fused_chain_u8() {
 
     // Chain: invert then linear(2.0, -10.0)
     let source = MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply((ConcretizeInvert, Linear::new(2.0, -10.0)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op((ConcretizeInvert, Linear::new(2.0, -10.0)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -66,19 +66,18 @@ fn apply_matches_legacy_invert() {
 
     // Legacy path
     let legacy =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(256, 1, 1, pixels.clone()).unwrap())
-            .invert()
+        PipelinePlan::from_source(MemorySource::<U8>::new(256, 1, 1, pixels.clone()).unwrap())
+            .plan_invert()
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
 
     // Concretize path
-    let concretize =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(256, 1, 1, pixels).unwrap())
-            .apply(ConcretizeInvert)
-            .unwrap()
-            .build()
-            .unwrap();
+    let concretize = PipelinePlan::from_source(MemorySource::<U8>::new(256, 1, 1, pixels).unwrap())
+        .append_op(ConcretizeInvert)
+        .unwrap()
+        .compile()
+        .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
     let mut legacy_sink = MemorySink::for_pipeline(&legacy).unwrap();
@@ -105,10 +104,10 @@ fn apply_chain_builder_ergonomic() {
         .then(Clamp::new(0.0, 200.0));
 
     let source = MemorySource::<U8>::new(3, 1, 1, vec![100, 200, 50]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply(chain)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op(chain)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -122,7 +121,7 @@ fn apply_chain_builder_ergonomic() {
     assert_eq!(output, vec![200, 100, 200]);
 }
 
-// ── Unified .apply() integration tests ───────────────────────────────────────
+// ── Unified .append_op() integration tests ───────────────────────────────────────
 
 #[test]
 fn apply_unified_point_op() {
@@ -134,10 +133,10 @@ fn apply_unified_point_op() {
     use crate::domain::ops::point::Invert as ConcretizeInvert;
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 100, 200, 255]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply(ConcretizeInvert)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op(ConcretizeInvert)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -155,15 +154,15 @@ fn apply_unified_dyn_operation() {
     use crate::domain::format::U8;
     use crate::domain::ops::arithmetic::invert::Invert;
 
-    // Use a Box<dyn DynOperation> through .apply()
+    // Use a Box<dyn DynOperation> through .append_op()
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 100, 200, 255]).unwrap();
     let dyn_op: Box<dyn DynOperation> =
         Box::new(OperationBridge::new_pixel_local(Invert::<U8>::new(), 1));
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply(dyn_op)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op(dyn_op)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -181,14 +180,14 @@ fn apply_unified_mixed_chain() {
     use crate::domain::format::U8;
     use crate::domain::ops::point::{Invert as ConcretizeInvert, Linear};
 
-    // Mix point ops via .apply() with chained calls
+    // Mix point ops via .append_op() with chained calls
     let source = MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply(ConcretizeInvert)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op(ConcretizeInvert)
         .unwrap()
-        .apply(Linear::new(2.0, -10.0))
+        .append_op(Linear::new(2.0, -10.0))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -208,10 +207,10 @@ fn apply_consecutive_point_ops_auto_fuse_into_single_node() {
     use crate::sources::memory::MemorySource;
 
     let builder =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
-            .apply(ConcretizeInvert)
+        PipelinePlan::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
+            .append_op(ConcretizeInvert)
             .unwrap()
-            .apply(Linear::new(2.0, -10.0))
+            .append_op(Linear::new(2.0, -10.0))
             .unwrap();
 
     assert_eq!(
@@ -220,7 +219,7 @@ fn apply_consecutive_point_ops_auto_fuse_into_single_node() {
         "pending point ops should stay out of the arena until flush"
     );
 
-    let pipeline = builder.build().unwrap();
+    let pipeline = builder.compile().unwrap();
     assert_eq!(
         pipeline.nodes.len(),
         1,
@@ -234,10 +233,10 @@ fn convenience_point_ops_auto_fuse_into_single_node() {
     use crate::sources::memory::MemorySource;
 
     let builder =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
-            .invert()
+        PipelinePlan::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
+            .plan_invert()
             .unwrap()
-            .linear(2.0, -10.0)
+            .plan_linear(2.0, -10.0)
             .unwrap();
 
     assert_eq!(
@@ -246,7 +245,7 @@ fn convenience_point_ops_auto_fuse_into_single_node() {
         "convenience point ops should stay out of the arena until flush"
     );
 
-    let pipeline = builder.build().unwrap();
+    let pipeline = builder.compile().unwrap();
     assert_eq!(
         pipeline.nodes.len(),
         1,

@@ -11,7 +11,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, ops::structural::embed::ExtendMode},
@@ -35,8 +35,8 @@ fn bench_embed(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<U8>::new(src_size, src_size, 3, pixels.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
-                        .embed(
+                    let pipeline = PipelinePlan::from_source(source)
+                        .plan_embed(
                             dst_size,
                             dst_size,
                             x_off,
@@ -46,7 +46,7 @@ fn bench_embed(c: &mut Criterion) {
                             ExtendMode::Black,
                         )
                         .unwrap()
-                        .build()
+                        .compile()
                         .unwrap();
                     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())

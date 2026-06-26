@@ -9,8 +9,8 @@ use std::{
 use viprs::{
     BuildError, Image, ImageMetadata, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{
         kernel::InterpolationKernel,
@@ -292,35 +292,35 @@ fn random_resize(rng: &mut Lcg) -> Resize {
 }
 
 fn configure_pipeline(
-    builder: PipelineBuilder,
+    builder: viprs_runtime::pipeline::internal::PipelinePlan,
     image: &Image<U8>,
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
-) -> Result<PipelineBuilder, BuildError> {
+) -> Result<viprs_runtime::pipeline::internal::PipelinePlan, BuildError> {
     match pipeline_kind {
         PipelineKind::Thumbnail => {
             let target = thumbnail_target_width(image.width(), rng);
-            builder.thumbnail(Thumbnail::new(
+            builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(target),
                 InterpolationKernel::Lanczos3,
             ))
         }
         PipelineKind::Crop => {
             let (x, y, width, height) = random_extract(image, rng, true);
-            builder.extract_area(x, y, width, height)
+            builder.plan_extract_area(x, y, width, height)
         }
         PipelineKind::ExtractArea => {
             let (x, y, width, height) = random_extract(image, rng, false);
-            builder.extract_area(x, y, width, height)
+            builder.plan_extract_area(x, y, width, height)
         }
-        PipelineKind::Resize => builder.resize(random_resize(rng)),
+        PipelineKind::Resize => builder.plan_resize(random_resize(rng)),
         PipelineKind::Heavy => {
             let (x, y, width, height) = random_extract(image, rng, false);
             let target = thumbnail_target_width(width, rng);
             builder
-                .extract_area(x, y, width, height)?
-                .resize(random_resize(rng))?
-                .thumbnail(Thumbnail::new(
+                .plan_extract_area(x, y, width, height)?
+                .plan_resize(random_resize(rng))?
+                .plan_thumbnail(Thumbnail::new(
                     ThumbnailTarget::Width(target),
                     InterpolationKernel::Lanczos3,
                 ))
@@ -333,7 +333,9 @@ fn execute_iteration(
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
 ) -> (u32, u32, usize) {
-    let builder = PipelineBuilder::from_source(memory_source_from_image(&fixture.image));
+    let builder = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+        memory_source_from_image(&fixture.image),
+    );
     let pipeline = configure_pipeline(builder, &fixture.image, pipeline_kind, rng)
         .unwrap_or_else(|error| {
             panic!(
@@ -341,7 +343,7 @@ fn execute_iteration(
                 fixture.name
             )
         })
-        .build()
+        .compile()
         .unwrap_or_else(|error| {
             panic!(
                 "pipeline build failed for fixture {} with {pipeline_kind:?}: {error:?}",

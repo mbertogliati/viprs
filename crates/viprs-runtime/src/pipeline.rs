@@ -1,7 +1,7 @@
-//! Concrete pipeline construction and compilation adapters.
+//! Internal pipeline planning and compilation adapters.
 //!
-//! These types bridge ergonomic builder calls to compiled execution plans that
-//! schedulers can run tile-by-tile over concrete image sources.
+//! The planner is used by runtime facades to lower image operations into
+//! scheduler-ready execution plans. It is not part of the public user API.
 
 use crate::{
     adapters::{cache::OperationTileCache, sinks::memory::MemorySink, sources::zero::ZeroSource},
@@ -62,56 +62,54 @@ use std::{
 #[cfg(test)]
 use crate::domain::colorspace::{Cmyk, Lch, Oklab, Oklch, SRgb, ScRgb, Ucs, Xyz, Yxy};
 
-/// Index of a node inside a [`PipelineArena`] or [`CompiledPipeline`].
+/// Index of a node inside the internal pipeline arena or compiled plan.
 ///
 /// This alias makes graph wiring code easier to read by distinguishing node
 /// references from plain integers.
 ///
 /// # Examples
 ///
-/// ```rust
-/// use viprs_runtime::pipeline::NodeIdx;
-///
+/// ```rust,ignore
 /// let node: NodeIdx = 0;
 /// assert_eq!(node, 0);
 /// ```
 pub type NodeIdx = usize;
-/// Index of a scratch/output buffer inside a compiled pipeline execution plan.
+/// Index of a scratch/output buffer inside an internal execution plan.
 ///
 /// This alias documents when an integer refers to buffer storage rather than to
 /// a graph node.
 ///
 /// # Examples
 ///
-/// ```rust
-/// use viprs_runtime::pipeline::BufferIdx;
-///
+/// ```rust,ignore
 /// let buffer: BufferIdx = 0;
 /// assert_eq!(buffer, 0);
 /// ```
 pub type BufferIdx = usize;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) enum LineCacheAccess {
+pub enum LineCacheAccess {
     Sequential,
     Random,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) struct LineCacheRequest {
+pub struct LineCacheRequest {
     lines_ahead: Option<usize>,
     access: LineCacheAccess,
 }
 
 impl LineCacheRequest {
-    pub(crate) fn new(lines_ahead: usize, access: LineCacheAccess) -> Self {
+    #[must_use]
+    pub fn new(lines_ahead: usize, access: LineCacheAccess) -> Self {
         Self {
             lines_ahead: (lines_ahead != 0).then_some(lines_ahead),
             access,
         }
     }
 
-    pub(crate) fn resolve(self, tile_height: u32) -> LineCacheConfig {
+    #[must_use]
+    pub fn resolve(self, tile_height: u32) -> LineCacheConfig {
         let auto_lines = (tile_height as usize).saturating_mul(2).max(1);
         let lines_ahead = self
             .lines_ahead
@@ -119,7 +117,8 @@ impl LineCacheRequest {
         LineCacheConfig { lines_ahead }
     }
 
-    pub(crate) const fn access(self) -> LineCacheAccess {
+    #[must_use]
+    pub const fn access(self) -> LineCacheAccess {
         self.access
     }
 }
@@ -139,7 +138,23 @@ pub use arena::PipelineArena;
 use arena::{ArenaNodeOp, format_sample_size};
 
 mod builder;
-pub use builder::{Flush, PipelineBuilder, PipelineOp};
+use builder::{CommitPlan, CommittedPlan};
+
+#[doc(hidden)]
+pub mod internal {
+    //! Internal planner access for runtime facades, workspace tests, and benchmarks.
+    //!
+    //! This module is not a user-facing operation DSL. Public image processing code
+    //! should use `viprs_runtime::image_pipeline::ImagePipeline`.
+
+    pub use super::builder::{CommitPlan, CommittedPlan, Fusing, PipelineOp, PipelinePlan};
+}
+
+pub(crate) type CommittedBuilderState = CommittedPlan;
+
+pub trait CommitBuilderState: CommitPlan {}
+
+impl<State: CommitPlan> CommitBuilderState for State {}
 
 #[cfg(test)]
 mod tests;

@@ -273,7 +273,7 @@ fn run_viprs_draw_line_bench(input: &Path, iterations: usize, e2e: bool) -> Benc
 
 fn run_histogram_once(
     scheduler: &RayonScheduler,
-    pipeline: &viprs::adapters::pipeline::CompiledPipeline,
+    pipeline: &viprs_runtime::pipeline::CompiledPipeline,
     image: &BenchImage,
     e2e: bool,
 ) {

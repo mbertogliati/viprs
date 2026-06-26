@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::create::InvertlutOp},
@@ -40,13 +40,13 @@ pub fn bench_invertlut(c: &mut Criterion) {
             |b, &size| {
                 b.iter(|| {
                     let source = MemorySource::<F32>::new(size, 1, bands, pixels.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
-                        .then(Box::new(OperationBridge::new_pixel_local(
+                    let pipeline = PipelinePlan::from_source(source)
+                        .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                             InvertlutOp::<F32>::new(&table, rows, cols, size).unwrap(),
                             bands,
                         )))
                         .unwrap()
-                        .build()
+                        .compile()
                         .unwrap();
                     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     scheduler.run(&pipeline, &mut sink).unwrap();

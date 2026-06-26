@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -27,13 +27,13 @@ fn bench_hist_find(c: &mut Criterion) {
     for &size in &[512u32, 2048, 8192] {
         let pixels = make_pixels(size);
         let source = MemorySource::<U8>::new(size, size, 3, pixels).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
-            .then(Box::new(OperationBridge::new_pixel_local(
+        let pipeline = PipelinePlan::from_source(source)
+            .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Linear::<U8>::new(1, 0).unwrap(),
                 3,
             )))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
         let reducer = HistFindOp::for_format(3, None, u8::MAX as u32);
 

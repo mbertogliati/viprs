@@ -189,24 +189,35 @@ where
     })
 }
 
-/// Pipeline-based image processing: operations run tile-by-tile through the
-/// demand-driven scheduler, so only a sliding window of tiles is resident at once
-/// during the processing phase.
+/// Pipeline-based image processing with the first-class
+/// [`ImagePipeline`](crate::image_pipeline::ImagePipeline) API.
 ///
-/// Unlike [`process`], this function expresses operations as pipeline builder
-/// steps. The scheduler requests and processes tiles on demand, keeping peak
-/// working-set memory proportional to `(tile_height × width × bands × threads)`
-/// rather than a second full copy of the image.
+/// Unlike [`process`], this function expresses operations as lazy
+/// `ImagePipeline` transforms. The pipeline is executed only after the closure
+/// returns and this helper selects the raw-pixel output contract for encoding.
 ///
-/// The `build_pipeline` closure receives a `PipelineBuilder` (backed by a
-/// `MemorySource` of the decoded image) and must return a built `CompiledPipeline`.
+/// # Examples
+///
+/// ```no_run
+/// use viprs_runtime::process::{EncodeOptions, ProcessOptions, process_pipeline};
+///
+/// let input_bytes = vec![0xFF, 0xD8, 0xFF];
+/// let mut output = Vec::new();
+/// let _result = process_pipeline(
+///     &input_bytes,
+///     &mut output,
+///     |pipeline| pipeline.invert().map_err(Into::into),
+///     &EncodeOptions::Jpeg { quality: 85 },
+///     &ProcessOptions::default(),
+/// );
+/// ```
 ///
 /// # Errors
 ///
 /// Returns `ViprsError` on decode, pipeline, or encode failure.
 /// Returns `ViprsError::Cancelled` if the cancel token is triggered.
 #[cfg(feature = "rayon")]
-pub fn process_pipeline<W, F>(
+pub fn process_pipeline<W, F, State>(
     input: &[u8],
     output: &mut W,
     build_pipeline: F,
@@ -216,14 +227,11 @@ pub fn process_pipeline<W, F>(
 where
     W: Write,
     F: FnOnce(
-        crate::pipeline::PipelineBuilder,
-    ) -> Result<crate::pipeline::CompiledPipeline, ViprsError>,
+        crate::image_pipeline::ImagePipeline,
+    ) -> Result<crate::image_pipeline::ImagePipeline<State>, ViprsError>,
+    State: crate::image_pipeline::CommitState,
 {
-    use crate::pipeline::PipelineBuilder;
-    use crate::ports::scheduler::TileScheduler;
-    use crate::scheduler::rayon_scheduler::RayonScheduler;
-    use crate::sinks::memory::MemorySink;
-    use crate::sources::memory::MemorySource;
+    use crate::image_pipeline::{Format, ImagePipeline, Input, Sink};
 
     validate_encode_options(encode_opts)?;
     check_cancelled(process_opts.cancel_token.as_ref())?;
@@ -238,43 +246,40 @@ where
 
     check_cancelled(process_opts.cancel_token.as_ref())?;
 
-    // Build a MemorySource from decoded pixels — the pipeline reads tiles on demand.
     let metadata = decoded.metadata().clone();
-    let source = MemorySource::<U8>::new(
+    let input = Input::memory::<U8>(
         decoded.width(),
         decoded.height(),
         decoded.bands(),
         decoded.into_buffer(),
     )?;
-    let builder = PipelineBuilder::from_source(source);
+    let pipeline = ImagePipeline::from_input(input);
 
-    // Let the caller configure pipeline operations.
-    let pipeline = build_pipeline(builder)?;
+    let pipeline = build_pipeline(pipeline)?.commit()?;
 
     check_cancelled(process_opts.cancel_token.as_ref())?;
 
-    // Execute pipeline tile-by-tile via the rayon scheduler.
-    let scheduler = RayonScheduler::new(RayonScheduler::default_threads())?;
-    let mut sink = MemorySink::for_pipeline(&pipeline)?;
-
-    if let Some(ref token) = process_opts.cancel_token {
-        scheduler.run_cancellable(&pipeline, &mut sink, token)?;
-    } else {
-        scheduler.run(&pipeline, &mut sink)?;
+    if pipeline.output_format() != Format::U8 {
+        return Err(ViprsError::Codec(
+            "process_pipeline: encoded output requires U8 pipeline samples".into(),
+        ));
     }
 
-    // Extract result and encode.
+    let output_pixels = pipeline.raw_pixels().run_blocking(Sink::memory())?;
+    check_cancelled(process_opts.cancel_token.as_ref())?;
+
     let out_metadata = if process_opts.strip_metadata {
         ImageMetadata::default()
     } else {
         metadata
     };
-    let image = sink.into_image::<U8>(
-        pipeline.width,
-        pipeline.height,
-        pipeline.output_bands,
-        out_metadata,
-    )?;
+    let image = Image::<U8>::from_buffer(
+        output_pixels.width(),
+        output_pixels.height(),
+        output_pixels.bands(),
+        output_pixels.into_bytes(),
+    )?
+    .with_metadata(out_metadata);
 
     let encoded = encode_image(&image, encode_opts, process_opts)?;
     output.write_all(&encoded)?;

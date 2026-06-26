@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, op::OperationBridge, ops::conversion::gamma::GammaOp},
@@ -19,10 +19,10 @@ fn bench_gamma(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 4, pixels.clone()).unwrap();
                 let op = GammaOp::<U8>::default();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new_pixel_local(op, 4)))
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new_pixel_local(op, 4)))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

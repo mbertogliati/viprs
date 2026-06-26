@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, op::OperationBridge, ops::create::MandelbrotOp},
@@ -18,13 +18,13 @@ fn bench_mandelbrot(c: &mut Criterion) {
             let pixels = vec![0u8; size as usize * size as usize];
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new_pixel_local(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                         MandelbrotOp::<U8>::new(size, size, 256).unwrap(),
                         1,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();

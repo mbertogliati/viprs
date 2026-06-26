@@ -2,10 +2,7 @@ mod chaos_monkey_15 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, F32, Image, ImageMetadata, Interpretation, U8,
-        adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sources::memory::MemorySource,
-        },
+        adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             codec_options::SaveOptions,
             colorspace::{Lab, SRgb},
@@ -66,21 +63,26 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -134,7 +136,7 @@ mod chaos_monkey_15 {
         let image = patterned_rgb(7, 5);
         let identity = Matrix::identity(3);
         let (pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.then(Box::new(
+            builder.append_dyn_op(Box::new(
                 viprs::domain::op::OperationBridge::with_dynamic_bands_pixel_local(
                     RecombOp::<U8>::new(identity),
                     3,
@@ -152,7 +154,7 @@ mod chaos_monkey_15 {
     fn linear_scale_zero_produces_black_output() {
         let image = make_u8_image(3, 1, 1, vec![0, 127, 255]);
         let (_pipeline, output) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.linear(0.0, 0.0))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_linear(0.0, 0.0))
                 .expect("linear(scale=0) should be valid");
 
         assert_eq!(output.pixels(), &[0, 0, 0]);
@@ -163,8 +165,8 @@ mod chaos_monkey_15 {
         let image = make_u8_image(2, 1, 4, vec![0, 255, 0, 255, 255, 0, 255, 0]);
         let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
             builder
-                .cast(viprs::BandFormatId::F32)?
-                .cast(viprs::BandFormatId::U8)
+                .plan_cast(viprs::BandFormatId::F32)?
+                .plan_cast(viprs::BandFormatId::U8)
         })
         .expect("RGBA cast round-trip should succeed");
 

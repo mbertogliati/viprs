@@ -6,8 +6,8 @@ use bytemuck::Pod;
 use viprs::{
     BuildError, CompiledPipeline, Image, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink, sources::memory::MemorySource,
+        scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+        sources::memory::MemorySource,
     },
     domain::{kernel::InterpolationKernel, ops::resample::Resize},
     ports::scheduler::TileScheduler,
@@ -34,15 +34,19 @@ where
 
 fn execute_pipeline<F>(
     image: &Image<F>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<CompiledPipeline, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    ) -> Result<CompiledPipeline, BuildError>,
 ) -> Result<Vec<u8>, String>
 where
     F: viprs::BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-        image,
-    )))
+    let pipeline = configure(
+        viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+            image,
+        )),
+    )
     .map_err(|err| format!("build failed: {err:?}"))?;
     let mut sink =
         MemorySink::for_pipeline(&pipeline).map_err(|err| format!("sink failed: {err:?}"))?;
@@ -55,7 +59,9 @@ where
 
 fn assert_zero_band_pipeline_is_rejected(
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<CompiledPipeline, BuildError>,
+    configure: impl FnOnce(
+        viprs_runtime::pipeline::internal::PipelinePlan,
+    ) -> Result<CompiledPipeline, BuildError>,
 ) {
     let image = zero_band_image();
     let result = catch_unwind(AssertUnwindSafe(|| execute_pipeline(&image, configure)));
@@ -75,21 +81,21 @@ fn assert_zero_band_pipeline_is_rejected(
 #[test]
 #[ignore = "BUG B-675: zero-band invert pipeline succeeds instead of rejecting invalid input"]
 fn zero_band_invert_is_rejected() {
-    assert_zero_band_pipeline_is_rejected("invert", |builder| builder.invert()?.build());
+    assert_zero_band_pipeline_is_rejected("invert", |builder| builder.plan_invert()?.compile());
 }
 
 #[test]
 #[ignore = "BUG B-677: zero-band flip_horizontal pipeline succeeds instead of rejecting invalid input"]
 fn zero_band_flip_horizontal_is_rejected() {
     assert_zero_band_pipeline_is_rejected("flip_horizontal", |builder| {
-        builder.flip_horizontal()?.build()
+        builder.plan_flip_horizontal()?.compile()
     });
 }
 
 #[test]
 #[ignore = "BUG B-678: zero-band rotate90 pipeline succeeds instead of rejecting invalid input"]
 fn zero_band_rotate90_is_rejected() {
-    assert_zero_band_pipeline_is_rejected("rotate90", |builder| builder.rotate90()?.build());
+    assert_zero_band_pipeline_is_rejected("rotate90", |builder| builder.plan_rotate90()?.compile());
 }
 
 #[test]
@@ -97,7 +103,7 @@ fn zero_band_rotate90_is_rejected() {
 fn zero_band_resize_is_rejected() {
     assert_zero_band_pipeline_is_rejected("resize", |builder| {
         builder
-            .resize(Resize::new(1.5, 1.5, InterpolationKernel::Lanczos3))?
-            .build()
+            .plan_resize(Resize::new(1.5, 1.5, InterpolationKernel::Lanczos3))?
+            .compile()
     });
 }

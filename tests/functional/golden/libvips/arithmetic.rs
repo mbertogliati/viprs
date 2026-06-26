@@ -11,7 +11,7 @@ fn abs_libvips() {
     let case = "signed_ramp";
     let source = signed_f32_source();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Abs::<F32>::new(),
             1,
         )))
@@ -31,7 +31,7 @@ fn round_rint_libvips() {
     let case = "fractional_gradient_rint";
     let source = fractional_f32_source();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Round::<F32>::new(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Round::<F32>::new(), 1)))
     });
     let input = write_f32_input("round_libvips", case, "input", &source);
     let cmd = ["round", input.as_str(), "{output}", "rint"];
@@ -48,7 +48,7 @@ fn round_ceil_libvips() {
     let case = "fractional_gradient_ceil";
     let source = fractional_f32_source();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Ceil::<F32>::new(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Ceil::<F32>::new(), 1)))
     });
     let input = write_f32_input("round_libvips", case, "input", &source);
     let cmd = ["round", input.as_str(), "{output}", "ceil"];
@@ -65,7 +65,7 @@ fn round_floor_libvips() {
     let case = "fractional_gradient_floor";
     let source = fractional_f32_source();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new(Floor::<F32>::new(), 1)))
+        builder.append_dyn_op(Box::new(OperationBridge::new(Floor::<F32>::new(), 1)))
     });
     let input = write_f32_input("round_libvips", case, "input", &source);
     let cmd = ["round", input.as_str(), "{output}", "floor"];
@@ -82,7 +82,7 @@ fn sign_u8_nonzero_pixels_libvips() {
     let case = "grayscale_nonzero_pixels";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Sign::<U8>::new(),
             1,
         )))
@@ -104,7 +104,7 @@ fn add_libvips() {
     let rhs = rhs_f32();
     let rhs_for_op = rhs.clone();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Add::<F32>::new(rhs_for_op),
             1,
         )))
@@ -127,7 +127,7 @@ fn subtract_libvips() {
     let rhs = rhs_f32();
     let rhs_for_op = rhs.clone();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Subtract::<F32>::new(rhs_for_op),
             1,
         )))
@@ -150,7 +150,7 @@ fn multiply_libvips() {
     let rhs = rhs_f32();
     let rhs_for_op = rhs.clone();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Multiply::<F32>::new(rhs_for_op),
             1,
         )))
@@ -223,7 +223,7 @@ fn divide_libvips() {
     let rhs = rhs_f32();
     let rhs_for_op = rhs.clone();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Divide::<F32>::new(rhs_for_op, WIDTH, 1),
             1,
         )))
@@ -244,7 +244,7 @@ fn clamp_signed_f32_range_libvips() {
     let case = "signed_gradient_range";
     let source = signed_f32_source();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             ClampOp::<F32>::new(-3.25, 4.5),
             1,
         )))
@@ -274,7 +274,7 @@ fn remainder_i32_with_zero_divisors_libvips() {
     let rhs = rhs_i32();
     let rhs_for_op = rhs.clone();
     let actual = run_pipeline_i32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Remainder::<I32>::new(rhs_for_op),
             1,
         )))
@@ -297,7 +297,7 @@ fn remainder_f32_fractional_rhs_libvips() {
     let rhs = rhs_f32();
     let rhs_for_op = rhs.clone();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Remainder::<F32>::new(rhs_for_op),
             1,
         )))
@@ -317,7 +317,9 @@ fn invert_libvips() {
 
     let case = "grayscale_ramp";
     let source = grayscale_source();
-    let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| builder.invert());
+    let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
+        builder.plan_invert()
+    });
     let input = write_u8_input("invert_libvips", case, "input", &source);
     let cmd = ["invert", input.as_str(), "{output}"];
 
@@ -333,7 +335,7 @@ fn linear_libvips() {
     let case = "signed_scaled_offset";
     let source = signed_f32_source();
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.linear(1.75, -2.5)
+        builder.plan_linear(1.75, -2.5)
     });
     let input = write_f32_input("linear_libvips", case, "input", &source);
     let cmd = ["linear", input.as_str(), "{output}", "1.75", "--", "-2.5"];

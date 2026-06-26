@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -23,13 +23,13 @@ fn make_pixels(size: u32) -> Vec<u8> {
 
 fn histogram_bins_from_source(size: u32, pixels: &[u8], scheduler: &RayonScheduler) -> Vec<f32> {
     let source = MemorySource::<U8>::new(size, size, 1, pixels.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new_pixel_local(
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Linear::<U8>::new(1, 0).unwrap(),
             1,
         )))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
     let hist = scheduler
@@ -52,13 +52,13 @@ fn bench_hist_norm(c: &mut Criterion) {
             b.iter(|| {
                 let hist_bins = histogram_bins_from_source(size, &pixels, &scheduler);
                 let source = MemorySource::<F32>::new(256, 1, 1, hist_bins).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new(
                         HistNormTypedOp::<F32, U8>::new(),
                         1,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();

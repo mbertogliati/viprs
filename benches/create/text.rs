@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::TextSource,
     },
     ports::scheduler::TileScheduler,
@@ -22,7 +22,7 @@ fn bench_text(c: &mut Criterion) {
                     None::<&str>,
                 )
                 .unwrap();
-                let pipeline = PipelineBuilder::from_source(source).build().unwrap();
+                let pipeline = PipelinePlan::from_source(source).compile().unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();
                 black_box(sink.into_buffer())

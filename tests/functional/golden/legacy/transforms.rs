@@ -17,7 +17,7 @@ fn affine_rotate30_scale_half_gradient_libvips() {
     let (matrix, tx, ty, output_width, output_height) =
         affine_rotate_scale_auto_canvas(0.5, 30.0, width, height);
     let (_, _, actual) = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.affine(matrix, tx, ty, output_width, output_height, kernel)
+        builder.plan_affine(matrix, tx, ty, output_width, output_height, kernel)
     });
     let input = write_u8_input_spec(
         "affine_libvips",
@@ -69,7 +69,8 @@ fn affine_rotate30_scale_half_gradient_libvips_with_cache() {
         affine_rotate_scale_auto_canvas(0.5, 30.0, width, height);
     let (_, _, actual, _) =
         run_cached_pipeline_u8_twice(source.clone(), width, height, bands, |builder| {
-            let builder = builder.affine(matrix, tx, ty, output_width, output_height, kernel)?;
+            let builder =
+                builder.plan_affine(matrix, tx, ty, output_width, output_height, kernel)?;
             builder.cache_last_op(NonZeroUsize::new(64).unwrap())
         });
     let input = write_u8_input_spec(
@@ -119,7 +120,7 @@ fn similarity_rotate45_scale0_75_libvips() {
     let kernel = InterpolationKernel::Bilinear;
     let source = rgb_source(width, height);
     let (_, _, actual) = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.similarity(0.75, 45.0, kernel)
+        builder.plan_similarity(0.75, 45.0, kernel)
     });
     let input = write_u8_input_spec(
         "similarity_libvips",
@@ -157,7 +158,7 @@ fn thumbnail_width128_preserves_square_aspect_ratio_libvips() {
     let source = smooth_grayscale_source(width, height);
     let (output_width, output_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(128),
                 InterpolationKernel::Lanczos3,
             ))
@@ -197,7 +198,7 @@ fn thumbnail_width128_preserves_square_aspect_ratio_libvips_with_cache() {
     let source = smooth_grayscale_source(width, height);
     let (output_width, output_height, actual, _) =
         run_cached_pipeline_u8_twice(source.clone(), width, height, bands, |builder| {
-            let builder = builder.thumbnail(Thumbnail::new(
+            let builder = builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(128),
                 InterpolationKernel::Lanczos3,
             ))?;
@@ -230,7 +231,7 @@ pub(crate) fn assert_resize_matches_libvips(case: &str, scale: f64, kernel: Inte
     let height = 4;
     let source = smooth_grayscale_source(width, height);
     let (_, _, actual) = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.resize(Resize::new(scale, scale, kernel))
+        builder.plan_resize(Resize::new(scale, scale, kernel))
     });
     let input = write_u8_input_spec(
         "resize_libvips",

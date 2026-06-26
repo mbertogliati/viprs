@@ -5,8 +5,8 @@ mod chaos_monkey_2 {
         BandFormat, BandFormatId, BuildError, CompiledPipeline, F32, Image, ImageMetadata,
         Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::{ColorspaceId, Hsv, Lab, SRgb},
@@ -65,19 +65,24 @@ mod chaos_monkey_2 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs::pipeline::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -98,19 +103,24 @@ mod chaos_monkey_2 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -215,8 +225,9 @@ mod chaos_monkey_2 {
     #[test]
     fn pass4_linear_u8_clamps_boundary_values() {
         let image: Image<U8> = Image::from_buffer(1, 1, 1, vec![200u8]).unwrap();
-        let (_pipeline, output) = execute_same_format(&image, |builder| builder.linear(2.0, 0.0))
-            .expect("linear should succeed");
+        let (_pipeline, output) =
+            execute_same_format(&image, |builder| builder.plan_linear(2.0, 0.0))
+                .expect("linear should succeed");
 
         assert_eq!(output.pixels(), &[255]);
     }
@@ -225,8 +236,9 @@ mod chaos_monkey_2 {
     fn pass4_linear_f32_handles_nan_and_infinities_without_panicking() {
         let image: Image<F32> =
             Image::from_buffer(3, 1, 1, vec![f32::NAN, f32::INFINITY, f32::NEG_INFINITY]).unwrap();
-        let (_pipeline, output) = execute_same_format(&image, |builder| builder.linear(1.5, -2.0))
-            .expect("linear should succeed");
+        let (_pipeline, output) =
+            execute_same_format(&image, |builder| builder.plan_linear(1.5, -2.0))
+                .expect("linear should succeed");
 
         assert!(output.pixels()[0].is_nan());
         assert!(output.pixels()[1].is_infinite() && output.pixels()[1].is_sign_positive());

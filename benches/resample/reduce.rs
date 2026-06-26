@@ -7,7 +7,7 @@ use viprs::{
     },
     domain::format::U8,
     domain::kernel::InterpolationKernel,
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelinePlan,
     ports::scheduler::TileScheduler,
 };
 
@@ -20,10 +20,10 @@ fn bench_reduce(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
+                let pipeline = PipelinePlan::from_source(source)
+                    .plan_reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

@@ -4,8 +4,8 @@ mod chaos_monkey_12 {
         BuildError, CompiledPipeline, F32, Image, ImageMetadata, Interpretation, OperationBridge,
         RecombOp, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             colorspace::Lab,
@@ -80,19 +80,24 @@ mod chaos_monkey_12 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs::pipeline::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -102,20 +107,29 @@ mod chaos_monkey_12 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_image_with_output<InputF, OutputF, S: viprs::pipeline::Flush>(
+    fn execute_to_image_with_output<
+        InputF,
+        OutputF,
+        S: viprs_runtime::pipeline::internal::CommitPlan,
+    >(
         image: &Image<InputF>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<OutputF>), String>
     where
         InputF: viprs::BandFormat,
         InputF::Sample: Pod,
         OutputF: viprs::BandFormat,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -125,19 +139,24 @@ mod chaos_monkey_12 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -159,56 +178,56 @@ mod chaos_monkey_12 {
 
         let (pipeline, output) = execute_to_image(&image, |builder| {
             Ok(builder
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?
-                .linear(1.0, 0.0)?)
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?
+                .plan_linear(1.0, 0.0)?)
         })
         .expect("linear chain should succeed");
 

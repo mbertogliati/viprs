@@ -12,7 +12,7 @@ use viprs::{
         ops::conversion::{ScaleMode, ScaleOp},
         reducers::stats::StatsReducer,
     },
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelinePlan,
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 
@@ -69,11 +69,11 @@ fn bench_scale(c: &mut Criterion) {
                     "create memory source",
                 );
                 let input_pipeline = must(
-                    PipelineBuilder::from_source(source)
-                        .then(Box::new(OperationBridge::new(PassThroughU16, 1))),
+                    PipelinePlan::from_source(source)
+                        .append_dyn_op(Box::new(OperationBridge::new(PassThroughU16, 1))),
                     "add identity operation",
                 )
-                .build()
+                .compile()
                 .unwrap();
                 let stats_sink = MemorySink::for_pipeline(&input_pipeline).unwrap();
                 let stats = must(
@@ -95,10 +95,10 @@ fn bench_scale(c: &mut Criterion) {
                     1,
                 ));
                 let scale_pipeline = must(
-                    PipelineBuilder::from_source(scale_source).then(op),
+                    PipelinePlan::from_source(scale_source).append_dyn_op(op),
                     "add scale operation",
                 )
-                .build()
+                .compile()
                 .unwrap();
                 let mut sink = MemorySink::for_pipeline(&scale_pipeline).unwrap();
                 must(

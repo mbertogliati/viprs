@@ -5,13 +5,13 @@ fn colourspace_builder_supports_lab_lch_lab() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![50.0, 20.0, -30.0]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Lab)
-        .colourspace::<Lch>()
+        .plan_colourspace::<Lch>()
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -23,13 +23,13 @@ fn colourspace_builder_supports_srgb_scrgb_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .colourspace::<ScRgb>()
+        .plan_colourspace::<ScRgb>()
         .unwrap()
-        .colourspace::<SRgb>()
+        .plan_colourspace::<SRgb>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::U8);
@@ -41,13 +41,13 @@ fn colourspace_builder_supports_lab_xyz_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![53.23, 80.1, 67.2]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Lab)
-        .colourspace::<Xyz>()
+        .plan_colourspace::<Xyz>()
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -59,13 +59,13 @@ fn colourspace_builder_supports_scrgb_xyz_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.4, 0.5, 0.6]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::ScRgb)
-        .colourspace::<Xyz>()
+        .plan_colourspace::<Xyz>()
         .unwrap()
-        .colourspace::<ScRgb>()
+        .plan_colourspace::<ScRgb>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -80,25 +80,25 @@ fn colourspace_builder_supports_srgb_to_bw() {
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::Srgb);
 
-    let direct = PipelineBuilder::from_source(
+    let direct = PipelinePlan::from_source(
         MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32])
             .unwrap()
             .with_metadata(metadata.clone()),
     )
-    .colourspace::<Greyscale>()
+    .plan_colourspace::<Greyscale>()
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
-    let explicit = PipelineBuilder::from_source(
+    let explicit = PipelinePlan::from_source(
         MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32])
             .unwrap()
             .with_metadata(metadata),
     )
-    .colourspace::<ScRgb>()
+    .plan_colourspace::<ScRgb>()
     .unwrap()
-    .colourspace::<Greyscale>()
+    .plan_colourspace::<Greyscale>()
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
 
     let mut direct_sink = MemorySink::for_pipeline(&direct).unwrap();
@@ -129,14 +129,14 @@ fn colourspace_builder_supports_scrgb_to_bw() {
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::Scrgb);
 
-    let pipeline = PipelineBuilder::from_source(
+    let pipeline = PipelinePlan::from_source(
         MemorySource::<F32>::new(1, 1, 3, vec![0.25, 0.5, 0.75])
             .unwrap()
             .with_metadata(metadata),
     )
-    .colourspace::<Greyscale>()
+    .plan_colourspace::<Greyscale>()
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -160,27 +160,27 @@ fn colourspace_builder_supports_lab_to_bw() {
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::Lab);
 
-    let direct = PipelineBuilder::from_source(
+    let direct = PipelinePlan::from_source(
         MemorySource::<F32>::new(1, 1, 3, vec![53.23, 80.1, 67.2])
             .unwrap()
             .with_metadata(metadata.clone()),
     )
-    .colourspace::<Greyscale>()
+    .plan_colourspace::<Greyscale>()
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
-    let explicit = PipelineBuilder::from_source(
+    let explicit = PipelinePlan::from_source(
         MemorySource::<F32>::new(1, 1, 3, vec![53.23, 80.1, 67.2])
             .unwrap()
             .with_metadata(metadata),
     )
-    .colourspace::<SRgb>()
+    .plan_colourspace::<SRgb>()
     .unwrap()
-    .colourspace::<ScRgb>()
+    .plan_colourspace::<ScRgb>()
     .unwrap()
-    .colourspace::<Greyscale>()
+    .plan_colourspace::<Greyscale>()
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
 
     let mut direct_sink = MemorySink::for_pipeline(&direct).unwrap();
@@ -208,11 +208,11 @@ fn colourspace_builder_supports_srgb_cmyk() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .colourspace::<Cmyk>()
+        .plan_colourspace::<Cmyk>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::U8);
@@ -224,13 +224,13 @@ fn colourspace_builder_supports_cmyk_xyz_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 4, vec![0, 255, 255, 0]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Cmyk)
-        .colourspace::<Xyz>()
+        .plan_colourspace::<Xyz>()
         .unwrap()
-        .colourspace::<Cmyk>()
+        .plan_colourspace::<Cmyk>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::U8);
@@ -242,13 +242,13 @@ fn colourspace_builder_supports_srgb_cmyk_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(1, 1, 3, vec![128, 64, 32]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .colourspace::<Cmyk>()
+        .plan_colourspace::<Cmyk>()
         .unwrap()
-        .colourspace::<SRgb>()
+        .plan_colourspace::<SRgb>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::U8);
@@ -260,17 +260,17 @@ fn colourspace_builder_supports_xyz_oklab_oklch_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.95047, 1.0, 1.08883]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Xyz)
-        .colourspace::<Oklab>()
+        .plan_colourspace::<Oklab>()
         .unwrap()
-        .colourspace::<Oklch>()
+        .plan_colourspace::<Oklch>()
         .unwrap()
-        .colourspace::<Oklab>()
+        .plan_colourspace::<Oklab>()
         .unwrap()
-        .colourspace::<Xyz>()
+        .plan_colourspace::<Xyz>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -282,13 +282,13 @@ fn colourspace_builder_supports_xyz_yxy_xyz() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.4, 0.5, 0.6]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Xyz)
-        .colourspace::<Yxy>()
+        .plan_colourspace::<Yxy>()
         .unwrap()
-        .colourspace::<Xyz>()
+        .plan_colourspace::<Xyz>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -300,13 +300,13 @@ fn colourspace_builder_supports_lch_ucs_and_back() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![50.0, 20.0, 120.0]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Lch)
-        .colourspace::<Ucs>()
+        .plan_colourspace::<Ucs>()
         .unwrap()
-        .colourspace::<Lch>()
+        .plan_colourspace::<Lch>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -323,10 +323,10 @@ fn colourspace_builder_maps_cmc_interpretation_to_lch_route() {
     let source = MemorySource::<F32>::new(1, 1, 3, vec![50.0, 20.0, 120.0])
         .unwrap()
         .with_metadata(metadata);
-    let pipeline = PipelineBuilder::from_source(source)
-        .colourspace::<Lch>()
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_colourspace::<Lch>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_format, BandFormatId::F32);
@@ -338,13 +338,13 @@ fn colourspace_builder_preserves_known_white_point_through_xyz_lab_xyz() {
     use crate::adapters::{sinks::memory::MemorySink, sources::memory::MemorySource};
 
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.95047, 1.0, 1.08883]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::Xyz)
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .colourspace::<Xyz>()
+        .plan_colourspace::<Xyz>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -370,13 +370,13 @@ proptest! {
         use crate::adapters::{sinks::memory::MemorySink, sources::memory::MemorySource};
 
         let source = MemorySource::<U8>::new(1, 1, 4, vec![red, green, blue, alpha]).unwrap();
-        let pipeline = PipelineBuilder::from_source(source)
+        let pipeline = PipelinePlan::from_source(source)
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
             .unwrap()
-            .colourspace::<SRgb>()
+            .plan_colourspace::<SRgb>()
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -439,13 +439,13 @@ fn rgba_u16_thumbnail_builds_and_executes() {
     .unwrap()
     .with_metadata(image.metadata().clone());
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(11),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let output = pipeline
@@ -467,9 +467,9 @@ fn colourspace_roundtrip_after_affine_and_before_thumbnail_preserves_rgba_alpha_
     )
     .unwrap()
     .with_metadata(image.metadata().clone());
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .affine(
+        .plan_affine(
             [37.0 / 29.0, 0.0, 0.0, 19.0 / 13.0],
             0.0,
             0.0,
@@ -478,16 +478,16 @@ fn colourspace_roundtrip_after_affine_and_before_thumbnail_preserves_rgba_alpha_
             InterpolationKernel::Lanczos3,
         )
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .colourspace::<SRgb>()
+        .plan_colourspace::<SRgb>()
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(11),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let output = pipeline
@@ -509,14 +509,14 @@ fn colourspace_roundtrip_after_thumbnail_and_affine_preserves_rgba_alpha_band() 
     )
     .unwrap()
     .with_metadata(image.metadata().clone());
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(17),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .affine(
+        .plan_affine(
             [17.0 / 13.0, 0.0, 0.0, 10.0 / 7.0],
             0.0,
             0.0,
@@ -525,11 +525,11 @@ fn colourspace_roundtrip_after_thumbnail_and_affine_preserves_rgba_alpha_band() 
             InterpolationKernel::Lanczos3,
         )
         .unwrap()
-        .colourspace::<crate::domain::colorspace::Hsv>()
+        .plan_colourspace::<crate::domain::colorspace::Hsv>()
         .unwrap()
-        .colourspace::<SRgb>()
+        .plan_colourspace::<SRgb>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let output = pipeline
@@ -545,11 +545,11 @@ fn sharpen_builder_preserves_rgba_identity_when_sigma_zero() {
     use crate::adapters::{sinks::memory::MemorySink, sources::memory::MemorySource};
 
     let source = MemorySource::<U8>::new(1, 1, 4, vec![128, 64, 32, 200]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .sharpen(0.0, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.0, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

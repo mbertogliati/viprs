@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -29,10 +29,10 @@ fn bench_flip(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).flip_horizontal(),
+                    PipelinePlan::from_source(source).flip_horizontal(),
                     "add horizontal flip operation",
                 );
-                let pipeline = must(builder.build(), "build pipeline");
+                let pipeline = must(builder.compile(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),
@@ -50,10 +50,10 @@ fn bench_flip(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).flip_vertical(),
+                    PipelinePlan::from_source(source).flip_vertical(),
                     "add vertical flip operation",
                 );
-                let pipeline = must(builder.build(), "build pipeline");
+                let pipeline = must(builder.compile(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),

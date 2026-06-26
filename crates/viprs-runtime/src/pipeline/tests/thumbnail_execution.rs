@@ -2,12 +2,12 @@ use super::*;
 
 #[test]
 fn cache_last_op_keeps_linear_output_nodes_for_repeated_runs() {
-    let pipeline = PipelineBuilder::new(16, 16)
-        .then(non_pixel_local_pass_op(1))
+    let pipeline = PipelinePlan::new(16, 16)
+        .append_dyn_op(non_pixel_local_pass_op(1))
         .unwrap()
         .cache_last_op(NonZeroUsize::new(32).unwrap())
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.nodes[0].cache_op_id(), Some(0));
@@ -31,12 +31,12 @@ fn coalescing_invert_invert_is_identity_end_to_end() {
     let input_data: Vec<u8> = (0..w * h).map(|i| i as u8).collect();
     let source = MemorySource::<U8>::new(w, h, bands, input_data.clone()).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .invert()
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_invert()
         .unwrap()
-        .invert()
+        .plan_invert()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     // The Concretize chain should collapse the double invert into one compiled node.
@@ -73,10 +73,10 @@ fn fused_resize_upscale_uses_output_height_for_intermediate_buffers() {
         .collect();
     let source = MemorySource::<U8>::new(width, height, bands, pixels).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .resize(Resize::new(1.25, 1.25, InterpolationKernel::Lanczos3))
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_resize(Resize::new(1.25, 1.25, InterpolationKernel::Lanczos3))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -128,10 +128,10 @@ fn run_to_image_propagates_source_metadata() {
         .unwrap()
         .with_metadata(metadata.clone());
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(PassThrough, 3)))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(PassThrough, 3)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -164,11 +164,11 @@ fn run_to_image_updates_colourspace_metadata_and_invalidates_source_icc() {
     .unwrap()
     .with_metadata(metadata);
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let scheduler = RayonScheduler::new(1).unwrap();
@@ -196,7 +196,7 @@ fn normalize_to_srgb_matches_web_encode_normalization_for_gray_alpha_sources() {
     let input = Image::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
         .unwrap()
         .with_metadata(metadata);
-    let pipeline = PipelineBuilder::from_source(
+    let pipeline = PipelinePlan::from_source(
         MemorySource::<U8>::new(
             input.width(),
             input.height(),
@@ -206,9 +206,9 @@ fn normalize_to_srgb_matches_web_encode_normalization_for_gray_alpha_sources() {
         .unwrap()
         .with_metadata(input.metadata().clone()),
     )
-    .normalize_to_srgb()
+    .plan_normalize_to_srgb()
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
 
     let actual = pipeline
@@ -251,14 +251,14 @@ fn normalize_to_srgb_is_noop_for_existing_srgb_profile() {
     metadata.interpretation = Some(Interpretation::Srgb);
     metadata.icc_profile = Some(profile_load("srgb").expect("load srgb ICC profile"));
 
-    let builder = PipelineBuilder::from_source(
+    let builder = PipelinePlan::from_source(
         MemorySource::<U8>::new(2, 1, 3, vec![10, 20, 30, 40, 50, 60])
             .unwrap()
             .with_metadata(metadata),
     );
     let baseline_nodes = builder.node_count();
 
-    let normalized = builder.normalize_to_srgb().unwrap();
+    let normalized = builder.plan_normalize_to_srgb().unwrap();
 
     assert_eq!(normalized.node_count(), baseline_nodes);
 }
@@ -429,10 +429,10 @@ fn from_source_maps_interpretation_for_colourspace_builder() {
         .unwrap()
         .with_metadata(metadata);
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .colourspace::<Lab>()
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.output_bands, 3);
@@ -455,12 +455,12 @@ fn jpeg_decoder_source_preserves_interpretation_through_pipeline() {
         .unwrap();
     let source = DecoderSource::<_, U8>::new(codec, &encoded).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .invert()
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_invert()
         .unwrap()
-        .invert()
+        .plan_invert()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let image = pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -533,13 +533,13 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
     )
     .unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(19),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.width, 19);
@@ -639,13 +639,13 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
     )
     .unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(19),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.width, 19);
@@ -705,16 +705,16 @@ fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
     }
 
     let source = DecoderSource::<_, U8>::new(NativeHintDecoder, b"jpeg").unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(crate::domain::colorspace::ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.demand_hint, DemandHint::ThinStrip);
@@ -780,16 +780,16 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
     }
 
     let source = DecoderSource::<_, U8>::new(NativeShrinkRoundingDecoder, b"jpeg").unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_eq!(pipeline.width, 400);
@@ -812,13 +812,13 @@ fn large_thumbnail_avoids_full_image_hint() {
     };
 
     let source = MemorySource::<U8>::new(2048, 2048, 3, vec![0u8; 2048 * 2048 * 3]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert_ne!(pipeline.demand_hint, DemandHint::FullImage);
@@ -860,13 +860,13 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
         )
         .unwrap()
         .with_metadata(ImageMetadata::default());
-        let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
+        let pipeline = PipelinePlan::from_source(source)
+            .plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(width),
                 InterpolationKernel::Lanczos3,
             ))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
         let image = pipeline
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -885,18 +885,18 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
         image.pixels().to_vec(),
     )
     .unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(100),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(50),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let chained = pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -946,13 +946,13 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
         )
         .unwrap()
         .with_metadata(ImageMetadata::default());
-        let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
+        let pipeline = PipelinePlan::from_source(source)
+            .plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(width),
                 InterpolationKernel::Lanczos3,
             ))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
         let image = pipeline
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -973,23 +973,23 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
     )
     .unwrap()
     .with_metadata(ImageMetadata::default());
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(64),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(7),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let chained = pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(2).unwrap())
@@ -1039,18 +1039,18 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
         image.pixels().to_vec(),
     )
     .unwrap();
-    let first_pipeline = PipelineBuilder::from_source(source)
+    let first_pipeline = PipelinePlan::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .colourspace::<SRgb>()
+        .plan_colourspace::<SRgb>()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let first = first_pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -1064,13 +1064,13 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
     )
     .unwrap()
     .with_metadata(first.metadata().clone());
-    let sequential_pipeline = PipelineBuilder::from_source(sequential_source)
-        .thumbnail(Thumbnail::new(
+    let sequential_pipeline = PipelinePlan::from_source(sequential_source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(200),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let sequential = sequential_pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -1083,23 +1083,23 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
         image.pixels().to_vec(),
     )
     .unwrap();
-    let chained_pipeline = PipelineBuilder::from_source(chained_source)
+    let chained_pipeline = PipelinePlan::from_source(chained_source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .colourspace::<SRgb>()
+        .plan_colourspace::<SRgb>()
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(200),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let chained = chained_pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -1125,10 +1125,10 @@ fn replicate_runs_end_to_end_without_tile_propagation_panic() {
     let input_data: Vec<u8> = (0..width * height).map(|value| value as u8).collect();
     let source = MemorySource::<U8>::new(width, height, 1, input_data.clone()).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .replicate(2, 3)
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_replicate(2, 3)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -1303,11 +1303,11 @@ fn sequential_builder_enables_thin_strip_streaming_defaults() {
     use crate::pipeline::LineCacheConfig;
 
     let source = ZeroSource::<U8>::new(64, 64, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = PipelinePlan::from_source(source)
         .sequential(0)
-        .then(pass_op(1))
+        .append_dyn_op(pass_op(1))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let expected_lines =
@@ -1328,12 +1328,12 @@ fn linecache_op_exposes_explicit_line_budget() {
     use crate::pipeline::LineCacheConfig;
 
     let source = ZeroSource::<U8>::new(64, 64, 1);
-    let pipeline = PipelineBuilder::from_source(source)
-        .apply(LineCacheOp::new(7))
+    let pipeline = PipelinePlan::from_source(source)
+        .append_op(LineCacheOp::new(7))
         .unwrap()
-        .then(pass_op(1))
+        .append_dyn_op(pass_op(1))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     assert!(!pipeline.sequential);

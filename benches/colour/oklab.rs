@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -21,11 +21,11 @@ fn bench_xyz_to_oklab(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = PipelinePlan::from_source(source)
                     .with_colorspace(ColorspaceId::Xyz)
-                    .colourspace::<Oklab>()
+                    .plan_colourspace::<Oklab>()
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

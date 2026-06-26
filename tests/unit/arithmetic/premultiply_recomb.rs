@@ -2,7 +2,7 @@ mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler},
+        adapters::scheduler::rayon_scheduler::RayonScheduler,
         domain::{
             colorspace::{ColorspaceId, SRgb},
             kernel::InterpolationKernel,
@@ -47,28 +47,33 @@ mod chaos_monkey_19 {
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(
-            viprs::adapters::sources::memory::MemorySource::<FIn>::new(
-                image.width(),
-                image.height(),
-                image.bands(),
-                image.pixels().to_vec(),
-            )
-            .unwrap()
-            .with_metadata(image.metadata().clone()),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+                viprs::adapters::sources::memory::MemorySource::<FIn>::new(
+                    image.width(),
+                    image.height(),
+                    image.bands(),
+                    image.pixels().to_vec(),
+                )
+                .unwrap()
+                .with_metadata(image.metadata().clone()),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -99,9 +104,10 @@ mod chaos_monkey_19 {
     #[test]
     fn cast_f32_nan_to_u8_does_not_panic_and_clamps_to_an_endpoint() {
         let image = make_f32_image(2, 1, 1, vec![f32::NAN, 0.5], ImageMetadata::default());
-        let (_pipeline, output) =
-            execute_to_image::<F32, U8, _>(&image, |builder| builder.cast(viprs::BandFormatId::U8))
-                .expect("F32->U8 cast should succeed for NaN inputs");
+        let (_pipeline, output) = execute_to_image::<F32, U8, _>(&image, |builder| {
+            builder.plan_cast(viprs::BandFormatId::U8)
+        })
+        .expect("F32->U8 cast should succeed for NaN inputs");
 
         assert!(matches!(output.pixels()[0], 0 | 255));
         assert_eq!(output.pixels()[1], 128);
@@ -111,7 +117,7 @@ mod chaos_monkey_19 {
     fn linear_u8_offset_254_saturates_instead_of_wrapping() {
         let image = make_u8_image(2, 1, 1, vec![1, 250]);
         let (_pipeline, output) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.linear(1.0, 254.0))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_linear(1.0, 254.0))
                 .expect("linear should execute on U8");
 
         assert_eq!(output.pixels(), &[255, 255]);
@@ -121,11 +127,12 @@ mod chaos_monkey_19 {
     fn double_premultiply_does_not_panic_and_preserves_alpha() {
         let image = rgba_image_with_partial_alpha();
         let (_pipeline, single) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.premultiply())
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_premultiply())
                 .expect("single premultiply should succeed");
-        let (_pipeline, doubled) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.premultiply()?.premultiply())
-                .expect("double premultiply should succeed");
+        let (_pipeline, doubled) = execute_to_image::<U8, U8, _>(&image, |builder| {
+            builder.plan_premultiply()?.plan_premultiply()
+        })
+        .expect("double premultiply should succeed");
 
         assert_eq!(single.pixels()[3], image.pixels()[3]);
         assert_eq!(single.pixels()[7], image.pixels()[7]);
@@ -140,7 +147,7 @@ mod chaos_monkey_19 {
     fn invert_u16_uses_full_u16_range() {
         let image = make_u16_image(2, 1, 1, vec![0, u16::MAX]);
         let (_pipeline, output) =
-            execute_to_image::<U16, U16, _>(&image, |builder| builder.invert())
+            execute_to_image::<U16, U16, _>(&image, |builder| builder.plan_invert())
                 .expect("invert should execute on U16");
 
         assert_eq!(output.pixels(), &[u16::MAX, 0]);

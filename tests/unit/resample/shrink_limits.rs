@@ -2,7 +2,7 @@ mod chaos_monkey_19 {
     use bytemuck::Pod;
     use viprs::{
         BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
-        adapters::{pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler},
+        adapters::scheduler::rayon_scheduler::RayonScheduler,
         domain::{
             colorspace::{ColorspaceId, SRgb},
             kernel::InterpolationKernel,
@@ -47,28 +47,33 @@ mod chaos_monkey_19 {
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
+    ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(
-            viprs::adapters::sources::memory::MemorySource::<FIn>::new(
-                image.width(),
-                image.height(),
-                image.bands(),
-                image.pixels().to_vec(),
-            )
-            .unwrap()
-            .with_metadata(image.metadata().clone()),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(
+                viprs::adapters::sources::memory::MemorySource::<FIn>::new(
+                    image.width(),
+                    image.height(),
+                    image.bands(),
+                    image.pixels().to_vec(),
+                )
+                .unwrap()
+                .with_metadata(image.metadata().clone()),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -101,7 +106,7 @@ mod chaos_monkey_19 {
     fn thumbnail_zero_band_image_returns_typed_error() {
         let image = make_u8_image(4, 4, 0, Vec::new());
         let result = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(2),
                 InterpolationKernel::Lanczos3,
             ))
@@ -130,7 +135,7 @@ mod chaos_monkey_19 {
     fn shrink_h_max_factor_produces_single_output_pixel() {
         let image = make_u8_image(65_535, 1, 1, vec![255; 65_535]);
         let (pipeline, output) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.shrink_h(65_535))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_shrink_h(65_535))
                 .expect("shrink_h(65535) should succeed");
 
         assert_eq!((pipeline.width, pipeline.height), (1, 1));
@@ -141,7 +146,7 @@ mod chaos_monkey_19 {
     fn reduce_factor_one_is_identity() {
         let image = patterned_rgb(11, 7);
         let (_pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.reduce(1.0, 1.0, InterpolationKernel::Lanczos3)
+            builder.plan_reduce(1.0, 1.0, InterpolationKernel::Lanczos3)
         })
         .expect("reduce(1.0) should succeed");
 

@@ -7,8 +7,8 @@ mod robustness_determinism {
     use viprs::{
         BuildError, CompiledPipeline, Image, Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-            sinks::memory::MemorySink, sources::memory::MemorySource,
+            scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             kernel::InterpolationKernel,
@@ -68,16 +68,21 @@ mod robustness_determinism {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_buffer<S: viprs::pipeline::Flush>(
+    fn execute_to_buffer<S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<U8>,
         threads: usize,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+        configure: impl FnOnce(
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> (CompiledPipeline, Vec<u8>) {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
+        )
         .unwrap_or_else(|error| panic!("pipeline stage failed: {error:?}"))
-        .build()
+        .compile()
         .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"));
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -97,8 +102,10 @@ mod robustness_determinism {
     fn invert_pipeline_is_deterministic_across_repeated_runs() {
         let image = load_fixture_image("sample.jpg", 64, 64, 3);
 
-        let (_first_pipeline, first) = execute_to_buffer(&image, 2, |builder| builder.invert());
-        let (_second_pipeline, second) = execute_to_buffer(&image, 2, |builder| builder.invert());
+        let (_first_pipeline, first) =
+            execute_to_buffer(&image, 2, |builder| builder.plan_invert());
+        let (_second_pipeline, second) =
+            execute_to_buffer(&image, 2, |builder| builder.plan_invert());
 
         assert_eq!(
             first, second,
@@ -113,7 +120,7 @@ mod robustness_determinism {
 
         for run in 0..5 {
             let (_pipeline, output) =
-                execute_to_buffer(&image, 2, |builder| builder.thumbnail(thumbnail(200)));
+                execute_to_buffer(&image, 2, |builder| builder.plan_thumbnail(thumbnail(200)));
             if let Some(expected) = &baseline {
                 assert_eq!(
                     output.as_slice(),
@@ -132,7 +139,7 @@ mod robustness_determinism {
         let image = load_fixture_image("sample.jpg", 64, 64, 3);
 
         let (_pipeline, output) =
-            execute_to_buffer(&image, 2, |builder| builder.invert()?.invert());
+            execute_to_buffer(&image, 2, |builder| builder.plan_invert()?.plan_invert());
 
         assert_eq!(
             output.as_slice(),
@@ -146,10 +153,10 @@ mod robustness_determinism {
         let image = load_fixture_image("bench_1024x1024.jpg", 256, 256, 3);
 
         let (_single_pipeline, single_thread) = execute_to_buffer(&image, 1, |builder| {
-            builder.thumbnail(thumbnail(256))?.invert()
+            builder.plan_thumbnail(thumbnail(256))?.plan_invert()
         });
         let (_multi_pipeline, four_threads) = execute_to_buffer(&image, 4, |builder| {
-            builder.thumbnail(thumbnail(256))?.invert()
+            builder.plan_thumbnail(thumbnail(256))?.plan_invert()
         });
 
         assert_eq!(

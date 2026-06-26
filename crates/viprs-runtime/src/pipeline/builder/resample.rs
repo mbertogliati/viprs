@@ -1,23 +1,23 @@
 use super::state::{validate_reduce_factors, validate_reduce_kernel};
 use super::{
-    AffineBridge, BandFormatId, BuildError, ColorspaceId, CopyOp, DemandHint, DynOperation, F32,
-    F64, FlattenBridge, Flush, I16, I32, Identity, InterpolationKernel, Interpretation, NonZeroU8,
-    OperationBridge, PipelineBuilder, Premultiply, ReduceBridge, ReduceHBridge, ReduceVBridge,
-    Resize, ResizeNode, ShrinkBridge, ShrinkHBridge, ShrinkVBridge, SimilarityBridge, Thumbnail,
-    ThumbnailNode, U8, U16, U32, Unpremultiply, flatten_has_alpha,
+    AffineBridge, BandFormatId, BuildError, ColorspaceId, CommitPlan, CommittedPlan, CopyOp,
+    DemandHint, DynOperation, F32, F64, FlattenBridge, I16, I32, InterpolationKernel,
+    Interpretation, NonZeroU8, OperationBridge, PipelinePlan, Premultiply, ReduceBridge,
+    ReduceHBridge, ReduceVBridge, Resize, ResizeNode, ShrinkBridge, ShrinkHBridge, ShrinkVBridge,
+    SimilarityBridge, Thumbnail, ThumbnailNode, U8, U16, U32, Unpremultiply, flatten_has_alpha,
 };
 
-impl<Op: Flush> PipelineBuilder<Op> {
+impl<Op: CommitPlan> PipelinePlan<Op> {
     /// Reduce the image width by `factor` using `kernel` (horizontal downscale).
     ///
     /// `factor` must be >= 1.0. Output width is `round(input_width / factor)`.
     /// `compile()` propagates the new dimensions automatically via `output_width`
     /// declared by `ReduceHBridge` — no manual `set_dimensions` call is needed.
-    pub fn reduce_h(
+    pub fn plan_reduce_h(
         self,
         factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         self.reduce_h_with_hint(factor, kernel, DemandHint::ThinStrip)
     }
 
@@ -64,7 +64,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         factor: f64,
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         validate_reduce_kernel("reduce_h", kernel)?;
         let bands = self.bands;
         let (input_w, _) = self.current_dimensions();
@@ -119,7 +119,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 demand_hint,
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `shrink_h` exposes adapter behavior needed by the surrounding module.
@@ -130,8 +130,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink_h;
     /// ```
-    pub fn shrink_h(self, factor: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.shrink_h_with_ceil(factor, false)
+    pub fn plan_shrink_h(self, factor: u32) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        self.plan_shrink_h_with_ceil(factor, false)
     }
 
     /// `shrink_h_with_ceil` exposes adapter behavior needed by the surrounding module.
@@ -142,11 +142,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink_h_with_ceil;
     /// ```
-    pub fn shrink_h_with_ceil(
+    pub fn plan_shrink_h_with_ceil(
         self,
         factor: u32,
         ceil: bool,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         if factor == 0 {
             return Err(BuildError::SourceHint {
@@ -205,7 +205,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 Some(source_width),
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `shrink` exposes adapter behavior needed by the surrounding module.
@@ -216,11 +216,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink;
     /// ```
-    pub fn shrink(
+    pub fn plan_shrink(
         self,
         h_factor: u32,
         v_factor: u32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(ShrinkBridge::<U8>::new(
@@ -259,7 +259,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Reduce the image height by `factor` using `kernel` (vertical downscale).
@@ -267,11 +267,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// `factor` must be >= 1.0. Output height is `round(input_height / factor)`.
     /// `compile()` propagates the new dimensions automatically via `output_height`
     /// declared by `ReduceVBridge` — no manual `set_dimensions` call is needed.
-    pub fn reduce_v(
+    pub fn plan_reduce_v(
         self,
         factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         self.reduce_v_with_hint(factor, kernel, DemandHint::ThinStrip)
     }
 
@@ -280,7 +280,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         factor: f64,
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         validate_reduce_kernel("reduce_v", kernel)?;
         let bands = self.bands;
         let (_, input_h) = self.current_dimensions();
@@ -335,7 +335,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 demand_hint,
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `reduce` exposes adapter behavior needed by the surrounding module.
@@ -346,12 +346,12 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::reduce;
     /// ```
-    pub fn reduce(
+    pub fn plan_reduce(
         self,
         h_factor: f64,
         v_factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         validate_reduce_factors(h_factor, v_factor)?;
         validate_reduce_kernel("reduce", kernel)?;
         let bands = self.bands;
@@ -378,7 +378,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 Box::new(ReduceBridge::<F64>::new(h_factor, v_factor, kernel, bands)?)
             }
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `shrink_v` exposes adapter behavior needed by the surrounding module.
@@ -389,8 +389,8 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink_v;
     /// ```
-    pub fn shrink_v(self, factor: u32) -> Result<PipelineBuilder<Identity>, BuildError> {
-        self.shrink_v_with_ceil(factor, false)
+    pub fn plan_shrink_v(self, factor: u32) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
+        self.plan_shrink_v_with_ceil(factor, false)
     }
 
     /// `shrink_v_with_ceil` exposes adapter behavior needed by the surrounding module.
@@ -401,11 +401,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::shrink_v_with_ceil;
     /// ```
-    pub fn shrink_v_with_ceil(
+    pub fn plan_shrink_v_with_ceil(
         self,
         factor: u32,
         ceil: bool,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         if factor == 0 {
             return Err(BuildError::SourceHint {
@@ -440,7 +440,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 Box::new(ShrinkVBridge::<F64>::new_with_ceil(factor, ceil, bands)?)
             }
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// Apply an affine transform to the image.
@@ -452,7 +452,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// background on the uncovered edges.
     /// `output_w` and `output_h` fix the output image dimensions; the pipeline
     /// compiler propagates these via `AffineBridge::output_width`/`output_height`.
-    pub fn affine(
+    pub fn plan_affine(
         self,
         matrix: [f64; 4],
         tx: f64,
@@ -460,7 +460,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         output_w: u32,
         output_h: u32,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let (backward_matrix, backward_tx, backward_ty) =
             Self::forward_affine_to_backward(matrix, tx, ty, output_w, output_h)?;
         self.affine_backward_with_extend_and_hint(
@@ -485,7 +485,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         kernel: InterpolationKernel,
         demand_hint: DemandHint,
         extend: crate::domain::ops::resample::affine::ExtendMode,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let (input_w, input_h) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -581,7 +581,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 extend,
             )?),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `similarity` exposes adapter behavior needed by the surrounding module.
@@ -592,12 +592,12 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::similarity;
     /// ```
-    pub fn similarity(
+    pub fn plan_similarity(
         self,
         scale: f64,
         angle: f64,
         kernel: InterpolationKernel,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let (input_w, input_h) = self.current_dimensions();
         let op: Box<dyn DynOperation> = match self.current_format {
@@ -623,7 +623,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 scale, angle, kernel, input_w, input_h, bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `resize` exposes adapter behavior needed by the surrounding module.
@@ -634,7 +634,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::resize;
     /// ```
-    pub fn resize(self, resize: Resize) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_resize(self, resize: Resize) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         if self.bands == 0 {
             return Err(BuildError::SourceHint {
                 context: "resize",
@@ -676,17 +676,17 @@ impl<Op: Flush> PipelineBuilder<Op> {
                     bands,
                 )),
             };
-            return self.then(op);
+            return self.append_dyn_op(op);
         }
 
-        let mut builder = self.flush_into_identity()?;
+        let mut builder = self.commit_plan()?;
         for node in plan.nodes {
             builder = match node {
-                ResizeNode::ShrinkH { factor } => builder.shrink_h(factor)?,
-                ResizeNode::ShrinkV { factor } => builder.shrink_v(factor)?,
-                ResizeNode::ReduceH { factor, kernel } => builder.reduce_h(factor, kernel)?,
-                ResizeNode::ReduceV { factor, kernel } => builder.reduce_v(factor, kernel)?,
-                ResizeNode::Zoom { xfac, yfac } => builder.zoom(xfac, yfac)?,
+                ResizeNode::ShrinkH { factor } => builder.plan_shrink_h(factor)?,
+                ResizeNode::ShrinkV { factor } => builder.plan_shrink_v(factor)?,
+                ResizeNode::ReduceH { factor, kernel } => builder.plan_reduce_h(factor, kernel)?,
+                ResizeNode::ReduceV { factor, kernel } => builder.plan_reduce_v(factor, kernel)?,
+                ResizeNode::Zoom { xfac, yfac } => builder.plan_zoom(xfac, yfac)?,
                 ResizeNode::Affine {
                     matrix,
                     tx,
@@ -718,7 +718,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::premultiply;
     /// ```
-    pub fn premultiply(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_premultiply(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let max_alpha = self.current_interpretation.map_or_else(
             || {
@@ -757,7 +757,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 bands,
             )),
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `unpremultiply` exposes adapter behavior needed by the surrounding module.
@@ -768,7 +768,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::unpremultiply;
     /// ```
-    pub fn unpremultiply(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_unpremultiply(self) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let bands = self.bands;
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => Box::new(OperationBridge::new_pixel_local(
@@ -790,7 +790,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 });
             }
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `flatten` exposes adapter behavior needed by the surrounding module.
@@ -801,7 +801,10 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```ignore
     /// let _ = viprs_runtime::pipeline::builder::flatten;
     /// ```
-    pub fn flatten(self, background: [f32; 4]) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn plan_flatten(
+        self,
+        background: [f32; 4],
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         let input_bands = self.bands;
         if !flatten_has_alpha(input_bands) {
             let op: Box<dyn DynOperation> = match self.current_format {
@@ -834,7 +837,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                     input_bands,
                 )),
             };
-            return self.then(op);
+            return self.append_dyn_op(op);
         }
         let op: Box<dyn DynOperation> = match self.current_format {
             BandFormatId::U8 => {
@@ -855,7 +858,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
                 });
             }
         };
-        self.then(op)
+        self.append_dyn_op(op)
     }
 
     /// `thumbnail` exposes adapter behavior needed by the surrounding module.
@@ -868,10 +871,10 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// ```
     #[allow(clippy::needless_pass_by_value)]
     // REASON: public API stability for the builder-style `thumbnail` entry point.
-    pub fn thumbnail(
+    pub fn plan_thumbnail(
         mut self,
         thumbnail: Thumbnail,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<PipelinePlan<CommittedPlan>, BuildError> {
         thumbnail.validate_input(self.bands)?;
         let (mut input_width, mut input_height) = self.current_dimensions();
         let mut plan = thumbnail.into_pipeline_nodes(input_width, input_height, self.bands);
@@ -917,12 +920,12 @@ impl<Op: Flush> PipelineBuilder<Op> {
         }
         let has_nodes = !plan.nodes.is_empty();
 
-        let mut builder = self.flush_into_identity()?;
+        let mut builder = self.commit_plan()?;
         for node in plan.nodes {
             builder = match node {
-                ThumbnailNode::Premultiply => builder.premultiply()?,
-                ThumbnailNode::ShrinkH { factor } => builder.shrink_h(factor)?,
-                ThumbnailNode::ShrinkV { factor } => builder.shrink_v(factor)?,
+                ThumbnailNode::Premultiply => builder.plan_premultiply()?,
+                ThumbnailNode::ShrinkH { factor } => builder.plan_shrink_h(factor)?,
+                ThumbnailNode::ShrinkV { factor } => builder.plan_shrink_v(factor)?,
                 ThumbnailNode::ReduceH { factor, kernel } => {
                     builder.reduce_h_with_hint(factor, kernel, DemandHint::ThinStrip)?
                 }
@@ -958,16 +961,16 @@ impl<Op: Flush> PipelineBuilder<Op> {
                     y,
                     width,
                     height,
-                } => builder.extract_area(x, y, width, height)?,
-                ThumbnailNode::Unpremultiply => builder.unpremultiply()?,
-                ThumbnailNode::Flatten { background } => builder.flatten(background)?,
+                } => builder.plan_extract_area(x, y, width, height)?,
+                ThumbnailNode::Unpremultiply => builder.plan_unpremultiply()?,
+                ThumbnailNode::Flatten { background } => builder.plan_flatten(background)?,
             };
         }
 
         if has_nodes {
             Ok(builder)
         } else {
-            builder.affine(
+            builder.plan_affine(
                 [1.0, 0.0, 0.0, 1.0],
                 0.0,
                 0.0,

@@ -3,10 +3,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use std::num::NonZeroUsize;
 use viprs::{
     adapters::{
-        pipeline::{CompiledPipeline, PipelineBuilder},
-        scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink,
-        sources::memory::MemorySource,
+        pipeline::CompiledPipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         format::U8,
@@ -15,6 +13,7 @@ use viprs::{
     },
     ports::scheduler::TileScheduler,
 };
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 const STANDARD_SIZES: [u32; 3] = [512, 2048, 8192];
 const TARGET_WIDTH: u32 = 128;
@@ -26,8 +25,8 @@ fn thumbnail_pipeline(
     cache_tiles: Option<NonZeroUsize>,
 ) -> CompiledPipeline {
     let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
-    let builder = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let builder = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))
@@ -37,7 +36,7 @@ fn thumbnail_pipeline(
     } else {
         builder
     };
-    builder.build().unwrap()
+    builder.compile().unwrap()
 }
 
 fn run_thumbnail(pipeline: &CompiledPipeline, scheduler: &RayonScheduler) -> Vec<u8> {

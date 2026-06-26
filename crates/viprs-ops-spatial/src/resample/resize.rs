@@ -2,7 +2,7 @@
 //!
 //! `ResizeOp` is a composite operation: it plans a resize as a sequence of
 //! `ShrinkH`/`ShrinkV`, `ReduceH`/`ReduceV`, `Zoom`, and `Affine` nodes.
-//! The plan is materialised by `PipelineBuilder::resize()`.
+//! The plan is materialised by `ImagePipeline::resize()`.
 
 use viprs_core::kernel::InterpolationKernel;
 

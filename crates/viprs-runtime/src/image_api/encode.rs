@@ -30,7 +30,7 @@ impl ImageApi {
         #[cfg(feature = "jpeg")]
         {
             let resource_limits = self.resource_limits.clone();
-            let pipeline = self.builder.build()?;
+            let pipeline = self.builder.compile()?;
             Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
             let codec = JpegCodec;
@@ -72,7 +72,7 @@ impl ImageApi {
         #[cfg(feature = "jpeg")]
         {
             let resource_limits = self.resource_limits.clone();
-            let pipeline = self.builder.build()?;
+            let pipeline = self.builder.compile()?;
 
             Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
@@ -116,7 +116,7 @@ impl ImageApi {
         #[cfg(feature = "png")]
         {
             let resource_limits = self.resource_limits.clone();
-            let pipeline = self.builder.build()?;
+            let pipeline = self.builder.compile()?;
             Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
             let codec = PngCodec::default();
@@ -151,7 +151,7 @@ impl ImageApi {
         #[cfg(feature = "png")]
         {
             let resource_limits = self.resource_limits.clone();
-            let pipeline = self.builder.build()?;
+            let pipeline = self.builder.compile()?;
 
             Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
@@ -191,7 +191,7 @@ impl ImageApi {
         #[cfg(feature = "webp")]
         {
             let resource_limits = self.resource_limits.clone();
-            let pipeline = self.builder.build()?;
+            let pipeline = self.builder.compile()?;
             Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
             let codec = WebpCodec;
@@ -233,7 +233,7 @@ impl ImageApi {
         #[cfg(feature = "webp")]
         {
             let resource_limits = self.resource_limits.clone();
-            let pipeline = self.builder.build()?;
+            let pipeline = self.builder.compile()?;
 
             Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
             let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
@@ -274,7 +274,7 @@ impl ImageApi {
     /// ```
     pub fn save(self, path: impl AsRef<Path>) -> Result<(), ViprsError> {
         let resource_limits = self.resource_limits.clone();
-        let pipeline = self.builder.build()?;
+        let pipeline = self.builder.compile()?;
         Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
         let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
         let path = path.as_ref();
