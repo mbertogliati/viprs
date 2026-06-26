@@ -133,14 +133,12 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -149,12 +147,12 @@ mod chaos_monkey_18 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -321,14 +319,12 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -337,12 +333,12 @@ mod chaos_monkey_8 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -363,26 +359,24 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -416,7 +410,7 @@ mod chaos_monkey_8 {
     fn png_rotate_roundtrip_rgb_preserves_pixels() {
         let image = patterned_u8(7, 5, 3);
         let (_pipeline, rotated) =
-            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.rotate90())
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.plan_rotate90())
                 .expect("rotate90 should succeed");
 
         let codec = PngCodec::default();
@@ -436,7 +430,7 @@ mod chaos_monkey_8 {
     fn png_rotate_roundtrip_rgba_preserves_pixels() {
         let image = patterned_u8(5, 7, 4);
         let (_pipeline, rotated) =
-            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.rotate90())
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.plan_rotate90())
                 .expect("rotate90 should succeed");
 
         let codec = PngCodec::default();

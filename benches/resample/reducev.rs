@@ -3,7 +3,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, kernel::InterpolationKernel},
@@ -19,10 +19,10 @@ fn bench_reducev(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .reduce_v(2.0, InterpolationKernel::Lanczos3)
+                let pipeline = PipelinePlan::from_source(source)
+                    .plan_reduce_v(2.0, InterpolationKernel::Lanczos3)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
@@ -48,10 +48,10 @@ fn bench_reducev_thumbnail_residual(c: &mut Criterion) {
     group.bench_function("400x409_rgb_to_400x400", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(input_w, input_h, bands, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .reduce_v(factor, InterpolationKernel::Lanczos3)
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_reduce_v(factor, InterpolationKernel::Lanczos3)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(RayonScheduler::default_threads())

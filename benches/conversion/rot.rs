@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, ops::conversion::Angle},
@@ -29,10 +29,10 @@ fn bench_rot(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).rot(Angle::D90),
+                    PipelinePlan::from_source(source).plan_rot(Angle::D90),
                     "add rot d90 operation",
                 );
-                let pipeline = must(builder.build(), "build pipeline");
+                let pipeline = must(builder.compile(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),
@@ -50,10 +50,10 @@ fn bench_rot(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).rot(Angle::D180),
+                    PipelinePlan::from_source(source).plan_rot(Angle::D180),
                     "add rot d180 operation",
                 );
-                let pipeline = must(builder.build(), "build pipeline");
+                let pipeline = must(builder.compile(), "build pipeline");
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(
                     RayonScheduler::new(RayonScheduler::default_threads()),

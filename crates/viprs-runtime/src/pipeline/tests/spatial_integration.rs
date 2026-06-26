@@ -21,10 +21,10 @@ fn run_resize_pipeline_with_pixels(
     kernel: InterpolationKernel,
 ) -> (u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(width, height, 1, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .resize(Resize::new(hscale, vscale, kernel))
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_resize(Resize::new(hscale, vscale, kernel))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(1)
@@ -45,8 +45,8 @@ fn run_thumbnail_pipeline_with_pixels(
     kernel: InterpolationKernel,
 ) -> (u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(input_width, input_height, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::FitBox {
                 width: target_width,
                 height: target_height,
@@ -54,7 +54,7 @@ fn run_thumbnail_pipeline_with_pixels(
             kernel,
         ))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
@@ -82,11 +82,11 @@ fn stepped_gradient_pixels(width: u32, height: u32) -> Vec<u8> {
         .collect()
 }
 
-struct IdentityF32;
+struct PassthroughF32;
 
-impl PixelLocalOp for IdentityF32 {}
+impl PixelLocalOp for PassthroughF32 {}
 
-impl Op for IdentityF32 {
+impl Op for PassthroughF32 {
     type Input = F32;
     type Output = F32;
     type State = ();
@@ -207,7 +207,7 @@ fn reduce_fractional_pipeline_matches_declared_dimensions() {
             .collect(),
     )
     .unwrap();
-    let pipeline = PipelineBuilder::from_source(
+    let pipeline = PipelinePlan::from_source(
         MemorySource::<U8>::new(
             image.width(),
             image.height(),
@@ -216,9 +216,9 @@ fn reduce_fractional_pipeline_matches_declared_dimensions() {
         )
         .unwrap(),
     )
-    .reduce(1.5, 2.5, InterpolationKernel::Lanczos3)
+    .plan_reduce(1.5, 2.5, InterpolationKernel::Lanczos3)
     .unwrap()
-    .build()
+    .compile()
     .unwrap();
 
     let expected_len =
@@ -238,7 +238,10 @@ fn mapim_pipeline_connect_to_slot_runs_coordinate_map() {
     let source = MemorySource::<F32>::new(2, 2, 2, source_pixels.clone()).unwrap();
 
     let mut arena = PipelineArena::with_source(Box::new(source));
-    let upstream = arena.add_node(Box::new(OperationBridge::new_pixel_local(IdentityF32, 2)));
+    let upstream = arena.add_node(Box::new(OperationBridge::new_pixel_local(
+        PassthroughF32,
+        2,
+    )));
     let node = arena.add_node(Box::new(
         MapImOp::<F32>::new(2, 2, 2, 2, 2, BandFormatId::F32).with_premultiplied(true),
     ));
@@ -261,7 +264,7 @@ fn mapim_pipeline_connect_to_slot_runs_coordinate_map() {
 #[test]
 fn subsample_builder_zero_x_factor_returns_source_hint_error() {
     let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-    let result = PipelineBuilder::from_source(source).subsample(0, 1);
+    let result = PipelinePlan::from_source(source).plan_subsample(0, 1);
 
     assert!(matches!(
         result,

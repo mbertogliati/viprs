@@ -11,7 +11,7 @@ fn flip_horizontal_libvips() {
     let case = "grayscale_ramp";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.flip_horizontal()
+        builder.plan_flip_horizontal()
     });
     let input = write_u8_input("flip_horizontal_libvips", case, "input", &source);
     let cmd = ["flip", input.as_str(), "{output}", "horizontal"];
@@ -28,7 +28,7 @@ fn flip_vertical_libvips() {
     let case = "grayscale_ramp";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.flip_vertical()
+        builder.plan_flip_vertical()
     });
     let input = write_u8_input("flip_vertical_libvips", case, "input", &source);
     let cmd = ["flip", input.as_str(), "{output}", "vertical"];
@@ -45,7 +45,7 @@ fn rotate90_libvips() {
     let case = "grayscale_ramp";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.rotate90()
+        builder.plan_rotate90()
     });
     let input = write_u8_input("rotate90_libvips", case, "input", &source);
     let cmd = ["rot", input.as_str(), "{output}", "d90"];
@@ -62,7 +62,7 @@ fn rotate180_libvips() {
     let case = "grayscale_ramp";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.rotate180()
+        builder.plan_rotate180()
     });
     let input = write_u8_input("rotate180_libvips", case, "input", &source);
     let cmd = ["rot", input.as_str(), "{output}", "d180"];
@@ -79,7 +79,7 @@ fn rotate270_libvips() {
     let case = "grayscale_ramp";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.rotate270()
+        builder.plan_rotate270()
     });
     let input = write_u8_input("rotate270_libvips", case, "input", &source);
     let cmd = ["rot", input.as_str(), "{output}", "d270"];
@@ -99,7 +99,7 @@ fn autorot_orientation_6_rgb_libvips() {
     let case = "orientation_6_rgb";
     let source = rgb_source(width, height);
     let actual = run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-        builder.then(Box::new(AutorotBridge::<U8>::new(width, height, bands, 6)))
+        builder.append_dyn_op(Box::new(AutorotBridge::<U8>::new(width, height, bands, 6)))
     });
     let input = write_u8_input_spec(
         "autorot_libvips",
@@ -125,7 +125,7 @@ fn replicate_libvips() {
     let case = "grayscale_2x3";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.replicate(2, 3)
+        builder.plan_replicate(2, 3)
     });
     let input = write_u8_input("replicate_libvips", case, "input", &source);
     let cmd = ["replicate", input.as_str(), "{output}", "2", "3"];
@@ -142,7 +142,7 @@ fn subsample_non_point_libvips() {
     let case = "grayscale_2x3_non_point";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.subsample(2, 3)
+        builder.plan_subsample(2, 3)
     });
     let input = write_u8_input("subsample_libvips", case, "input", &source);
     let cmd = ["subsample", input.as_str(), "{output}", "2", "3"];
@@ -161,7 +161,7 @@ fn gamma_default_2_4_boundary_pixels_libvips() {
     let case = "boundary_pixels_default_2_4";
     let source = vec![0u8, u8::MAX, 0, u8::MAX, u8::MAX, 0, u8::MAX, 0];
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             GammaOp::<U8>::default(),
             1,
         )))
@@ -195,7 +195,7 @@ fn gamma_default_2_4_midtones_libvips() {
     let case = "midtones_default_2_4";
     let source = vec![32u8, 64, 96, 128, 160, 192, 224, 255];
     let actual = run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             GammaOp::<U8>::default(),
             1,
         )))
@@ -227,7 +227,7 @@ fn zoom_libvips() {
     let case = "grayscale_2x3";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.zoom(2, 3)
+        builder.plan_zoom(2, 3)
     });
     let input = write_u8_input("zoom_libvips", case, "input", &source);
     let cmd = ["zoom", input.as_str(), "{output}", "2", "3"];
@@ -244,7 +244,7 @@ fn embed_black_extend_libvips() {
     let case = "offset_black";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.embed(12, 10, 2, 1, WIDTH, HEIGHT, ExtendMode::Black)
+        builder.plan_embed(12, 10, 2, 1, WIDTH, HEIGHT, ExtendMode::Black)
     });
     let input = write_u8_input("embed_libvips", case, "input", &source);
     let cmd = [
@@ -271,7 +271,7 @@ fn embed_copy_extend_libvips() {
     let case = "offset_copy";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.embed(12, 10, 2, 1, WIDTH, HEIGHT, ExtendMode::Copy)
+        builder.plan_embed(12, 10, 2, 1, WIDTH, HEIGHT, ExtendMode::Copy)
     });
     let input = write_u8_input("embed_libvips", case, "input", &source);
     let cmd = [
@@ -298,7 +298,7 @@ fn embed_mirror_extend_libvips() {
     let case = "offset_mirror";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.embed(12, 10, 2, 1, WIDTH, HEIGHT, ExtendMode::Mirror)
+        builder.plan_embed(12, 10, 2, 1, WIDTH, HEIGHT, ExtendMode::Mirror)
     });
     let input = write_u8_input("embed_libvips", case, "input", &source);
     let cmd = [
@@ -325,7 +325,7 @@ fn extract_area_libvips() {
     let case = "center_crop";
     let source = grayscale_source();
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.extract_area(1, 2, 4, 3)
+        builder.plan_extract_area(1, 2, 4, 3)
     });
     let input = write_u8_input("extract_area_libvips", case, "input", &source);
     let cmd = ["crop", input.as_str(), "{output}", "1", "2", "4", "3"];

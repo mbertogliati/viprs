@@ -4,7 +4,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -28,13 +28,13 @@ fn make_spatial_pixels(size: u32) -> Vec<f32> {
 
 fn make_frequency_pixels(size: u32, scheduler: &RayonScheduler) -> Vec<f32> {
     let source = MemorySource::<F32>::new(size, size, 1, make_spatial_pixels(size)).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(
             FwFftOp::<F32>::new(size, size).expect("FwFftOp should construct"),
             1,
         )))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     scheduler.run(&pipeline, &mut sink).unwrap();
@@ -51,13 +51,13 @@ fn bench_invfft(c: &mut Criterion) {
             b.iter(|| {
                 let source =
                     MemorySource::<F32>::new(size, size, 2, frequency_pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new(
                         InvFftOp::<F32>::new(size, size).expect("InvFftOp should construct"),
                         2,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();

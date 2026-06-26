@@ -95,7 +95,7 @@ fn colourspace_srgb_to_lab_libvips() {
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
     });
     let input = write_u8_input_spec(
         "colourspace_libvips",
@@ -127,7 +127,7 @@ fn colourspace_lab_to_srgb_libvips() {
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Lab)
-            .colourspace::<SRgb>()
+            .plan_colourspace::<SRgb>()
     });
     let input = write_f32_input_spec(
         "colourspace_libvips",
@@ -159,7 +159,7 @@ fn colourspace_srgb_to_xyz_libvips() {
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Xyz>()
+            .plan_colourspace::<Xyz>()
     });
     let input = write_u8_input_spec(
         "colourspace_libvips",
@@ -191,7 +191,7 @@ fn colourspace_xyz_to_srgb_libvips() {
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Xyz)
-            .colourspace::<SRgb>()
+            .plan_colourspace::<SRgb>()
     });
     let vips_source = scale_f32_pixels(&source, 100.0);
     let input = write_f32_input_spec(
@@ -224,7 +224,7 @@ fn colourspace_srgb_to_hsv_libvips() {
     let actual = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Hsv>()
+            .plan_colourspace::<Hsv>()
     });
     let input = write_u8_input_spec(
         "colourspace_libvips",
@@ -256,7 +256,7 @@ fn colourspace_hsv_to_srgb_libvips() {
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Hsv)
-            .colourspace::<SRgb>()
+            .plan_colourspace::<SRgb>()
     });
     let vips_source = encode_vips_hsv_input(&source);
     let input = write_u8_input_spec(
@@ -283,7 +283,7 @@ fn colourspace_lab_to_xyz_d65_libvips() {
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Lab)
-            .colourspace::<Xyz>()
+            .plan_colourspace::<Xyz>()
     });
     let input = write_f32_input_spec(
         "colourspace_libvips",
@@ -315,7 +315,7 @@ fn colourspace_xyz_to_lab_d65_libvips() {
     let actual = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Xyz)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
     });
     let vips_source = scale_f32_pixels(&source, 100.0);
     let input = write_f32_input_spec(
@@ -346,7 +346,7 @@ fn de00_known_pairs_libvips() {
     let case = "sharma_reference_pairs";
     let (left, right, combined) = delta_e_known_pairs();
     let actual = run_pipeline_f32(combined, WIDTH, HEIGHT, 6, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(DE00, 6)))
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(DE00, 6)))
     });
     let left_input = write_f32_input_spec(
         "de00_libvips",
@@ -383,7 +383,7 @@ fn de76_known_pairs_libvips() {
     let case = "sharma_reference_pairs";
     let (left, right, combined) = delta_e_known_pairs();
     let actual = run_pipeline_f32(combined, WIDTH, HEIGHT, 6, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(DE76, 6)))
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(DE76, 6)))
     });
     let left_input = write_f32_input_spec(
         "de76_libvips",

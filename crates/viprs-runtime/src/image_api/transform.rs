@@ -25,7 +25,7 @@ impl ImageApi {
     /// ```
     pub fn apply<O: PipelineOp>(self, op: O) -> Result<Self, BuildError> {
         Self::from_builder(
-            self.builder.apply(op)?.flush_into_identity()?,
+            self.builder.append_op(op)?.commit_plan()?,
             self.resource_limits,
         )
     }
@@ -46,7 +46,7 @@ impl ImageApi {
     /// ```
     pub fn invert(self) -> Result<Self, BuildError> {
         Self::from_builder(
-            self.builder.invert()?.flush_into_identity()?,
+            self.builder.plan_invert()?.commit_plan()?,
             self.resource_limits,
         )
     }
@@ -67,7 +67,7 @@ impl ImageApi {
     /// ```
     pub fn linear(self, scale: f64, offset: f64) -> Result<Self, BuildError> {
         Self::from_builder(
-            self.builder.linear(scale, offset)?.flush_into_identity()?,
+            self.builder.plan_linear(scale, offset)?.commit_plan()?,
             self.resource_limits,
         )
     }
@@ -108,13 +108,13 @@ impl ImageApi {
         Ok(Self {
             builder: self
                 .builder
-                .flatten([
+                .plan_flatten([
                     f32::from(r) / 255.0,
                     f32::from(g) / 255.0,
                     f32::from(b) / 255.0,
                     1.0,
                 ])?
-                .flush_into_identity()?,
+                .commit_plan()?,
             resource_limits: self.resource_limits,
         })
     }
@@ -135,7 +135,7 @@ impl ImageApi {
     /// ```
     pub fn premultiply(self) -> Result<Self, BuildError> {
         Ok(Self {
-            builder: self.builder.premultiply()?.flush_into_identity()?,
+            builder: self.builder.plan_premultiply()?.commit_plan()?,
             resource_limits: self.resource_limits,
         })
     }
@@ -156,7 +156,7 @@ impl ImageApi {
     /// ```
     pub fn unpremultiply(self) -> Result<Self, BuildError> {
         Ok(Self {
-            builder: self.builder.unpremultiply()?.flush_into_identity()?,
+            builder: self.builder.plan_unpremultiply()?.commit_plan()?,
             resource_limits: self.resource_limits,
         })
     }
@@ -183,7 +183,7 @@ impl ImageApi {
 
         #[cfg(not(feature = "icc"))]
         Self::from_builder(
-            self.builder.thumbnail(Thumbnail::new(
+            self.builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(width),
                 InterpolationKernel::Lanczos3,
             ))?,
@@ -214,12 +214,12 @@ impl ImageApi {
         width: u32,
         options: ImageApiThumbnailOptions,
     ) -> Result<Self, BuildError> {
-        let builder = self.builder.thumbnail(Thumbnail::new(
+        let builder = self.builder.plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(width),
             InterpolationKernel::Lanczos3,
         ))?;
         let builder = if options.auto_normalize_to_srgb {
-            builder.normalize_to_srgb()?
+            builder.plan_normalize_to_srgb()?
         } else {
             builder
         };
@@ -244,7 +244,7 @@ impl ImageApi {
     /// ```
     #[cfg(feature = "icc")]
     pub fn normalize_to_srgb(self) -> Result<Self, BuildError> {
-        Self::from_builder(self.builder.normalize_to_srgb()?, self.resource_limits)
+        Self::from_builder(self.builder.plan_normalize_to_srgb()?, self.resource_limits)
     }
 
     /// Crop the current image to an attention-guided region of `width × height`.
@@ -263,7 +263,7 @@ impl ImageApi {
     /// ```
     pub fn smartcrop(self, width: u32, height: u32) -> Result<Self, ViprsError> {
         let resource_limits = self.resource_limits.clone();
-        let pipeline = self.builder.build()?;
+        let pipeline = self.builder.compile()?;
 
         Self::validate_output_limits(resource_limits.as_ref(), &pipeline)?;
         let scheduler = Self::build_scheduler(resource_limits.as_ref())?;
@@ -274,7 +274,7 @@ impl ImageApi {
             let crop_height = height.min(image.height()).max(1);
             let cropped = Self::from_image_with_limits(image, None, resource_limits)?;
             Ok(Self {
-                builder: cropped.builder.extract_area(
+                builder: cropped.builder.plan_extract_area(
                     crop.crop_left(),
                     crop.crop_top(),
                     crop_width,
@@ -334,7 +334,7 @@ impl ImageApi {
         m2: f32,
     ) -> Result<Self, BuildError> {
         Ok(Self {
-            builder: self.builder.sharpen(sigma, x1, y2, y3, m1, m2)?,
+            builder: self.builder.plan_sharpen(sigma, x1, y2, y3, m1, m2)?,
             resource_limits: self.resource_limits,
         })
     }

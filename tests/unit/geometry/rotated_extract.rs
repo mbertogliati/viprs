@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::internal::Flush>(
-        builder: viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
+        builder: viprs_runtime::pipeline::internal::PipelinePlan<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -87,7 +87,7 @@ mod chaos_monkey_13 {
         FOut::Sample: Pod,
     {
         let pipeline = builder
-            .build()
+            .compile()
             .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -108,14 +108,12 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -124,9 +122,9 @@ mod chaos_monkey_13 {
         FOut::Sample: Pod,
     {
         let builder = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
@@ -152,7 +150,7 @@ mod chaos_monkey_13 {
         let image = Image::from_buffer(4, 3, 1, (0u8..12).collect::<Vec<_>>())
             .expect("input image must build");
         let (pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
-            builder.rotate90()?.extract_area(2, 1, 1, 3)
+            builder.plan_rotate90()?.plan_extract_area(2, 1, 1, 3)
         })
         .expect("rotate90 then extract_area should succeed");
 

@@ -306,7 +306,7 @@ impl PipelineArena {
 
     /// Update the output dimensions of the pipeline.
     ///
-    /// Called by `PipelineBuilder` when an op changes the image dimensions (e.g.,
+    /// Called by `PipelinePlan` when an op changes the image dimensions (e.g.,
     /// `ExtractArea`). The arena stores the _output_ dimensions so that `compile()`
     /// propagates the correct width/height to `CompiledPipeline`, which the scheduler
     /// uses to generate tiles.
@@ -400,7 +400,7 @@ impl PipelineArena {
             .map(|arena_node| Some(arena_node.op))
             .collect();
 
-        // Identity mapping — builder-level concretization now owns point-op fusion.
+        // Direct mapping: plan-level concretization now owns point-op fusion.
         let canonical_idx: Vec<NodeIdx> = (0..n).collect();
 
         // Maps each original NodeIdx to the BufferIdx it writes to.

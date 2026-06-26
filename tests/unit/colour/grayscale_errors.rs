@@ -63,26 +63,24 @@ mod chaos_monkey {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -103,26 +101,24 @@ mod chaos_monkey {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -157,7 +153,7 @@ mod chaos_monkey {
         let result = execute_to_buffer(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Lab>()
+                .plan_colourspace::<Lab>()
         });
         let error = match result {
             Ok((pipeline, _buffer)) => panic!(

@@ -2,7 +2,7 @@
 /// Benchmark: Concretize fusion vs legacy pipeline for multi-op chains.
 ///
 /// Compares:
-/// 1. Legacy path: N separate `.invert()` / `.linear()` calls (N DynOperation nodes)
+/// 1. Legacy path: N separate `.plan_invert()` / `.plan_linear()` calls (N DynOperation nodes)
 /// 2. Concretize path: single `.apply(chain)` call (1 fused DynOperation node)
 ///
 /// The key insight: Concretize eliminates N-1 intermediate memory passes.
@@ -10,7 +10,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -35,12 +35,12 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_2ops", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .linear(2.0, -10.0)
+                .plan_linear(2.0, -10.0)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -54,10 +54,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("concretize_2ops", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply((CInvert, Linear::new(2.0, -10.0)))
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -71,12 +71,12 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("auto_apply_2ops", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(CInvert)
                 .unwrap()
                 .apply(Linear::new(2.0, -10.0))
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -91,12 +91,12 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("separate_4ops", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply((CInvert, Linear::new(1.5, -5.0)))
                 .unwrap()
                 .apply((CInvert, Linear::new(0.8, 10.0)))
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -111,16 +111,16 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_4ops", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .linear(1.5, -5.0)
+                .plan_linear(1.5, -5.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.8, 10.0)
+                .plan_linear(0.8, 10.0)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -138,10 +138,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 (CInvert, Linear::new(1.5, -5.0)),
                 (CInvert, Linear::new(0.8, 10.0)),
             );
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -156,24 +156,24 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_8ops", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .linear(1.2, -3.0)
+                .plan_linear(1.2, -3.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.9, 5.0)
+                .plan_linear(0.9, 5.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(1.1, -2.0)
+                .plan_linear(1.1, -2.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.8, 10.0)
+                .plan_linear(0.8, 10.0)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -197,10 +197,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                     (CInvert, Linear::new(0.8, 10.0)),
                 ),
             );
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -224,10 +224,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .then(Linear::new(1.1, -2.0))
                 .then(CInvert)
                 .then(Linear::new(0.8, 10.0));
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -242,24 +242,24 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_8_inverts", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -277,10 +277,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 ((CInvert, CInvert), (CInvert, CInvert)),
                 ((CInvert, CInvert), (CInvert, CInvert)),
             );
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -295,22 +295,22 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_7_inverts", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -329,10 +329,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 ((CInvert, CInvert), (CInvert, CInvert)),
                 ((CInvert, CInvert), CInvert),
             );
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -353,16 +353,16 @@ fn bench_fusion_chain(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("legacy", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .invert()
+                let pipeline = PipelinePlan::from_source(source)
+                    .plan_invert()
                     .unwrap()
-                    .linear(1.5, -5.0)
+                    .plan_linear(1.5, -5.0)
                     .unwrap()
-                    .invert()
+                    .plan_invert()
                     .unwrap()
-                    .linear(0.8, 10.0)
+                    .plan_linear(0.8, 10.0)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
@@ -380,10 +380,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                     (CInvert, Linear::new(1.5, -5.0)),
                     (CInvert, Linear::new(0.8, 10.0)),
                 );
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = PipelinePlan::from_source(source)
                     .apply(chain)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)
@@ -420,10 +420,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .then(Linear::new(1.1, -2.0))
                 .then(CInvert)
                 .then(Linear::new(0.8, 10.0));
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -447,10 +447,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 PointInstr::Invert,
                 PointInstr::Linear(0.8, 10.0),
             ];
-            let pipeline = PipelineBuilder::from_source(source)
-                .then(Box::new(InterpreterOp::new(ops)))
+            let pipeline = PipelinePlan::from_source(source)
+                .append_dyn_op(Box::new(InterpreterOp::new(ops)))
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -464,24 +464,24 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_8ops_nodes", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(2048, 2048, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .linear(1.2, -3.0)
+                .plan_linear(1.2, -3.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.9, 5.0)
+                .plan_linear(0.9, 5.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(1.1, -2.0)
+                .plan_linear(1.1, -2.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.8, 10.0)
+                .plan_linear(0.8, 10.0)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -513,10 +513,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 .then(Linear::new(1.05, -4.0))
                 .then(CInvert)
                 .then(Linear::new(0.95, 3.0));
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = PipelinePlan::from_source(source)
                 .apply(chain)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -548,10 +548,10 @@ fn bench_fusion_chain(c: &mut Criterion) {
                 PointInstr::Invert,
                 PointInstr::Linear(0.95, 3.0),
             ];
-            let pipeline = PipelineBuilder::from_source(source)
-                .then(Box::new(InterpreterOp::new(ops)))
+            let pipeline = PipelinePlan::from_source(source)
+                .append_dyn_op(Box::new(InterpreterOp::new(ops)))
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)
@@ -565,40 +565,40 @@ fn bench_fusion_chain(c: &mut Criterion) {
     group.bench_function("legacy_16ops_nodes", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(2048, 2048, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .invert()
+            let pipeline = PipelinePlan::from_source(source)
+                .plan_invert()
                 .unwrap()
-                .linear(1.2, -3.0)
+                .plan_linear(1.2, -3.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.9, 5.0)
+                .plan_linear(0.9, 5.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(1.1, -2.0)
+                .plan_linear(1.1, -2.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.8, 10.0)
+                .plan_linear(0.8, 10.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(1.3, -1.0)
+                .plan_linear(1.3, -1.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.7, 8.0)
+                .plan_linear(0.7, 8.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(1.05, -4.0)
+                .plan_linear(1.05, -4.0)
                 .unwrap()
-                .invert()
+                .plan_invert()
                 .unwrap()
-                .linear(0.95, 3.0)
+                .plan_linear(0.95, 3.0)
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             RayonScheduler::new(1)

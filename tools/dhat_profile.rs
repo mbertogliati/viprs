@@ -22,7 +22,7 @@ static ALLOC: dhat::Alloc = dhat::Alloc;
 
 use std::path::{Path, PathBuf};
 
-use viprs_runtime::pipeline::internal::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelinePlan;
 use viprs::adapters::scheduler::rayon_scheduler::RayonScheduler;
 use viprs::adapters::sinks::memory::MemorySink;
 use viprs::adapters::sources::memory::MemorySource;
@@ -72,24 +72,24 @@ fn run_u8_profile(
     let source = MemorySource::<U8>::new(width, height, bands, pixels)
         .map_err(|err| render_error("failed to create memory source", err))?
         .with_metadata(metadata);
-    let builder = PipelineBuilder::from_source(source);
+    let builder = PipelinePlan::from_source(source);
 
     let builder = match op {
         "invert" => builder
-            .invert()
+            .plan_invert()
             .map_err(|err| render_error("failed to add invert op", err))?,
         "add" => {
             let rhs = vec![1u8; tile_samples(width, height)];
             let dyn_op = Box::new(OperationBridge::new(Add::<U8>::new(rhs), 1u32));
             builder
-                .then(dyn_op)
+                .append_dyn_op(dyn_op)
                 .map_err(|err| render_error("failed to add add op", err))?
         }
         "resize" => {
             let scale = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(0.5);
             let resize = Resize::new(scale, scale, InterpolationKernel::Lanczos3);
             builder
-                .resize(resize)
+                .plan_resize(resize)
                 .map_err(|err| render_error("failed to add resize op", err))?
         }
         "thumbnail" => {
@@ -97,14 +97,14 @@ fn run_u8_profile(
             let target = ThumbnailTarget::Width(target_width);
             let thumbnail = Thumbnail::new(target, InterpolationKernel::Lanczos3);
             builder
-                .thumbnail(thumbnail)
+                .plan_thumbnail(thumbnail)
                 .map_err(|err| render_error("failed to add thumbnail op", err))?
         }
         "sharpen" => {
             let sigma = op_args.first().and_then(|s| s.parse().ok()).unwrap_or(0.5);
             let strength = op_args.get(1).and_then(|s| s.parse().ok()).unwrap_or(3.0);
             builder
-                .sharpen(sigma, 2.0, 10.0, 20.0, 0.0, strength)
+                .plan_sharpen(sigma, 2.0, 10.0, 20.0, 0.0, strength)
                 .map_err(|err| render_error("failed to add sharpen op", err))?
         }
         other => {
@@ -114,7 +114,7 @@ fn run_u8_profile(
     };
 
     let pipeline = builder
-        .build()
+        .compile()
         .map_err(|err| render_error("failed to build pipeline", err))?;
     let mut sink = MemorySink::for_pipeline(&pipeline);
     let scheduler = RayonScheduler::new(RayonScheduler::default_threads())
@@ -185,10 +185,10 @@ fn run_gauss_blur(size: u32) -> ExampleResult<()> {
 
     let source = MemorySource::<U8>::new(size, size, 3, pixels)
         .map_err(|err| render_error("failed to create gauss blur source", err))?;
-    let pipeline = PipelineBuilder::from_source(source)
-        .gauss_blur(1.5)
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_gauss_blur(1.5)
         .map_err(|err| render_error("failed to add gauss_blur op", err))?
-        .build()
+        .compile()
         .map_err(|err| render_error("failed to build gauss_blur pipeline", err))?;
     let mut sink = MemorySink::for_pipeline(&pipeline);
     let scheduler = RayonScheduler::new(RayonScheduler::default_threads())

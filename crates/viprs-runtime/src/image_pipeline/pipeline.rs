@@ -5,7 +5,7 @@ use viprs_core::error::BuildError;
 use super::{DemandHint, Format, Input, RawOutputPipeline};
 use crate::pipeline::{
     CommitBuilderState, CommittedBuilderState,
-    internal::{Fusing as BuilderFusing, PipelineBuilder},
+    internal::{Fusing as BuilderFusing, PipelinePlan},
 };
 
 /// Public state for a pipeline with no pending fused point operations.
@@ -107,7 +107,7 @@ pub struct ImagePipeline<State = Committed>
 where
     State: CommitState,
 {
-    pub(super) builder: PipelineBuilder<State::BuilderState>,
+    pub(super) builder: PipelinePlan<State::BuilderState>,
     state: PhantomData<State>,
 }
 
@@ -133,7 +133,7 @@ impl<State> ImagePipeline<State>
 where
     State: CommitState,
 {
-    pub(super) const fn from_builder(builder: PipelineBuilder<State::BuilderState>) -> Self {
+    pub(super) const fn from_builder(builder: PipelinePlan<State::BuilderState>) -> Self {
         Self {
             builder,
             state: PhantomData,

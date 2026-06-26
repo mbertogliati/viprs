@@ -47,14 +47,12 @@ mod chaos_monkey_19 {
             .with_metadata(metadata)
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -63,7 +61,7 @@ mod chaos_monkey_19 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(
                 viprs::adapters::sources::memory::MemorySource::<FIn>::new(
                     image.width(),
                     image.height(),
@@ -75,7 +73,7 @@ mod chaos_monkey_19 {
             ),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -107,7 +105,7 @@ mod chaos_monkey_19 {
     fn embed_entirely_outside_canvas_returns_typed_error() {
         let image = make_u8_image(2, 2, 1, vec![1, 2, 3, 4]);
         let result = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.embed(4, 4, 4, 0, image.width(), image.height(), ExtendMode::Black)
+            builder.plan_embed(4, 4, 4, 0, image.width(), image.height(), ExtendMode::Black)
         });
 
         assert!(

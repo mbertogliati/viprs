@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::convolution::Sobel},
@@ -20,10 +20,10 @@ fn bench_sobel(c: &mut Criterion) {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let bridge = OperationBridge::new(Sobel::<F32>::new(), 1u32);
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(bridge))
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(bridge))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
 
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

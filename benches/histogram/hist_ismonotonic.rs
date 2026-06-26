@@ -13,7 +13,7 @@ use viprs::{
     pipeline::OperationBridge,
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
-use viprs_runtime::pipeline::internal::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 fn make_pixels(size: u32) -> Vec<u8> {
     let pixel_count = size as usize * size as usize;
@@ -24,13 +24,13 @@ fn make_pixels(size: u32) -> Vec<u8> {
 
 fn cumulative_bins(size: u32, pixels: &[u8], scheduler: &RayonScheduler) -> Vec<f32> {
     let source = MemorySource::<U8>::new(size, size, 1, pixels.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new_pixel_local(
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Linear::<U8>::new(1, 0).unwrap(),
             1,
         )))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
     let histogram = scheduler
@@ -63,13 +63,13 @@ fn bench_hist_ismonotonic(c: &mut Criterion) {
             b.iter(|| {
                 let cumulative = cumulative_bins(size, &pixels, &scheduler);
                 let source = MemorySource::<F32>::new(256, 1, 1, cumulative).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new(
                         HistIsMonotonicOp::<F32>::new(),
                         1,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();

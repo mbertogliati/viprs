@@ -50,9 +50,9 @@ fn grayscale_pixels(size: u32) -> Vec<u8> {
 fn build_invert_invert(size: u32) -> viprs::PipelineOutput {
     let input = Input::memory::<U8>(size, size, 1, grayscale_pixels(size)).unwrap();
     ImagePipeline::from_input(input)
-        .invert()
+        .plan_invert()
         .unwrap()
-        .invert()
+        .plan_invert()
         .unwrap()
         .raw_pixels()
         .run_blocking(Sink::memory())
@@ -63,12 +63,12 @@ fn build_thumbnail_sharpen(size: u32) -> viprs::PipelineOutput {
     let input = Input::memory::<U8>(size, size, 3, rgb_pixels(size)).unwrap();
     ImagePipeline::from_input(input)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .plan_sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .raw_pixels()
         .run_blocking(Sink::memory())
@@ -79,14 +79,14 @@ fn build_thumbnail_colourspace_cast(size: u32) -> viprs::PipelineOutput {
     let input = Input::memory::<U8>(size, size, 3, rgb_pixels(size)).unwrap();
     ImagePipeline::from_input(input)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .plan_thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .colourspace::<Lab>()
+        .plan_colourspace::<Lab>()
         .unwrap()
-        .cast(BandFormatId::U8)
+        .plan_cast(BandFormatId::U8)
         .unwrap()
         .raw_pixels()
         .run_blocking(Sink::memory())

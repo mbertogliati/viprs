@@ -20,7 +20,7 @@ where
         kernel: InterpolationKernel,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.reduce_h(factor, kernel)?,
+            self.commit()?.builder.plan_reduce_h(factor, kernel)?,
         ))
     }
 
@@ -31,7 +31,7 @@ where
     /// Returns [`BuildError`] when factor is invalid.
     pub fn shrink_h(self, factor: u32) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.shrink_h(factor)?,
+            self.commit()?.builder.plan_shrink_h(factor)?,
         ))
     }
 
@@ -46,7 +46,9 @@ where
         ceil: bool,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.shrink_h_with_ceil(factor, ceil)?,
+            self.commit()?
+                .builder
+                .plan_shrink_h_with_ceil(factor, ceil)?,
         ))
     }
 
@@ -61,7 +63,7 @@ where
         v_factor: u32,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.shrink(h_factor, v_factor)?,
+            self.commit()?.builder.plan_shrink(h_factor, v_factor)?,
         ))
     }
 
@@ -76,7 +78,7 @@ where
         kernel: InterpolationKernel,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.reduce_v(factor, kernel)?,
+            self.commit()?.builder.plan_reduce_v(factor, kernel)?,
         ))
     }
 
@@ -92,7 +94,9 @@ where
         kernel: InterpolationKernel,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.reduce(h_factor, v_factor, kernel)?,
+            self.commit()?
+                .builder
+                .plan_reduce(h_factor, v_factor, kernel)?,
         ))
     }
 
@@ -103,7 +107,7 @@ where
     /// Returns [`BuildError`] when factor is invalid.
     pub fn shrink_v(self, factor: u32) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.shrink_v(factor)?,
+            self.commit()?.builder.plan_shrink_v(factor)?,
         ))
     }
 
@@ -118,7 +122,9 @@ where
         ceil: bool,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.shrink_v_with_ceil(factor, ceil)?,
+            self.commit()?
+                .builder
+                .plan_shrink_v_with_ceil(factor, ceil)?,
         ))
     }
 
@@ -141,7 +147,7 @@ where
         Ok(ImagePipeline::from_builder(
             self.commit()?
                 .builder
-                .affine(matrix, tx, ty, output_w, output_h, kernel)?,
+                .plan_affine(matrix, tx, ty, output_w, output_h, kernel)?,
         ))
     }
 
@@ -157,7 +163,9 @@ where
         kernel: InterpolationKernel,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.similarity(scale, angle, kernel)?,
+            self.commit()?
+                .builder
+                .plan_similarity(scale, angle, kernel)?,
         ))
     }
 
@@ -179,7 +187,7 @@ where
     /// ```
     pub fn resize(self, resize: Resize) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.resize(resize)?,
+            self.commit()?.builder.plan_resize(resize)?,
         ))
     }
 
@@ -190,7 +198,7 @@ where
     /// Returns [`BuildError`] when thumbnail planning or execution setup fails.
     pub fn thumbnail(self, thumbnail: Thumbnail) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.thumbnail(thumbnail)?,
+            self.commit()?.builder.plan_thumbnail(thumbnail)?,
         ))
     }
 }

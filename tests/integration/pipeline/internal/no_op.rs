@@ -72,26 +72,24 @@ mod chaos_monkey_9 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_pipeline<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn run_pipeline<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let scheduler = RayonScheduler::new(2).map_err(|error| error.to_string())?;
@@ -119,8 +117,8 @@ mod chaos_monkey_9 {
     fn no_op_pipeline_builds_identity_output() {
         let image = patterned_rgb_u8(4, 3);
         let source = memory_source_from_image(&image);
-        let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
-            .build()
+        let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+            .compile()
             .unwrap();
         let output = pipeline
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
@@ -163,15 +161,15 @@ mod chaos_monkey_9 {
         }
 
         let image = patterned_rgb_u8(512, 512);
-        let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+        let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
             memory_source_from_image(&image),
         )
-        .then(Box::new(viprs::OperationBridge::new(
+        .append_dyn_op(Box::new(viprs::OperationBridge::new(
             FullImagePass,
             image.bands(),
         )))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
         let output = pipeline
             .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())

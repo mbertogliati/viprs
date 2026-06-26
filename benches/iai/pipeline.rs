@@ -26,7 +26,7 @@ use viprs::domain::op::OperationBridge;
 use viprs::domain::ops::arithmetic::add::Add;
 use viprs::domain::ops::arithmetic::invert::Invert;
 use viprs::ports::scheduler::TileScheduler;
-use viprs_runtime::pipeline::internal::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 fn tile_samples(size: u32) -> usize {
     let tw = DemandHint::ThinStrip.tile_width(size) as usize;
@@ -41,10 +41,10 @@ fn run_invert(size: u32) {
     let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
     let invert_op = Invert::<U8>::new();
     let dyn_op = Box::new(OperationBridge::new(invert_op, 1u32));
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(dyn_op)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(dyn_op)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())
@@ -61,10 +61,10 @@ fn run_add(size: u32) {
     let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
     let add_op = Add::<U8>::new(rhs);
     let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
-    let pipeline = PipelineBuilder::from_source(source)
-        .then(dyn_op)
+    let pipeline = PipelinePlan::from_source(source)
+        .append_dyn_op(dyn_op)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(RayonScheduler::default_threads())

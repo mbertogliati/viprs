@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -25,10 +25,10 @@ fn bench_compass(c: &mut Criterion) {
                     CompassOp::<F32>::new(&PREWITT_COMPASS_MASK, 8).unwrap(),
                     1u32,
                 );
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(bridge))
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(bridge))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

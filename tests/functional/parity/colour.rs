@@ -16,7 +16,7 @@ fn libvips_parity_upstream_resample_thumbnail_fit_box() {
     let source = grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::FitBox {
                     width: 40,
                     height: 24,
@@ -66,7 +66,7 @@ fn libvips_parity_upstream_colour_srgb_to_lab() {
     let (width, height, actual) = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::SRgb)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
     });
     let input = write_u8_input_spec(
         op,
@@ -110,7 +110,7 @@ fn libvips_parity_upstream_colour_lab_to_srgb() {
     let (width, height, actual) = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Lab)
-            .colourspace::<SRgb>()
+            .plan_colourspace::<SRgb>()
     });
     let input = write_f32_input_spec(
         op,

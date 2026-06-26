@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::convolution::ConvaOp},
@@ -52,10 +52,10 @@ fn bench_conva(c: &mut Criterion) {
                             MemorySource::<F32>::new(image_size, image_size, 1, pixels.clone())
                                 .unwrap();
                         let conva = ConvaOp::<F32>::new(kernel.clone()).unwrap();
-                        let pipeline = PipelineBuilder::from_source(source)
-                            .then(Box::new(OperationBridge::new(conva, 1)))
+                        let pipeline = PipelinePlan::from_source(source)
+                            .append_dyn_op(Box::new(OperationBridge::new(conva, 1)))
                             .unwrap()
-                            .build()
+                            .compile()
                             .unwrap();
                         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                         RayonScheduler::new(RayonScheduler::default_threads())
@@ -75,10 +75,10 @@ fn bench_conva(c: &mut Criterion) {
                         let source =
                             MemorySource::<F32>::new(image_size, image_size, 1, pixels.clone())
                                 .unwrap();
-                        let pipeline = PipelineBuilder::from_source(source)
+                        let pipeline = PipelinePlan::from_source(source)
                             .conv2d(kernel.clone())
                             .unwrap()
-                            .build()
+                            .compile()
                             .unwrap();
                         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                         RayonScheduler::new(RayonScheduler::default_threads())

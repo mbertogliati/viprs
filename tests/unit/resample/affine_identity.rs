@@ -65,26 +65,24 @@ mod chaos_monkey_2 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -105,26 +103,24 @@ mod chaos_monkey_2 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -230,7 +226,7 @@ mod chaos_monkey_2 {
     fn pass1_affine_identity_nearest_is_identity() {
         let image = patterned_u8_image(7, 5, 3);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
-            builder.affine(
+            builder.plan_affine(
                 [1.0, 0.0, 0.0, 1.0],
                 0.0,
                 0.0,
@@ -248,7 +244,7 @@ mod chaos_monkey_2 {
     fn pass1_similarity_identity_is_identity() {
         let image = patterned_u8_image(7, 5, 3);
         let (_pipeline, output) = execute_same_format(&image, |builder| {
-            builder.similarity(1.0, 0.0, InterpolationKernel::Nearest)
+            builder.plan_similarity(1.0, 0.0, InterpolationKernel::Nearest)
         })
         .expect("identity similarity should succeed");
 
@@ -285,8 +281,8 @@ mod chaos_monkey_2 {
         let (pipeline, buffer) = execute_to_buffer(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Lab>()?
-                .affine(
+                .plan_colourspace::<Lab>()?
+                .plan_affine(
                     [1.0, 0.05, -0.05, 1.0],
                     1.0,
                     2.0,
@@ -294,7 +290,7 @@ mod chaos_monkey_2 {
                     19,
                     InterpolationKernel::Bilinear,
                 )?
-                .colourspace::<SRgb>()
+                .plan_colourspace::<SRgb>()
         })
         .expect("Lab affine roundtrip should succeed");
 

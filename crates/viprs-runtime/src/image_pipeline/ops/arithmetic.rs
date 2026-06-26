@@ -45,7 +45,7 @@ where
                 >>::NextState,
             >,
     {
-        Ok(ImagePipeline::from_builder(self.builder.invert()?))
+        Ok(ImagePipeline::from_builder(self.builder.plan_invert()?))
     }
 
     /// Apply `output = input * scale + offset` per sample.
@@ -83,7 +83,7 @@ where
             >,
     {
         Ok(ImagePipeline::from_builder(
-            self.builder.linear(scale, offset)?,
+            self.builder.plan_linear(scale, offset)?,
         ))
     }
 
@@ -104,7 +104,7 @@ where
     /// ```
     pub fn cast(self, target: BandFormatId) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.cast(target)?,
+            self.commit()?.builder.plan_cast(target)?,
         ))
     }
 
@@ -114,6 +114,8 @@ where
     ///
     /// Returns [`BuildError`] when the current format is unsupported.
     pub fn msb(self) -> Result<ImagePipeline<Committed>, BuildError> {
-        Ok(ImagePipeline::from_builder(self.commit()?.builder.msb()?))
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.plan_msb()?,
+        ))
     }
 }

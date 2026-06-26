@@ -3,7 +3,7 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::conversion::copy::CopyOp;
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -22,10 +22,10 @@ fn bench_copy(c: &mut Criterion) {
                 let source = MemorySource::<U8>::new(size, size, 4, pixels.clone()).unwrap();
                 let op = CopyOp::<U8>::default();
                 let dyn_op = Box::new(OperationBridge::new_pixel_local(op, 4));
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(dyn_op)
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(dyn_op)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

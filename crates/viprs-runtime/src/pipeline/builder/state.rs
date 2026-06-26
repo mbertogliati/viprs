@@ -1,24 +1,24 @@
 use super::{
     BandFormat, BuildError, Concretize, DemandHint, DynOperation, InterpolationKernel, LineCacheOp,
-    PipelineBuilder, SequentialOp, flush_concretize_chain,
+    PipelinePlan, SequentialOp, flush_concretize_chain,
 };
 
-/// Trait for anything that can be applied to a [`PipelineBuilder`] via `.apply()`.
+/// Trait for anything that can be applied to a [`PipelinePlan`] via `.append_op()`.
 ///
 /// Two blanket implementations cover all cases:
 /// - `Concretize` types (point ops) → fused into a single vectorized loop
 /// - `Box<dyn DynOperation>` → executed as a separate pipeline node
 ///
-/// The user never sees this trait — they just call `builder.apply(op)`.
-pub trait PipelineOp<State = Identity> {
+/// The user never sees this trait — they just call `builder.append_op(op)`.
+pub trait PipelineOp<State = CommittedPlan> {
     /// Builder state produced after this operation has been incorporated.
-    type NextState: Flush;
+    type NextState: CommitPlan;
 
     /// Applies this operation to the current builder state.
     fn apply_to_pipeline(
         self,
-        builder: PipelineBuilder<State>,
-    ) -> Result<PipelineBuilder<Self::NextState>, BuildError>;
+        builder: PipelinePlan<State>,
+    ) -> Result<PipelinePlan<Self::NextState>, BuildError>;
 }
 
 /// Local marker trait limiting the concretize blanket impl to known point-op chain types.
@@ -63,7 +63,7 @@ impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Sqrt {}
 impl ConcretizePipelineOpAllowed for viprs_ops_pixel::point::Tan {}
 
 /// Point ops implementing `Concretize` are auto-fused.
-impl<C> PipelineOp<Identity> for C
+impl<C> PipelineOp<CommittedPlan> for C
 where
     C: Concretize + Clone + ConcretizePipelineOpAllowed,
 {
@@ -71,8 +71,8 @@ where
 
     fn apply_to_pipeline(
         self,
-        builder: PipelineBuilder<Identity>,
-    ) -> Result<PipelineBuilder<Self::NextState>, BuildError> {
+        builder: PipelinePlan<CommittedPlan>,
+    ) -> Result<PipelinePlan<Self::NextState>, BuildError> {
         Ok(builder.into_state(Fusing { chain: self }))
     }
 }
@@ -86,9 +86,9 @@ where
 
     fn apply_to_pipeline(
         self,
-        builder: PipelineBuilder<Fusing<C>>,
-    ) -> Result<PipelineBuilder<Self::NextState>, BuildError> {
-        let PipelineBuilder {
+        builder: PipelinePlan<Fusing<C>>,
+    ) -> Result<PipelinePlan<Self::NextState>, BuildError> {
+        let PipelinePlan {
             arena,
             last_node,
             current_format,
@@ -99,7 +99,7 @@ where
             pending,
         } = builder;
         let Fusing { chain } = pending;
-        Ok(PipelineBuilder {
+        Ok(PipelinePlan {
             arena,
             last_node,
             current_format,
@@ -115,35 +115,35 @@ where
 }
 
 /// Pre-built dynamic operations pass through to `then()`.
-impl<S: Flush> PipelineOp<S> for Box<dyn DynOperation> {
-    type NextState = Identity;
+impl<S: CommitPlan> PipelineOp<S> for Box<dyn DynOperation> {
+    type NextState = CommittedPlan;
 
     fn apply_to_pipeline(
         self,
-        builder: PipelineBuilder<S>,
-    ) -> Result<PipelineBuilder<Self::NextState>, BuildError> {
-        builder.then(self)
+        builder: PipelinePlan<S>,
+    ) -> Result<PipelinePlan<Self::NextState>, BuildError> {
+        builder.append_dyn_op(self)
     }
 }
 
-impl<S: Flush> PipelineOp<S> for SequentialOp {
+impl<S: CommitPlan> PipelineOp<S> for SequentialOp {
     type NextState = S;
 
     fn apply_to_pipeline(
         self,
-        builder: PipelineBuilder<S>,
-    ) -> Result<PipelineBuilder<Self::NextState>, BuildError> {
+        builder: PipelinePlan<S>,
+    ) -> Result<PipelinePlan<Self::NextState>, BuildError> {
         Ok(builder.configure_sequential_streaming(self.lines_ahead()))
     }
 }
 
-impl<S: Flush> PipelineOp<S> for LineCacheOp {
+impl<S: CommitPlan> PipelineOp<S> for LineCacheOp {
     type NextState = S;
 
     fn apply_to_pipeline(
         self,
-        builder: PipelineBuilder<S>,
-    ) -> Result<PipelineBuilder<Self::NextState>, BuildError> {
+        builder: PipelinePlan<S>,
+    ) -> Result<PipelinePlan<Self::NextState>, BuildError> {
         Ok(builder.configure_linecache(self.lines_ahead()))
     }
 }
@@ -153,7 +153,7 @@ const LBB_REDUCE_REASON: &str =
 const NOHALO_REDUCE_REASON: &str = "Nohalo is a nonlinear 2-D interpolator in libvips and has no separable reduce kernel; use resize()/affine() mapping or one of: Nearest, Bilinear, Bicubic/CatmullRom, Lanczos2, Lanczos3";
 
 /// No point-op chain is being accumulated, so the builder can accept a fresh op.
-pub struct Identity;
+pub struct CommittedPlan;
 
 /// A statically typed `Concretize` chain that has not yet been emitted into the arena.
 pub struct Fusing<C: Concretize> {
@@ -161,22 +161,22 @@ pub struct Fusing<C: Concretize> {
 }
 
 /// Capability to flush the current builder state into concrete pipeline nodes.
-pub trait Flush: Sized {
+pub trait CommitPlan: Sized {
     /// Materializes any deferred work held by this state into the builder arena.
-    fn flush(builder: &mut PipelineBuilder<Self>) -> Result<(), BuildError>;
+    fn flush(builder: &mut PipelinePlan<Self>) -> Result<(), BuildError>;
 }
 
-impl Flush for Identity {
-    fn flush(_builder: &mut PipelineBuilder<Self>) -> Result<(), BuildError> {
+impl CommitPlan for CommittedPlan {
+    fn flush(_builder: &mut PipelinePlan<Self>) -> Result<(), BuildError> {
         Ok(())
     }
 }
 
-impl<C> Flush for Fusing<C>
+impl<C> CommitPlan for Fusing<C>
 where
     C: Concretize + Clone,
 {
-    fn flush(builder: &mut PipelineBuilder<Self>) -> Result<(), BuildError> {
+    fn flush(builder: &mut PipelinePlan<Self>) -> Result<(), BuildError> {
         let op = flush_concretize_chain(
             &builder.pending.chain,
             builder.current_format,
@@ -275,7 +275,7 @@ pub(in crate::pipeline::builder) fn validate_extract_area_bounds(
 /// `DynOperation` wrapper for `Affine` that overrides `output_width` and
 /// `output_height` with the fixed dimensions supplied at construction time.
 ///
-/// `pub(crate)` — callers use `PipelineBuilder::affine`, not this type directly.
+/// `pub(crate)` — callers use `PipelinePlan::affine`, not this type directly.
 pub struct AffineBridge<F: BandFormat>
 where
     F::Sample: bytemuck::Pod

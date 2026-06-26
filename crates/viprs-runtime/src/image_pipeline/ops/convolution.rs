@@ -24,7 +24,7 @@ where
     /// ```
     pub fn conv2d(self, kernel: Vec<Vec<f64>>) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.conv2d(kernel)?,
+            self.commit()?.builder.plan_conv2d(kernel)?,
         ))
     }
 
@@ -35,7 +35,7 @@ where
     /// Returns [`BuildError`] when the current format is unsupported.
     pub fn gauss_blur(self, sigma: f32) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.gauss_blur(sigma)?,
+            self.commit()?.builder.plan_gauss_blur(sigma)?,
         ))
     }
 
@@ -56,7 +56,9 @@ where
         m2: f32,
     ) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.sharpen(sigma, x1, y2, y3, m1, m2)?,
+            self.commit()?
+                .builder
+                .plan_sharpen(sigma, x1, y2, y3, m1, m2)?,
         ))
     }
 }

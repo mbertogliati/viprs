@@ -88,14 +88,12 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -104,12 +102,12 @@ mod chaos_monkey_8 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -130,26 +128,24 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -188,11 +184,10 @@ mod chaos_monkey_8 {
             let image = Arc::clone(&image);
             handles.push(thread::spawn(move || {
                 execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
-                    builder.rotate90()?.flip_horizontal()?.resize(Resize::new(
-                        1.5,
-                        1.5,
-                        InterpolationKernel::Nearest,
-                    ))
+                    builder
+                        .plan_rotate90()?
+                        .plan_flip_horizontal()?
+                        .plan_resize(Resize::new(1.5, 1.5, InterpolationKernel::Nearest))
                 })
                 .expect("deterministic pipeline must succeed")
                 .1
@@ -226,7 +221,7 @@ mod chaos_monkey_8 {
         );
 
         let (_pipeline, output) =
-            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.invert())
+            execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.plan_invert())
                 .expect("source image must remain usable after histogram computation");
         assert_eq!(output.width(), image.width());
         assert_eq!(output.height(), image.height());

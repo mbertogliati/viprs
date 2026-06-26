@@ -88,14 +88,12 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -104,12 +102,12 @@ mod chaos_monkey_8 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -130,26 +128,24 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -185,8 +181,8 @@ mod chaos_monkey_8 {
         let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Hsv>()?
-                .colourspace::<SRgb>()
+                .plan_colourspace::<Hsv>()?
+                .plan_colourspace::<SRgb>()
         })
         .expect("RGBA HSV roundtrip should succeed");
 
@@ -209,11 +205,11 @@ mod chaos_monkey_8 {
     #[test]
     fn colourspace_to_lab_rejects_one_band_images_with_typed_error() {
         let image = patterned_u8(8, 8, 1);
-        let result = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+        let result = viprs_runtime::pipeline::internal::PipelinePlan::from_source(
             memory_source_from_image(&image),
         )
         .with_colorspace(ColorspaceId::SRgb)
-        .colourspace::<viprs::domain::colorspace::Lab>();
+        .plan_colourspace::<viprs::domain::colorspace::Lab>();
 
         assert!(
             result.is_err(),
@@ -227,9 +223,9 @@ mod chaos_monkey_8 {
         let (_pipeline, output) = execute_pipeline_to_image::<U8, U8, _>(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Hsv>()?
-                .linear(1.75, 15.0)?
-                .colourspace::<SRgb>()
+                .plan_colourspace::<Hsv>()?
+                .plan_linear(1.75, 15.0)?
+                .plan_colourspace::<SRgb>()
         })
         .expect("HSV arithmetic pipeline should succeed");
 
@@ -259,7 +255,7 @@ mod chaos_monkey_8 {
             execute_pipeline_to_image::<viprs::F32, U8, _>(&image, |builder| {
                 builder
                     .with_colorspace(ColorspaceId::Hsv)
-                    .colourspace::<SRgb>()
+                    .plan_colourspace::<SRgb>()
             })
             .expect("HSV image should remain usable after histogram computation");
         assert_eq!(output.bands(), 3);

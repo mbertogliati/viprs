@@ -20,14 +20,14 @@ use viprs::{
 /// Build, run the pipeline, and return the raw output bytes.
 ///
 /// `source_pixels` — 4x4 F32 image (16 f32 values, row-major).
-/// `scale` and `offset` are `f64` as required by `viprs_runtime::pipeline::internal::PipelineBuilder::linear`.
+/// `scale` and `offset` are `f64` as required by `viprs_runtime::pipeline::internal::PipelinePlan::linear`.
 fn run_linear(source_pixels: Vec<f32>, scale: f64, offset: f64) -> Vec<u8> {
     let source = MemorySource::<F32>::new(4, 4, 1, source_pixels).unwrap();
 
-    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
-        .linear(scale, offset)
+    let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+        .plan_linear(scale, offset)
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();

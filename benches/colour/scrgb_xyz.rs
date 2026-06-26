@@ -4,7 +4,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -47,11 +47,11 @@ fn bench_scrgb_xyz(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("scrgb_to_xyz", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, scrgb.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = PipelinePlan::from_source(source)
                     .with_colorspace(ColorspaceId::ScRgb)
-                    .colourspace::<Xyz>()
+                    .plan_colourspace::<Xyz>()
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())
@@ -65,11 +65,11 @@ fn bench_scrgb_xyz(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("xyz_to_scrgb", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, xyz.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = PipelinePlan::from_source(source)
                     .with_colorspace(ColorspaceId::Xyz)
-                    .colourspace::<ScRgb>()
+                    .plan_colourspace::<ScRgb>()
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

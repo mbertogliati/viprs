@@ -24,7 +24,7 @@ where
     /// ```
     pub fn colourspace<To: Colorspace>(self) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.colourspace::<To>()?,
+            self.commit()?.builder.plan_colourspace::<To>()?,
         ))
     }
 
@@ -36,7 +36,7 @@ where
     #[cfg(feature = "icc")]
     pub fn normalize_to_srgb(self) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.normalize_to_srgb()?,
+            self.commit()?.builder.plan_normalize_to_srgb()?,
         ))
     }
 
@@ -47,7 +47,7 @@ where
     /// Returns [`BuildError`] when the current format is unsupported.
     pub fn premultiply(self) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.premultiply()?,
+            self.commit()?.builder.plan_premultiply()?,
         ))
     }
 
@@ -58,7 +58,7 @@ where
     /// Returns [`BuildError`] when the current format is unsupported.
     pub fn unpremultiply(self) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.unpremultiply()?,
+            self.commit()?.builder.plan_unpremultiply()?,
         ))
     }
 
@@ -80,7 +80,7 @@ where
     /// ```
     pub fn flatten(self, background: [f32; 4]) -> Result<ImagePipeline<Committed>, BuildError> {
         Ok(ImagePipeline::from_builder(
-            self.commit()?.builder.flatten(background)?,
+            self.commit()?.builder.plan_flatten(background)?,
         ))
     }
 }

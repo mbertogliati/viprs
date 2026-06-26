@@ -85,26 +85,24 @@ mod chaos_monkey_5 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -143,7 +141,7 @@ mod chaos_monkey_5 {
     #[test]
     fn gauss_blur_sigma_zero_is_identity() {
         let image = patterned_rgb_u8(7, 5);
-        let (_pipeline, output) = execute_to_image(&image, |builder| builder.gauss_blur(0.0))
+        let (_pipeline, output) = execute_to_image(&image, |builder| builder.plan_gauss_blur(0.0))
             .expect("blur should succeed");
         assert_eq!(output.pixels(), image.pixels());
     }
@@ -154,7 +152,7 @@ mod chaos_monkey_5 {
         let (_pipeline, output) = execute_to_image(&image, |builder| {
             builder
                 .with_colorspace(ColorspaceId::SRgb)
-                .sharpen(0.5, SHARPEN_X1, SHARPEN_Y2, SHARPEN_Y3, 0.0, 0.0)
+                .plan_sharpen(0.5, SHARPEN_X1, SHARPEN_Y2, SHARPEN_Y3, 0.0, 0.0)
         })
         .expect("sharpen should succeed");
 
@@ -165,7 +163,7 @@ mod chaos_monkey_5 {
     fn conv2d_all_zero_kernel_outputs_black() {
         let image = patterned_rgb_f32(7, 5);
         let (pipeline, output) = execute_to_image(&image, |builder| {
-            builder.conv2d(vec![
+            builder.plan_conv2d(vec![
                 vec![0.0, 0.0, 0.0],
                 vec![0.0, 0.0, 0.0],
                 vec![0.0, 0.0, 0.0],

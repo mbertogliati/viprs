@@ -85,26 +85,24 @@ mod chaos_monkey_5 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -144,7 +142,8 @@ mod chaos_monkey_5 {
     fn thumbnail_one_produces_one_by_one_for_rectangular_input() {
         let image = patterned_rgb_u8(7, 5);
         let (pipeline, output) =
-            execute_to_image(&image, |builder| builder.thumbnail(thumbnail(1))).expect("thumbnail");
+            execute_to_image(&image, |builder| builder.plan_thumbnail(thumbnail(1)))
+                .expect("thumbnail");
 
         assert_eq!((pipeline.width, pipeline.height), (1, 1));
         assert_eq!((output.width(), output.height()), (1, 1));
@@ -155,7 +154,7 @@ mod chaos_monkey_5 {
         for (width, height) in [(7, 5), (1, 8192), (8192, 1)] {
             let image = patterned_rgb_u8(width, height);
             let (_pipeline, output) =
-                execute_to_image(&image, |builder| builder.rotate180()?.rotate180())
+                execute_to_image(&image, |builder| builder.plan_rotate180()?.plan_rotate180())
                     .expect("rotate180 x2 should succeed");
 
             assert_eq!(output.pixels(), image.pixels());

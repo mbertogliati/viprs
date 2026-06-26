@@ -69,26 +69,24 @@ mod chaos_monkey_3 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -109,26 +107,24 @@ mod chaos_monkey_3 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -140,25 +136,23 @@ mod chaos_monkey_3 {
         Ok((pipeline, sink.into_buffer()))
     }
 
-    fn build_pipeline_only<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn build_pipeline_only<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<CompiledPipeline, ViprsError>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )?
-        .build()
+        .compile()
         .map_err(Into::into)
     }
 
@@ -206,14 +200,14 @@ mod chaos_monkey_3 {
         flipped
     }
 
-    fn assert_identity_sizes<S: viprs_runtime::pipeline::internal::Flush>(
+    fn assert_identity_sizes<S: viprs_runtime::pipeline::internal::CommitPlan>(
         configure: impl Copy
         + Fn(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
+            viprs_runtime::pipeline::internal::PipelinePlan,
             u32,
             u32,
         )
-            -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
         tolerance: u8,
     ) {
         for image in [
@@ -238,7 +232,7 @@ mod chaos_monkey_3 {
     fn pass1_affine_identity_is_pixel_exact_across_extreme_sizes() {
         assert_identity_sizes(
             |builder, width, height| {
-                builder.affine(
+                builder.plan_affine(
                     [1.0, 0.0, 0.0, 1.0],
                     0.0,
                     0.0,
@@ -255,7 +249,7 @@ mod chaos_monkey_3 {
     fn pass2_resize_scale_one_is_pixel_exact_identity() {
         assert_identity_sizes(
             |builder, _width, _height| {
-                builder.resize(Resize::new(1.0, 1.0, InterpolationKernel::Lanczos3))
+                builder.plan_resize(Resize::new(1.0, 1.0, InterpolationKernel::Lanczos3))
             },
             0,
         );
@@ -265,7 +259,7 @@ mod chaos_monkey_3 {
     fn pass4_affine_zero_scale_returns_typed_error_not_success_or_panic() {
         let image = patterned_rgb_u8(7, 5);
         let result = execute_to_buffer(&image, |builder| {
-            builder.affine(
+            builder.plan_affine(
                 [0.0, 0.0, 0.0, 0.0],
                 0.0,
                 0.0,

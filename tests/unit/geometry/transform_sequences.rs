@@ -69,26 +69,24 @@ mod chaos_monkey_3 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -109,26 +107,24 @@ mod chaos_monkey_3 {
         Ok((pipeline, output))
     }
 
-    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
@@ -140,25 +136,23 @@ mod chaos_monkey_3 {
         Ok((pipeline, sink.into_buffer()))
     }
 
-    fn build_pipeline_only<F, S: viprs_runtime::pipeline::internal::Flush>(
+    fn build_pipeline_only<F, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<CompiledPipeline, ViprsError>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
         configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )?
-        .build()
+        .compile()
         .map_err(Into::into)
     }
 
@@ -206,14 +200,14 @@ mod chaos_monkey_3 {
         flipped
     }
 
-    fn assert_identity_sizes<S: viprs_runtime::pipeline::internal::Flush>(
+    fn assert_identity_sizes<S: viprs_runtime::pipeline::internal::CommitPlan>(
         configure: impl Copy
         + Fn(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
+            viprs_runtime::pipeline::internal::PipelinePlan,
             u32,
             u32,
         )
-            -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
         tolerance: u8,
     ) {
         for image in [
@@ -239,8 +233,8 @@ mod chaos_monkey_3 {
         let image = patterned_rgb_u8(7, 5);
         let (_pipeline, output) = execute_to_image(&image, |builder| {
             builder
-                .extract_area(0, 0, image.width(), image.height())?
-                .embed(
+                .plan_extract_area(0, 0, image.width(), image.height())?
+                .plan_embed(
                     image.width(),
                     image.height(),
                     0,
@@ -258,7 +252,7 @@ mod chaos_monkey_3 {
     #[test]
     fn pass2_extract_area_fraction_zero_returns_typed_error_not_panic() {
         let image = patterned_rgb_u8(7, 5);
-        let result = build_pipeline_only(&image, |builder| builder.extract_area(0, 0, 0, 0));
+        let result = build_pipeline_only(&image, |builder| builder.plan_extract_area(0, 0, 0, 0));
         assert!(matches!(
             result,
             Err(ViprsError::Build(
@@ -277,7 +271,7 @@ mod chaos_monkey_3 {
     #[test]
     fn pass2_extract_area_zero_width_returns_typed_error_not_panic() {
         let image = patterned_rgb_u8(7, 5);
-        let result = build_pipeline_only(&image, |builder| builder.extract_area(0, 0, 0, 4));
+        let result = build_pipeline_only(&image, |builder| builder.plan_extract_area(0, 0, 0, 4));
         assert!(matches!(
             result,
             Err(ViprsError::Build(
@@ -296,7 +290,7 @@ mod chaos_monkey_3 {
     #[test]
     fn pass2_extract_area_zero_height_returns_typed_error_not_panic() {
         let image = patterned_rgb_u8(7, 5);
-        let result = build_pipeline_only(&image, |builder| builder.extract_area(0, 0, 4, 0));
+        let result = build_pipeline_only(&image, |builder| builder.plan_extract_area(0, 0, 4, 0));
         assert!(matches!(
             result,
             Err(ViprsError::Build(
@@ -315,7 +309,7 @@ mod chaos_monkey_3 {
     #[test]
     fn pass2_extract_area_fraction_gt_one_returns_typed_error_not_panic() {
         let image = patterned_rgb_u8(7, 5);
-        let result = build_pipeline_only(&image, |builder| builder.extract_area(0, 0, 11, 8));
+        let result = build_pipeline_only(&image, |builder| builder.plan_extract_area(0, 0, 11, 8));
         assert!(matches!(
             result,
             Err(ViprsError::Build(
@@ -335,11 +329,12 @@ mod chaos_monkey_3 {
     fn pass6_rotate90_then_flip_horizontal_matches_post_rotate_horizontal_flip_on_non_square_images()
      {
         let image = patterned_rgb_u8(7, 5);
-        let (r90_pipeline, r90) = execute_to_buffer(&image, |builder| builder.rotate90())
+        let (r90_pipeline, r90) = execute_to_buffer(&image, |builder| builder.plan_rotate90())
             .expect("rotate90 should succeed");
-        let (r90_fliph_pipeline, r90_fliph) =
-            execute_to_buffer(&image, |builder| builder.rotate90()?.flip_horizontal())
-                .expect("rotate90 then flip_horizontal should succeed");
+        let (r90_fliph_pipeline, r90_fliph) = execute_to_buffer(&image, |builder| {
+            builder.plan_rotate90()?.plan_flip_horizontal()
+        })
+        .expect("rotate90 then flip_horizontal should succeed");
 
         let expected = flip_horizontal_buffer(
             &r90,
@@ -360,19 +355,21 @@ mod chaos_monkey_3 {
         );
         assert_eq!(
             r90_fliph, expected,
-            "rotate90().flip_horizontal() must use the post-rotate width"
+            "rotate90().plan_flip_horizontal() must use the post-rotate width"
         );
     }
 
     #[test]
     fn pass6_rotate90_then_flip_horizontal_matches_flip_vertical_then_rotate90() {
         let image = patterned_rgb_u8(7, 5);
-        let (lhs_pipeline, lhs) =
-            execute_to_buffer(&image, |builder| builder.rotate90()?.flip_horizontal())
-                .expect("rotate90 then flip_horizontal should succeed");
-        let (rhs_pipeline, rhs) =
-            execute_to_buffer(&image, |builder| builder.flip_vertical()?.rotate90())
-                .expect("flip_vertical then rotate90 should succeed");
+        let (lhs_pipeline, lhs) = execute_to_buffer(&image, |builder| {
+            builder.plan_rotate90()?.plan_flip_horizontal()
+        })
+        .expect("rotate90 then flip_horizontal should succeed");
+        let (rhs_pipeline, rhs) = execute_to_buffer(&image, |builder| {
+            builder.plan_flip_vertical()?.plan_rotate90()
+        })
+        .expect("flip_vertical then rotate90 should succeed");
 
         assert_eq!(
             (lhs_pipeline.width, lhs_pipeline.height),
@@ -380,18 +377,19 @@ mod chaos_monkey_3 {
         );
         assert_eq!(
             lhs, rhs,
-            "rotate90().flip_horizontal() must match flip_vertical().rotate90()"
+            "rotate90().plan_flip_horizontal() must match flip_vertical().plan_rotate90()"
         );
     }
 
     #[test]
     fn pass6_rotate90_then_flip_vertical_matches_post_rotate_vertical_flip_on_non_square_images() {
         let image = patterned_rgb_u8(7, 5);
-        let (r90_pipeline, r90) = execute_to_buffer(&image, |builder| builder.rotate90())
+        let (r90_pipeline, r90) = execute_to_buffer(&image, |builder| builder.plan_rotate90())
             .expect("rotate90 should succeed");
-        let (r90_flipv_pipeline, r90_flipv) =
-            execute_to_buffer(&image, |builder| builder.rotate90()?.flip_vertical())
-                .expect("rotate90 then flip_vertical should succeed");
+        let (r90_flipv_pipeline, r90_flipv) = execute_to_buffer(&image, |builder| {
+            builder.plan_rotate90()?.plan_flip_vertical()
+        })
+        .expect("rotate90 then flip_vertical should succeed");
 
         let expected = flip_vertical_buffer(
             &r90,
@@ -407,7 +405,7 @@ mod chaos_monkey_3 {
         );
         assert_eq!(
             r90_flipv, expected,
-            "rotate90().flip_vertical() must use the post-rotate height"
+            "rotate90().plan_flip_vertical() must use the post-rotate height"
         );
     }
 }

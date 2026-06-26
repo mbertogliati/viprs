@@ -16,7 +16,7 @@ fn libvips_parity_upstream_resample_resize_half_bilinear() {
     let source = rgb_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.resize(Resize::new(0.5, 0.5, InterpolationKernel::Bilinear))
+            builder.plan_resize(Resize::new(0.5, 0.5, InterpolationKernel::Bilinear))
         });
     let input = write_u8_input_spec(
         op,
@@ -61,7 +61,7 @@ fn libvips_parity_upstream_resample_resize_geometry_corner_case() {
     let source = smooth_grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-            builder.resize(Resize::new(0.5, 0.5, InterpolationKernel::Bilinear))
+            builder.plan_resize(Resize::new(0.5, 0.5, InterpolationKernel::Bilinear))
         });
     let input = write_u8_input_spec(
         op,
@@ -106,7 +106,7 @@ fn libvips_parity_upstream_resample_reduceh_lanczos3() {
     let source = smooth_grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-            builder.reduce_h(1.5, InterpolationKernel::Lanczos3)
+            builder.plan_reduce_h(1.5, InterpolationKernel::Lanczos3)
         });
     let input = write_u8_input_spec(
         op,
@@ -151,7 +151,7 @@ fn libvips_parity_upstream_resample_reducev_lanczos3() {
     let source = smooth_grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, 1, |builder| {
-            builder.reduce_v(1.5, InterpolationKernel::Lanczos3)
+            builder.plan_reduce_v(1.5, InterpolationKernel::Lanczos3)
         });
     let input = write_u8_input_spec(
         op,
@@ -197,7 +197,7 @@ fn libvips_parity_upstream_resample_shrink_factor4() {
     let source = rgb_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.shrink_v(4)?.shrink_h(4)
+            builder.plan_shrink_v(4)?.plan_shrink_h(4)
         });
     let input = write_u8_input_spec(
         op,
@@ -242,7 +242,7 @@ fn libvips_parity_upstream_resample_thumbnail_width_target() {
     let source = smooth_grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.plan_thumbnail(Thumbnail::new(
                 ThumbnailTarget::Width(128),
                 InterpolationKernel::Lanczos3,
             ))

@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::{
-    image_api::ImageApi, pipeline::internal::PipelineBuilder, ports::source::ImageSource,
+    image_api::ImageApi, pipeline::internal::PipelinePlan, ports::source::ImageSource,
     sources::memory::MemorySource,
 };
 use viprs_core::{error::ViprsError, format::BandFormat};
@@ -24,7 +24,7 @@ use super::Format;
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 pub struct Input {
-    builder: PipelineBuilder,
+    builder: PipelinePlan,
     path: Option<PathBuf>,
     width: u32,
     height: u32,
@@ -169,7 +169,7 @@ impl Input {
         self.path.as_deref()
     }
 
-    pub(in crate::image_pipeline) fn into_builder(self) -> PipelineBuilder {
+    pub(in crate::image_pipeline) fn into_builder(self) -> PipelinePlan {
         self.builder
     }
 
@@ -177,10 +177,10 @@ impl Input {
     where
         S: ImageSource + 'static,
     {
-        Self::from_builder(PipelineBuilder::from_source(source), path)
+        Self::from_builder(PipelinePlan::from_source(source), path)
     }
 
-    fn from_builder(builder: PipelineBuilder, path: Option<PathBuf>) -> Self {
+    fn from_builder(builder: PipelinePlan, path: Option<PathBuf>) -> Self {
         let (width, height) = builder.current_dimensions();
         let bands = builder.current_bands();
         let format = Format::from(builder.current_format());

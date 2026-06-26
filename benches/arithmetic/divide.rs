@@ -8,7 +8,7 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::arithmetic::divide::Divide;
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::F32,
@@ -29,10 +29,10 @@ fn bench_divide(c: &mut Criterion) {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
                 let div_op = Divide::<F32>::new(rhs, size, 1);
                 let dyn_op = Box::new(OperationBridge::new(div_op, 1u32));
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(dyn_op)
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(dyn_op)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(1)

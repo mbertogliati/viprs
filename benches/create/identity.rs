@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -21,13 +21,13 @@ fn bench_identity(c: &mut Criterion) {
         let pixels = vec![0u8; size as usize];
         b.iter(|| {
             let source = MemorySource::<U8>::new(size, 1, 1, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
-                .then(Box::new(OperationBridge::new_pixel_local(
+            let pipeline = PipelinePlan::from_source(source)
+                .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                     IdentityOp::<U8>::new(false),
                     1,
                 )))
                 .unwrap()
-                .build()
+                .compile()
                 .unwrap();
             let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
             scheduler.run(&pipeline, &mut sink).unwrap();
@@ -42,13 +42,13 @@ fn bench_identity(c: &mut Criterion) {
             let pixels = vec![0u16; size as usize];
             b.iter(|| {
                 let source = MemorySource::<U16>::new(size, 1, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::new_pixel_local(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                         IdentityOp::<U16>::new(true),
                         1,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 scheduler.run(&pipeline, &mut sink).unwrap();

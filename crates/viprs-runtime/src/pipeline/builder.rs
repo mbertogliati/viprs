@@ -30,10 +30,10 @@ pub use state::AffineBridge;
 pub use state::PipelineOp;
 // REASON: Preserve the previous builder.rs module surface for crate-internal callers.
 #[allow(unused_imports)]
-pub use state::{Flush, Fusing, Identity};
+pub use state::{CommitPlan, CommittedPlan, Fusing};
 
 mod core;
-pub use core::PipelineBuilder;
+pub use core::PipelinePlan;
 
 mod colour;
 mod geometry;

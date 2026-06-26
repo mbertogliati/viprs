@@ -6,7 +6,7 @@ use viprs::{
         sources::memory::MemorySource,
     },
     domain::{format::U8, op::OperationBridge, ops::conversion::Transpose3dOp},
-    pipeline::internal::PipelineBuilder,
+    pipeline::internal::PipelinePlan,
     ports::scheduler::TileScheduler,
 };
 
@@ -31,13 +31,12 @@ fn bench_transpose3d(c: &mut Criterion) {
                     "create memory source",
                 );
                 let pipeline = must(
-                    PipelineBuilder::from_source(source).then(Box::new(OperationBridge::new(
-                        Transpose3dOp::<U8>::new(size, page_height),
-                        1,
-                    ))),
+                    PipelinePlan::from_source(source).append_dyn_op(Box::new(
+                        OperationBridge::new(Transpose3dOp::<U8>::new(size, page_height), 1),
+                    )),
                     "add transpose3d operation",
                 )
-                .build()
+                .compile()
                 .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(

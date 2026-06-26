@@ -64,14 +64,12 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -80,12 +78,12 @@ mod chaos_monkey_16 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -147,9 +145,9 @@ mod chaos_monkey_16 {
     }
 
     fn append_recomb(
-        builder: viprs_runtime::pipeline::internal::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::internal::PipelineBuilder, BuildError> {
-        builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+        builder: viprs_runtime::pipeline::internal::PipelinePlan,
+    ) -> Result<viprs_runtime::pipeline::internal::PipelinePlan, BuildError> {
+        builder.append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
             RecombOp::<U8>::new(recomb_matrix()),
             3,
             3,
@@ -185,14 +183,14 @@ mod chaos_monkey_16 {
     fn shrink_then_lab_matches_sequential_execution() {
         let image = patterned_rgb(14, 10);
         let (_first_pipeline, shrunk) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.shrink(2, 2))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_shrink(2, 2))
                 .expect("shrink should succeed");
         let (_second_pipeline, sequential) =
-            execute_to_image::<U8, F32, _>(&shrunk, |builder| builder.colourspace::<Lab>())
+            execute_to_image::<U8, F32, _>(&shrunk, |builder| builder.plan_colourspace::<Lab>())
                 .expect("colourspace should succeed");
 
         let (pipeline, chained) = execute_to_image::<U8, F32, _>(&image, |builder| {
-            builder.shrink(2, 2)?.colourspace::<Lab>()
+            builder.plan_shrink(2, 2)?.plan_colourspace::<Lab>()
         })
         .expect("chained shrink -> Lab should succeed");
 
@@ -215,7 +213,7 @@ mod chaos_monkey_16 {
     fn shrink_one_is_pixel_exact_identity() {
         let image = patterned_rgba(9, 7);
         let (pipeline, output) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.shrink(1, 1))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_shrink(1, 1))
                 .expect("shrink(1,1) should succeed");
 
         assert_eq!(
@@ -228,9 +226,10 @@ mod chaos_monkey_16 {
     #[test]
     fn rotate180_twice_is_pixel_exact_identity() {
         let image = patterned_rgba(11, 7);
-        let (pipeline, output) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.rotate180()?.rotate180())
-                .expect("rotate180 twice should succeed");
+        let (pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
+            builder.plan_rotate180()?.plan_rotate180()
+        })
+        .expect("rotate180 twice should succeed");
 
         assert_eq!(
             (pipeline.width, pipeline.height, output.bands()),

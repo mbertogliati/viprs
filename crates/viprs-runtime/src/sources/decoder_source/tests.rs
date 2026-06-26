@@ -1053,7 +1053,7 @@ fn streaming_path_uses_decoder_path_api() {
 
 #[test]
 fn streaming_shared_source_runs_through_pipeline_scheduler() {
-    use crate::pipeline::internal::PipelineBuilder;
+    use crate::pipeline::internal::PipelinePlan;
     use crate::scheduler::rayon_scheduler::RayonScheduler;
 
     let decoder = StreamingGridDecoder::new();
@@ -1062,10 +1062,10 @@ fn streaming_shared_source_runs_through_pipeline_scheduler() {
     let source =
         DecoderSource::<_, U8>::streaming_shared(decoder, encoded, LoadOptions::default()).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .invert()
+    let pipeline = PipelinePlan::from_source(source)
+        .plan_invert()
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let image = pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())

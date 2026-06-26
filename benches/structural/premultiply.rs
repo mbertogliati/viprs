@@ -2,7 +2,7 @@
 /// Benchmark: Premultiply<U8> and Unpremultiply<U8> — alpha premultiplication.
 ///
 /// Measures `process_region` directly (not via the full pipeline), because
-/// `PipelineBuilder` does not yet have a `premultiply()` convenience method
+/// `PipelinePlan` does not yet have a `premultiply()` convenience method
 /// (blocked on B-50 which addresses multi-band-count ops in the bridge).
 ///
 /// The benchmark covers the pixel-path hot loop for three RGBA image sizes.
@@ -13,7 +13,7 @@ use viprs::domain::{
     op::Op,
     ops::structural::{Premultiply, Unpremultiply},
 };
-use viprs_runtime::pipeline::internal::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 fn bench_premultiply(c: &mut Criterion) {
     let mut group = c.benchmark_group("premultiply_u8");

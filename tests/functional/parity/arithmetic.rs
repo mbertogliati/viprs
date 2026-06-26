@@ -14,7 +14,7 @@ fn libvips_parity_upstream_arithmetic_add() {
     let rhs_for_op = rhs.clone();
     let (width, height, actual) =
         run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-            builder.then(Box::new(OperationBridge::new_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Add::<F32>::new(rhs_for_op),
                 1,
             )))
@@ -67,7 +67,7 @@ fn libvips_parity_upstream_arithmetic_subtract() {
     let rhs_for_op = rhs.clone();
     let (width, height, actual) =
         run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-            builder.then(Box::new(OperationBridge::new_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Subtract::<F32>::new(rhs_for_op),
                 1,
             )))
@@ -120,7 +120,7 @@ fn libvips_parity_upstream_arithmetic_multiply() {
     let rhs_for_op = rhs.clone();
     let (width, height, actual) =
         run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-            builder.then(Box::new(OperationBridge::new_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Multiply::<F32>::new(rhs_for_op),
                 1,
             )))
@@ -173,7 +173,7 @@ fn libvips_parity_upstream_arithmetic_divide() {
     let rhs_for_op = rhs.clone();
     let (width, height, actual) =
         run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, move |builder| {
-            builder.then(Box::new(OperationBridge::new_pixel_local(
+            builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
                 Divide::<F32>::new(rhs_for_op, WIDTH, 1),
                 1,
             )))
@@ -223,7 +223,7 @@ fn libvips_parity_upstream_arithmetic_abs() {
     let case = "test_abs_signed_ramp";
     let source = signed_f32_source();
     let (width, height, actual) = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
-        builder.then(Box::new(OperationBridge::new_pixel_local(
+        builder.append_dyn_op(Box::new(OperationBridge::new_pixel_local(
             Abs::<F32>::new(),
             1,
         )))
@@ -260,8 +260,9 @@ fn libvips_parity_upstream_arithmetic_invert() {
     let op = "libvips_parity_arithmetic";
     let case = "test_invert_grayscale_gradient";
     let source = grayscale_source(WIDTH, HEIGHT);
-    let (width, height, actual) =
-        run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| builder.invert());
+    let (width, height, actual) = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 1, |builder| {
+        builder.plan_invert()
+    });
     let input = write_u8_input_spec(
         op,
         case,

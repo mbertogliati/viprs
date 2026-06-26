@@ -86,20 +86,20 @@ mod robustness_recovery {
         )
         .expect("fixture image should have a valid in-memory buffer");
 
-        viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
-            .invert()
+        viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+            .plan_invert()
             .expect("invert should build for U8 fixture images")
-            .build()
+            .compile()
             .expect("valid recovery pipeline should compile")
     }
 
     fn build_failing_pipeline(image: &Image<U8>) -> viprs_runtime::pipeline::CompiledPipeline {
         let source = FailingSource::from_image(image);
 
-        viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
-            .invert()
+        viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+            .plan_invert()
             .expect("invert should build for failing U8 sources")
-            .build()
+            .compile()
             .expect("failing recovery pipeline should compile")
     }
 

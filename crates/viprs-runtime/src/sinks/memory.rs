@@ -315,7 +315,7 @@ mod tests {
         format::U8,
         image::{DemandHint, Tile, TileMut},
     };
-    use crate::pipeline::internal::PipelineBuilder;
+    use crate::pipeline::internal::PipelinePlan;
     use std::sync::Arc;
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -572,13 +572,13 @@ mod tests {
 
     #[test]
     fn for_pipeline_infers_bps_for_u8() {
-        let pipeline = PipelineBuilder::new(16, 16)
-            .then(Box::new(OperationBridge::new(
+        let pipeline = PipelinePlan::new(16, 16)
+            .append_dyn_op(Box::new(OperationBridge::new(
                 PassThrough { bands: 1 },
                 1u32,
             )))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
 
         assert_eq!(pipeline.output_format, BandFormatId::U8);
@@ -594,10 +594,10 @@ mod tests {
         use crate::sources::zero::ZeroSource;
 
         // Use a F32 source so that the pipeline's current_format matches F32PassThrough.
-        let pipeline = PipelineBuilder::from_source(ZeroSource::<F32>::new(16, 16, 1))
-            .then(Box::new(OperationBridge::new(F32PassThrough, 1u32)))
+        let pipeline = PipelinePlan::from_source(ZeroSource::<F32>::new(16, 16, 1))
+            .append_dyn_op(Box::new(OperationBridge::new(F32PassThrough, 1u32)))
             .unwrap()
-            .build()
+            .compile()
             .unwrap();
 
         assert_eq!(pipeline.output_format, BandFormatId::F32);

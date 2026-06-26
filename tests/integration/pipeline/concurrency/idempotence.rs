@@ -48,23 +48,21 @@ mod robustez_idempotencia {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline<S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_pipeline<S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<U8>,
         threads: usize,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
+            viprs_runtime::pipeline::internal::PipelinePlan,
         ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            viprs_runtime::pipeline::internal::PipelinePlan<S>,
             viprs::BuildError,
         >,
     ) -> Image<U8> {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source_from_image(
-                image,
-            )),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(source_from_image(image)),
         )
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
         let scheduler = RayonScheduler::new(threads).unwrap();
         pipeline.run_to_image::<U8, _>(&scheduler).unwrap()
@@ -107,18 +105,17 @@ mod robustez_idempotencia {
     #[test]
     fn same_pipeline_twice_produces_identical_bytes() {
         let image = patterned_image(257, 193, 3);
-        let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-            source_from_image(&image),
-        )
-        .thumbnail(Thumbnail::new(
-            ThumbnailTarget::Width(91),
-            InterpolationKernel::Lanczos3,
-        ))
-        .unwrap()
-        .invert()
-        .unwrap()
-        .build()
-        .unwrap();
+        let pipeline =
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(source_from_image(&image))
+                .plan_thumbnail(Thumbnail::new(
+                    ThumbnailTarget::Width(91),
+                    InterpolationKernel::Lanczos3,
+                ))
+                .unwrap()
+                .plan_invert()
+                .unwrap()
+                .compile()
+                .unwrap();
         let scheduler = RayonScheduler::new(2).unwrap();
 
         let first = pipeline.run_to_image::<U8, _>(&scheduler).unwrap();
@@ -131,7 +128,7 @@ mod robustez_idempotencia {
     fn invert_twice_matches_original_u8_bytes() {
         let image = patterned_image(129, 97, 3);
 
-        let output = execute_pipeline(&image, 2, |builder| builder.invert()?.invert());
+        let output = execute_pipeline(&image, 2, |builder| builder.plan_invert()?.plan_invert());
 
         assert_eq!(output.pixels(), image.pixels());
     }
@@ -141,7 +138,7 @@ mod robustez_idempotencia {
         let image = patterned_image(255, 189, 3);
         let outputs: Vec<Vec<u8>> = (0..10)
             .map(|_| {
-                execute_pipeline(&image, 2, |builder| builder.shrink(3, 2))
+                execute_pipeline(&image, 2, |builder| builder.plan_shrink(3, 2))
                     .pixels()
                     .to_vec()
             })
@@ -156,7 +153,7 @@ mod robustez_idempotencia {
         let outputs: Vec<Vec<u8>> = (0..5)
             .map(|_| {
                 execute_pipeline(&image, 2, |builder| {
-                    builder.thumbnail(Thumbnail::new(
+                    builder.plan_thumbnail(Thumbnail::new(
                         ThumbnailTarget::FitBox {
                             width: 80,
                             height: 60,
@@ -206,8 +203,8 @@ mod robustez_idempotencia {
                 execute_pipeline(&image, 2, |builder| {
                     builder
                         .with_colorspace(ColorspaceId::SRgb)
-                        .colourspace::<Lab>()?
-                        .colourspace::<SRgb>()
+                        .plan_colourspace::<Lab>()?
+                        .plan_colourspace::<SRgb>()
                 })
                 .pixels()
                 .to_vec()
@@ -223,7 +220,7 @@ mod robustez_idempotencia {
         let outputs: Vec<Vec<u8>> = (0..5)
             .map(|_| {
                 execute_pipeline(&image, 2, |builder| {
-                    builder.reduce(2.5, 2.5, InterpolationKernel::Lanczos3)
+                    builder.plan_reduce(2.5, 2.5, InterpolationKernel::Lanczos3)
                 })
                 .pixels()
                 .to_vec()
@@ -239,19 +236,19 @@ mod robustez_idempotencia {
 
         let uncached = execute_pipeline(&image, 2, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .plan_thumbnail(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
-                .invert()
+                .plan_invert()
         });
         let cached = execute_pipeline(&image, 2, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .plan_thumbnail(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
-                .invert()?
+                .plan_invert()?
                 .cache_last_op(NonZeroUsize::new(1 << 20).unwrap())
         });
 
@@ -264,21 +261,21 @@ mod robustez_idempotencia {
 
         let single_thread = execute_pipeline(&image, 1, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .plan_thumbnail(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
-                .reduce(1.5, 1.5, InterpolationKernel::Lanczos3)?
-                .invert()
+                .plan_reduce(1.5, 1.5, InterpolationKernel::Lanczos3)?
+                .plan_invert()
         });
         let four_threads = execute_pipeline(&image, 4, |builder| {
             builder
-                .thumbnail(Thumbnail::new(
+                .plan_thumbnail(Thumbnail::new(
                     ThumbnailTarget::Width(91),
                     InterpolationKernel::Lanczos3,
                 ))?
-                .reduce(1.5, 1.5, InterpolationKernel::Lanczos3)?
-                .invert()
+                .plan_reduce(1.5, 1.5, InterpolationKernel::Lanczos3)?
+                .plan_invert()
         });
 
         assert_eq!(single_thread.pixels(), four_threads.pixels());

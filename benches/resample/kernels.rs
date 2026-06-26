@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, kernel::InterpolationKernel},
@@ -29,12 +29,12 @@ fn bench_resize_kernel(c: &mut Criterion) {
                     b.iter(|| {
                         let source =
                             MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                        let pipeline = PipelineBuilder::from_source(source)
-                            .resize(viprs::domain::ops::resample::resize::Resize::new(
+                        let pipeline = PipelinePlan::from_source(source)
+                            .plan_resize(viprs::domain::ops::resample::resize::Resize::new(
                                 0.75, 0.75, kernel,
                             ))
                             .unwrap()
-                            .build()
+                            .compile()
                             .unwrap();
                         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                         RayonScheduler::new(RayonScheduler::default_threads())

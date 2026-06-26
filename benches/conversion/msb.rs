@@ -6,7 +6,7 @@ use viprs::{
         sources::memory::MemorySource,
     },
     domain::format::U32,
-    pipeline::internal::PipelineBuilder,
+    pipeline::internal::PipelinePlan,
     ports::scheduler::TileScheduler,
 };
 
@@ -32,10 +32,10 @@ fn bench_msb(c: &mut Criterion) {
                     "create memory source",
                 );
                 let pipeline = must(
-                    PipelineBuilder::from_source(source).msb(),
+                    PipelinePlan::from_source(source).plan_msb(),
                     "add msb operation",
                 )
-                .build()
+                .compile()
                 .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 let scheduler = must(

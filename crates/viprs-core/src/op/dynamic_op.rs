@@ -151,7 +151,7 @@ pub trait DynOperation: Send + Sync {
     /// (arithmetic, convolution, cast, etc.) and do not alter the colorspace.
     ///
     /// `ColourConvertBridge` overrides this to return `Some(To::ID)` so that
-    /// `PipelineBuilder` can track the current colorspace after a colour conversion
+    /// `PipelinePlan` can track the current colorspace after a colour conversion
     /// without needing a separate `DynColourOperation` trait.
     fn output_colorspace(&self) -> Option<ColorspaceId> {
         None

@@ -63,14 +63,12 @@ mod chaos_monkey_15 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -79,12 +77,12 @@ mod chaos_monkey_15 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -137,7 +135,7 @@ mod chaos_monkey_15 {
     fn extract_area_last_pixel_reads_exact_boundary_value() {
         let image = make_u8_image(3, 2, 1, vec![1, 2, 3, 4, 5, 6]);
         let (pipeline, output) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.extract_area(2, 1, 1, 1))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.plan_extract_area(2, 1, 1, 1))
                 .expect("extract_area on last pixel should succeed");
 
         assert_eq!((pipeline.width, pipeline.height, output.bands()), (1, 1, 1));

@@ -46,21 +46,19 @@ mod robustness_dims {
         .map(|source| source.with_metadata(image.metadata().clone()))
     }
 
-    fn execute_to_image<S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<U8>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image)?,
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )?),
         )?
-        .build()?;
+        .compile()?;
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)?.run(&pipeline, &mut sink)?;
         let output = sink.into_image::<U8>(
@@ -72,15 +70,13 @@ mod robustness_dims {
         Ok((pipeline, output))
     }
 
-    fn execute_without_panicking<S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_without_panicking<S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<U8>,
         op_name: &str,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Image<U8>), ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| execute_to_image(image, configure)));
         assert!(
@@ -97,7 +93,7 @@ mod robustness_dims {
         for (width, height) in [(1, 1), (1, 17), (17, 1), (16_385, 1)] {
             let image = make_u8_image(width, height, 1);
             let (_pipeline, output) =
-                execute_without_panicking(&image, "invert", |builder| builder.invert())
+                execute_without_panicking(&image, "invert", |builder| builder.plan_invert())
                     .unwrap_or_else(|error| {
                         panic!("invert should succeed for {width}x{height}: {error}")
                     });
@@ -142,7 +138,7 @@ mod robustness_dims {
         for ((width, height), resize, expected_dims) in cases {
             let image = make_u8_image(width, height, 1);
             let (pipeline, output) =
-                execute_without_panicking(&image, "resize", |builder| builder.resize(resize))
+                execute_without_panicking(&image, "resize", |builder| builder.plan_resize(resize))
                     .unwrap_or_else(|error| {
                         panic!("resize should succeed for {width}x{height}: {error}")
                     });
@@ -193,7 +189,7 @@ mod robustness_dims {
         for (width, height, thumbnail, expected_dims) in cases {
             let image = make_u8_image(width, height, 1);
             let (pipeline, output) = execute_without_panicking(&image, "thumbnail", |builder| {
-                builder.thumbnail(thumbnail)
+                builder.plan_thumbnail(thumbnail)
             })
             .unwrap_or_else(|error| {
                 panic!("thumbnail should succeed for {width}x{height}: {error}")
@@ -225,7 +221,7 @@ mod robustness_dims {
         for ((width, height), hshrink, vshrink) in cases {
             let image = make_u8_image(width, height, 1);
             let (pipeline, output) = execute_without_panicking(&image, "shrink", |builder| {
-                builder.shrink(hshrink, vshrink)
+                builder.plan_shrink(hshrink, vshrink)
             })
             .unwrap_or_else(|error| panic!("shrink should succeed for {width}x{height}: {error}"));
 
@@ -262,18 +258,18 @@ mod robustness_dims {
             for (op_name, result) in [
                 (
                     "invert",
-                    execute_without_panicking(&image, "invert", |builder| builder.invert()),
+                    execute_without_panicking(&image, "invert", |builder| builder.plan_invert()),
                 ),
                 (
                     "resize",
                     execute_without_panicking(&image, "resize", |builder| {
-                        builder.resize(Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3))
+                        builder.plan_resize(Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3))
                     }),
                 ),
                 (
                     "thumbnail",
                     execute_without_panicking(&image, "thumbnail", |builder| {
-                        builder.thumbnail(Thumbnail::new(
+                        builder.plan_thumbnail(Thumbnail::new(
                             ThumbnailTarget::FitBox {
                                 width: 8,
                                 height: 8,
@@ -284,7 +280,9 @@ mod robustness_dims {
                 ),
                 (
                     "shrink",
-                    execute_without_panicking(&image, "shrink", |builder| builder.shrink(2, 2)),
+                    execute_without_panicking(&image, "shrink", |builder| {
+                        builder.plan_shrink(2, 2)
+                    }),
                 ),
             ] {
                 match result {

@@ -10,7 +10,7 @@ use viprs::{
     pipeline::OperationBridge,
     ports::scheduler::TileScheduler,
 };
-use viprs_runtime::pipeline::internal::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelinePlan;
 
 fn make_pixels(size: u32) -> Vec<f32> {
     let pixel_count = size as usize * size as usize;
@@ -38,14 +38,14 @@ fn bench_lut_recomb(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                         RecombOp::<F32>::new(matrix.clone()),
                         3,
                         2,
                     )))
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

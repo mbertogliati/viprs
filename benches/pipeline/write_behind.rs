@@ -1,5 +1,5 @@
 #![allow(missing_docs)]
-use viprs_runtime::pipeline::internal::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelinePlan;
 use std::{thread, time::Duration};
 
 use criterion::{
@@ -83,10 +83,10 @@ impl FileSinkWriter for SimulatedEncodeWriter {
 
 fn make_pipeline(size: u32) -> CompiledPipeline {
     let source = BlackSource::new(size, size, BANDS);
-    PipelineBuilder::from_source(source)
-        .then(Box::new(OperationBridge::new(ThinStripCopy, BANDS)))
+    PipelinePlan::from_source(source)
+        .append_dyn_op(Box::new(OperationBridge::new(ThinStripCopy, BANDS)))
         .unwrap()
-        .build()
+        .compile()
         .unwrap()
 }
 

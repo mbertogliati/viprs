@@ -3,9 +3,10 @@
 
 use super::{
     BandFormat, BandFormatId, BuildError, CompiledPipeline, DecodeLimits, ForeignRegistry, Image,
-    JPEG_HEADER, LoadOptions, MemorySource, PNG_HEADER, Path, PipelineBuilder, Pod, RayonScheduler,
-    Read, ResourceLimits, ViprsError, size_of,
+    JPEG_HEADER, LoadOptions, MemorySource, PNG_HEADER, Path, Pod, RayonScheduler, Read,
+    ResourceLimits, ViprsError, size_of,
 };
+use crate::pipeline::internal::PipelinePlan;
 
 #[cfg(any(feature = "jpeg", feature = "png", feature = "webp"))]
 use super::{Arc, DecoderSource};
@@ -43,7 +44,7 @@ use std::fs;
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 pub struct ImageApi {
-    pub(in crate::image_api) builder: PipelineBuilder,
+    pub(in crate::image_api) builder: PipelinePlan,
     pub(in crate::image_api) resource_limits: Option<ResourceLimits>,
 }
 
@@ -222,7 +223,7 @@ impl ImageApi {
     }
 
     pub(in crate::image_api) const fn from_builder(
-        builder: PipelineBuilder,
+        builder: PipelinePlan,
         resource_limits: Option<ResourceLimits>,
     ) -> Result<Self, BuildError> {
         Ok(Self {
@@ -233,7 +234,7 @@ impl ImageApi {
 
     /// Consume this facade into the staged pipeline builder for sibling public
     /// vocabulary adapters.
-    pub(crate) fn into_pipeline_builder(self) -> PipelineBuilder {
+    pub(crate) fn into_pipeline_builder(self) -> PipelinePlan {
         self.builder
     }
 
@@ -318,7 +319,7 @@ impl ImageApi {
             .with_metadata(metadata);
 
         Ok(Self {
-            builder: PipelineBuilder::from_source(source),
+            builder: PipelinePlan::from_source(source),
             resource_limits,
         })
     }
@@ -339,7 +340,7 @@ impl ImageApi {
             limits,
         )?;
         Ok(Self {
-            builder: PipelineBuilder::from_source(source),
+            builder: PipelinePlan::from_source(source),
             resource_limits,
         })
     }

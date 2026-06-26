@@ -14,7 +14,7 @@ fn libvips_parity_upstream_colour_xyz_to_lab() {
     let (width, height, actual) = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
             .with_colorspace(ColorspaceId::Xyz)
-            .colourspace::<Lab>()
+            .plan_colourspace::<Lab>()
     });
     let vips_source = scale_f32_pixels(&source, 100.0);
     let input = write_f32_input_spec(
@@ -59,8 +59,8 @@ fn libvips_parity_upstream_convolution_gaussblur_uniform_field() {
     let blur = GaussBlur::new(1.0);
     let (width, height, actual) = run_pipeline_f32(source.clone(), WIDTH, HEIGHT, 1, |builder| {
         builder
-            .then(Box::new(OperationBridge::new(blur.h, 1)))?
-            .then(Box::new(OperationBridge::new(blur.v, 1)))
+            .append_dyn_op(Box::new(OperationBridge::new(blur.h, 1)))?
+            .append_dyn_op(Box::new(OperationBridge::new(blur.v, 1)))
     });
     let input = write_f32_input_spec(
         op,
@@ -104,11 +104,11 @@ fn libvips_parity_upstream_convolution_gaussblur_u8_nonuniform_field() {
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, 1, |builder| {
             builder
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurH::<U8>::new(1.0),
                     1,
                 )))?
-                .then(Box::new(OperationBridge::new(
+                .append_dyn_op(Box::new(OperationBridge::new(
                     GaussBlurV::<U8>::new(1.0),
                     1,
                 )))
@@ -152,11 +152,11 @@ fn libvips_parity_upstream_convolution_gaussblur_u8_rgb_field() {
     let source = rgb_source(WIDTH, HEIGHT);
     let (width, height, actual) = run_pipeline_u8(source.clone(), WIDTH, HEIGHT, 3, |builder| {
         builder
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 GaussBlurH::<U8>::new(1.0),
                 3,
             )))?
-            .then(Box::new(OperationBridge::new(
+            .append_dyn_op(Box::new(OperationBridge::new(
                 GaussBlurV::<U8>::new(1.0),
                 3,
             )))
@@ -204,8 +204,8 @@ fn libvips_parity_upstream_convolution_gaussblur_nonuniform_field() {
     let (out_width, out_height, actual) =
         run_pipeline_f32(source.clone(), width, height, 1, |builder| {
             builder
-                .then(Box::new(OperationBridge::new(blur.h, 1)))?
-                .then(Box::new(OperationBridge::new(blur.v, 1)))
+                .append_dyn_op(Box::new(OperationBridge::new(blur.h, 1)))?
+                .append_dyn_op(Box::new(OperationBridge::new(blur.v, 1)))
         });
     let input = write_f32_input_spec(
         op,

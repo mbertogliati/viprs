@@ -12,7 +12,7 @@ use crate::{
     },
     domain::ops::resample::thumbnail::ThumbnailTarget,
     pipeline::arena::source_region_for_scheduler_tile,
-    pipeline::internal::PipelineBuilder,
+    pipeline::internal::PipelinePlan,
     scheduler::rayon_scheduler::RayonScheduler,
     sources::memory::MemorySource,
     sources::zero::ZeroSource,

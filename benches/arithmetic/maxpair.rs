@@ -3,7 +3,7 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::arithmetic::maxpair::MaxPair;
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, op::OperationBridge},
@@ -25,10 +25,10 @@ fn bench_maxpair(c: &mut Criterion) {
                     MaxPair::<U8>::new(rhs.clone(), size, 1),
                     1u32,
                 ));
-                let pipeline = PipelineBuilder::from_source(source)
-                    .then(op)
+                let pipeline = PipelinePlan::from_source(source)
+                    .append_dyn_op(op)
                     .unwrap()
-                    .build()
+                    .compile()
                     .unwrap();
                 let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                 RayonScheduler::new(RayonScheduler::default_threads())

@@ -64,14 +64,12 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::CommitPlan>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::internal::PipelineBuilder,
-        ) -> Result<
-            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
-            BuildError,
-        >,
+            viprs_runtime::pipeline::internal::PipelinePlan,
+        )
+            -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
     ) -> Result<(viprs_runtime::pipeline::CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -80,12 +78,12 @@ mod chaos_monkey_16 {
         FOut::Sample: Pod,
     {
         let pipeline = configure(
-            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
-                memory_source_from_image(image),
-            ),
+            viprs_runtime::pipeline::internal::PipelinePlan::from_source(memory_source_from_image(
+                image,
+            )),
         )
         .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
+        .compile()
         .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
@@ -147,9 +145,9 @@ mod chaos_monkey_16 {
     }
 
     fn append_recomb(
-        builder: viprs_runtime::pipeline::internal::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::internal::PipelineBuilder, BuildError> {
-        builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+        builder: viprs_runtime::pipeline::internal::PipelinePlan,
+    ) -> Result<viprs_runtime::pipeline::internal::PipelinePlan, BuildError> {
+        builder.append_dyn_op(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
             RecombOp::<U8>::new(recomb_matrix()),
             3,
             3,
@@ -185,7 +183,7 @@ mod chaos_monkey_16 {
     fn embed_repeat_tiles_non_power_of_two_input_exactly() {
         let image = make_u8_image(3, 5, 1, (0u8..15).collect());
         let (pipeline, output) = execute_to_image::<U8, U8, _>(&image, |builder| {
-            builder.embed(
+            builder.plan_embed(
                 8,
                 9,
                 2,

@@ -114,22 +114,21 @@ pub(crate) fn gauss_source() -> Vec<f32> {
     vec![37.5; (WIDTH * HEIGHT) as usize]
 }
 
-pub(crate) fn run_pipeline_u8<S: viprs_runtime::pipeline::internal::Flush>(
+pub(crate) fn run_pipeline_u8<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::internal::PipelineBuilder,
+        viprs_runtime::pipeline::internal::PipelinePlan,
     )
-        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline =
-        configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source))
-            .unwrap()
-            .build()
-            .unwrap();
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
+        .unwrap()
+        .compile()
+        .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(1)
@@ -139,22 +138,21 @@ pub(crate) fn run_pipeline_u8<S: viprs_runtime::pipeline::internal::Flush>(
     sink.into_buffer()
 }
 
-pub(crate) fn run_pipeline_f32<S: viprs_runtime::pipeline::internal::Flush>(
+pub(crate) fn run_pipeline_f32<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::internal::PipelineBuilder,
+        viprs_runtime::pipeline::internal::PipelinePlan,
     )
-        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline =
-        configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source))
-            .unwrap()
-            .build()
-            .unwrap();
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
+        .unwrap()
+        .compile()
+        .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(1)
@@ -164,22 +162,21 @@ pub(crate) fn run_pipeline_f32<S: viprs_runtime::pipeline::internal::Flush>(
     sink.into_buffer()
 }
 
-pub(crate) fn run_pipeline_i32<S: viprs_runtime::pipeline::internal::Flush>(
+pub(crate) fn run_pipeline_i32<S: viprs_runtime::pipeline::internal::CommitPlan>(
     source_pixels: Vec<i32>,
     width: u32,
     height: u32,
     bands: u32,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::internal::PipelineBuilder,
+        viprs_runtime::pipeline::internal::PipelinePlan,
     )
-        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
+        -> Result<viprs_runtime::pipeline::internal::PipelinePlan<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<I32>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline =
-        configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source))
-            .unwrap()
-            .build()
-            .unwrap();
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelinePlan::from_source(source))
+        .unwrap()
+        .compile()
+        .unwrap();
 
     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
     RayonScheduler::new(1)
@@ -443,10 +440,10 @@ where
     R: viprs::domain::reducer::TileReducer<U8>,
 {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
-        .apply(viprs::Linear::new(1.0, 0.0))
+    let pipeline = viprs_runtime::pipeline::internal::PipelinePlan::from_source(source)
+        .append_op(viprs::Linear::new(1.0, 0.0))
         .unwrap()
-        .build()
+        .compile()
         .unwrap();
     let sink = MemorySink::for_pipeline(&pipeline).unwrap();
 

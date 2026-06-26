@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelinePlan, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -50,12 +50,12 @@ fn bench_lch(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<F32>::new(image_size, image_size, 3, lab.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
-                        .then(Box::new(ColourConvertBridge::<LabToLch, Lab, Lch>::new(
+                    let pipeline = PipelinePlan::from_source(source)
+                        .append_dyn_op(Box::new(ColourConvertBridge::<LabToLch, Lab, Lch>::new(
                             LabToLch, 3,
                         )))
                         .unwrap()
-                        .build()
+                        .compile()
                         .unwrap();
                     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
@@ -74,12 +74,12 @@ fn bench_lch(c: &mut Criterion) {
                 b.iter(|| {
                     let source =
                         MemorySource::<F32>::new(image_size, image_size, 3, lch.clone()).unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
-                        .then(Box::new(ColourConvertBridge::<LchToLab, Lch, Lab>::new(
+                    let pipeline = PipelinePlan::from_source(source)
+                        .append_dyn_op(Box::new(ColourConvertBridge::<LchToLab, Lch, Lab>::new(
                             LchToLab, 3,
                         )))
                         .unwrap()
-                        .build()
+                        .compile()
                         .unwrap();
                     let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
                     RayonScheduler::new(RayonScheduler::default_threads())
