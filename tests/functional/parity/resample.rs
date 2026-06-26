@@ -242,7 +242,7 @@ fn libvips_parity_upstream_resample_thumbnail_width_target() {
     let source = smooth_grayscale_source(width, height);
     let (out_width, out_height, actual) =
         run_pipeline_u8(source.clone(), width, height, bands, |builder| {
-            builder.thumbnail(Thumbnail::new(
+            builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(128),
                 InterpolationKernel::Lanczos3,
             ))

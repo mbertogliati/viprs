@@ -18,10 +18,10 @@ use super::{PngCodec, PngEncoder};
 use viprs_core::codec_options::{LoadOptions, PngFilterStrategy, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{U8, U16};
-use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
 
-fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
+fn clamped_region_pixels_u8(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
     let bands = image.bands() as usize;
     let mut output = vec![0u8; region.pixel_count() * bands];
 
@@ -172,7 +172,7 @@ fn round_trip_u8_rgb() {
     let codec = PngCodec::default();
     // 4×4 RGB image with a recognisable gradient pattern.
     let pixels: Vec<u8> = (0u8..48).collect();
-    let original = Image::<U8>::from_buffer(4, 4, 3, pixels.clone()).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(4, 4, 3, pixels.clone()).unwrap();
 
     let encoded = codec.encode::<U8>(&original).unwrap();
     let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -189,7 +189,7 @@ fn round_trip_u8_rgb() {
 fn round_trip_u8_grayscale() {
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..16).collect();
-    let original = Image::<U8>::from_buffer(4, 4, 1, pixels).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(4, 4, 1, pixels).unwrap();
 
     let encoded = codec.encode::<U8>(&original).unwrap();
     let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -232,7 +232,7 @@ fn round_trip_u16_rgb() {
     let codec = PngCodec::default();
     // 3×3 U16 RGB image.
     let pixels: Vec<u16> = (0u16..27).map(|v| v * 1000).collect();
-    let original = Image::<U16>::from_buffer(3, 3, 3, pixels).unwrap();
+    let original = InMemoryImage::<U16>::from_buffer(3, 3, 3, pixels).unwrap();
 
     let encoded = codec.encode::<U16>(&original).unwrap();
     let decoded = codec.decode::<U16>(&encoded).unwrap();
@@ -248,7 +248,7 @@ fn round_trip_u16_rgb() {
 fn libspng_round_trip_u8_rgba() {
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..128).cycle().take(4 * 8 * 4).collect();
-    let original = Image::<U8>::from_buffer(4, 8, 4, pixels).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(4, 8, 4, pixels).unwrap();
 
     let encoded = codec.encode::<U8>(&original).unwrap();
     let decoded = decode_png_with_libspng::<U8>(&encoded).unwrap();
@@ -294,7 +294,7 @@ fn probe_returns_correct_dimensions() {
     let codec = PngCodec::default();
     // Encode a 7×5 RGBA image and probe it.
     let pixels: Vec<u8> = vec![128u8; 7 * 5 * 4];
-    let image = Image::<U8>::from_buffer(7, 5, 4, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(7, 5, 4, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
 
     let (w, h, bands) = codec.probe(&encoded).unwrap();
@@ -338,7 +338,7 @@ fn encode_with_options_compression_level_round_trip_preserves_pixels() {
             ]
         })
         .collect();
-    let image = Image::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
 
     let opts = SaveOptions::default().with_compression_level(9);
     let encoded = codec.encode_with_options::<U8>(&image, &opts).unwrap();
@@ -357,7 +357,7 @@ fn encode_with_options_compression_level_round_trip_preserves_pixels() {
 #[test]
 fn png_encoder_compression_zero_is_larger_than_nine() {
     let pixels: Vec<u8> = vec![7u8; 256 * 256 * 3];
-    let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
 
     let uncompressed = PngEncoder {
         compression: 0,
@@ -380,7 +380,7 @@ fn png_encoder_compression_zero_is_larger_than_nine() {
 #[test]
 fn png_encoder_interlace_round_trip_preserves_pixels() {
     let pixels: Vec<u8> = (0u8..192).cycle().take(16 * 16 * 3).collect();
-    let image = Image::<U8>::from_buffer(16, 16, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(16, 16, 3, pixels).unwrap();
 
     let encoded = PngEncoder {
         compression: 6,
@@ -399,7 +399,7 @@ fn png_encoder_interlace_round_trip_preserves_pixels() {
 
 #[test]
 fn png_round_trip_preserves_resolution_metadata() {
-    let image = Image::<U8>::from_buffer(4, 4, 3, vec![64u8; 4 * 4 * 3])
+    let image = InMemoryImage::<U8>::from_buffer(4, 4, 3, vec![64u8; 4 * 4 * 3])
         .unwrap()
         .with_metadata(ImageMetadata {
             xres: Some(12.0),
@@ -427,7 +427,7 @@ fn png_round_trip_preserves_resolution_metadata() {
 
 #[test]
 fn encode_with_options_interlace_sets_adam7() {
-    let image = Image::<U8>::from_buffer(8, 8, 3, vec![9u8; 8 * 8 * 3]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 8, 3, vec![9u8; 8 * 8 * 3]).unwrap();
     let encoded = PngCodec::default()
         .encode_with_options::<U8>(&image, &SaveOptions::default().with_interlace(true))
         .unwrap();
@@ -441,7 +441,7 @@ fn encode_with_options_png_filter_changes_encoded_stream() {
     let pixels: Vec<u8> = (0..16)
         .flat_map(|row| (0..16).flat_map(move |col| [row as u8, col as u8, (row * col) as u8]))
         .collect();
-    let image = Image::<U8>::from_buffer(16, 16, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(16, 16, 3, pixels).unwrap();
 
     let no_filter = PngCodec::default()
         .encode_with_options::<U8>(
@@ -473,7 +473,7 @@ fn encode_with_options_png_filter_changes_encoded_stream() {
 #[test]
 fn encode_to_writer_matches_encode_with_options() {
     let pixels: Vec<u8> = (0u8..96).cycle().take(8 * 4 * 3).collect();
-    let image = Image::<U8>::from_buffer(8, 4, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 4, 3, pixels).unwrap();
     let opts = SaveOptions::default()
         .with_compression_level(6)
         .with_png_filter(PngFilterStrategy::Paeth);
@@ -494,7 +494,7 @@ fn encode_to_writer_matches_encode_with_options() {
 fn png_metadata_round_trip_preserves_color_type_mapping() {
     let cases = [
         (
-            Image::<U8>::from_buffer(3, 2, 1, vec![5u8; 3 * 2])
+            InMemoryImage::<U8>::from_buffer(3, 2, 1, vec![5u8; 3 * 2])
                 .unwrap()
                 .with_metadata(ImageMetadata {
                     interpretation: Some(Interpretation::BW),
@@ -504,7 +504,7 @@ fn png_metadata_round_trip_preserves_color_type_mapping() {
             Interpretation::BW,
         ),
         (
-            Image::<U8>::from_buffer(3, 2, 3, vec![9u8; 3 * 2 * 3])
+            InMemoryImage::<U8>::from_buffer(3, 2, 3, vec![9u8; 3 * 2 * 3])
                 .unwrap()
                 .with_metadata(ImageMetadata {
                     interpretation: Some(Interpretation::Srgb),
@@ -530,7 +530,7 @@ fn png_metadata_round_trip_preserves_color_type_mapping() {
 
 #[test]
 fn png_metadata_round_trip_preserves_icc_exif_and_xmp() {
-    let image = Image::<U8>::from_buffer(2, 2, 3, vec![32u8; 12])
+    let image = InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![32u8; 12])
         .unwrap()
         .with_metadata(ImageMetadata {
             icc_profile: Some((0u8..32).collect()),
@@ -549,7 +549,7 @@ fn png_metadata_round_trip_preserves_icc_exif_and_xmp() {
 
 #[test]
 fn strip_metadata_removes_png_icc_exif_and_xmp() {
-    let image = Image::<U8>::from_buffer(2, 2, 3, vec![48u8; 12])
+    let image = InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![48u8; 12])
         .unwrap()
         .with_metadata(ImageMetadata {
             icc_profile: Some((0u8..24).collect()),
@@ -574,7 +574,7 @@ fn strip_metadata_removes_png_icc_exif_and_xmp() {
 fn decode_with_options_delegates_to_decode() {
     let codec = PngCodec::default();
     let pixels: Vec<u8> = vec![0u8; 4 * 4];
-    let image = Image::<U8>::from_buffer(4, 4, 1, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(4, 4, 1, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
 
     let opts = LoadOptions::default();
@@ -586,7 +586,7 @@ fn decode_with_options_delegates_to_decode() {
 fn decode_path_with_options_matches_in_memory_decode() {
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..96).cycle().take(8 * 4 * 3).collect();
-    let image = Image::<U8>::from_buffer(8, 4, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 4, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let path = png_test_output_path("decode-path");
     std::fs::write(&path, &encoded).unwrap();
@@ -620,7 +620,8 @@ fn decode_path_with_shrink_keeps_partial_tail_blocks() {
             ]
         })
         .collect();
-    let image = Image::<U8>::from_buffer(width as u32, height as u32, 3, pixels.clone()).unwrap();
+    let image =
+        InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 3, pixels.clone()).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let path = png_test_output_path("decode-path-shrink-tail");
     std::fs::write(&path, &encoded).unwrap();
@@ -656,7 +657,8 @@ fn decode_path_with_shrink_preserves_grayscale_alpha_pairs() {
             ]
         })
         .collect();
-    let image = Image::<U8>::from_buffer(width as u32, height as u32, 2, pixels.clone()).unwrap();
+    let image =
+        InMemoryImage::<U8>::from_buffer(width as u32, height as u32, 2, pixels.clone()).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let path = png_test_output_path("decode-path-shrink-ga");
     std::fs::write(&path, &encoded).unwrap();
@@ -680,7 +682,7 @@ fn decode_path_with_shrink_preserves_grayscale_alpha_pairs() {
 fn decode_region_from_path_matches_in_memory_decode() {
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..90).cycle().take(6 * 5 * 3).collect();
-    let image = Image::<U8>::from_buffer(6, 5, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(6, 5, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let path = png_test_output_path("decode-region-path");
     std::fs::write(&path, &encoded).unwrap();
@@ -702,7 +704,7 @@ fn decode_region_from_path_matches_in_memory_decode() {
 fn decode_region_from_path_streams_sequential_full_width_strips() {
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..144).cycle().take(6 * 8 * 3).collect();
-    let image = Image::<U8>::from_buffer(6, 8, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(6, 8, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let eager = codec.decode::<U8>(&encoded).unwrap();
     let path = png_test_output_path("decode-region-path-sequential");
@@ -734,7 +736,7 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
     // an unrelated region read while the probe verifies row decode starts only after
     // the session mutex has been released.
     let pixels: Vec<u8> = (0u8..=255).cycle().take(256 * 256 * 3).collect();
-    let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
     let encoded = codec.encode::<U8>(&image).unwrap();
     let eager = codec.decode::<U8>(&encoded).unwrap();
     let path = png_test_output_path("decode-region-path-concurrent-session");
@@ -805,7 +807,7 @@ fn decode_region_from_path_does_not_hold_session_mutex_across_row_decode() {
 #[test]
 fn decode_region_into_interlaced_png_matches_eager_decode() {
     let pixels: Vec<u8> = (0u8..192).cycle().take(8 * 8 * 3).collect();
-    let image = Image::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
     let encoded = PngEncoder {
         compression: 6,
         interlace: true,
@@ -829,7 +831,7 @@ fn decode_region_from_path_interlaced_png_reuses_eager_backing() {
     let _guard = PROBE_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
     let codec = PngCodec::default();
     let pixels: Vec<u8> = (0u8..=255).cycle().take(256 * 256 * 3).collect();
-    let image = Image::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(256, 256, 3, pixels).unwrap();
     let encoded = PngEncoder {
         compression: 6,
         interlace: true,
@@ -883,7 +885,7 @@ fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
     let _guard = PROBE_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
     let codec = Arc::new(PngCodec::default());
     let pixels: Vec<u8> = (0u8..=255).cycle().take(64 * 64 * 3).collect();
-    let image = Image::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
     let encoded = Arc::new(codec.encode::<U8>(&image).unwrap());
     let left = Region::new(0, 0, 32, 64);
     let right = Region::new(32, 0, 32, 64);
@@ -933,7 +935,7 @@ fn decode_region_into_allows_parallel_tile_reads_on_same_codec() {
 
 #[test]
 fn decode_region_into_returns_image_too_large_for_overflowing_region() {
-    let image = Image::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![1, 2, 3]).unwrap();
     let encoded = PngCodec::default().encode::<U8>(&image).unwrap();
     let region = Region::new(0, 0, u32::MAX, u32::MAX);
     let mut output = Vec::new();
@@ -964,7 +966,7 @@ fn encode_unsupported_format_returns_error() {
 
     let codec = PngCodec::default();
     let pixels: Vec<f32> = vec![0.5f32; 4 * 4 * 3];
-    let image = Image::<F32>::from_buffer(4, 4, 3, pixels).unwrap();
+    let image = InMemoryImage::<F32>::from_buffer(4, 4, 3, pixels).unwrap();
     let result = codec.encode::<F32>(&image);
     assert!(result.is_err());
     if let Err(ViprsError::Codec(msg)) = result {
@@ -992,7 +994,7 @@ fn round_trip_u8_rgba_4x4() {
     let codec = PngCodec::default();
     // 4×4 RGBA image — PNG is lossless so pixels must be identical after round-trip.
     let pixels: Vec<u8> = (0u8..64).collect(); // 4*4*4
-    let original = Image::<U8>::from_buffer(4, 4, 4, pixels).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(4, 4, 4, pixels).unwrap();
 
     let encoded = codec.encode::<U8>(&original).unwrap();
     let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -1012,7 +1014,7 @@ fn round_trip_u16_rgb_4x4() {
     let codec = PngCodec::default();
     // 4×4 U16 RGB image — PNG is lossless so pixels must be identical.
     let pixels: Vec<u16> = (0u16..48).map(|v| v * 1000).collect(); // 4*4*3
-    let original = Image::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
+    let original = InMemoryImage::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
 
     let encoded = codec.encode::<U16>(&original).unwrap();
     let decoded = codec.decode::<U16>(&encoded).unwrap();
@@ -1102,7 +1104,7 @@ fn audit_reference_large_fixture_decode_matches_imagemagick() {
 
 #[test]
 fn audit_roundtrip_tiny_2x2_rgba_is_exact() {
-    let original = Image::<U8>::from_buffer(
+    let original = InMemoryImage::<U8>::from_buffer(
         2,
         2,
         4,
@@ -1127,7 +1129,7 @@ fn encode_f32_returns_codec_error() {
     let codec = PngCodec::default();
     // F32 is not supported by the PNG codec.
     let pixels: Vec<f32> = vec![0.0f32; 4 * 4 * 3];
-    let image = Image::<F32>::from_buffer(4, 4, 3, pixels).unwrap();
+    let image = InMemoryImage::<F32>::from_buffer(4, 4, 3, pixels).unwrap();
     let result = codec.encode::<F32>(&image);
     assert!(
         matches!(result, Err(ViprsError::Codec(_))),

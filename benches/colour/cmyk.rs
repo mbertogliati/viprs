@@ -4,7 +4,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -49,7 +49,7 @@ fn bench_cmyk_xyz(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("cmyk_to_xyz", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 4, cmyk.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .with_colorspace(ColorspaceId::Cmyk)
                     .colourspace::<Xyz>()
                     .unwrap()
@@ -67,7 +67,7 @@ fn bench_cmyk_xyz(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("xyz_to_cmyk", size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, xyz.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .with_colorspace(ColorspaceId::Xyz)
                     .colourspace::<Cmyk>()
                     .unwrap()

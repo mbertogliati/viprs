@@ -23,7 +23,7 @@ use viprs_core::{
     codec_options::LoadOptions,
     error::ViprsError,
     format::{BandFormat, BandFormatId},
-    image::{Image, ImageMetadata, Interpretation},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::ImageDecoder;
 
@@ -398,7 +398,7 @@ fn run_dcraw_info(program: &OsStr, input_path: &Path) -> Result<String, ViprsErr
 fn decode_with_dcraw<F: BandFormat>(
     src: &[u8],
     bitdepth: DcrawBitDepth,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let program = dcraw_program();
     with_dcraw_input_file(src, |path| {
         let info = run_dcraw_info(&program, path)?;
@@ -420,7 +420,7 @@ fn decode_with_dcraw<F: BandFormat>(
                         ))
                     },
                 )?;
-                Image::from_buffer(width, height, bands, typed)
+                InMemoryImage::from_buffer(width, height, bands, typed)
                     .map(|image| image.with_metadata(metadata))
             }
             DcrawBitDepth::U16 => {
@@ -434,7 +434,7 @@ fn decode_with_dcraw<F: BandFormat>(
                         ))
                     },
                 )?;
-                Image::from_buffer(width, height, bands, typed)
+                InMemoryImage::from_buffer(width, height, bands, typed)
                     .map(|image| image.with_metadata(metadata))
             }
         }
@@ -494,7 +494,7 @@ impl ImageDecoder for DcrawDecoder {
         false
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -502,7 +502,7 @@ impl ImageDecoder for DcrawDecoder {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         match F::ID {
             BandFormatId::U8 => decode_with_dcraw(src, DcrawBitDepth::U8),
             BandFormatId::U16 => decode_with_dcraw(src, DcrawBitDepth::U16),

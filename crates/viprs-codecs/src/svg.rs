@@ -15,7 +15,7 @@ use resvg::{tiny_skia, usvg};
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::ImageDecoder;
 
 const DEFAULT_SVG_DPI: f64 = 72.0;
@@ -142,11 +142,11 @@ fn image_from_rgba_pixels<F: BandFormat>(
     height: u32,
     pixels: Vec<u8>,
     metadata: ImageMetadata,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let samples = bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels).map_err(
         |(_err, _pixels)| ViprsError::Codec("svg: sample cast failed (internal error)".into()),
     )?;
-    Image::from_buffer(width, height, SVG_BANDS, samples)
+    InMemoryImage::from_buffer(width, height, SVG_BANDS, samples)
         .map(|image| image.with_metadata(metadata))
         .map_err(|err| ViprsError::Codec(err.to_string()))
 }
@@ -170,7 +170,7 @@ impl ImageDecoder for SvgDecoder {
         sniff_svg_markup(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -178,7 +178,7 @@ impl ImageDecoder for SvgDecoder {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {

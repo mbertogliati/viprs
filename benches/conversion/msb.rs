@@ -6,7 +6,7 @@ use viprs::{
         sources::memory::MemorySource,
     },
     domain::format::U32,
-    pipeline::PipelineBuilder,
+    pipeline::ImagePipeline,
     ports::scheduler::TileScheduler,
 };
 
@@ -32,7 +32,7 @@ fn bench_msb(c: &mut Criterion) {
                     "create memory source",
                 );
                 let pipeline = must(
-                    PipelineBuilder::from_source(source).msb(),
+                    ImagePipeline::from_source(source).msb(),
                     "add msb operation",
                 )
                 .build()

@@ -1,10 +1,10 @@
 use super::{
-    Arc, BandFormat, DecoderBacking, DecoderSource, DemandHint, Image, ImageDecoder, ImageMetadata,
-    ImageSource, LoadOptions, NonZeroU8, Region, ShrinkSample, ThumbnailPreShrinkMode, ViprsError,
-    checked_region_end, expected_output_len, materialize_residual_thumbnail_shrink,
-    normalize_shrink_factor, normalize_streaming_options, shrunk_dimension,
-    software_box_shrink_generic, streaming_backing_shrink_factor, streaming_eager_decode,
-    thumbnail_pre_shrink_mode,
+    Arc, BandFormat, DecoderBacking, DecoderSource, DemandHint, ImageDecoder, ImageMetadata,
+    ImageSource, InMemoryImage, LoadOptions, NonZeroU8, Region, ShrinkSample,
+    ThumbnailPreShrinkMode, ViprsError, checked_region_end, expected_output_len,
+    materialize_residual_thumbnail_shrink, normalize_shrink_factor, normalize_streaming_options,
+    shrunk_dimension, software_box_shrink_generic, streaming_backing_shrink_factor,
+    streaming_eager_decode, thumbnail_pre_shrink_mode,
 };
 
 impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
@@ -40,7 +40,7 @@ impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
     /// Returns `None` for streaming sources. In eager mode this is the resident
     /// decoded backing image: either the decoder-native shrunken raster or the
     /// full-resolution image used for post-decode shrink fallback.
-    pub fn image(&self) -> Option<&Image<F>> {
+    pub fn image(&self) -> Option<&InMemoryImage<F>> {
         match &self.backing {
             DecoderBacking::Eager(image) => Some(image),
             DecoderBacking::Deferred { image, .. } => image
@@ -78,7 +78,7 @@ impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
         }
     }
 
-    fn materialize_deferred_image(&self) -> Result<&Image<F>, ViprsError>
+    fn materialize_deferred_image(&self) -> Result<&InMemoryImage<F>, ViprsError>
     where
         F::Sample: ShrinkSample,
     {
@@ -105,7 +105,10 @@ impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
         }
     }
 
-    fn eager_decode_with_shrink(&self, factor: NonZeroU8) -> Result<(Image<F>, u8), ViprsError>
+    fn eager_decode_with_shrink(
+        &self,
+        factor: NonZeroU8,
+    ) -> Result<(InMemoryImage<F>, u8), ViprsError>
     where
         F::Sample: ShrinkSample,
     {
@@ -422,7 +425,7 @@ where
 impl<D: ImageDecoder, F: BandFormat, M> DecoderSource<'_, D, F, M> {
     fn read_eager_region(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         region: Region,
         output: &mut [u8],
     ) -> Result<(), ViprsError>

@@ -21,7 +21,7 @@ fn run_resize_pipeline_with_pixels(
     kernel: InterpolationKernel,
 ) -> (u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(width, height, 1, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .resize(Resize::new(hscale, vscale, kernel))
         .unwrap()
         .build()
@@ -45,8 +45,8 @@ fn run_thumbnail_pipeline_with_pixels(
     kernel: InterpolationKernel,
 ) -> (u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(input_width, input_height, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = ImagePipeline::from_source(source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::FitBox {
                 width: target_width,
                 height: target_height,
@@ -198,7 +198,7 @@ fn thumbnail_non_constant_input_exposes_lanczos3_reduce_path() {
 
 #[test]
 fn reduce_fractional_pipeline_matches_declared_dimensions() {
-    let image = Image::<U8>::from_buffer(
+    let image = InMemoryImage::<U8>::from_buffer(
         777,
         333,
         3,
@@ -207,7 +207,7 @@ fn reduce_fractional_pipeline_matches_declared_dimensions() {
             .collect(),
     )
     .unwrap();
-    let pipeline = PipelineBuilder::from_source(
+    let pipeline = ImagePipeline::from_source(
         MemorySource::<U8>::new(
             image.width(),
             image.height(),
@@ -261,7 +261,7 @@ fn mapim_pipeline_connect_to_slot_runs_coordinate_map() {
 #[test]
 fn subsample_builder_zero_x_factor_returns_source_hint_error() {
     let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-    let result = PipelineBuilder::from_source(source).subsample(0, 1);
+    let result = ImagePipeline::from_source(source).subsample(0, 1);
 
     assert!(matches!(
         result,

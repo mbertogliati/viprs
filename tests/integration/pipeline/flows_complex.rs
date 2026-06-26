@@ -1,7 +1,8 @@
 use super::flows_support::*;
 use bytemuck::{cast_slice, cast_slice_mut};
 use viprs::{
-    BuildError, F32, F64, Image, ImageMetadata, Interpretation, OperationBridge, Region, U8,
+    BuildError, F32, F64, ImageMetadata, InMemoryImage, Interpretation, OperationBridge, Region,
+    U8,
     adapters::{
         pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
@@ -41,7 +42,7 @@ fn fnv1a64(bytes: &[u8]) -> u64 {
     })
 }
 
-fn to_rgba_u8(image: &Image<U8>) -> Image<U8> {
+fn to_rgba_u8(image: &InMemoryImage<U8>) -> InMemoryImage<U8> {
     match image.bands() {
         4 => image.clone(),
         3 => {
@@ -50,7 +51,7 @@ fn to_rgba_u8(image: &Image<U8>) -> Image<U8> {
                 pixels.extend_from_slice(rgb);
                 pixels.push(u8::MAX);
             }
-            Image::<U8>::from_buffer(image.width(), image.height(), 4, pixels)
+            InMemoryImage::<U8>::from_buffer(image.width(), image.height(), 4, pixels)
                 .expect("failed to materialize rgba image")
                 .with_metadata(image.metadata().clone())
         }
@@ -61,10 +62,10 @@ fn to_rgba_u8(image: &Image<U8>) -> Image<U8> {
 fn place_overlay_on_canvas(
     base_width: u32,
     base_height: u32,
-    overlay: &Image<U8>,
+    overlay: &InMemoryImage<U8>,
     x: u32,
     y: u32,
-) -> Image<U8> {
+) -> InMemoryImage<U8> {
     let mut pixels = vec![0u8; (base_width * base_height * overlay.bands()) as usize];
     let bands = overlay.bands() as usize;
     for row in 0..overlay.height() {
@@ -83,7 +84,7 @@ fn place_overlay_on_canvas(
                 .copy_from_slice(&overlay.pixels()[src_idx..src_idx + bands]);
         }
     }
-    Image::<U8>::from_buffer(base_width, base_height, overlay.bands(), pixels)
+    InMemoryImage::<U8>::from_buffer(base_width, base_height, overlay.bands(), pixels)
         .expect("failed to materialize overlay canvas")
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::Srgb),
@@ -91,7 +92,7 @@ fn place_overlay_on_canvas(
         })
 }
 
-fn run_u8_to_u8_op<T>(image: &Image<U8>, op: T, output_bands: u32) -> Image<U8>
+fn run_u8_to_u8_op<T>(image: &InMemoryImage<U8>, op: T, output_bands: u32) -> InMemoryImage<U8>
 where
     T: Op<Input = U8, Output = U8> + 'static,
 {
@@ -105,12 +106,12 @@ where
         .run(&pipeline, &mut sink)
         .expect("pipeline execution failed");
     let buffer = sink.into_buffer();
-    Image::<U8>::from_buffer(pipeline.width, pipeline.height, output_bands, buffer)
+    InMemoryImage::<U8>::from_buffer(pipeline.width, pipeline.height, output_bands, buffer)
         .expect("failed to materialize u8 output")
         .with_metadata(image.metadata().clone())
 }
 
-fn run_u8_to_f32_op<T>(image: &Image<U8>, op: T, output_bands: u32) -> Image<F32>
+fn run_u8_to_f32_op<T>(image: &InMemoryImage<U8>, op: T, output_bands: u32) -> InMemoryImage<F32>
 where
     T: Op<Input = U8, Output = F32> + 'static,
 {
@@ -125,11 +126,11 @@ where
         .expect("pipeline execution failed");
     let raw = sink.into_buffer();
     let pixels = cast_slice::<u8, f32>(&raw).to_vec();
-    Image::<F32>::from_buffer(pipeline.width, pipeline.height, output_bands, pixels)
+    InMemoryImage::<F32>::from_buffer(pipeline.width, pipeline.height, output_bands, pixels)
         .expect("failed to materialize f32 output")
 }
 
-fn run_f32_to_f32_op<T>(image: &Image<F32>, op: T, output_bands: u32) -> Image<F32>
+fn run_f32_to_f32_op<T>(image: &InMemoryImage<F32>, op: T, output_bands: u32) -> InMemoryImage<F32>
 where
     T: Op<Input = F32, Output = F32> + 'static,
 {
@@ -151,16 +152,16 @@ where
         .expect("pipeline execution failed");
     let raw = sink.into_buffer();
     let pixels = cast_slice::<u8, f32>(&raw).to_vec();
-    Image::<F32>::from_buffer(pipeline.width, pipeline.height, output_bands, pixels)
+    InMemoryImage::<F32>::from_buffer(pipeline.width, pipeline.height, output_bands, pixels)
         .expect("failed to materialize f32 output")
 }
 
 fn apply_smartcrop(
-    image: &Image<U8>,
+    image: &InMemoryImage<U8>,
     target_width: u32,
     target_height: u32,
     interesting: Interesting,
-) -> Image<U8> {
+) -> InMemoryImage<U8> {
     let op = SmartcropOp::analyze_with_interesting(image, target_width, target_height, interesting);
     let source = memory_source_from_image(image);
     let mut arena = PipelineArena::with_source(Box::new(source));
@@ -171,7 +172,7 @@ fn apply_smartcrop(
         .expect("scheduler construction failed")
         .run(&pipeline, &mut sink)
         .expect("smartcrop execution failed");
-    Image::<U8>::from_buffer(
+    InMemoryImage::<U8>::from_buffer(
         pipeline.width,
         pipeline.height,
         image.bands(),
@@ -189,7 +190,7 @@ fn mean_abs_diff(lhs: &[u8], rhs: &[u8]) -> f64 {
         / lhs.len() as f64
 }
 
-fn histogram_spread(image: &Image<U8>) -> usize {
+fn histogram_spread(image: &InMemoryImage<U8>) -> usize {
     let mut seen = [false; 256];
     for sample in image.pixels() {
         seen[*sample as usize] = true;
@@ -198,8 +199,8 @@ fn histogram_spread(image: &Image<U8>) -> usize {
 }
 
 fn mean_rect_diff(
-    lhs: &Image<U8>,
-    rhs: &Image<U8>,
+    lhs: &InMemoryImage<U8>,
+    rhs: &InMemoryImage<U8>,
     left: u32,
     top: u32,
     width: u32,
@@ -276,15 +277,15 @@ fn peak_position(image: &[f64], width: usize) -> (usize, usize, f64) {
 }
 
 #[cfg(feature = "fft")]
-fn checkerboard_f32(width: u32, height: u32) -> Image<F32> {
+fn checkerboard_f32(width: u32, height: u32) -> InMemoryImage<F32> {
     let pixels = (0..height)
         .flat_map(|y| (0..width).map(move |x| if (x + y) % 2 == 0 { 1.0 } else { -1.0 }))
         .collect();
-    Image::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build f32 image")
+    InMemoryImage::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build f32 image")
 }
 
 #[cfg(feature = "fft")]
-fn registration_fixture_f32(width: u32, height: u32) -> Image<F32> {
+fn registration_fixture_f32(width: u32, height: u32) -> InMemoryImage<F32> {
     let pixels = (0..height)
         .flat_map(|y| {
             (0..width).map(move |x| {
@@ -302,11 +303,12 @@ fn registration_fixture_f32(width: u32, height: u32) -> Image<F32> {
             })
         })
         .collect();
-    Image::<F32>::from_buffer(width, height, 1, pixels).expect("failed to build registration image")
+    InMemoryImage::<F32>::from_buffer(width, height, 1, pixels)
+        .expect("failed to build registration image")
 }
 
 #[cfg(feature = "fft")]
-fn circular_shift(image: &Image<F32>, dx: usize, dy: usize) -> Image<F32> {
+fn circular_shift(image: &InMemoryImage<F32>, dx: usize, dy: usize) -> InMemoryImage<F32> {
     let width = image.width() as usize;
     let height = image.height() as usize;
     let mut shifted = vec![0.0_f32; width * height];
@@ -317,11 +319,11 @@ fn circular_shift(image: &Image<F32>, dx: usize, dy: usize) -> Image<F32> {
             shifted[y * width + x] = image.pixels()[src_y * width + src_x];
         }
     }
-    Image::<F32>::from_buffer(image.width(), image.height(), 1, shifted)
+    InMemoryImage::<F32>::from_buffer(image.width(), image.height(), 1, shifted)
         .expect("failed to build shifted image")
 }
 
-fn alpha_is_preserved(image: &Image<U8>) -> bool {
+fn alpha_is_preserved(image: &InMemoryImage<U8>) -> bool {
     image.bands() == 4 && image.pixels().chunks_exact(4).any(|px| px[3] != 0)
 }
 
@@ -348,7 +350,7 @@ fn run_mapim_u8(
     output
 }
 
-fn to_f32_unit_rgba(image: &Image<U8>) -> Vec<f32> {
+fn to_f32_unit_rgba(image: &InMemoryImage<U8>) -> Vec<f32> {
     to_rgba_u8(image)
         .pixels()
         .iter()
@@ -356,7 +358,10 @@ fn to_f32_unit_rgba(image: &Image<U8>) -> Vec<f32> {
         .collect()
 }
 
-fn run_composite_over_rgba(base: &Image<U8>, overlay: &Image<U8>) -> Image<U8> {
+fn run_composite_over_rgba(
+    base: &InMemoryImage<U8>,
+    overlay: &InMemoryImage<U8>,
+) -> InMemoryImage<U8> {
     let base = to_rgba_u8(base);
     let overlay = to_rgba_u8(overlay);
     let base_f32 = to_f32_unit_rgba(&base);
@@ -382,7 +387,7 @@ fn run_composite_over_rgba(base: &Image<U8>, overlay: &Image<U8>) -> Image<U8> {
         .into_iter()
         .map(|sample| (sample.clamp(0.0, 1.0) * 255.0).round() as u8)
         .collect();
-    Image::<U8>::from_buffer(base.width(), base.height(), 4, pixels)
+    InMemoryImage::<U8>::from_buffer(base.width(), base.height(), 4, pixels)
         .expect("failed to build composite output")
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::Srgb),
@@ -397,16 +402,23 @@ fn flow1_full_thumbnail_pipeline_preserves_geometry_alpha_and_hashes() {
     let rgba = load_u8_fixture("bench_2048x2048_rgba.png");
     let small = load_u8_fixture("bench_512x512.jpg");
 
-    let (thumb_pipeline, thumb_output) =
-        execute_u8_pipeline_to_image(&jpeg, |builder| builder.thumbnail(thumbnail_config(400)));
-    let thumb_output_repeat =
-        execute_u8_pipeline_to_image(&jpeg, |builder| builder.thumbnail(thumbnail_config(400))).1;
-    let (rgba_pipeline, rgba_output) =
-        execute_u8_pipeline_to_image(&rgba, |builder| builder.thumbnail(thumbnail_config(256)));
-    let rgba_output_repeat =
-        execute_u8_pipeline_to_image(&rgba, |builder| builder.thumbnail(thumbnail_config(256))).1;
-    let (upscale_pipeline, upscale_output) =
-        execute_u8_pipeline_to_image(&small, |builder| builder.thumbnail(thumbnail_config(1600)));
+    let (thumb_pipeline, thumb_output) = execute_u8_pipeline_to_image(&jpeg, |builder| {
+        builder.thumbnail_with(thumbnail_config(400))
+    });
+    let thumb_output_repeat = execute_u8_pipeline_to_image(&jpeg, |builder| {
+        builder.thumbnail_with(thumbnail_config(400))
+    })
+    .1;
+    let (rgba_pipeline, rgba_output) = execute_u8_pipeline_to_image(&rgba, |builder| {
+        builder.thumbnail_with(thumbnail_config(256))
+    });
+    let rgba_output_repeat = execute_u8_pipeline_to_image(&rgba, |builder| {
+        builder.thumbnail_with(thumbnail_config(256))
+    })
+    .1;
+    let (upscale_pipeline, upscale_output) = execute_u8_pipeline_to_image(&small, |builder| {
+        builder.thumbnail_with(thumbnail_config(1600))
+    });
 
     assert_thumbnail_dimensions(&thumb_pipeline, &jpeg, 400);
     assert_thumbnail_dimensions(&rgba_pipeline, &rgba, 256);
@@ -501,7 +513,7 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
     .1;
     assert_eq!((tiny.width(), tiny.height()), (1, 1));
 
-    let degenerate = PipelineBuilder::from_source(memory_source_from_image(&image)).affine(
+    let degenerate = ImagePipeline::from_source(memory_source_from_image(&image)).affine(
         [1.0, 2.0, 2.0, 4.0],
         0.0,
         0.0,
@@ -534,7 +546,7 @@ fn flow3_phase_correlation_registration_detects_known_offsets_and_non_power_of_t
         reference.height(),
     );
     let correlation = invfft(
-        &Image::<F64>::from_buffer(
+        &InMemoryImage::<F64>::from_buffer(
             reference.width(),
             reference.height(),
             COMPLEX_BANDS,
@@ -556,7 +568,7 @@ fn flow3_phase_correlation_registration_detects_known_offsets_and_non_power_of_t
         reference.height(),
     );
     let identical_corr = invfft(
-        &Image::<F64>::from_buffer(
+        &InMemoryImage::<F64>::from_buffer(
             reference.width(),
             reference.height(),
             COMPLEX_BANDS,
@@ -698,7 +710,7 @@ fn flow7_frequency_chain_roundtrips_and_low_pass_reduces_high_frequency_energy()
         image.height(),
     );
     let filtered_image = invfft(
-        &Image::<F64>::from_buffer(image.width(), image.height(), COMPLEX_BANDS, filtered)
+        &InMemoryImage::<F64>::from_buffer(image.width(), image.height(), COMPLEX_BANDS, filtered)
             .expect("filtered fft image"),
     )
     .expect("inverse filtered fft");
@@ -809,10 +821,10 @@ fn flow9_filter_chain_canny_open_and_conva_remain_binary_and_reduce_noise() {
         }
     }
     pixels[(8 * 64 + 8) as usize] = u8::MAX;
-    let image = Image::<U8>::from_buffer(64, 64, 1, pixels).expect("synthetic edge image");
+    let image = InMemoryImage::<U8>::from_buffer(64, 64, 1, pixels).expect("synthetic edge image");
 
     let canny = run_u8_to_f32_op(&image, Canny::<U8>::new(1.4), 1);
-    let binary = Image::<U8>::from_buffer(
+    let binary = InMemoryImage::<U8>::from_buffer(
         canny.width(),
         canny.height(),
         1,
@@ -834,7 +846,7 @@ fn flow9_filter_chain_canny_open_and_conva_remain_binary_and_reduce_noise() {
     );
     let sobel = run_u8_to_u8_op(&image, EdgeOp::<U8>::sobel(), 1);
     let conva = run_f32_to_f32_op(
-        &Image::<F32>::from_buffer(9, 9, 1, (0..81).map(|value| value as f32).collect())
+        &InMemoryImage::<F32>::from_buffer(9, 9, 1, (0..81).map(|value| value as f32).collect())
             .expect("conva input"),
         ConvaOp::<F32>::with_mask(
             ConvolutionMask2d::from_coefficients(vec![vec![1.0; 7]; 7]).expect("mask"),
@@ -892,7 +904,7 @@ fn flow10_composite_affine_icc_pipeline_keeps_output_visible_and_roundtrips_jpeg
         100,
     );
     let watermark_thumb = execute_u8_pipeline_to_image(&watermark, |builder| {
-        builder.thumbnail(thumbnail_config(64))
+        builder.thumbnail_with(thumbnail_config(64))
     })
     .1;
     let watermark_rgba = {
@@ -901,7 +913,7 @@ fn flow10_composite_affine_icc_pipeline_keeps_output_visible_and_roundtrips_jpeg
         for pixel in pixels.chunks_exact_mut(4) {
             pixel[3] = 77;
         }
-        Image::<U8>::from_buffer(rgba.width(), rgba.height(), 4, pixels)
+        InMemoryImage::<U8>::from_buffer(rgba.width(), rgba.height(), 4, pixels)
             .expect("watermark rgba")
             .with_metadata(rgba.metadata().clone())
     };

@@ -26,14 +26,14 @@ impl ImageDecoder for AlwaysFailDecoder {
     fn sniff(&self, _: &[u8]) -> bool {
         false
     }
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec("always fails".into()))
     }
     fn decode_with_options<F: BandFormat>(
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode(src)
     }
     fn probe(&self, _: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
@@ -65,7 +65,7 @@ impl ImageDecoder for MetadataDecoder {
         true
     }
 
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options::<F>(&[], &LoadOptions::default())
     }
 
@@ -73,7 +73,7 @@ impl ImageDecoder for MetadataDecoder {
         &self,
         _: &[u8],
         _: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         if F::ID != U8::ID {
             return Err(ViprsError::Codec(
                 "metadata decoder only supports U8".into(),
@@ -82,14 +82,14 @@ impl ImageDecoder for MetadataDecoder {
 
         let mut metadata = ImageMetadata::default();
         metadata.interpretation = Some(Interpretation::Srgb);
-        let image = Image::from_buffer(1, 1, 1, vec![1u8])
+        let image = InMemoryImage::from_buffer(1, 1, 1, vec![1u8])
             .map_err(|e| ViprsError::Codec(e.to_string()))?
             .with_metadata(metadata);
 
         let cast = {
             // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
             // `F::Sample == u8` and `Image<U8>` has the same layout as `Image<F>`.
-            unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) }
+            unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) }
         };
         Ok(cast)
     }
@@ -116,7 +116,7 @@ impl ImageDecoder for PathOnlyDecoder {
         false
     }
 
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec(
             "path-only: byte decode unavailable".into(),
         ))
@@ -126,7 +126,7 @@ impl ImageDecoder for PathOnlyDecoder {
         &self,
         _src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec(
             "path-only: byte decode unavailable".into(),
         ))
@@ -136,16 +136,16 @@ impl ImageDecoder for PathOnlyDecoder {
         &self,
         _path: &Path,
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         if F::ID != U8::ID {
             return Err(ViprsError::Codec("path-only: only U8 is supported".into()));
         }
 
-        let image = Image::<U8>::from_buffer(2, 1, 1, vec![7, 9])?;
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![7, 9])?;
         Ok({
             // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
             // `F::Sample == u8` and `Image<U8>` has the same layout as `Image<F>`.
-            unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) }
+            unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) }
         })
     }
 
@@ -198,7 +198,7 @@ impl ImageDecoder for TrackingDecoder {
         true
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -206,7 +206,7 @@ impl ImageDecoder for TrackingDecoder {
         &self,
         _: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         if F::ID != U8::ID {
             return Err(ViprsError::Codec(
                 "tracking decoder only supports U8".into(),
@@ -217,13 +217,14 @@ impl ImageDecoder for TrackingDecoder {
         self.seen_factors.lock().unwrap().push(factor);
         let width = (8 / u32::from(factor)).max(1);
         let height = (8 / u32::from(factor)).max(1);
-        let image = Image::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
-            .map_err(|e| ViprsError::Codec(e.to_string()))?;
+        let image =
+            InMemoryImage::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
+                .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
         let cast = {
             // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
             // `F::Sample == u8` and `Image<U8>` has the same layout as `Image<F>`.
-            unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) }
+            unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) }
         };
         Ok(cast)
     }
@@ -274,7 +275,7 @@ fn set_thumbnail_shrink_on_load_reopens_jpeg_decoder_natively() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -282,7 +283,7 @@ fn set_thumbnail_shrink_on_load_reopens_jpeg_decoder_natively() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "jpeg tracking decoder only supports U8".into(),
@@ -293,13 +294,14 @@ fn set_thumbnail_shrink_on_load_reopens_jpeg_decoder_natively() {
             self.seen_factors.lock().unwrap().push(factor);
             let width = (8 / u32::from(factor)).max(1);
             let height = (8 / u32::from(factor)).max(1);
-            let image = Image::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
-                .map_err(|e| ViprsError::Codec(e.to_string()))?;
+            let image =
+                InMemoryImage::from_buffer(width, height, 1, vec![0u8; (width * height) as usize])
+                    .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
             let cast = {
                 // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
                 // `F::Sample == u8` and `Image<U8>` has the same layout as `Image<F>`.
-                unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) }
+                unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) }
             };
             Ok(cast)
         }
@@ -400,7 +402,7 @@ fn set_thumbnail_shrink_on_load_applies_software_box_shrink_for_png() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -408,7 +410,7 @@ fn set_thumbnail_shrink_on_load_applies_software_box_shrink_for_png() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "png tracking decoder only supports U8".into(),
@@ -417,13 +419,13 @@ fn set_thumbnail_shrink_on_load_applies_software_box_shrink_for_png() {
 
             let factor = opts.shrink_factor.map_or(1, NonZeroU8::get);
             self.seen_factors.lock().unwrap().push(factor);
-            let image = Image::from_buffer(8, 8, 1, vec![128u8; 64])
+            let image = InMemoryImage::from_buffer(8, 8, 1, vec![128u8; 64])
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
             let cast = {
                 // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
                 // `F::Sample == u8` and `Image<U8>` has the same layout as `Image<F>`.
-                unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) }
+                unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) }
             };
             Ok(cast)
         }
@@ -518,7 +520,7 @@ impl ImageDecoder for Fixed4x4Decoder {
     fn sniff(&self, _: &[u8]) -> bool {
         true
     }
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         // Only valid for U8; other formats are unsupported in this stub.
         Err(ViprsError::Codec(
             "Fixed4x4Decoder only supports U8 via decode_with_options".into(),
@@ -528,7 +530,7 @@ impl ImageDecoder for Fixed4x4Decoder {
         &self,
         _src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         // pixel at (x, y) = y * 4 + x  (values 0..15), single band
         // We produce a U8 image; for non-U8 F this will fail the buffer cast,
         // but the tests below always use U8.
@@ -547,7 +549,8 @@ impl ImageDecoder for Fixed4x4Decoder {
         } else {
             return Err(ViprsError::Codec("Fixed4x4Decoder only supports U8".into()));
         };
-        Image::from_buffer(4, 4, 1, sample_data).map_err(|e| ViprsError::Codec(e.to_string()))
+        InMemoryImage::from_buffer(4, 4, 1, sample_data)
+            .map_err(|e| ViprsError::Codec(e.to_string()))
     }
     fn probe(&self, _: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
         Ok((4, 4, 1))
@@ -588,7 +591,7 @@ fn set_shrink_on_load_updates_view_without_redecoding() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -596,7 +599,7 @@ fn set_shrink_on_load_updates_view_without_redecoding() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec("block decoder only supports U8".into()));
             }
@@ -615,13 +618,13 @@ fn set_shrink_on_load_updates_view_without_redecoding() {
                     pixels[y * 8 + x] = value;
                 }
             }
-            let image = Image::from_buffer(8, 8, 1, pixels)
+            let image = InMemoryImage::from_buffer(8, 8, 1, pixels)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
             let cast = {
                 // SAFETY: `BandFormat` is sealed, so `F::ID == U8` implies
                 // `F::Sample == u8` and `Image<U8>` has the same layout as `Image<F>`.
-                unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) }
+                unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) }
             };
             Ok(cast)
         }
@@ -741,7 +744,7 @@ impl ImageDecoder for StreamingGridDecoder {
         true
     }
 
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         *self.full_decodes.lock().unwrap() += 1;
         Err(ViprsError::Codec(
             "streaming-grid must not full-decode".into(),
@@ -752,7 +755,7 @@ impl ImageDecoder for StreamingGridDecoder {
         &self,
         _src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         *self.full_decodes.lock().unwrap() += 1;
         if F::ID != U8::ID {
             return Err(ViprsError::Codec("streaming-grid only decodes U8".into()));
@@ -767,7 +770,7 @@ impl ImageDecoder for StreamingGridDecoder {
         }
         // SAFETY: U8::Sample is u8, and we verified F::ID == U8::ID above.
         let typed_pixels: Vec<F::Sample> = bytemuck::cast_vec(pixels);
-        Image::from_buffer(dim, dim, 1, typed_pixels)
+        InMemoryImage::from_buffer(dim, dim, 1, typed_pixels)
     }
 
     fn probe(&self, _: &[u8]) -> Result<(u32, u32, u32), ViprsError> {
@@ -939,7 +942,7 @@ impl ImageDecoder for PathOnlyStreamingDecoder {
         false
     }
 
-    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec(
             "path-streaming: full byte decode unavailable".into(),
         ))
@@ -949,7 +952,7 @@ impl ImageDecoder for PathOnlyStreamingDecoder {
         &self,
         _src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec(
             "path-streaming: full byte decode unavailable".into(),
         ))
@@ -1053,7 +1056,7 @@ fn streaming_path_uses_decoder_path_api() {
 
 #[test]
 fn streaming_shared_source_runs_through_pipeline_scheduler() {
-    use crate::pipeline::PipelineBuilder;
+    use crate::pipeline::ImagePipeline;
     use crate::scheduler::rayon_scheduler::RayonScheduler;
 
     let decoder = StreamingGridDecoder::new();
@@ -1062,7 +1065,7 @@ fn streaming_shared_source_runs_through_pipeline_scheduler() {
     let source =
         DecoderSource::<_, U8>::streaming_shared(decoder, encoded, LoadOptions::default()).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .build()

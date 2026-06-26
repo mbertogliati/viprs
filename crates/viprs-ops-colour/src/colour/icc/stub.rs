@@ -1,9 +1,9 @@
 use super::{IccImage, IccTransformOptions, cms_unimplemented};
-use viprs_core::{error::ViprsError, format::BandFormat, image::Image};
+use viprs_core::{error::ViprsError, format::BandFormat, image::InMemoryImage};
 
 /// Returns or performs icc transform.
 pub const fn icc_transform<F: BandFormat>(
-    _image: &Image<F>,
+    _image: &InMemoryImage<F>,
     _output_profile: &[u8],
     _options: &IccTransformOptions<'_>,
 ) -> Result<IccImage, ViprsError> {
@@ -12,7 +12,7 @@ pub const fn icc_transform<F: BandFormat>(
 
 /// Returns or performs icc import.
 pub const fn icc_import<F: BandFormat>(
-    _image: &Image<F>,
+    _image: &InMemoryImage<F>,
     _profile: &[u8],
 ) -> Result<IccImage, ViprsError> {
     Err(cms_unimplemented("icc_import"))
@@ -20,7 +20,7 @@ pub const fn icc_import<F: BandFormat>(
 
 /// Returns or performs icc export.
 pub const fn icc_export<F: BandFormat>(
-    _image: &Image<F>,
+    _image: &InMemoryImage<F>,
     _profile: Option<&[u8]>,
 ) -> Result<IccImage, ViprsError> {
     Err(cms_unimplemented("icc_export"))

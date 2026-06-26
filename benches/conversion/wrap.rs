@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -30,7 +30,7 @@ fn bench_wrap(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).wrap(displacement, displacement),
+                    ImagePipeline::from_source(source).wrap(displacement, displacement),
                     "add wrap operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");

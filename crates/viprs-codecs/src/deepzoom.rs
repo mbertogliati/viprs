@@ -9,7 +9,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use viprs_core::{codec_options::SaveOptions, error::ViprsError, format::U8, image::Image};
+use viprs_core::{codec_options::SaveOptions, error::ViprsError, format::U8, image::InMemoryImage};
 
 const DEFAULT_TILE_SIZE: u32 = 254;
 const DEFAULT_OVERLAP: u32 = 1;
@@ -180,7 +180,7 @@ impl DeepZoomExporter {
     /// ```rust,no_run
     /// let _ = viprs_codecs::deepzoom::DeepZoomExporter::export;
     /// ```
-    pub fn export(&self, image: &Image<U8>, path: &Path) -> Result<(), ViprsError> {
+    pub fn export(&self, image: &InMemoryImage<U8>, path: &Path) -> Result<(), ViprsError> {
         let target = DeepZoomTarget::from_path(path)?;
         let descriptor = descriptor_xml(
             &target.base_name,
@@ -869,7 +869,7 @@ mod tests {
 
     #[test]
     fn stream_levels_handles_single_pixel_image() {
-        let image = Image::<U8>::from_buffer(1, 1, 1, vec![42]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![42]).unwrap();
         let mut seen = Vec::new();
 
         stream_levels(
@@ -964,7 +964,7 @@ mod tests {
 
     #[test]
     fn stream_levels_only_reports_current_level_pixels() {
-        let image = Image::<U8>::from_buffer(5, 3, 1, (0u8..15).collect()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(5, 3, 1, (0u8..15).collect()).unwrap();
         let mut seen = Vec::new();
 
         stream_levels(
@@ -1000,7 +1000,7 @@ mod tests {
             output_dir.join(format!("deepzoom-structure-{}.dzi", std::process::id()));
         let tile_root = output_dir.join(format!("deepzoom-structure-{}_files", std::process::id()));
 
-        let image = Image::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
         let exporter =
             DeepZoomExporter::from_options(&SaveOptions::default().with_tile_width(2)).unwrap();
         exporter.export(&image, &descriptor_path).unwrap();
@@ -1027,7 +1027,7 @@ mod tests {
         fs::create_dir_all(&output_dir).unwrap();
         let szi_path = output_dir.join(format!("deepzoom-archive-{}.szi", std::process::id()));
 
-        let image = Image::<U8>::from_buffer(3, 3, 3, (0u8..27).collect()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(3, 3, 3, (0u8..27).collect()).unwrap();
         let exporter = DeepZoomExporter::from_options(&SaveOptions::default()).unwrap();
         exporter.export(&image, &szi_path).unwrap();
 
@@ -1051,7 +1051,7 @@ mod tests {
         let pixels: Vec<u8> = (0..(64usize * 64usize * 3usize))
             .map(|index| u8::try_from(index % 251).unwrap())
             .collect();
-        let image = Image::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(64, 64, 3, pixels).unwrap();
         let exporter =
             DeepZoomExporter::from_options(&SaveOptions::default().with_tile_width(16)).unwrap();
 

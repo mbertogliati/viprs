@@ -35,7 +35,9 @@ use gif::{
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{AnimationFrame, AnimationLoopCount, FrameDisposal, Image, ImageMetadata};
+use viprs_core::image::{
+    AnimationFrame, AnimationLoopCount, FrameDisposal, ImageMetadata, InMemoryImage,
+};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// GIF codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
@@ -833,7 +835,7 @@ impl ImageDecoder for GifCodec {
         header.len() >= 6 && (&header[..6] == b"GIF87a" || &header[..6] == b"GIF89a")
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -850,7 +852,7 @@ impl ImageDecoder for GifCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -924,7 +926,7 @@ impl ImageDecoder for GifCodec {
                 // SAFETY: F::ID == U8 (checked above) implies F::Sample == u8.
                 let samples = bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels)
                     .map_err(|(e, _)| ViprsError::Codec(format!("gif: cast error: {e:?}")))?;
-                Image::from_buffer(width, height, bands, samples)
+                InMemoryImage::from_buffer(width, height, bands, samples)
                     .map(|image| AnimationFrame::new(image, delay_ms, disposal))
                     .map_err(|e| ViprsError::Codec(e.to_string()))
             })
@@ -983,7 +985,7 @@ impl ImageEncoder for GifCodec {
         "gif"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
@@ -994,7 +996,7 @@ impl ImageEncoder for GifCodec {
     /// remap on/off). Other fields are ignored per the codec contract.
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -1098,8 +1100,8 @@ impl ImageEncoder for GifCodec {
 }
 
 fn validate_animation_frame_shape<F: BandFormat>(
-    frame: &Image<F>,
-    reference: &Image<F>,
+    frame: &InMemoryImage<F>,
+    reference: &InMemoryImage<F>,
     frame_index: usize,
 ) -> Result<(), ViprsError> {
     if frame.width() != reference.width()
@@ -1432,7 +1434,7 @@ mod tests {
             }
         }
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
         let encoded = codec.encode::<U8>(&image).unwrap();
         let decoded = codec.decode::<U8>(&encoded).unwrap();
 
@@ -1508,14 +1510,14 @@ mod tests {
     #[test]
     fn encode_multiframe_gif_preserves_delay_disposal_and_loop_count() {
         let codec = GifCodec::default();
-        let animated = Image::<U8>::from_frames(vec![
+        let animated = InMemoryImage::<U8>::from_frames(vec![
             AnimationFrame::new(
-                Image::<U8>::from_buffer(2, 1, 3, vec![255, 0, 0, 255, 0, 0]).unwrap(),
+                InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![255, 0, 0, 255, 0, 0]).unwrap(),
                 40,
                 FrameDisposal::Keep,
             ),
             AnimationFrame::new(
-                Image::<U8>::from_buffer(2, 1, 3, vec![0, 255, 0, 0, 255, 0]).unwrap(),
+                InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![0, 255, 0, 0, 255, 0]).unwrap(),
                 70,
                 FrameDisposal::Background,
             ),
@@ -1545,7 +1547,7 @@ mod tests {
 
     #[test]
     fn encode_rejects_empty_animation_sequence() {
-        let image = Image::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56])
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![12, 34, 56])
             .unwrap()
             .with_animation_frames(vec![]);
 
@@ -1569,7 +1571,7 @@ mod tests {
                     vec![0, 0, 255]
                 };
                 AnimationFrame::new(
-                    Image::<U8>::from_buffer(1, 1, 3, rgb).unwrap(),
+                    InMemoryImage::<U8>::from_buffer(1, 1, 3, rgb).unwrap(),
                     10,
                     FrameDisposal::Keep,
                 )
@@ -1596,7 +1598,7 @@ mod tests {
     fn round_trip_solid_colour_rgb_4x4() {
         let codec = GifCodec::default();
         let pixels: Vec<u8> = [200u8, 50, 50].repeat(4 * 4);
-        let original = Image::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
+        let original = InMemoryImage::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
 
         let encoded = codec.encode::<U8>(&original).unwrap();
         assert!(
@@ -1629,7 +1631,7 @@ mod tests {
     fn probe_returns_correct_dimensions() {
         let codec = GifCodec::default();
         let pixels: Vec<u8> = [128u8, 64, 32].repeat(6 * 5);
-        let image = Image::<U8>::from_buffer(6, 5, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(6, 5, 3, pixels).unwrap();
         let encoded = codec.encode::<U8>(&image).unwrap();
 
         let (w, h, bands) = codec.probe(&encoded).unwrap();
@@ -1653,7 +1655,7 @@ mod tests {
             }
         }
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
         let encoded = codec.encode::<U8>(&image).unwrap();
 
         assert!(
@@ -1678,7 +1680,7 @@ mod tests {
             "parity input must exceed GIF palette capacity"
         );
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels.clone()).unwrap();
         let viprs_encoded = codec.encode::<U8>(&image).unwrap();
         let viprs_decoded = codec.decode::<U8>(&viprs_encoded).unwrap();
         let libvips_encoded = encode_with_libvips_gif(width, height, &pixels);
@@ -1728,7 +1730,7 @@ mod tests {
             }
         }
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
         let encoded = codec
             .encode_with_options::<U8>(&image, &SaveOptions::default().with_colors(16))
             .unwrap();
@@ -1749,7 +1751,7 @@ mod tests {
             pixels.extend_from_slice(&[sample, sample, sample]);
         }
 
-        let image = Image::<U8>::from_buffer(width, 1, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, 1, 3, pixels).unwrap();
         let without_dither = codec
             .encode_with_options::<U8>(
                 &image,
@@ -1791,7 +1793,7 @@ mod tests {
             }
         }
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
         let without_dither = codec
             .encode_with_options::<U8>(&image, &SaveOptions::default().with_dither(false))
             .unwrap();
@@ -1810,7 +1812,7 @@ mod tests {
     fn encode_rgba_preserves_transparency_index() {
         let codec = GifCodec::default();
         let pixels: Vec<u8> = vec![255, 0, 0, 255, 0, 255, 0, 0];
-        let image = Image::<U8>::from_buffer(2, 1, 4, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 4, pixels).unwrap();
 
         let encoded = codec.encode::<U8>(&image).unwrap();
         let decoded_rgba = rgba_frame(&encoded);
@@ -1826,7 +1828,7 @@ mod tests {
     fn decode_transparent_gif_preserves_alpha_and_probe_reports_rgba() {
         let codec = GifCodec::default();
         let pixels: Vec<u8> = vec![255, 0, 0, 255, 0, 255, 0, 0];
-        let image = Image::<U8>::from_buffer(2, 1, 4, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 4, pixels.clone()).unwrap();
 
         let encoded = codec.encode::<U8>(&image).unwrap();
         assert_eq!(codec.probe(&encoded).unwrap(), (2, 1, 4));
@@ -1848,7 +1850,7 @@ mod tests {
             (width, height, pixels) in rgb_u8_image(),
         ) {
             let codec = GifCodec::default();
-            let original = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+            let original = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
 
             let encoded = codec.encode::<U8>(&original).unwrap();
             let decoded = codec.decode::<U8>(&encoded).unwrap();
@@ -1864,7 +1866,7 @@ mod tests {
             (width, height, pixels) in exact_palette_rgb_u8_image(),
         ) {
             let codec = GifCodec::default();
-            let original = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+            let original = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
 
             let palette_size = u16::try_from(
                 original
@@ -1908,7 +1910,7 @@ mod tests {
         use viprs_core::format::U16;
         let codec = GifCodec::default();
         let pixels: Vec<u16> = vec![0u16; 4 * 4 * 3];
-        let image = Image::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
         let result = codec.encode::<U16>(&image);
         assert!(
             matches!(result, Err(ViprsError::Codec(_))),
@@ -1920,7 +1922,7 @@ mod tests {
     fn encode_wrong_band_count_returns_error() {
         let codec = GifCodec::default();
         let pixels: Vec<u8> = vec![0u8; 4 * 4 * 2];
-        let image = Image::<U8>::from_buffer(4, 4, 2, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 4, 2, pixels).unwrap();
         let result = codec.encode::<U8>(&image);
         assert!(
             matches!(result, Err(ViprsError::Codec(_))),
@@ -1932,7 +1934,7 @@ mod tests {
     fn encode_invalid_color_limit_returns_error() {
         let codec = GifCodec::default();
         let pixels: Vec<u8> = [64u8, 64, 64].repeat(4 * 4);
-        let image = Image::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
         let result =
             codec.encode_with_options::<U8>(&image, &SaveOptions::default().with_colors(1));
         assert!(matches!(result, Err(ViprsError::Codec(_))));

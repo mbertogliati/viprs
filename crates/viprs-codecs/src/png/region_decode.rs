@@ -8,7 +8,7 @@ use crate::viprs_span;
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, Region};
+use viprs_core::image::{InMemoryImage, Region};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, ImageMetadataProbe, TileImageDecoder};
 
 #[cfg(feature = "libspng")]
@@ -384,7 +384,7 @@ impl ImageDecoder for PngCodec {
         header.len() >= 8 && header[..8] == PNG_MAGIC
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         viprs_span!(tracing::Level::INFO, "viprs.decode", format = "png");
         validate_png_critical_chunk_crcs(src)?;
         // The pure-Rust `png` crate (fdeflate) is faster than libspng's
@@ -408,7 +408,7 @@ impl ImageDecoder for PngCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -420,7 +420,7 @@ impl ImageDecoder for PngCodec {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -444,7 +444,7 @@ impl ImageDecoder for PngCodec {
                 let samples: Vec<F::Sample> =
                     bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels)
                         .map_err(|(e, _)| ViprsError::Codec(format!("png: cast error: {e:?}")))?;
-                return Image::from_buffer(width, height, bands, samples)
+                return InMemoryImage::from_buffer(width, height, bands, samples)
                     .map_err(|e| ViprsError::Codec(e.to_string()));
             }
         }
@@ -643,7 +643,7 @@ impl ImageEncoder for PngCodec {
         "png"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         PngEncoder::default().encode(image)
     }
 
@@ -651,7 +651,7 @@ impl ImageEncoder for PngCodec {
     /// fields are ignored. Only `opts.compression_level` is honoured if set.
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -672,7 +672,7 @@ impl ImageEncoder for PngCodec {
 
     fn encode_to_writer<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
         writer: &mut dyn Write,
     ) -> Result<(), ViprsError>
@@ -698,13 +698,13 @@ impl ImageEncoder for PngEncoder {
         "png"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         encode_png_web_ready(image, self, false)
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -725,7 +725,7 @@ impl ImageEncoder for PngEncoder {
 
     fn encode_to_writer<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
         writer: &mut dyn Write,
     ) -> Result<(), ViprsError>

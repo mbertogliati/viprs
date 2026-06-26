@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U16, op::OperationBridge, ops::create::XyzOp},
@@ -18,7 +18,7 @@ fn bench_xyz(c: &mut Criterion) {
             let pixels = vec![0u16; size as usize * size as usize * 3];
             b.iter(|| {
                 let source = MemorySource::<U16>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(
                         XyzOp::<U16>::new(size, size),
                         3,

@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -30,7 +30,7 @@ fn bench_hist_equal(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(
                         Linear::<U8>::new(1, 0).unwrap(),
                         1,
@@ -49,7 +49,7 @@ fn bench_hist_equal(c: &mut Criterion) {
 
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
                 let op = HistEqualOp::<U8>::from_lut(lut).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(op, 1)))
                     .unwrap()
                     .build()

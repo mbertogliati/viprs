@@ -47,7 +47,7 @@ use crate::{
         colour_dispatcher::ColourspaceDispatcher,
         error::{BuildError, ViprsError},
         format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-        image::{DemandHint, Image, ImageMetadata, Interpretation, Region},
+        image::{DemandHint, ImageMetadata, InMemoryImage, Interpretation, Region},
         kernel::InterpolationKernel,
         op::{DynOperation, DynViewOp, NodeSpec, OperationBridge, SourceReadPlan, ViewBridge},
         reorder::{ReorderError, ReorderNode, reorder_dag},
@@ -139,7 +139,7 @@ pub use arena::PipelineArena;
 use arena::{ArenaNodeOp, format_sample_size};
 
 mod builder;
-pub use builder::{Flush, PipelineBuilder, PipelineOp};
+pub use builder::{Commit, ImagePipeline, PipelineOp};
 
 #[cfg(test)]
 mod tests;

@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -47,7 +47,7 @@ fn bench_gaussmat(c: &mut Criterion) {
                     let source =
                         MemorySource::<F32>::new(op.width(), op.height(), 1, pixels.clone())
                             .unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .then(Box::new(OperationBridge::new_pixel_local(op, 1)))
                         .unwrap()
                         .build()

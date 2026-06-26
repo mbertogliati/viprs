@@ -7,7 +7,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, kernel::InterpolationKernel},
@@ -31,7 +31,7 @@ fn run_affine_pipeline(
 ) {
     let scale = input_size as f64 / output_size as f64;
     let source = MemorySource::<U8>::new(input_size, input_size, bands, pixels.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .affine(
             [scale, 0.0, 0.0, scale],
             0.0,

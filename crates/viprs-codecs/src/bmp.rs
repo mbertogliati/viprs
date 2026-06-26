@@ -11,7 +11,7 @@ use image::codecs::bmp::{BmpDecoder, BmpEncoder};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// BMP codec: implements both [`ImageDecoder`] and [`ImageEncoder`].
@@ -85,7 +85,7 @@ impl ImageDecoder for BmpCodec {
         header.starts_with(b"BM")
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -93,7 +93,7 @@ impl ImageDecoder for BmpCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -106,7 +106,7 @@ impl ImageDecoder for BmpCodec {
 
         let (width, height, bands, metadata, pixels) = decode_bmp(src)?;
         let pixels = bytemuck::cast_vec::<u8, F::Sample>(pixels);
-        Image::from_buffer(width, height, bands, pixels)
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .map(|image| image.with_metadata(metadata))
             .map_err(|error| ViprsError::Codec(error.to_string()))
     }
@@ -128,13 +128,13 @@ impl ImageEncoder for BmpCodec {
         "bmp"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -165,7 +165,7 @@ mod tests {
     #[test]
     fn bmp_round_trip_rgb_u8() {
         let codec = BmpCodec;
-        let input = Image::<U8>::from_buffer(
+        let input = InMemoryImage::<U8>::from_buffer(
             2,
             2,
             3,

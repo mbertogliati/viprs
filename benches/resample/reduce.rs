@@ -7,7 +7,7 @@ use viprs::{
     },
     domain::format::U8,
     domain::kernel::InterpolationKernel,
-    pipeline::PipelineBuilder,
+    pipeline::ImagePipeline,
     ports::scheduler::TileScheduler,
 };
 
@@ -20,7 +20,7 @@ fn bench_reduce(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .reduce(2.0, 2.0, InterpolationKernel::Lanczos3)
                     .unwrap()
                     .build()

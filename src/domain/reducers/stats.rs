@@ -5,7 +5,7 @@ use crate::{
     domain::{
         error::ViprsError,
         format::BandFormat,
-        image::{Image, Region, Tile},
+        image::{InMemoryImage, Region, Tile},
         stats::ImageStats,
     },
 };
@@ -127,7 +127,7 @@ impl StatsReducer {
     }
 }
 
-fn stats_for_image<F>(image: &Image<F>) -> Result<ImageStats, ViprsError>
+fn stats_for_image<F>(image: &InMemoryImage<F>) -> Result<ImageStats, ViprsError>
 where
     F: BandFormat,
     F::Sample: Into<f64> + Copy,
@@ -157,16 +157,16 @@ where
 /// ```rust
 /// use viprs::domain::{
 ///     format::U8,
-///     image::Image,
+///     image::InMemoryImage,
 ///     reducers::image_avg,
 /// };
 ///
-/// let image = Image::<U8>::from_buffer(2, 1, 1, vec![10, 30]).unwrap();
+/// let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![10, 30]).unwrap();
 /// let mean = image_avg(&image).unwrap();
 ///
 /// assert_eq!(mean, vec![20.0]);
 /// ```
-pub fn image_avg<F>(image: &Image<F>) -> Result<Vec<f64>, ViprsError>
+pub fn image_avg<F>(image: &InMemoryImage<F>) -> Result<Vec<f64>, ViprsError>
 where
     F: BandFormat,
     F::Sample: Into<f64> + Copy,
@@ -183,16 +183,16 @@ where
 /// ```rust
 /// use viprs::domain::{
 ///     format::U8,
-///     image::Image,
+///     image::InMemoryImage,
 ///     reducers::image_min,
 /// };
 ///
-/// let image = Image::<U8>::from_buffer(3, 1, 1, vec![9, 4, 7]).unwrap();
+/// let image = InMemoryImage::<U8>::from_buffer(3, 1, 1, vec![9, 4, 7]).unwrap();
 /// let min = image_min(&image).unwrap();
 ///
 /// assert_eq!(min, vec![4.0]);
 /// ```
-pub fn image_min<F>(image: &Image<F>) -> Result<Vec<f64>, ViprsError>
+pub fn image_min<F>(image: &InMemoryImage<F>) -> Result<Vec<f64>, ViprsError>
 where
     F: BandFormat,
     F::Sample: Into<f64> + Copy,
@@ -209,16 +209,16 @@ where
 /// ```rust
 /// use viprs::domain::{
 ///     format::U8,
-///     image::Image,
+///     image::InMemoryImage,
 ///     reducers::image_max,
 /// };
 ///
-/// let image = Image::<U8>::from_buffer(3, 1, 1, vec![9, 4, 7]).unwrap();
+/// let image = InMemoryImage::<U8>::from_buffer(3, 1, 1, vec![9, 4, 7]).unwrap();
 /// let max = image_max(&image).unwrap();
 ///
 /// assert_eq!(max, vec![9.0]);
 /// ```
-pub fn image_max<F>(image: &Image<F>) -> Result<Vec<f64>, ViprsError>
+pub fn image_max<F>(image: &InMemoryImage<F>) -> Result<Vec<f64>, ViprsError>
 where
     F: BandFormat,
     F::Sample: Into<f64> + Copy,
@@ -235,16 +235,16 @@ where
 /// ```rust
 /// use viprs::domain::{
 ///     format::U8,
-///     image::Image,
+///     image::InMemoryImage,
 ///     reducers::image_deviate,
 /// };
 ///
-/// let image = Image::<U8>::from_buffer(2, 1, 1, vec![0, 2]).unwrap();
+/// let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 2]).unwrap();
 /// let stddev = image_deviate(&image).unwrap();
 ///
 /// assert_eq!(stddev, vec![1.0]);
 /// ```
-pub fn image_deviate<F>(image: &Image<F>) -> Result<Vec<f64>, ViprsError>
+pub fn image_deviate<F>(image: &InMemoryImage<F>) -> Result<Vec<f64>, ViprsError>
 where
     F: BandFormat,
     F::Sample: Into<f64> + Copy,
@@ -382,7 +382,7 @@ mod tests {
     use crate::domain::{
         error::ViprsError,
         format::U8,
-        image::{Image, Region},
+        image::{InMemoryImage, Region},
     };
 
     fn assert_close(actual: &[f64], expected: &[f64]) {
@@ -412,7 +412,7 @@ mod tests {
 
     #[test]
     fn image_avg_single_band_image() {
-        let image = Image::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
 
         let avg = image_avg(&image).unwrap();
 
@@ -421,7 +421,8 @@ mod tests {
 
     #[test]
     fn image_avg_multi_band_image() {
-        let image = Image::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let avg = image_avg(&image).unwrap();
 
@@ -430,7 +431,7 @@ mod tests {
 
     #[test]
     fn image_min_single_band_image() {
-        let image = Image::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
 
         let min = image_min(&image).unwrap();
 
@@ -439,7 +440,8 @@ mod tests {
 
     #[test]
     fn image_min_multi_band_image() {
-        let image = Image::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let min = image_min(&image).unwrap();
 
@@ -448,7 +450,7 @@ mod tests {
 
     #[test]
     fn image_max_single_band_image() {
-        let image = Image::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
 
         let max = image_max(&image).unwrap();
 
@@ -457,7 +459,8 @@ mod tests {
 
     #[test]
     fn image_max_multi_band_image() {
-        let image = Image::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let max = image_max(&image).unwrap();
 
@@ -466,7 +469,7 @@ mod tests {
 
     #[test]
     fn image_deviate_single_band_image() {
-        let image = Image::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(4, 1, 1, vec![0, 100, 200, 100]).unwrap();
 
         let stddev = image_deviate(&image).unwrap();
 
@@ -475,7 +478,8 @@ mod tests {
 
     #[test]
     fn image_deviate_multi_band_image() {
-        let image = Image::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
+        let image =
+            InMemoryImage::<U8>::from_buffer(3, 1, 2, vec![10, 100, 20, 200, 30, 50]).unwrap();
 
         let stddev = image_deviate(&image).unwrap();
 
@@ -487,7 +491,7 @@ mod tests {
 
     #[test]
     fn image_avg_rejects_zero_band_images() {
-        let image = Image::<U8>::from_buffer(1, 1, 0, Vec::new()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 0, Vec::new()).unwrap();
 
         let error = image_avg(&image).unwrap_err();
 

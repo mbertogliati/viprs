@@ -193,7 +193,7 @@ pub(super) fn decode_current_page<F: BandFormat>(
     decoder: &mut Decoder<Cursor<&[u8]>>,
     total_pages: u32,
     loaded_pages: u32,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let (width, height) = decoder
         .dimensions()
         .map_err(|e| ViprsError::Codec(e.to_string()))?;
@@ -216,7 +216,7 @@ pub(super) fn decode_current_page<F: BandFormat>(
         loaded_pages,
     )?;
 
-    Image::from_buffer(width, height, bands, decoded.samples)
+    InMemoryImage::from_buffer(width, height, bands, decoded.samples)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
@@ -443,7 +443,7 @@ pub(super) fn decode_page_with_pyramid_selection<F: BandFormat>(
     total_pages: u32,
     loaded_pages: u32,
     opts: &LoadOptions,
-) -> Result<Image<F>, ViprsError>
+) -> Result<InMemoryImage<F>, ViprsError>
 where
     F::Sample: Clone,
 {
@@ -483,7 +483,7 @@ where
 pub(super) fn decode_tiff<F: BandFormat>(
     src: &[u8],
     opts: &LoadOptions,
-) -> Result<Image<F>, ViprsError>
+) -> Result<InMemoryImage<F>, ViprsError>
 where
     F::Sample: Clone,
 {
@@ -531,7 +531,7 @@ where
         pixels.extend_from_slice(page.pixels());
     }
 
-    Image::from_buffer(width, page_height * page_count, bands, pixels)
+    InMemoryImage::from_buffer(width, page_height * page_count, bands, pixels)
         .map(|image| image.with_metadata(metadata).with_frames(pages))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }

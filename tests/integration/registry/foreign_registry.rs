@@ -3,7 +3,7 @@
 fn image_load_and_save_use_default_foreign_registry() {
     use std::{fs, path::PathBuf};
 
-    use viprs::{Image, ImageCodecExt, U8};
+    use viprs::{ImageCodecExt, InMemoryImage, U8};
 
     fn test_output_path() -> PathBuf {
         let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -14,12 +14,16 @@ fn image_load_and_save_use_default_foreign_registry() {
     }
 
     let path = test_output_path();
-    let original =
-        Image::<U8>::from_buffer(2, 2, 3, vec![255, 0, 0, 0, 255, 0, 0, 0, 255, 12, 34, 56])
-            .unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(
+        2,
+        2,
+        3,
+        vec![255, 0, 0, 0, 255, 0, 0, 0, 255, 12, 34, 56],
+    )
+    .unwrap();
 
     original.save(&path).unwrap();
-    let decoded = Image::<U8>::load(&path).unwrap();
+    let decoded = InMemoryImage::<U8>::load(&path).unwrap();
 
     assert_eq!(decoded.width(), original.width());
     assert_eq!(decoded.height(), original.height());

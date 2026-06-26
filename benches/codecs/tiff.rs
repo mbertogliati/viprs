@@ -4,7 +4,7 @@ use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, 
 #[cfg(feature = "tiff")]
 use viprs::{
     adapters::codecs::TiffCodec,
-    domain::{format::U8, image::Image},
+    domain::{format::U8, image::InMemoryImage},
     ports::codec::{ImageDecoder, ImageEncoder},
 };
 
@@ -14,7 +14,7 @@ const DIMENSIONS: [u32; 3] = [512, 2048, 8192];
 #[cfg(feature = "tiff")]
 struct TiffFixture {
     dimension: u32,
-    image: Image<U8>,
+    image: InMemoryImage<U8>,
     encoded: Vec<u8>,
 }
 
@@ -37,8 +37,8 @@ fn rgb_pixels(dimension: u32) -> Vec<u8> {
 }
 
 #[cfg(feature = "tiff")]
-fn make_image(dimension: u32) -> Image<U8> {
-    match Image::<U8>::from_buffer(dimension, dimension, 3, rgb_pixels(dimension)) {
+fn make_image(dimension: u32) -> InMemoryImage<U8> {
+    match InMemoryImage::<U8>::from_buffer(dimension, dimension, 3, rgb_pixels(dimension)) {
         Ok(image) => image,
         Err(err) => panic!("tiff bench fixture image must be valid: {err}"),
     }

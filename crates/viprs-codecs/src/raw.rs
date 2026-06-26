@@ -16,7 +16,7 @@ use viprs_core::{
     codec_options::{LoadOptions, RawEndianness, SaveOptions},
     error::ViprsError,
     format::{BandFormat, BandFormatId},
-    image::{Image, ImageMetadata, Interpretation},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
@@ -122,7 +122,7 @@ impl From<RawLoadOptions> for LoadOptions {
 /// Explicit parameters for RAW encoding.
 ///
 /// RAW save behavior is intentionally narrow: only byte order needs to be chosen
-/// because the layout is implied by the typed [`Image`] being written.
+/// because the layout is implied by the typed [`InMemoryImage`] being written.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RawSaveOptions {
     /// Byte order to use when serializing multi-byte samples.
@@ -183,7 +183,7 @@ impl RawCodec {
         &self,
         src: &[u8],
         opts: &RawLoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         validate_raw_layout(opts.width, opts.height, opts.bands)?;
         validate_raw_format::<F>(opts.format)?;
 
@@ -215,7 +215,7 @@ impl RawCodec {
             ..ImageMetadata::default()
         };
 
-        Image::from_buffer(opts.width, opts.height, opts.bands, samples)
+        InMemoryImage::from_buffer(opts.width, opts.height, opts.bands, samples)
             .map(|image| image.with_metadata(metadata))
     }
 
@@ -229,7 +229,7 @@ impl RawCodec {
     /// ```
     pub fn encode_raw<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &RawSaveOptions,
     ) -> Result<Vec<u8>, ViprsError> {
         encode_bytes(image.pixels(), opts.endianness)
@@ -254,7 +254,7 @@ impl ImageDecoder for RawCodec {
         false
     }
 
-    fn decode<F: BandFormat>(&self, _src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, _src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         Err(ViprsError::Codec(
             "raw: width/height/bands are required; use decode_with_options() or decode_raw()"
                 .into(),
@@ -265,7 +265,7 @@ impl ImageDecoder for RawCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -277,7 +277,7 @@ impl ImageDecoder for RawCodec {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -300,13 +300,13 @@ impl ImageEncoder for RawCodec {
         "raw"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_raw(image, &RawSaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -459,7 +459,7 @@ mod tests {
     fn round_trip_u8_grayscale() {
         let codec = RawCodec;
         let pixels: Vec<u8> = (0..64).collect();
-        let image = Image::<U8>::from_buffer(8, 8, 1, pixels.clone()).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(8, 8, 1, pixels.clone()).unwrap();
 
         let encoded = codec.encode(&image).unwrap();
         assert_eq!(encoded, pixels);
@@ -502,7 +502,7 @@ mod tests {
     fn round_trip_u16_via_generic_options() {
         let codec = RawCodec;
         let pixels: Vec<u16> = (0u16..16).collect();
-        let image = Image::<U16>::from_buffer(4, 4, 1, pixels).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(4, 4, 1, pixels).unwrap();
         let encoded = codec.encode(&image).unwrap();
 
         let decoded = codec
@@ -521,7 +521,7 @@ mod tests {
     fn round_trip_f32_rgba() {
         let codec = RawCodec;
         let pixels: Vec<f32> = (0..32).map(|i| i as f32 / 31.0).collect();
-        let image = Image::<F32>::from_buffer(2, 4, 4, pixels).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(2, 4, 4, pixels).unwrap();
         let encoded = codec.encode(&image).unwrap();
         let decoded = codec
             .decode_raw::<F32>(
@@ -562,7 +562,7 @@ mod tests {
     #[test]
     fn encode_with_requested_endianness_swaps_multibyte_samples() {
         let codec = RawCodec;
-        let image = Image::<U16>::from_buffer(2, 1, 1, vec![0x0102, 0x0304]).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![0x0102, 0x0304]).unwrap();
         let native = codec.encode(&image).unwrap();
         let swapped = codec
             .encode_with_options(
@@ -579,7 +579,7 @@ mod tests {
     #[test]
     fn decode_with_requested_endianness_restores_original_values() {
         let codec = RawCodec;
-        let image = Image::<U16>::from_buffer(2, 1, 1, vec![0x0102, 0x0304]).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![0x0102, 0x0304]).unwrap();
         let encoded = codec
             .encode_with_options(
                 &image,
@@ -716,7 +716,7 @@ mod tests {
         ) {
             let count = (width * height * bands) as usize;
             let pixels: Vec<u8> = (0..count).map(|index| (index % 255) as u8).collect();
-            let image = Image::<U8>::from_buffer(width, height, bands, pixels).unwrap();
+            let image = InMemoryImage::<U8>::from_buffer(width, height, bands, pixels).unwrap();
             let codec = RawCodec;
             let encoded = codec.encode(&image).unwrap();
             let decoded = codec
@@ -736,7 +736,7 @@ mod tests {
         ) {
             let count = (width * height * bands) as usize;
             let pixels: Vec<f32> = (0..count).map(|index| index as f32 / 7.0).collect();
-            let image = Image::<F32>::from_buffer(width, height, bands, pixels).unwrap();
+            let image = InMemoryImage::<F32>::from_buffer(width, height, bands, pixels).unwrap();
             let codec = RawCodec;
             let encoded = codec
                 .encode_with_options(

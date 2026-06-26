@@ -5,7 +5,7 @@ use viprs::{
         pipeline::PipelineArena, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
-    domain::{format::U8, image::Image, ops::conversion::SmartcropOp},
+    domain::{format::U8, image::InMemoryImage, ops::conversion::SmartcropOp},
     ports::scheduler::TileScheduler,
 };
 
@@ -25,7 +25,8 @@ fn bench_smartcrop(c: &mut Criterion) {
 
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
-                let image = Image::<U8>::from_buffer(size, size, 1, pixels.clone()).unwrap();
+                let image =
+                    InMemoryImage::<U8>::from_buffer(size, size, 1, pixels.clone()).unwrap();
                 let op = SmartcropOp::analyze(&image, size / 2, size / 2);
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
                 let mut arena = PipelineArena::with_source(Box::new(source));

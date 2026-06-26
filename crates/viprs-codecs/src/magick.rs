@@ -14,7 +14,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::{BandFormatId, U8},
-    image::Image,
+    image::InMemoryImage,
 };
 use viprs_ports::codec::ImageCodec;
 
@@ -163,9 +163,9 @@ impl ImageCodec for MagickFallbackSaver {
             )));
         }
 
-        let image = image
-            .downcast_ref::<Image<U8>>()
-            .ok_or_else(|| ViprsError::Codec("magick fallback expected Image<U8>".into()))?;
+        let image = image.downcast_ref::<InMemoryImage<U8>>().ok_or_else(|| {
+            ViprsError::Codec("magick fallback expected InMemoryImage<U8>".into())
+        })?;
         let pam = build_pam_u8(image);
         run_magick(&pam, self.output_spec)
     }
@@ -314,7 +314,7 @@ fn run_magick_program(
     Ok(output.stdout)
 }
 
-fn parse_pam_u8(bytes: &[u8]) -> Result<Image<U8>, ViprsError> {
+fn parse_pam_u8(bytes: &[u8]) -> Result<InMemoryImage<U8>, ViprsError> {
     if !bytes.starts_with(b"P7\n") {
         return Err(ViprsError::Codec(
             "magick fallback decode expected PAM (P7) output".into(),
@@ -396,7 +396,7 @@ fn parse_pam_u8(bytes: &[u8]) -> Result<Image<U8>, ViprsError> {
         )));
     }
 
-    Image::<U8>::from_buffer(width, height, depth, payload.to_vec())
+    InMemoryImage::<U8>::from_buffer(width, height, depth, payload.to_vec())
 }
 
 fn parse_header_u32(value: &[u8], key: &str) -> Result<u32, ViprsError> {
@@ -406,7 +406,7 @@ fn parse_header_u32(value: &[u8], key: &str) -> Result<u32, ViprsError> {
         .map_err(|_| ViprsError::Codec(format!("magick fallback PAM field {key} is invalid")))
 }
 
-fn build_pam_u8(image: &Image<U8>) -> Vec<u8> {
+fn build_pam_u8(image: &InMemoryImage<U8>) -> Vec<u8> {
     let tuple_type = match image.bands() {
         1 => "GRAYSCALE",
         2 => "GRAYSCALE_ALPHA",
@@ -500,7 +500,7 @@ fi
         let decoded = loader
             .decode_boxed(b"input-image", BandFormatId::U8, &LoadOptions::default())
             .unwrap()
-            .downcast::<Image<U8>>()
+            .downcast::<InMemoryImage<U8>>()
             .unwrap();
         // SAFETY: tests in this module serialize environment mutation via ENV_LOCK.
         unsafe { std::env::remove_var("VIPRS_MAGICK_BIN") };
@@ -526,7 +526,7 @@ fi
                 &LoadOptions::default().with_max_dimension(256),
             )
             .unwrap()
-            .downcast::<Image<U8>>()
+            .downcast::<InMemoryImage<U8>>()
             .unwrap();
         // SAFETY: tests in this module serialize environment mutation via ENV_LOCK.
         unsafe { std::env::remove_var("VIPRS_MAGICK_BIN") };
@@ -553,7 +553,7 @@ fi
                     .with_shrink(std::num::NonZeroU8::new(4).unwrap()),
             )
             .unwrap()
-            .downcast::<Image<U8>>()
+            .downcast::<InMemoryImage<U8>>()
             .unwrap();
         // SAFETY: tests in this module serialize environment mutation via ENV_LOCK.
         unsafe { std::env::remove_var("VIPRS_MAGICK_BIN") };
@@ -569,7 +569,7 @@ fi
         // SAFETY: tests in this module serialize environment mutation via ENV_LOCK.
         unsafe { std::env::set_var("VIPRS_MAGICK_BIN", &script) };
         let saver = MagickFallbackSaver::new("magick-ico", "ico:-", &["ico"]);
-        let image = Image::<U8>::from_buffer(1, 1, 3, vec![9, 8, 7]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![9, 8, 7]).unwrap();
         let encoded = saver
             .encode_boxed(&image, BandFormatId::U8, &SaveOptions::default())
             .unwrap();

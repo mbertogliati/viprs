@@ -4,7 +4,7 @@ use super::support as golden;
 use bytemuck::cast_slice;
 use std::{mem::size_of, process::Command};
 use viprs::{
-    BuildError, OperationBridge, PipelineBuilder, TileScheduler,
+    BuildError, ImagePipeline, OperationBridge, TileScheduler,
     adapters::{
         scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
         sources::memory::MemorySource,
@@ -20,15 +20,15 @@ use viprs::{
 
 use golden::{ImageSpec, VipsBandFormat};
 
-fn run_pipeline_u8<S: viprs::pipeline::Flush>(
+fn run_pipeline_u8<S: viprs::pipeline::Commit>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<U8>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(ImagePipeline::from_source(source))
         .unwrap()
         .build()
         .unwrap();
@@ -41,15 +41,15 @@ fn run_pipeline_u8<S: viprs::pipeline::Flush>(
     sink.into_buffer()
 }
 
-fn run_pipeline_f32<S: viprs::pipeline::Flush>(
+fn run_pipeline_f32<S: viprs::pipeline::Commit>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
 ) -> Vec<u8> {
     let source = MemorySource::<F32>::new(width, height, bands, source_pixels).unwrap();
-    let pipeline = configure(PipelineBuilder::from_source(source))
+    let pipeline = configure(ImagePipeline::from_source(source))
         .unwrap()
         .build()
         .unwrap();

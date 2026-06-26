@@ -4,9 +4,9 @@ use std::{
 };
 
 use viprs::{
-    BuildError, CompiledPipeline, Image, ImageCodecExt, ImageMetadata, Interpretation, U8,
+    BuildError, CompiledPipeline, ImageCodecExt, ImageMetadata, InMemoryImage, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -36,15 +36,15 @@ fn fixture_path(name: &str) -> PathBuf {
 }
 
 #[cfg(feature = "jpeg")]
-fn load_u8_fixture(name: &str) -> Image<U8> {
+fn load_u8_fixture(name: &str) -> InMemoryImage<U8> {
     let path = fixture_path(name);
-    Image::<U8>::load(&path).unwrap_or_else(|error| {
+    InMemoryImage::<U8>::load(&path).unwrap_or_else(|error| {
         panic!("failed to load JPEG fixture {}: {error}", path.display());
     })
 }
 
 #[cfg(feature = "jpeg")]
-fn output_metadata(image: &Image<U8>) -> ImageMetadata {
+fn output_metadata(image: &InMemoryImage<U8>) -> ImageMetadata {
     let mut metadata = image.metadata().clone();
     if metadata.interpretation.is_none() && image.bands() >= 3 {
         metadata.interpretation = Some(Interpretation::Srgb);
@@ -53,7 +53,7 @@ fn output_metadata(image: &Image<U8>) -> ImageMetadata {
 }
 
 #[cfg(feature = "jpeg")]
-fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
     MemorySource::new(
         image.width(),
         image.height(),
@@ -65,18 +65,16 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 #[cfg(feature = "jpeg")]
-fn execute_to_image<S: viprs::pipeline::Flush>(
-    image: &Image<U8>,
+fn execute_to_image<S: viprs::pipeline::Commit>(
+    image: &InMemoryImage<U8>,
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-) -> (CompiledPipeline, Image<U8>) {
+    configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+) -> (CompiledPipeline, InMemoryImage<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
-        .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
-        .build()
-        .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
+            .build()
+            .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
             .unwrap_or_else(|error| panic!("scheduler construction failed: {error}"))
@@ -129,8 +127,9 @@ fn thumbnail_smoke_handles_non_power_of_2_fixtures() {
 
         let thumbnail = thumbnail_config();
         let expected = thumbnail.into_pipeline_nodes(image.width(), image.height(), image.bands());
-        let (pipeline, output) =
-            execute_to_image(&image, "thumbnail", |builder| builder.thumbnail(thumbnail));
+        let (pipeline, output) = execute_to_image(&image, "thumbnail", |builder| {
+            builder.thumbnail_with(thumbnail)
+        });
 
         assert_eq!(
             (pipeline.width, pipeline.height),

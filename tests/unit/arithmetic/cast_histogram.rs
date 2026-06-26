@@ -1,10 +1,10 @@
 mod chaos_monkey_13 {
     use bytemuck::Pod;
     use viprs::{
-        BandFormat, BandFormatId, BuildError, CompiledPipeline, Image, ImageMetadata,
+        BandFormat, BandFormatId, BuildError, CompiledPipeline, ImageMetadata, InMemoryImage,
         Interpretation, Tile, TileMut, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
@@ -38,7 +38,7 @@ mod chaos_monkey_13 {
         }
     }
 
-    fn patterned_u8(width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn patterned_u8(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * bands as usize);
         for y in 0..height {
             for x in 0..width {
@@ -54,8 +54,8 @@ mod chaos_monkey_13 {
             }
         }
 
-        let image =
-            Image::from_buffer(width, height, bands, pixels).expect("pattern image must build");
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels)
+            .expect("pattern image must build");
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -63,7 +63,7 @@ mod chaos_monkey_13 {
         }
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
     where
         F: BandFormat,
         F::Sample: Pod,
@@ -78,10 +78,10 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut, S: viprs::pipeline::Flush>(
-        builder: PipelineBuilder<S>,
+    fn run_builder_to_image<FOut, S: viprs::pipeline::Commit>(
+        builder: ImagePipeline<S>,
         metadata: ImageMetadata,
-    ) -> Result<(CompiledPipeline, Image<FOut>), String>
+    ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FOut: BandFormat,
         FOut::Sample: Pod,
@@ -108,20 +108,18 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
-        image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<FOut>), String>
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: BandFormat,
         FOut: BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let builder = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?;
+        let builder = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
     }
 
@@ -156,8 +154,8 @@ mod chaos_monkey_13 {
     #[ignore = "BUG: flatten() on RGB silently drops a colour band instead of erroring or acting as a no-op"]
     fn flatten_on_rgb_is_typed_error_or_noop() {
         let image = patterned_u8(6, 4, 3);
-        let builder = PipelineBuilder::from_source(memory_source_from_image(&image))
-            .flatten([0.0, 0.0, 0.0, 1.0]);
+        let builder = ImagePipeline::from_source(memory_source_from_image(&image))
+            .flatten_background([0.0, 0.0, 0.0, 1.0]);
 
         match builder {
             Err(_) => {}
@@ -215,8 +213,8 @@ mod chaos_monkey_13 {
 
     #[test]
     fn linear_with_large_positive_offset_clamps_u8() {
-        let image =
-            Image::from_buffer(3, 1, 1, vec![0u8, 10, 255]).expect("input image must build");
+        let image = InMemoryImage::from_buffer(3, 1, 1, vec![0u8, 10, 255])
+            .expect("input image must build");
         let (_pipeline, output) =
             execute_pipeline_to_image::<U8, U8, _>(&image, |builder| builder.linear(1.0, 1000.0))
                 .expect("linear with large positive offset should not panic");

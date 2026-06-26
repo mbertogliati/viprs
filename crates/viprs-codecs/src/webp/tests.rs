@@ -13,7 +13,7 @@ use viprs_core::codec_options::LoadOptions;
 use viprs_core::codec_options::SaveOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::U8;
-use viprs_core::image::{Image, ImageMetadata, Interpretation, Region};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation, Region};
 #[cfg(all(feature = "icc", feature = "_integration"))]
 use viprs_ops_colour::colour::profile_load;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder, TileImageDecoder};
@@ -103,7 +103,7 @@ fn test_webp_static_region_scratch_allocation_rejects_huge_dimensions() {
     }
 }
 
-fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
+fn clamped_region_pixels_u8(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
     let bands = image.bands() as usize;
     let mut output = vec![0u8; region.pixel_count() * bands];
     for out_y in 0..region.height {
@@ -138,7 +138,7 @@ fn assert_static_region_decode_matches_eager(
 fn tile_decoder_matches_eager_decode_region_after_shrink() {
     let codec = WebpCodec;
     let pixels: Vec<u8> = (0..8 * 6 * 3).map(|value| (value % 251) as u8).collect();
-    let image = Image::<U8>::from_buffer(8, 6, 3, pixels).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(8, 6, 3, pixels).unwrap();
     let encoded = codec.encode(&image).unwrap();
     let opts = LoadOptions::default().with_shrink(NonZeroU8::new(2).unwrap());
     let eager = codec.decode_with_options::<U8>(&encoded, &opts).unwrap();
@@ -197,17 +197,17 @@ fn sniff_rejects_short_header() {
 
 /// Create a solid-colour 8x8 RGB U8 image where every pixel is the given
 /// `[r, g, b]` triple.
-fn solid_rgb_8x8(r: u8, g: u8, b: u8) -> Image<U8> {
+fn solid_rgb_8x8(r: u8, g: u8, b: u8) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(8 * 8 * 3);
     for _ in 0..(8 * 8) {
         data.push(r);
         data.push(g);
         data.push(b);
     }
-    Image::from_buffer(8, 8, 3, data).unwrap()
+    InMemoryImage::from_buffer(8, 8, 3, data).unwrap()
 }
 
-fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
+fn patterned_rgb(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(width as usize * height as usize * 3);
     for y in 0..height {
         for x in 0..width {
@@ -216,10 +216,10 @@ fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
             data.push((((x ^ y) * 11) % 256) as u8);
         }
     }
-    Image::from_buffer(width, height, 3, data).unwrap()
+    InMemoryImage::from_buffer(width, height, 3, data).unwrap()
 }
 
-fn chroma_stress_rgb(width: u32, height: u32) -> Image<U8> {
+fn chroma_stress_rgb(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(width as usize * height as usize * 3);
     for y in 0..height {
         for x in 0..width {
@@ -232,10 +232,10 @@ fn chroma_stress_rgb(width: u32, height: u32) -> Image<U8> {
             data.extend_from_slice(&pixel);
         }
     }
-    Image::from_buffer(width, height, 3, data).unwrap()
+    InMemoryImage::from_buffer(width, height, 3, data).unwrap()
 }
 
-fn alternating_rgb(width: u32, height: u32) -> Image<U8> {
+fn alternating_rgb(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(width as usize * height as usize * 3);
     for y in 0..height {
         for x in 0..width {
@@ -244,10 +244,10 @@ fn alternating_rgb(width: u32, height: u32) -> Image<U8> {
             data.push(if (x + y) % 2 == 0 { 0 } else { 255 });
         }
     }
-    Image::from_buffer(width, height, 3, data).unwrap()
+    InMemoryImage::from_buffer(width, height, 3, data).unwrap()
 }
 
-fn rgb_nearest_downsample_2x(image: &Image<U8>) -> Vec<u8> {
+fn rgb_nearest_downsample_2x(image: &InMemoryImage<U8>) -> Vec<u8> {
     let width = image.width() / 2;
     let height = image.height() / 2;
     let mut out = Vec::with_capacity(width as usize * height as usize * 3);
@@ -266,7 +266,7 @@ fn rgb_nearest_downsample_2x(image: &Image<U8>) -> Vec<u8> {
     out
 }
 
-fn rgb_box_downsample_2x(image: &Image<U8>) -> Vec<u8> {
+fn rgb_box_downsample_2x(image: &InMemoryImage<U8>) -> Vec<u8> {
     let width = image.width() / 2;
     let height = image.height() / 2;
     let mut out = Vec::with_capacity(width as usize * height as usize * 3);
@@ -290,7 +290,7 @@ fn rgb_box_downsample_2x(image: &Image<U8>) -> Vec<u8> {
     out
 }
 
-fn transparent_payload_rgba(width: u32, height: u32) -> Image<U8> {
+fn transparent_payload_rgba(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(width as usize * height as usize * 4);
     for y in 0..height {
         for x in 0..width {
@@ -300,10 +300,10 @@ fn transparent_payload_rgba(width: u32, height: u32) -> Image<U8> {
             data.push(if (x + y) % 3 == 0 { 255 } else { 0 });
         }
     }
-    Image::from_buffer(width, height, 4, data).unwrap()
+    InMemoryImage::from_buffer(width, height, 4, data).unwrap()
 }
 
-fn rgb_total_abs_diff(lhs: &Image<U8>, rhs: &Image<U8>) -> u64 {
+fn rgb_total_abs_diff(lhs: &InMemoryImage<U8>, rhs: &InMemoryImage<U8>) -> u64 {
     lhs.pixels()
         .iter()
         .zip(rhs.pixels())
@@ -311,7 +311,7 @@ fn rgb_total_abs_diff(lhs: &Image<U8>, rhs: &Image<U8>) -> u64 {
         .sum()
 }
 
-fn transparent_rgb_samples(image: &Image<U8>) -> Vec<[u8; 3]> {
+fn transparent_rgb_samples(image: &InMemoryImage<U8>) -> Vec<[u8; 3]> {
     image
         .pixels()
         .chunks_exact(4)
@@ -335,7 +335,7 @@ fn round_trip_rgb() {
         "encoded output must have WebP magic"
     );
 
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
     assert_eq!(decoded.width(), 8);
     assert_eq!(decoded.height(), 8);
     assert_eq!(decoded.bands(), 3);
@@ -433,7 +433,7 @@ fn lossless_round_trip() {
 
     let opts = SaveOptions::default().lossless();
     let encoded = codec.encode_with_options(&original, &opts).unwrap();
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
 
     assert_eq!(decoded.width(), 8);
     assert_eq!(decoded.height(), 8);
@@ -454,7 +454,7 @@ fn lossless_round_trip() {
 #[test]
 fn audit_reference_sample_fixture_decode_matches_imagemagick() {
     let fixture = std::fs::read("tests/fixtures/images/sample.webp").unwrap();
-    let decoded: Image<U8> = WebpCodec.decode(&fixture).unwrap();
+    let decoded: InMemoryImage<U8> = WebpCodec.decode(&fixture).unwrap();
 
     assert_eq!(
         (decoded.width(), decoded.height(), decoded.bands()),
@@ -470,7 +470,7 @@ fn audit_reference_sample_fixture_decode_matches_imagemagick() {
 #[test]
 fn audit_reference_large_fixture_decode_matches_imagemagick() {
     let fixture = std::fs::read("tests/fixtures/images/bench_8192x8192.webp").unwrap();
-    let decoded: Image<U8> = WebpCodec.decode(&fixture).unwrap();
+    let decoded: InMemoryImage<U8> = WebpCodec.decode(&fixture).unwrap();
 
     assert_eq!(
         (decoded.width(), decoded.height(), decoded.bands()),
@@ -485,7 +485,7 @@ fn audit_reference_large_fixture_decode_matches_imagemagick() {
 
 #[test]
 fn audit_roundtrip_tiny_2x2_lossless_rgba_is_exact() {
-    let original = Image::<U8>::from_buffer(
+    let original = InMemoryImage::<U8>::from_buffer(
         2,
         2,
         4,
@@ -497,7 +497,7 @@ fn audit_roundtrip_tiny_2x2_lossless_rgba_is_exact() {
     let encoded = WebpCodec
         .encode_with_options(&original, &SaveOptions::default().lossless())
         .unwrap();
-    let decoded: Image<U8> = WebpCodec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = WebpCodec.decode(&encoded).unwrap();
 
     assert_eq!(
         (decoded.width(), decoded.height(), decoded.bands()),
@@ -542,7 +542,7 @@ fn webp_encode_options_quality_90_round_trip_preserves_dimensions() {
     };
 
     let encoded = codec.encode_with_webp_options(&original, &opts).unwrap();
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
 
     assert_eq!(decoded.width(), original.width());
     assert_eq!(decoded.height(), original.height());
@@ -576,7 +576,7 @@ fn lossless_round_trip_preserves_xmp_metadata() {
     let encoded = codec
         .encode_with_options(&original, &SaveOptions::default().lossless())
         .unwrap();
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
 
     assert_eq!(decoded.metadata().xmp, original.metadata().xmp);
 }
@@ -594,7 +594,7 @@ fn lossless_round_trip_preserves_icc_and_xmp_metadata() {
     let encoded = codec
         .encode_with_options(&original, &SaveOptions::default().lossless())
         .unwrap();
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
 
     assert_eq!(
         decoded.metadata().icc_profile,
@@ -615,8 +615,8 @@ fn lossless_mode_is_distinct_from_quality_100() {
         .encode_with_options(&original, &SaveOptions::default().lossless())
         .unwrap();
 
-    let lossy_decoded: Image<U8> = codec.decode(&lossy).unwrap();
-    let lossless_decoded: Image<U8> = codec.decode(&lossless).unwrap();
+    let lossy_decoded: InMemoryImage<U8> = codec.decode(&lossy).unwrap();
+    let lossless_decoded: InMemoryImage<U8> = codec.decode(&lossless).unwrap();
 
     assert_ne!(lossy, lossless, "lossless must not alias lossy quality=100");
     assert_eq!(lossless_decoded.pixels(), original.pixels());
@@ -642,8 +642,8 @@ fn exact_alpha_preserves_transparent_rgb_payload() {
         )
         .unwrap();
 
-    let default_decoded: Image<U8> = codec.decode(&default_encoded).unwrap();
-    let exact_decoded: Image<U8> = codec.decode(&exact_encoded).unwrap();
+    let default_decoded: InMemoryImage<U8> = codec.decode(&default_encoded).unwrap();
+    let exact_decoded: InMemoryImage<U8> = codec.decode(&exact_encoded).unwrap();
 
     assert_eq!(exact_decoded.pixels(), original.pixels());
     assert_ne!(
@@ -743,8 +743,8 @@ fn near_lossless_level_changes_fidelity() {
         .encode_with_options(&original, &SaveOptions::default().with_near_lossless(80))
         .unwrap();
 
-    let strong_decoded: Image<U8> = codec.decode(&strong).unwrap();
-    let gentle_decoded: Image<U8> = codec.decode(&gentle).unwrap();
+    let strong_decoded: InMemoryImage<U8> = codec.decode(&strong).unwrap();
+    let gentle_decoded: InMemoryImage<U8> = codec.decode(&gentle).unwrap();
     let strong_error = rgb_total_abs_diff(&original, &strong_decoded);
     let gentle_error = rgb_total_abs_diff(&original, &gentle_decoded);
 
@@ -775,8 +775,8 @@ fn smart_subsample_reduces_chroma_error() {
         )
         .unwrap();
 
-    let plain_decoded: Image<U8> = codec.decode(&plain).unwrap();
-    let smart_decoded: Image<U8> = codec.decode(&smart).unwrap();
+    let plain_decoded: InMemoryImage<U8> = codec.decode(&plain).unwrap();
+    let smart_decoded: InMemoryImage<U8> = codec.decode(&smart).unwrap();
     let plain_error = rgb_total_abs_diff(&original, &plain_decoded);
     let smart_error = rgb_total_abs_diff(&original, &smart_decoded);
 
@@ -793,7 +793,7 @@ fn smart_subsample_reduces_chroma_error() {
 fn encode_rejects_non_u8_format() {
     use viprs_core::format::F32;
     let codec = WebpCodec;
-    let image = Image::<F32>::from_buffer(2, 2, 3, vec![0.0f32; 12]).unwrap();
+    let image = InMemoryImage::<F32>::from_buffer(2, 2, 3, vec![0.0f32; 12]).unwrap();
     let result = codec.encode(&image);
     assert!(
         matches!(result, Err(ViprsError::Codec(_))),
@@ -817,7 +817,7 @@ fn decode_rejects_non_u8_format() {
 fn encode_rejects_unsupported_band_count() {
     let codec = WebpCodec;
     // 2-band image (unsupported).
-    let image = Image::<U8>::from_buffer(2, 2, 2, vec![0u8; 8]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(2, 2, 2, vec![0u8; 8]).unwrap();
     let result = codec.encode(&image);
     assert!(
         matches!(result, Err(ViprsError::Codec(_))),
@@ -840,7 +840,7 @@ fn probe_returns_correct_dimensions() {
 fn probe_returns_4_bands_for_rgba() {
     let codec = WebpCodec;
     let pixels: Vec<u8> = (0u8..=255).cycle().take(8 * 8 * 4).collect();
-    let original = Image::<U8>::from_buffer(8, 8, 4, pixels).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(8, 8, 4, pixels).unwrap();
     let opts = SaveOptions::default().lossless();
     let encoded = codec.encode_with_options(&original, &opts).unwrap();
     let (w, h, bands) = codec.probe(&encoded).unwrap();
@@ -892,11 +892,11 @@ fn lossless_round_trip_rgb_8x8() {
     let codec = WebpCodec;
     // Lossless encode of a gradient RGB image must decode pixel-perfectly.
     let pixels: Vec<u8> = (0u8..192).collect(); // 8*8*3
-    let original = Image::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(8, 8, 3, pixels).unwrap();
 
     let opts = SaveOptions::default().lossless();
     let encoded = codec.encode_with_options(&original, &opts).unwrap();
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
 
     assert_eq!(decoded.width(), 8);
     assert_eq!(decoded.height(), 8);
@@ -918,7 +918,7 @@ fn lossless_round_trip_rgba_8x8_encodes_without_error() {
         pixels.push(i.wrapping_mul(7)); // B
         pixels.push(200u8); // A
     }
-    let original = Image::<U8>::from_buffer(8, 8, 4, pixels).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(8, 8, 4, pixels).unwrap();
 
     let opts = SaveOptions::default().lossless();
     let encoded = codec.encode_with_options(&original, &opts).unwrap();
@@ -928,7 +928,7 @@ fn lossless_round_trip_rgba_8x8_encodes_without_error() {
         "encoded RGBA output must have WebP magic"
     );
 
-    let decoded: Image<U8> = codec.decode(&encoded).unwrap();
+    let decoded: InMemoryImage<U8> = codec.decode(&encoded).unwrap();
     assert_eq!(decoded.width(), 8);
     assert_eq!(decoded.height(), 8);
     assert_eq!(decoded.bands(), 4, "decoded RGBA image must have 4 bands");
@@ -959,7 +959,7 @@ fn encode_u16_returns_codec_error() {
     let codec = WebpCodec;
     // WebP is an 8-bit format; U16 must be rejected.
     let data: Vec<u16> = vec![0u16; 8 * 8 * 3];
-    let image = Image::<U16>::from_buffer(8, 8, 3, data).unwrap();
+    let image = InMemoryImage::<U16>::from_buffer(8, 8, 3, data).unwrap();
     let result = codec.encode(&image);
     assert!(
         matches!(result, Err(ViprsError::Codec(_))),
@@ -972,7 +972,7 @@ fn encode_2_band_u8_returns_codec_error() {
     let codec = WebpCodec;
     // 2 bands is not supported by WebP (only 1, 3, 4).
     let data: Vec<u8> = vec![0u8; 4 * 4 * 2];
-    let image = Image::<U8>::from_buffer(4, 4, 2, data).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(4, 4, 2, data).unwrap();
     let result = codec.encode(&image);
     assert!(
         matches!(result, Err(ViprsError::Codec(_))),
@@ -1012,7 +1012,7 @@ fn solid_rgba(width: u32, height: u32, color: [u8; 4]) -> Vec<u8> {
 }
 
 fn encode_rgba_webp_lossless(pixels: &[u8], width: u32, height: u32) -> Vec<u8> {
-    let image = Image::<U8>::from_buffer(width, height, 4, pixels.to_vec()).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(width, height, 4, pixels.to_vec()).unwrap();
     let opts = SaveOptions::default().lossless();
     WebpCodec.encode_with_options(&image, &opts).unwrap()
 }

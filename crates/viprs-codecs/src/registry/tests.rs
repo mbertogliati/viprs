@@ -9,7 +9,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-    image::Image,
+    image::InMemoryImage,
 };
 use viprs_ports::codec::{ImageCodec, ImageDecoder, ImageEncoder};
 
@@ -50,7 +50,8 @@ impl ImageCodec for ExtensionFallbackCodec {
         if band_format != BandFormatId::U8 {
             return Err(ViprsError::Codec("ext-fallback: only U8 supported".into()));
         }
-        let image = Image::<U8>::from_buffer(1, 1, 1, vec![src.first().copied().unwrap_or(0)])?;
+        let image =
+            InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![src.first().copied().unwrap_or(0)])?;
         Ok(Box::new(image))
     }
 
@@ -112,7 +113,12 @@ impl ImageCodec for DirectoryPathCodec {
             ));
         }
         assert!(path.is_dir());
-        Ok(Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![9])?))
+        Ok(Box::new(InMemoryImage::<U8>::from_buffer(
+            1,
+            1,
+            1,
+            vec![9],
+        )?))
     }
 
     fn encode_boxed(
@@ -151,7 +157,12 @@ impl ImageCodec for HeaderSniffCodec {
         if band_format != BandFormatId::U8 {
             return Err(ViprsError::Codec("header-sniff: only U8 supported".into()));
         }
-        Ok(Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![2])?))
+        Ok(Box::new(InMemoryImage::<U8>::from_buffer(
+            1,
+            1,
+            1,
+            vec![2],
+        )?))
     }
 
     fn encode_boxed(
@@ -198,7 +209,12 @@ impl ImageCodec for PathExtensionCodec {
                 "path-extension: only U8 supported".into(),
             ));
         }
-        Ok(Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![1])?))
+        Ok(Box::new(InMemoryImage::<U8>::from_buffer(
+            1,
+            1,
+            1,
+            vec![1],
+        )?))
     }
 
     fn encode_boxed(
@@ -250,7 +266,7 @@ impl ImageDecoder for ExtensionOnlyDecoder {
         false
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -258,7 +274,7 @@ impl ImageDecoder for ExtensionOnlyDecoder {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -266,7 +282,7 @@ impl ImageDecoder for ExtensionOnlyDecoder {
         let copied = src.len().min(bytes.len());
         bytes[..copied].copy_from_slice(&src[..copied]);
         let pixels = bytemuck::cast_slice::<u8, F::Sample>(&bytes).to_vec();
-        Image::from_buffer(1, 1, 1, pixels)
+        InMemoryImage::from_buffer(1, 1, 1, pixels)
     }
 
     fn probe(&self, _src: &[u8]) -> Result<(u32, u32, u32), ViprsError>
@@ -360,7 +376,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     let ext_image = ext
         .decode_boxed(b"*", BandFormatId::U8, &LoadOptions::default())
         .unwrap()
-        .downcast::<Image<U8>>()
+        .downcast::<InMemoryImage<U8>>()
         .unwrap();
     assert_eq!(ext_image.pixels(), &[b'*']);
     let ext_decode_err = ext
@@ -369,7 +385,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     assert!(ext_decode_err.to_string().contains("only U8 supported"));
     let ext_encode_err = ext
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::U8,
             &SaveOptions::default(),
         )
@@ -386,7 +402,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     let directory_image = directory
         .decode_boxed_path(&directory_path, BandFormatId::U8, &LoadOptions::default())
         .unwrap()
-        .downcast::<Image<U8>>()
+        .downcast::<InMemoryImage<U8>>()
         .unwrap();
     assert_eq!(directory_image.pixels(), &[9]);
     let directory_decode_err = directory
@@ -407,7 +423,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     );
     let directory_encode_err = directory
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::U8,
             &SaveOptions::default(),
         )
@@ -422,7 +438,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     let sniff_image = sniff
         .decode_boxed(b"", BandFormatId::U8, &LoadOptions::default())
         .unwrap()
-        .downcast::<Image<U8>>()
+        .downcast::<InMemoryImage<U8>>()
         .unwrap();
     assert_eq!(sniff_image.pixels(), &[2]);
     let sniff_err = sniff
@@ -431,7 +447,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     assert!(sniff_err.to_string().contains("only U8 supported"));
     let sniff_encode_err = sniff
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::U8,
             &SaveOptions::default(),
         )
@@ -447,7 +463,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     let path_image = path
         .decode_boxed(b"", BandFormatId::U8, &LoadOptions::default())
         .unwrap()
-        .downcast::<Image<U8>>()
+        .downcast::<InMemoryImage<U8>>()
         .unwrap();
     assert_eq!(path_image.pixels(), &[1]);
     let path_err = path
@@ -456,7 +472,7 @@ fn helper_codecs_expose_expected_capabilities_and_errors() {
     assert!(path_err.to_string().contains("only U8 supported"));
     let path_encode_err = path
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::U8,
             &SaveOptions::default(),
         )
@@ -481,7 +497,7 @@ fn codec_bridge_dispatches_all_band_formats_and_type_mismatches() {
             let decoded = codec
                 .decode_boxed(&bytes, $band, &opts)
                 .unwrap()
-                .downcast::<Image<$format>>()
+                .downcast::<InMemoryImage<$format>>()
                 .unwrap();
             assert_eq!(decoded.pixels(), &[$sample]);
 
@@ -490,11 +506,11 @@ fn codec_bridge_dispatches_all_band_formats_and_type_mismatches() {
             let decoded_path = codec
                 .decode_boxed_path(&path, $band, &opts)
                 .unwrap()
-                .downcast::<Image<$format>>()
+                .downcast::<InMemoryImage<$format>>()
                 .unwrap();
             assert_eq!(decoded_path.pixels(), &[$sample]);
 
-            let image = Image::<$format>::from_buffer(1, 1, 1, vec![$sample]).unwrap();
+            let image = InMemoryImage::<$format>::from_buffer(1, 1, 1, vec![$sample]).unwrap();
             let encoded = codec
                 .encode_boxed(&image, $band, &SaveOptions::default())
                 .unwrap();
@@ -513,7 +529,7 @@ fn codec_bridge_dispatches_all_band_formats_and_type_mismatches() {
 
     let mismatch = codec
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::F32,
             &SaveOptions::default(),
         )
@@ -538,7 +554,7 @@ fn decoder_bridges_cover_decode_only_and_extension_fallback_paths() {
             let decoded = decoder
                 .decode_boxed(&bytes, $band, &opts)
                 .unwrap()
-                .downcast::<Image<$format>>()
+                .downcast::<InMemoryImage<$format>>()
                 .unwrap();
             assert_eq!(decoded.pixels(), &[$sample]);
 
@@ -547,7 +563,7 @@ fn decoder_bridges_cover_decode_only_and_extension_fallback_paths() {
             let decoded_path = decoder
                 .decode_boxed_path(&path, $band, &opts)
                 .unwrap()
-                .downcast::<Image<$format>>()
+                .downcast::<InMemoryImage<$format>>()
                 .unwrap();
             assert_eq!(decoded_path.pixels(), &[$sample]);
             fs::remove_file(path).unwrap();
@@ -564,7 +580,7 @@ fn decoder_bridges_cover_decode_only_and_extension_fallback_paths() {
 
     let decode_only_err = decoder
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::U8,
             &SaveOptions::default(),
         )
@@ -585,12 +601,12 @@ fn decoder_bridges_cover_decode_only_and_extension_fallback_paths() {
     let decoded = extension_decoder
         .decode_boxed_path(&path, BandFormatId::U8, &LoadOptions::default())
         .unwrap()
-        .downcast::<Image<U8>>()
+        .downcast::<InMemoryImage<U8>>()
         .unwrap();
     assert_eq!(decoded.pixels(), &[11]);
     let decode_only_err = extension_decoder
         .encode_boxed(
-            &Image::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
+            &InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![1]).unwrap(),
             BandFormatId::U8,
             &SaveOptions::default(),
         )
@@ -606,7 +622,8 @@ fn registry_and_image_convenience_apis_cover_path_and_error_edges() {
     let u8_input = test_output_path("shared-u8-input", "raw");
     let u8_output = test_output_path("shared-u8-output", "raw");
     fs::write(&u8_input, [5]).unwrap();
-    let u8_image = Image::<U8>::load_with_options(&u8_input, &raw_load_options::<U8>()).unwrap();
+    let u8_image =
+        InMemoryImage::<U8>::load_with_options(&u8_input, &raw_load_options::<U8>()).unwrap();
     assert_eq!(u8_image.pixels(), &[5]);
     registry
         .save_with_options(&u8_image, &u8_output, &SaveOptions::default())
@@ -623,7 +640,7 @@ fn registry_and_image_convenience_apis_cover_path_and_error_edges() {
     let opts_u16 = raw_load_options::<U16>();
     let u16_image = registry.load_as::<U16>(&u16_input).unwrap_err();
     assert!(u16_image.to_string().contains("required"));
-    let u16_image = Image::<U16>::load_with_options(&u16_input, &opts_u16).unwrap();
+    let u16_image = InMemoryImage::<U16>::load_with_options(&u16_input, &opts_u16).unwrap();
     assert_eq!(u16_image.pixels(), &[1025]);
     registry.save_as(&u16_image, &u16_output).unwrap();
     assert_eq!(fs::read(&u16_output).unwrap(), sample_bytes(1025u16));
@@ -683,7 +700,7 @@ fn registry_errors_when_no_decoder_matches() {
 #[test]
 fn registry_errors_when_extension_is_missing() {
     let registry = ForeignRegistry::new();
-    let image = Image::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
     let err = registry
         .save(
             &image,
@@ -782,7 +799,7 @@ fn registry_loads_pdf_when_poppler_backend_enabled() {
 #[test]
 fn registry_returns_typed_deferred_encode_error() {
     let registry = ForeignRegistry::new();
-    let image = Image::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![7]).unwrap();
     let err = registry
         .save(
             &image,
@@ -804,7 +821,7 @@ fn registry_returns_typed_deferred_encode_error() {
 #[test]
 fn registry_returns_family_specific_deferred_errors_for_document_slide_and_fallbacks() {
     let registry = ForeignRegistry::default();
-    let image = Image::<U8>::from_buffer(1, 1, 1, vec![3]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![3]).unwrap();
 
     #[cfg(all(not(feature = "magick"), not(feature = "dcraw")))]
     let decode_cases = [
@@ -937,7 +954,7 @@ fn registry_saves_deepzoom_layout_for_dzi_path() {
     fs::create_dir_all(&root).unwrap();
     let descriptor = root.join(format!("deepzoom-export-{}.dzi", std::process::id()));
     let tile_root = root.join(format!("deepzoom-export-{}_files", std::process::id()));
-    let image = Image::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
 
     ForeignRegistry::default()
         .save_as(&image, &descriptor)
@@ -967,7 +984,7 @@ fn registry_quantizes_u16_deepzoom_tiles_to_u8() {
             .and_then(std::ffi::OsStr::to_str)
             .unwrap()
     ));
-    let image = Image::<U16>::from_buffer(2, 1, 1, vec![0, 257]).unwrap();
+    let image = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![0, 257]).unwrap();
 
     ForeignRegistry::default()
         .save_as(&image, &descriptor)
@@ -983,7 +1000,7 @@ fn registry_quantizes_u16_deepzoom_tiles_to_u8() {
 #[cfg(feature = "deepzoom")]
 #[test]
 fn to_u8_image_scales_unit_range_f32_pixels() {
-    let image = Image::<F32>::from_buffer(3, 1, 1, vec![0.0, 0.5, 1.0]).unwrap();
+    let image = InMemoryImage::<F32>::from_buffer(3, 1, 1, vec![0.0, 0.5, 1.0]).unwrap();
 
     let quantized = to_u8_image(&image).unwrap();
 
@@ -993,7 +1010,7 @@ fn to_u8_image_scales_unit_range_f32_pixels() {
 #[cfg(feature = "deepzoom")]
 #[test]
 fn to_u8_image_clamps_byte_range_f32_pixels() {
-    let image = Image::<F32>::from_buffer(3, 1, 1, vec![-5.0, 12.5, 300.0]).unwrap();
+    let image = InMemoryImage::<F32>::from_buffer(3, 1, 1, vec![-5.0, 12.5, 300.0]).unwrap();
 
     let quantized = to_u8_image(&image).unwrap();
 
@@ -1026,7 +1043,7 @@ fn registry_loads_jpeg_by_path() {
 
     let path = test_output_path("sample-jpeg", "jpg");
     let codec = JpegCodec;
-    let image = Image::<U8>::from_buffer(5, 3, 3, vec![120; 5 * 3 * 3]).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(5, 3, 3, vec![120; 5 * 3 * 3]).unwrap();
     fs::write(&path, codec.encode(&image).unwrap()).unwrap();
 
     let decoded = ForeignRegistry::default().load(&path).unwrap();
@@ -1047,8 +1064,8 @@ fn registry_loads_jpeg_and_png_when_extensions_are_swapped() {
     let png_path = test_output_path("swapped-png-correct", "png");
     let png_renamed_path = test_output_path("swapped-png-wrong", "jpg");
 
-    let jpeg_image = Image::<U8>::from_buffer(5, 3, 3, (0u8..45).collect()).unwrap();
-    let png_image = Image::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
+    let jpeg_image = InMemoryImage::<U8>::from_buffer(5, 3, 3, (0u8..45).collect()).unwrap();
+    let png_image = InMemoryImage::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
     let jpeg_bytes = JpegCodec.encode(&jpeg_image).unwrap();
     let png_bytes = PngCodec::default().encode(&png_image).unwrap();
 
@@ -1087,7 +1104,7 @@ fn registry_loads_png_and_saves_png_round_trip() {
     let input_path = test_output_path("sample-png-input", "png");
     let output_path = test_output_path("sample-png-output", "png");
     let codec = PngCodec::default();
-    let image = Image::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(4, 4, 3, (0u8..48).collect()).unwrap();
     fs::write(&input_path, codec.encode(&image).unwrap()).unwrap();
 
     let registry = ForeignRegistry::default();
@@ -1114,7 +1131,7 @@ fn registry_loads_tiff_and_saves_tiff_round_trip() {
     let input_path = test_output_path("sample-tiff-input", "tiff");
     let output_path = test_output_path("sample-tiff-output", "tif");
     let codec = TiffCodec::default();
-    let image = Image::<U8>::from_buffer(4, 3, 3, (0u8..36).collect()).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(4, 3, 3, (0u8..36).collect()).unwrap();
     fs::write(&input_path, codec.encode(&image).unwrap()).unwrap();
 
     let registry = ForeignRegistry::default();
@@ -1141,7 +1158,7 @@ fn registry_loads_exr_and_saves_exr_round_trip() {
     let input_path = test_output_path("sample-exr-input", "exr");
     let output_path = test_output_path("sample-exr-output", "exr");
     let codec = ExrCodec;
-    let image = Image::<F32>::from_buffer(
+    let image = InMemoryImage::<F32>::from_buffer(
         2,
         2,
         4,

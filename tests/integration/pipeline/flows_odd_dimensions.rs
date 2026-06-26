@@ -8,7 +8,7 @@ fn resize_then_sharpen_handles_odd_dimensions() {
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
         builder
             .resize(Resize::new(0.5, 0.5, InterpolationKernel::Lanczos3))?
-            .sharpen(
+            .sharpen_with(
                 SHARPEN_SIGMA,
                 SHARPEN_X1,
                 SHARPEN_Y2,
@@ -26,7 +26,7 @@ fn resize_then_sharpen_handles_odd_dimensions() {
 fn invert_then_thumbnail_handles_odd_dimensions() {
     let image = load_u8_fixture("bench_777x333.jpg");
     let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
-        builder.invert()?.thumbnail(thumbnail_config(200))
+        builder.invert()?.thumbnail_with(thumbnail_config(200))
     });
 
     assert_thumbnail_dimensions(&pipeline, &image, 200);
@@ -36,8 +36,9 @@ fn invert_then_thumbnail_handles_odd_dimensions() {
 #[cfg(feature = "jpeg")]
 fn load_jpeg_then_thumbnail_then_encode_jpeg_handles_odd_dimensions() {
     let image = load_u8_fixture("bench_777x333.jpg");
-    let (pipeline, output) =
-        execute_u8_pipeline_to_image(&image, |builder| builder.thumbnail(thumbnail_config(200)));
+    let (pipeline, output) = execute_u8_pipeline_to_image(&image, |builder| {
+        builder.thumbnail_with(thumbnail_config(200))
+    });
 
     assert_thumbnail_dimensions(&pipeline, &image, 200);
     assert_codec_roundtrip(&JpegCodec, &output, pipeline.width, pipeline.height);
@@ -60,7 +61,7 @@ proptest! {
             .map(|index| (index % 251) as u8)
             .collect();
 
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels)
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels)
             .expect("failed to create proptest image")
             .with_metadata(ImageMetadata {
                 interpretation: Some(Interpretation::Srgb),
@@ -69,8 +70,8 @@ proptest! {
 
         let (pipeline, _buffer) = execute_u8_pipeline_to_buffer(&image, |builder| {
             builder
-                .thumbnail(thumbnail_config(target_width))?
-                .sharpen(
+                .thumbnail_with(thumbnail_config(target_width))?
+                .sharpen_with(
                     SHARPEN_SIGMA,
                     SHARPEN_X1,
                     SHARPEN_Y2,

@@ -1,9 +1,9 @@
 mod chaos_monkey_14 {
     use bytemuck::Pod;
     use viprs::{
-        BuildError, CompiledPipeline, Image, ImageMetadata, Interpretation, U8,
+        BuildError, CompiledPipeline, ImageMetadata, InMemoryImage, Interpretation, U8,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sources::memory::MemorySource,
         },
         domain::ops::conversion::ExtendMode,
@@ -24,7 +24,7 @@ mod chaos_monkey_14 {
         }
     }
 
-    fn patterned_u8(width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn patterned_u8(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * bands as usize);
         for y in 0..height {
             for x in 0..width {
@@ -40,12 +40,12 @@ mod chaos_monkey_14 {
             }
         }
 
-        Image::from_buffer(width, height, bands, pixels)
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(srgb_metadata())
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
@@ -60,22 +60,20 @@ mod chaos_monkey_14 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
-        image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<FOut>), String>
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
         let output = pipeline
             .run_to_image::<FOut, _>(&RayonScheduler::new(2).map_err(|error| error.to_string())?)
             .map_err(|error| format!("pipeline execution failed: {error:?}"))?;

@@ -3,9 +3,9 @@ mod chaos_monkey_16 {
 
     use bytemuck::Pod;
     use viprs::{
-        BandFormatId, BuildError, F32, Image, ImageMetadata, Interpretation, U8, U16,
+        BandFormatId, BuildError, F32, ImageMetadata, InMemoryImage, Interpretation, U8, U16,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sources::memory::MemorySource,
         },
         domain::{
@@ -27,8 +27,8 @@ mod chaos_monkey_16 {
         }
     }
 
-    fn make_u8_image(width: u32, height: u32, bands: u32, pixels: Vec<u8>) -> Image<U8> {
-        let image = Image::from_buffer(width, height, bands, pixels).unwrap();
+    fn make_u8_image(width: u32, height: u32, bands: u32, pixels: Vec<u8>) -> InMemoryImage<U8> {
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels).unwrap();
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -36,8 +36,8 @@ mod chaos_monkey_16 {
         }
     }
 
-    fn make_u16_image(width: u32, height: u32, bands: u32, pixels: Vec<u16>) -> Image<U16> {
-        Image::from_buffer(width, height, bands, pixels).unwrap()
+    fn make_u16_image(width: u32, height: u32, bands: u32, pixels: Vec<u16>) -> InMemoryImage<U16> {
+        InMemoryImage::from_buffer(width, height, bands, pixels).unwrap()
     }
 
     fn make_f32_image(
@@ -46,13 +46,13 @@ mod chaos_monkey_16 {
         bands: u32,
         pixels: Vec<f32>,
         metadata: ImageMetadata,
-    ) -> Image<F32> {
-        Image::from_buffer(width, height, bands, pixels)
+    ) -> InMemoryImage<F32> {
+        InMemoryImage::from_buffer(width, height, bands, pixels)
             .unwrap()
             .with_metadata(metadata)
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
@@ -67,22 +67,20 @@ mod chaos_monkey_16 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
-        image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(viprs::CompiledPipeline, Image<FOut>), String>
+    fn execute_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(viprs::CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: viprs::BandFormat,
         FOut: viprs::BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let output = pipeline
             .run_to_image::<FOut, _>(
@@ -93,7 +91,7 @@ mod chaos_monkey_16 {
         Ok((pipeline, output))
     }
 
-    fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
+    fn patterned_rgb(width: u32, height: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * 3);
         for y in 0..height {
             for x in 0..width {
@@ -105,7 +103,7 @@ mod chaos_monkey_16 {
         make_u8_image(width, height, 3, pixels)
     }
 
-    fn patterned_rgba(width: u32, height: u32) -> Image<U8> {
+    fn patterned_rgba(width: u32, height: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * 4);
         for y in 0..height {
             for x in 0..width {
@@ -142,7 +140,7 @@ mod chaos_monkey_16 {
         )
     }
 
-    fn append_recomb(builder: PipelineBuilder) -> Result<PipelineBuilder, BuildError> {
+    fn append_recomb(builder: ImagePipeline) -> Result<ImagePipeline, BuildError> {
         builder.then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
             RecombOp::<U8>::new(recomb_matrix()),
             3,
@@ -151,7 +149,7 @@ mod chaos_monkey_16 {
     }
 
     fn expected_embed_repeat(
-        src: &Image<U8>,
+        src: &InMemoryImage<U8>,
         dst_width: u32,
         dst_height: u32,
         x_off: i32,
@@ -179,18 +177,19 @@ mod chaos_monkey_16 {
     fn thumbnail_recomb_thumbnail_matches_sequential_dimensions() {
         let image = patterned_rgb(37, 23);
         let (_first_pipeline, first) =
-            execute_to_image::<U8, U8, _>(&image, |builder| builder.thumbnail(thumbnail(19)))
+            execute_to_image::<U8, U8, _>(&image, |builder| builder.thumbnail_with(thumbnail(19)))
                 .expect("first thumbnail should succeed");
         let (_second_pipeline, recombined) =
             execute_to_image::<U8, U8, _>(&first, append_recomb).expect("recomb should succeed");
-        let (_third_pipeline, sequential) =
-            execute_to_image::<U8, U8, _>(&recombined, |builder| builder.thumbnail(thumbnail(9)))
-                .expect("second thumbnail should succeed");
+        let (_third_pipeline, sequential) = execute_to_image::<U8, U8, _>(&recombined, |builder| {
+            builder.thumbnail_with(thumbnail(9))
+        })
+        .expect("second thumbnail should succeed");
 
         let (pipeline, chained) = execute_to_image::<U8, U8, _>(&image, |builder| {
-            let builder = builder.thumbnail(thumbnail(19))?;
+            let builder = builder.thumbnail_with(thumbnail(19))?;
             let builder = append_recomb(builder)?;
-            builder.thumbnail(thumbnail(9))
+            builder.thumbnail_with(thumbnail(9))
         })
         .expect("chained thumbnail -> recomb -> thumbnail should succeed");
 

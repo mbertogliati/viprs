@@ -7,7 +7,7 @@ use viprs::ImageCodecExt;
 use viprs::adapters::codecs::TiffCodec;
 use viprs::domain::codec_options::{LoadOptions, SaveOptions, TiffCompression};
 use viprs::domain::format::{U8, U16};
-use viprs::domain::image::Image;
+use viprs::domain::image::InMemoryImage;
 use viprs::ports::codec::ImageEncoder;
 
 use super::types::{
@@ -632,9 +632,9 @@ pub fn parse_save_tiff_compression(op_args: &[String]) -> TiffCompression {
 }
 
 pub fn load_tiff_save_input(input: &Path) -> TiffSaveInput {
-    if let Ok(image) = Image::<U8>::load(input) {
+    if let Ok(image) = InMemoryImage::<U8>::load(input) {
         TiffSaveInput::U8(image)
-    } else if let Ok(image) = Image::<U16>::load(input) {
+    } else if let Ok(image) = InMemoryImage::<U16>::load(input) {
         TiffSaveInput::U16(image)
     } else {
         eprintln!("save-tiff expects an integer input image (U8/U16)");
@@ -673,11 +673,11 @@ pub fn default_bench_threads(requested_threads: usize, op: &str, input: &Path) -
 
 pub fn load_bench_image_with_options(input: &Path, opts: &LoadOptions) -> BenchImage {
     use viprs::domain::format::F32;
-    if let Ok(image) = Image::<U8>::load_with_options(input, opts) {
+    if let Ok(image) = InMemoryImage::<U8>::load_with_options(input, opts) {
         BenchImage::U8(image)
-    } else if let Ok(image) = Image::<U16>::load_with_options(input, opts) {
+    } else if let Ok(image) = InMemoryImage::<U16>::load_with_options(input, opts) {
         BenchImage::U16(image)
-    } else if let Ok(image) = Image::<F32>::load_with_options(input, opts) {
+    } else if let Ok(image) = InMemoryImage::<F32>::load_with_options(input, opts) {
         BenchImage::F32(image)
     } else {
         eprintln!("failed to load benchmark input as U8, U16, or F32 image");
@@ -833,7 +833,7 @@ pub fn bench_fixtures_for_op(op: &str) -> &'static [BenchFixtureSpec] {
 mod tests {
     use super::*;
     use crate::common::repo_root;
-    use viprs::domain::{format::U8, image::Image};
+    use viprs::domain::{format::U8, image::InMemoryImage};
 
     #[test]
     fn compute_baseline_scenarios_cover_all_standard_sizes_per_fixture_family() {
@@ -1048,7 +1048,7 @@ mod tests {
             .expect("missing SVG 512 fixture");
         let input = repo_root.join(fixture.input);
 
-        let image = Image::<U8>::load(&input)
+        let image = InMemoryImage::<U8>::load(&input)
             .unwrap_or_else(|err| panic!("failed to decode SVG bench fixture: {err}"));
 
         assert_eq!(image.width(), fixture.width);
@@ -1066,7 +1066,7 @@ mod tests {
             .expect("missing PDF 512 fixture");
         let input = repo_root.join(fixture.input);
 
-        let image = Image::<U8>::load(&input)
+        let image = InMemoryImage::<U8>::load(&input)
             .unwrap_or_else(|err| panic!("failed to decode PDF bench fixture: {err}"));
 
         assert_eq!(image.width(), fixture.width);

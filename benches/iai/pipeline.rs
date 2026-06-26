@@ -17,7 +17,7 @@
 ///   docker run --rm -v $(pwd):/src -w /src viprs-perf:arm64 \
 ///     cargo bench --bench iai_pipeline
 use iai_callgrind::{library_benchmark, library_benchmark_group, main};
-use viprs::adapters::pipeline::PipelineBuilder;
+use viprs::adapters::pipeline::ImagePipeline;
 use viprs::adapters::scheduler::rayon_scheduler::RayonScheduler;
 use viprs::adapters::sinks::memory::MemorySink;
 use viprs::adapters::sources::memory::MemorySource;
@@ -41,7 +41,7 @@ fn run_invert(size: u32) {
     let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
     let invert_op = Invert::<U8>::new();
     let dyn_op = Box::new(OperationBridge::new(invert_op, 1u32));
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()
@@ -61,7 +61,7 @@ fn run_add(size: u32) {
     let source = MemorySource::<U8>::new(size, size, 1, pixels).unwrap();
     let add_op = Add::<U8>::new(rhs);
     let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()

@@ -4,7 +4,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::{BandFormat, BandFormatId, F32, F64, I16, I32, U8, U16, U32},
-    image::Image,
+    image::InMemoryImage,
 };
 use viprs_ports::codec::{ImageCodec, ImageDecoder, ImageEncoder};
 
@@ -53,7 +53,7 @@ impl<C> CodecBridge<C> {
     where
         C: ImageEncoder,
     {
-        let image = image.downcast_ref::<Image<F>>().ok_or_else(|| {
+        let image = image.downcast_ref::<InMemoryImage<F>>().ok_or_else(|| {
             ViprsError::Codec(format!(
                 "foreign: codec '{}' received mismatched image type for {:?}",
                 ImageEncoder::format_name(&self.codec),

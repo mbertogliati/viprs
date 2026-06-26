@@ -11,7 +11,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -33,7 +33,7 @@ fn bench_extract_area(c: &mut Criterion) {
                 let y = size / 4;
                 let w = size / 2;
                 let h = size / 2;
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .extract_area(x, y, w, h)
                     .unwrap()
                     .build()

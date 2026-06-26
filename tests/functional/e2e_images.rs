@@ -30,7 +30,7 @@ use std::{fs, path::Path};
 
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     ports::scheduler::TileScheduler,
@@ -82,7 +82,7 @@ fn png_invert_matches_vips() {
     let source = MemorySource::<U16>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .expect("invert step failed")
         .build()
@@ -131,7 +131,7 @@ fn png_flip_horizontal_matches_vips() {
     let source = MemorySource::<U16>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .flip_horizontal()
         .expect("flip_horizontal step failed")
         .build()
@@ -178,7 +178,7 @@ fn png_rotate90_matches_vips() {
     let source = MemorySource::<U16>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .rotate90()
         .expect("rotate90 step failed")
         .build()
@@ -237,7 +237,7 @@ fn jpeg_invert_matches_vips() {
     let source = MemorySource::<U8>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .expect("invert step failed")
         .build()

@@ -2,7 +2,7 @@
 //!
 //! This is the runtime plugin boundary for codecs. Concrete codec adapters
 //! remain generic over `F: BandFormat`; the registry bridges them behind an
-//! object-safe trait so callers can say `Image::<U8>::load("x.png")`.
+//! object-safe trait so callers can say `InMemoryImage::<U8>::load("x.png")`.
 
 pub(crate) mod bridges;
 pub(crate) mod deepzoom;

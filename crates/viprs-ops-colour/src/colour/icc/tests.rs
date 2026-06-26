@@ -2,8 +2,8 @@ use super::*;
 use viprs_core::format::BandFormat;
 use viprs_core::image::{ImageMetadata, Interpretation};
 
-fn sample_u8_rgb() -> Image<U8> {
-    Image::from_buffer(
+fn sample_u8_rgb() -> InMemoryImage<U8> {
+    InMemoryImage::from_buffer(
         2,
         2,
         3,
@@ -16,8 +16,8 @@ fn sample_u8_rgb() -> Image<U8> {
     })
 }
 
-fn sample_u16_rgb() -> Image<U16> {
-    Image::from_buffer(
+fn sample_u16_rgb() -> InMemoryImage<U16> {
+    InMemoryImage::from_buffer(
         2,
         2,
         3,
@@ -35,8 +35,8 @@ fn sample_u16_rgb() -> Image<U16> {
     })
 }
 
-fn sample_u8_gray() -> Image<U8> {
-    Image::from_buffer(1, 4, 1, vec![0u8, 64, 128, 255])
+fn sample_u8_gray() -> InMemoryImage<U8> {
+    InMemoryImage::from_buffer(1, 4, 1, vec![0u8, 64, 128, 255])
         .expect("valid gray sample")
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::BW),
@@ -44,8 +44,8 @@ fn sample_u8_gray() -> Image<U8> {
         })
 }
 
-fn sample_u16_gray() -> Image<U16> {
-    Image::from_buffer(1, 4, 1, vec![0u16, 16384, 32768, 65535])
+fn sample_u16_gray() -> InMemoryImage<U16> {
+    InMemoryImage::from_buffer(1, 4, 1, vec![0u16, 16384, 32768, 65535])
         .expect("valid u16 gray sample")
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::Grey16),
@@ -53,8 +53,8 @@ fn sample_u16_gray() -> Image<U16> {
         })
 }
 
-fn sample_u8_cmyk() -> Image<U8> {
-    Image::from_buffer(
+fn sample_u8_cmyk() -> InMemoryImage<U8> {
+    InMemoryImage::from_buffer(
         1,
         2,
         4,
@@ -66,8 +66,8 @@ fn sample_u8_cmyk() -> Image<U8> {
     .expect("valid CMYK U8 sample")
 }
 
-fn sample_u16_cmyk() -> Image<U16> {
-    Image::from_buffer(
+fn sample_u16_cmyk() -> InMemoryImage<U16> {
+    InMemoryImage::from_buffer(
         1,
         2,
         4,
@@ -87,7 +87,7 @@ fn cmyk_profile_bytes() -> Vec<u8> {
         .expect("serialize CMYK profile")
 }
 
-fn with_icc_profile<F: BandFormat>(image: &Image<F>, profile: &[u8]) -> Image<F>
+fn with_icc_profile<F: BandFormat>(image: &InMemoryImage<F>, profile: &[u8]) -> InMemoryImage<F>
 where
     F::Sample: Clone,
 {
@@ -554,7 +554,8 @@ fn cmyk_u16_to_cmyk_u16_roundtrip() {
 fn icc_image_accessors_match_variants() {
     let u8_img = sample_u8_rgb();
     let u16_img = sample_u16_rgb();
-    let f32_img = Image::<F32>::from_buffer(1, 1, 3, vec![50.0, 0.0, 0.0]).expect("f32 image");
+    let f32_img =
+        InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![50.0, 0.0, 0.0]).expect("f32 image");
 
     let u8_variant = IccImage::U8(u8_img);
     assert!(u8_variant.as_u8().is_some());
@@ -611,19 +612,21 @@ fn transform_f32_to_rgb_lab_xyz_and_integer_depths() {
     let gray = profile_load("gray").expect("load gray");
     let cmyk = cmyk_profile_bytes();
 
-    let lab_image = Image::<F32>::from_buffer(2, 1, 3, vec![50.0, 0.0, 0.0, 80.0, -5.0, 15.0])
-        .expect("valid Lab f32 image")
-        .with_metadata(ImageMetadata {
-            interpretation: Some(Interpretation::Lab),
-            ..ImageMetadata::default()
-        });
+    let lab_image =
+        InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![50.0, 0.0, 0.0, 80.0, -5.0, 15.0])
+            .expect("valid Lab f32 image")
+            .with_metadata(ImageMetadata {
+                interpretation: Some(Interpretation::Lab),
+                ..ImageMetadata::default()
+            });
 
-    let xyz_image = Image::<F32>::from_buffer(2, 1, 3, vec![0.20, 0.30, 0.10, 0.40, 0.50, 0.25])
-        .expect("valid XYZ f32 image")
-        .with_metadata(ImageMetadata {
-            interpretation: Some(Interpretation::Xyz),
-            ..ImageMetadata::default()
-        });
+    let xyz_image =
+        InMemoryImage::<F32>::from_buffer(2, 1, 3, vec![0.20, 0.30, 0.10, 0.40, 0.50, 0.25])
+            .expect("valid XYZ f32 image")
+            .with_metadata(ImageMetadata {
+                interpretation: Some(Interpretation::Xyz),
+                ..ImageMetadata::default()
+            });
 
     let rgb_u8 = icc_transform(
         &lab_image,
@@ -756,13 +759,13 @@ fn fallback_input_profile_supports_u8_u16_and_f32_interpretations() {
     let rgb_u8 = sample_u8_rgb().with_metadata(ImageMetadata::default());
     let rgb_u16 = sample_u16_rgb().with_metadata(ImageMetadata::default());
     let gray_u8 = sample_u8_gray().with_metadata(ImageMetadata::default());
-    let lab_f32 = Image::<F32>::from_buffer(1, 1, 3, vec![55.0, 2.0, -1.5])
+    let lab_f32 = InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![55.0, 2.0, -1.5])
         .expect("f32 lab image")
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::Lab),
             ..ImageMetadata::default()
         });
-    let xyz_f32 = Image::<F32>::from_buffer(1, 1, 3, vec![0.3, 0.4, 0.2])
+    let xyz_f32 = InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![0.3, 0.4, 0.2])
         .expect("f32 xyz image")
         .with_metadata(ImageMetadata {
             interpretation: Some(Interpretation::Xyz),
@@ -780,7 +783,7 @@ fn fallback_input_profile_supports_u8_u16_and_f32_interpretations() {
 fn fallback_input_profile_rejects_unknown_format_without_profile() {
     use viprs_core::format::I16;
 
-    let image = Image::<I16>::from_buffer(1, 1, 2, vec![1i16, 2]).expect("valid image");
+    let image = InMemoryImage::<I16>::from_buffer(1, 1, 2, vec![1i16, 2]).expect("valid image");
     let srgb = profile_load("srgb").expect("load srgb");
     let err = icc_transform(&image, &srgb, &IccTransformOptions::default())
         .expect_err("missing profile should fail");
@@ -822,7 +825,8 @@ fn transform_rejects_unsupported_depth() {
 
 #[test]
 fn transform_rejects_rgb_input_with_wrong_band_count() {
-    let image = Image::<U8>::from_buffer(1, 1, 2, vec![128u8, 64]).expect("valid 2-band image");
+    let image =
+        InMemoryImage::<U8>::from_buffer(1, 1, 2, vec![128u8, 64]).expect("valid 2-band image");
     let srgb = profile_load("srgb").expect("load srgb");
     let imported = with_icc_profile(&image, &srgb);
 

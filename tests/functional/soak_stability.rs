@@ -7,9 +7,9 @@ use std::{
 };
 
 use viprs::{
-    BuildError, Image, ImageMetadata, Interpretation, U8,
+    BuildError, ImageMetadata, InMemoryImage, Interpretation, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -36,7 +36,7 @@ fn soak_lock() -> &'static Mutex<()> {
 
 struct FixtureSpec {
     name: String,
-    image: Image<U8>,
+    image: InMemoryImage<U8>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -151,7 +151,7 @@ fn build_fixture_spec(path: &Path) -> FixtureSpec {
         interpretation: (bands >= 3).then_some(Interpretation::Srgb),
         ..ImageMetadata::default()
     };
-    let image = Image::from_buffer(width, height, bands, pixels)
+    let image = InMemoryImage::from_buffer(width, height, bands, pixels)
         .unwrap_or_else(|error| panic!("failed to synthesize image for {name}: {error}"))
         .with_metadata(metadata);
 
@@ -194,7 +194,7 @@ fn synthetic_bands(name: &str) -> u32 {
     }
 }
 
-fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
+fn memory_source_from_image(image: &InMemoryImage<U8>) -> MemorySource<U8> {
     MemorySource::new(
         image.width(),
         image.height(),
@@ -258,7 +258,11 @@ fn thumbnail_target_width(width: u32, rng: &mut Lcg) -> u32 {
     rng.range_u32(lower, upper)
 }
 
-fn random_extract(image: &Image<U8>, rng: &mut Lcg, centered: bool) -> (u32, u32, u32, u32) {
+fn random_extract(
+    image: &InMemoryImage<U8>,
+    rng: &mut Lcg,
+    centered: bool,
+) -> (u32, u32, u32, u32) {
     let max_width = image.width();
     let max_height = image.height();
     let min_width = 1.max(max_width / 4);
@@ -292,15 +296,15 @@ fn random_resize(rng: &mut Lcg) -> Resize {
 }
 
 fn configure_pipeline(
-    builder: PipelineBuilder,
-    image: &Image<U8>,
+    builder: ImagePipeline,
+    image: &InMemoryImage<U8>,
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
-) -> Result<PipelineBuilder, BuildError> {
+) -> Result<ImagePipeline, BuildError> {
     match pipeline_kind {
         PipelineKind::Thumbnail => {
             let target = thumbnail_target_width(image.width(), rng);
-            builder.thumbnail(Thumbnail::new(
+            builder.thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(target),
                 InterpolationKernel::Lanczos3,
             ))
@@ -320,7 +324,7 @@ fn configure_pipeline(
             builder
                 .extract_area(x, y, width, height)?
                 .resize(random_resize(rng))?
-                .thumbnail(Thumbnail::new(
+                .thumbnail_with(Thumbnail::new(
                     ThumbnailTarget::Width(target),
                     InterpolationKernel::Lanczos3,
                 ))
@@ -333,7 +337,7 @@ fn execute_iteration(
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
 ) -> (u32, u32, usize) {
-    let builder = PipelineBuilder::from_source(memory_source_from_image(&fixture.image));
+    let builder = ImagePipeline::from_source(memory_source_from_image(&fixture.image));
     let pipeline = configure_pipeline(builder, &fixture.image, pipeline_kind, rng)
         .unwrap_or_else(|error| {
             panic!(

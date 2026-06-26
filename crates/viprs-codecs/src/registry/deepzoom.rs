@@ -4,7 +4,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::BandFormat,
-    image::Image,
+    image::InMemoryImage,
 };
 
 #[cfg(feature = "deepzoom")]
@@ -135,7 +135,9 @@ fn quantize_pixels_to_u8<T: DeepZoomQuantize + Copy>(pixels: &[T]) -> Vec<u8> {
 }
 
 #[cfg(feature = "deepzoom")]
-pub fn to_u8_image<F: BandFormat>(image: &Image<F>) -> Result<Image<U8>, ViprsError> {
+pub fn to_u8_image<F: BandFormat>(
+    image: &InMemoryImage<F>,
+) -> Result<InMemoryImage<U8>, ViprsError> {
     let quantized = match F::ID {
         BandFormatId::U8 => quantize_pixels_to_u8::<u8>(bytemuck::cast_slice(image.pixels())),
         BandFormatId::U16 => quantize_pixels_to_u8::<u16>(bytemuck::cast_slice(image.pixels())),
@@ -146,13 +148,13 @@ pub fn to_u8_image<F: BandFormat>(image: &Image<F>) -> Result<Image<U8>, ViprsEr
         BandFormatId::F64 => quantize_pixels_to_u8::<f64>(bytemuck::cast_slice(image.pixels())),
     };
 
-    Image::<U8>::from_buffer(image.width(), image.height(), image.bands(), quantized)
+    InMemoryImage::<U8>::from_buffer(image.width(), image.height(), image.bands(), quantized)
         .map(|image_u8| image_u8.with_metadata(image.metadata().clone()))
 }
 
 #[cfg(feature = "deepzoom")]
 pub fn save_deepzoom<F: BandFormat>(
-    image: &Image<F>,
+    image: &InMemoryImage<F>,
     path: &Path,
     opts: &SaveOptions,
 ) -> Result<(), ViprsError> {
@@ -163,7 +165,7 @@ pub fn save_deepzoom<F: BandFormat>(
 
 #[cfg(not(feature = "deepzoom"))]
 pub const fn save_deepzoom<F: BandFormat>(
-    _image: &Image<F>,
+    _image: &InMemoryImage<F>,
     _path: &Path,
     _opts: &SaveOptions,
 ) -> Result<(), ViprsError> {
@@ -173,7 +175,7 @@ pub const fn save_deepzoom<F: BandFormat>(
     })
 }
 
-/// Convenience codec I/O methods for [`Image`].
+/// Convenience codec I/O methods for [`InMemoryImage`].
 pub trait ImageCodecExt: Sized {
     /// Load an image from disk using the shared foreign registry.
     fn load(path: impl AsRef<Path>) -> Result<Self, ViprsError>;
@@ -192,7 +194,7 @@ pub trait ImageCodecExt: Sized {
     ) -> Result<(), ViprsError>;
 }
 
-impl<F: BandFormat> ImageCodecExt for Image<F> {
+impl<F: BandFormat> ImageCodecExt for InMemoryImage<F> {
     /// `load` exposes adapter behavior needed by the surrounding module.
     /// Call it when you need the concrete operation implemented here.
     ///

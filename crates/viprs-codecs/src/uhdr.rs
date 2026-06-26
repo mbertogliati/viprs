@@ -15,7 +15,7 @@ use crate::jpeg::{extract_exif_orientation, orient_u8_image};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8};
-use viprs_core::image::{Image, UhdrGainMap, UhdrGainMapMetadata};
+use viprs_core::image::{InMemoryImage, UhdrGainMap, UhdrGainMapMetadata};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const JPEG_SOI: [u8; 2] = [0xFF, 0xD8];
@@ -425,7 +425,9 @@ fn parse_gainmap_xmp(xmp: &[u8]) -> Result<Option<ParsedGainMapMetadata>, ViprsE
     }))
 }
 
-fn parse_gainmap_metadata(image: &Image<U8>) -> Result<Option<ParsedGainMapMetadata>, ViprsError> {
+fn parse_gainmap_metadata(
+    image: &InMemoryImage<U8>,
+) -> Result<Option<ParsedGainMapMetadata>, ViprsError> {
     if let Some(xmp) = image.metadata().xmp.as_deref()
         && let Some(parsed) = parse_gainmap_xmp(xmp)?
     {
@@ -485,7 +487,7 @@ impl ImageDecoder for UhdrCodec {
         scan_markers(header).mpf_segments > 0
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -493,7 +495,7 @@ impl ImageDecoder for UhdrCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -559,7 +561,7 @@ impl ImageEncoder for UhdrCodec {
         "uhdr"
     }
 
-    fn encode<F: BandFormat>(&self, _image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, _image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         Err(ViprsError::Codec(
             "uhdr: encode is not implemented (decode-only codec)".into(),
         ))
@@ -567,7 +569,7 @@ impl ImageEncoder for UhdrCodec {
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        _image: &Image<F>,
+        _image: &InMemoryImage<F>,
         _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -589,13 +591,17 @@ mod tests {
     use viprs_core::format::U16;
 
     fn build_jpeg_fixture() -> Vec<u8> {
-        let image =
-            Image::<U8>::from_buffer(2, 2, 3, vec![0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255])
-                .unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(
+            2,
+            2,
+            3,
+            vec![0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255],
+        )
+        .unwrap();
         JpegCodec.encode(&image).unwrap()
     }
 
-    fn encode_jpeg_quality_100(image: &Image<U8>) -> Vec<u8> {
+    fn encode_jpeg_quality_100(image: &InMemoryImage<U8>) -> Vec<u8> {
         JpegCodec
             .encode_with_options(image, &SaveOptions::default().with_quality(100))
             .unwrap()
@@ -778,8 +784,8 @@ mod tests {
     }
 
     fn synthetic_uhdr_fixture() -> Vec<u8> {
-        let gainmap_image =
-            Image::<U8>::from_buffer(1, 1, 1, vec![255]).expect("gainmap image should be valid");
+        let gainmap_image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![255])
+            .expect("gainmap image should be valid");
         let gainmap = with_embedded_xmp(&JpegCodec.encode(&gainmap_image).unwrap(), &gainmap_xmp());
         let base = with_embedded_xmp(&build_jpeg_fixture(), &container_xmp(gainmap.len()));
         inject_uhdr_stream(base, gainmap)
@@ -861,7 +867,7 @@ mod tests {
 
     #[test]
     fn decode_rotates_gainmap_with_primary_orientation() {
-        let base_image = Image::<U8>::from_buffer(
+        let base_image = InMemoryImage::<U8>::from_buffer(
             2,
             3,
             3,
@@ -871,7 +877,7 @@ mod tests {
         )
         .unwrap();
         let gainmap_image =
-            Image::<U8>::from_buffer(2, 3, 1, vec![0, 255, 255, 0, 0, 255]).unwrap();
+            InMemoryImage::<U8>::from_buffer(2, 3, 1, vec![0, 255, 255, 0, 0, 255]).unwrap();
         let gainmap = with_embedded_xmp(&encode_jpeg_quality_100(&gainmap_image), &gainmap_xmp());
         let expected_gainmap = orient_u8_image(
             &JpegCodec
@@ -904,7 +910,7 @@ mod tests {
 
     #[test]
     fn decode_with_no_rotate_keeps_gainmap_storage_orientation() {
-        let base_image = Image::<U8>::from_buffer(
+        let base_image = InMemoryImage::<U8>::from_buffer(
             2,
             3,
             3,
@@ -914,7 +920,7 @@ mod tests {
         )
         .unwrap();
         let gainmap_image =
-            Image::<U8>::from_buffer(2, 3, 1, vec![0, 255, 255, 0, 0, 255]).unwrap();
+            InMemoryImage::<U8>::from_buffer(2, 3, 1, vec![0, 255, 255, 0, 0, 255]).unwrap();
         let gainmap = with_embedded_xmp(&encode_jpeg_quality_100(&gainmap_image), &gainmap_xmp());
         let stored_gainmap = JpegCodec
             .decode_with_options::<U8>(&gainmap, &LoadOptions::default().no_rotate())
@@ -943,7 +949,7 @@ mod tests {
 
     #[test]
     fn decode_exif_only_gainmap_metadata_is_ignored() {
-        let gainmap_image = Image::<U8>::from_buffer(1, 1, 1, vec![255]).unwrap();
+        let gainmap_image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![255]).unwrap();
         let gainmap = with_embedded_exif(
             &encode_jpeg_quality_100(&gainmap_image),
             &proprietary_exif_payload(0xC7A1, 0x0102_0304),

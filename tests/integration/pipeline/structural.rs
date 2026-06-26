@@ -7,7 +7,7 @@ fn extract_area_produces_correct_subregion() {
     // Expected pixels: (1,1)=5, (2,1)=6, (1,2)=9, (2,2)=10.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -17,7 +17,7 @@ fn extract_area_produces_correct_subregion() {
     let data: Vec<u8> = (0u8..16).collect();
     let source = MemorySource::<U8>::new(4, 4, 1, data).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .extract_area(1, 1, 2, 2)
         .unwrap()
         .build()
@@ -52,7 +52,7 @@ fn flip_horizontal_reverses_columns() {
     // After horizontal flip: [4, 3, 2, 1].
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -60,7 +60,7 @@ fn flip_horizontal_reverses_columns() {
     };
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![1u8, 2, 3, 4]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .flip_horizontal()
         .unwrap()
         .build()
@@ -85,7 +85,7 @@ fn flip_horizontal_twice_is_identity() {
     // Two consecutive flip_horizontal calls cancel out.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -96,7 +96,7 @@ fn flip_horizontal_twice_is_identity() {
     let expected = source_data.clone();
     let source = MemorySource::<U8>::new(4, 4, 1, source_data).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .flip_horizontal()
         .unwrap()
         .flip_horizontal()
@@ -120,7 +120,7 @@ fn flip_vertical_reverses_rows() {
     // After vertical flip: [40, 30, 20, 10].
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -128,7 +128,7 @@ fn flip_vertical_reverses_rows() {
     };
 
     let source = MemorySource::<U8>::new(1, 4, 1, vec![10u8, 20, 30, 40]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .flip_vertical()
         .unwrap()
         .build()
@@ -153,7 +153,7 @@ fn flip_vertical_twice_is_identity() {
     // Two consecutive flip_vertical calls cancel out.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -164,7 +164,7 @@ fn flip_vertical_twice_is_identity() {
     let expected = source_data.clone();
     let source = MemorySource::<U8>::new(4, 4, 1, source_data).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .flip_vertical()
         .unwrap()
         .flip_vertical()
@@ -192,7 +192,7 @@ fn flip_vertical_twice_is_identity() {
 fn conv2d_identity_kernel_end_to_end() {
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::F32,
@@ -204,7 +204,7 @@ fn conv2d_identity_kernel_end_to_end() {
     let source = MemorySource::<F32>::new(4, 4, 1, input.clone()).unwrap();
 
     let identity_kernel = vec![vec![1.0f64]];
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .conv2d(identity_kernel)
         .unwrap()
         .build()
@@ -237,7 +237,7 @@ fn conv2d_box_filter_uniform_image_end_to_end() {
     // step edge; a uniform image would pass even if the kernel were ignored.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::F32,
@@ -258,7 +258,7 @@ fn conv2d_box_filter_uniform_image_end_to_end() {
 
     let w = 1.0f64 / 9.0;
     let box_3x3 = vec![vec![w, w, w], vec![w, w, w], vec![w, w, w]];
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .conv2d(box_3x3)
         .unwrap()
         .build()
@@ -304,7 +304,7 @@ fn any_source_u8_variant_works_end_to_end() {
     use viprs::{
         AnySource,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -314,7 +314,7 @@ fn any_source_u8_variant_works_end_to_end() {
     let mem_source = MemorySource::<U8>::new(2, 2, 1, vec![100u8; 4]).unwrap();
     let any = AnySource::U8(mem_source);
 
-    let pipeline = PipelineBuilder::from_source(any)
+    let pipeline = ImagePipeline::from_source(any)
         .invert()
         .unwrap()
         .build()

@@ -12,7 +12,7 @@ fn apply_single_invert_u8() {
     use crate::domain::ops::point::Invert as ConcretizeInvert;
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 100, 200, 255]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply(ConcretizeInvert)
         .unwrap()
         .build()
@@ -37,7 +37,7 @@ fn apply_fused_chain_u8() {
 
     // Chain: invert then linear(2.0, -10.0)
     let source = MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply((ConcretizeInvert, Linear::new(2.0, -10.0)))
         .unwrap()
         .build()
@@ -66,7 +66,7 @@ fn apply_matches_legacy_invert() {
 
     // Legacy path
     let legacy =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(256, 1, 1, pixels.clone()).unwrap())
+        ImagePipeline::from_source(MemorySource::<U8>::new(256, 1, 1, pixels.clone()).unwrap())
             .invert()
             .unwrap()
             .build()
@@ -74,7 +74,7 @@ fn apply_matches_legacy_invert() {
 
     // Concretize path
     let concretize =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(256, 1, 1, pixels).unwrap())
+        ImagePipeline::from_source(MemorySource::<U8>::new(256, 1, 1, pixels).unwrap())
             .apply(ConcretizeInvert)
             .unwrap()
             .build()
@@ -105,7 +105,7 @@ fn apply_chain_builder_ergonomic() {
         .then(Clamp::new(0.0, 200.0));
 
     let source = MemorySource::<U8>::new(3, 1, 1, vec![100, 200, 50]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply(chain)
         .unwrap()
         .build()
@@ -134,7 +134,7 @@ fn apply_unified_point_op() {
     use crate::domain::ops::point::Invert as ConcretizeInvert;
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 100, 200, 255]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply(ConcretizeInvert)
         .unwrap()
         .build()
@@ -160,7 +160,7 @@ fn apply_unified_dyn_operation() {
     let dyn_op: Box<dyn DynOperation> =
         Box::new(OperationBridge::new_pixel_local(Invert::<U8>::new(), 1));
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply(dyn_op)
         .unwrap()
         .build()
@@ -183,7 +183,7 @@ fn apply_unified_mixed_chain() {
 
     // Mix point ops via .apply() with chained calls
     let source = MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply(ConcretizeInvert)
         .unwrap()
         .apply(Linear::new(2.0, -10.0))
@@ -208,7 +208,7 @@ fn apply_consecutive_point_ops_auto_fuse_into_single_node() {
     use crate::sources::memory::MemorySource;
 
     let builder =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
+        ImagePipeline::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
             .apply(ConcretizeInvert)
             .unwrap()
             .apply(Linear::new(2.0, -10.0))
@@ -234,7 +234,7 @@ fn convenience_point_ops_auto_fuse_into_single_node() {
     use crate::sources::memory::MemorySource;
 
     let builder =
-        PipelineBuilder::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
+        ImagePipeline::from_source(MemorySource::<U8>::new(2, 1, 1, vec![100, 200]).unwrap())
             .invert()
             .unwrap()
             .linear(2.0, -10.0)

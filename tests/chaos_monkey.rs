@@ -4,20 +4,20 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use bytemuck::Pod;
 use viprs::{
-    BuildError, CompiledPipeline, Image, U8,
+    BuildError, CompiledPipeline, InMemoryImage, U8,
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{kernel::InterpolationKernel, ops::resample::Resize},
     ports::scheduler::TileScheduler,
 };
 
-fn zero_band_image() -> Image<U8> {
-    Image::from_buffer(1, 1, 0, Vec::<u8>::new()).expect("zero-band image should construct")
+fn zero_band_image() -> InMemoryImage<U8> {
+    InMemoryImage::from_buffer(1, 1, 0, Vec::<u8>::new()).expect("zero-band image should construct")
 }
 
-fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
 where
     F: viprs::BandFormat,
     F::Sample: Pod,
@@ -33,17 +33,15 @@ where
 }
 
 fn execute_pipeline<F>(
-    image: &Image<F>,
-    configure: impl FnOnce(PipelineBuilder) -> Result<CompiledPipeline, BuildError>,
+    image: &InMemoryImage<F>,
+    configure: impl FnOnce(ImagePipeline) -> Result<CompiledPipeline, BuildError>,
 ) -> Result<Vec<u8>, String>
 where
     F: viprs::BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-        image,
-    )))
-    .map_err(|err| format!("build failed: {err:?}"))?;
+    let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+        .map_err(|err| format!("build failed: {err:?}"))?;
     let mut sink =
         MemorySink::for_pipeline(&pipeline).map_err(|err| format!("sink failed: {err:?}"))?;
     RayonScheduler::new(2)
@@ -55,7 +53,7 @@ where
 
 fn assert_zero_band_pipeline_is_rejected(
     op_name: &str,
-    configure: impl FnOnce(PipelineBuilder) -> Result<CompiledPipeline, BuildError>,
+    configure: impl FnOnce(ImagePipeline) -> Result<CompiledPipeline, BuildError>,
 ) {
     let image = zero_band_image();
     let result = catch_unwind(AssertUnwindSafe(|| execute_pipeline(&image, configure)));

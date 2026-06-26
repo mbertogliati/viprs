@@ -15,7 +15,7 @@ use bytemuck::{Pod, Zeroable, allocation::try_cast_vec};
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const MAX_NAXIS: usize = 10;
@@ -443,7 +443,7 @@ where
 fn encode_pixels_as<T, F>(
     fptr: *mut fitsio_sys::fitsfile,
     datatype: c_int,
-    image: &Image<F>,
+    image: &InMemoryImage<F>,
     width: usize,
     height: usize,
     bands: usize,
@@ -546,7 +546,7 @@ impl FitsCodec {
     /// ```rust,no_run
     /// let _ = viprs_codecs::fits::FitsCodec::decode_fits::<viprs_core::format::U8>;
     /// ```
-    pub fn decode_fits<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    pub fn decode_fits<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         let temp = TempFitsPath::new("decode")?;
         fs::write(temp.as_path(), src)?;
 
@@ -635,7 +635,7 @@ impl FitsCodec {
             header.image_type.band_format,
         ));
 
-        Image::from_buffer(header.width, header.height, header.bands, pixels)
+        InMemoryImage::from_buffer(header.width, header.height, header.bands, pixels)
             .map(|img| img.with_metadata(metadata))
             .map_err(|err| ViprsError::Codec(err.to_string()))
     }
@@ -653,7 +653,7 @@ impl ImageDecoder for FitsCodec {
         sniff_fits(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_fits(src)
     }
 
@@ -661,7 +661,7 @@ impl ImageDecoder for FitsCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -686,7 +686,7 @@ impl ImageEncoder for FitsCodec {
         "fits"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         let fits_type = FitsType::from_band_format(F::ID).ok_or_else(|| {
             ViprsError::Codec(format!("fits: unsupported save format {:?}", F::ID))
         })?;
@@ -787,7 +787,7 @@ impl ImageEncoder for FitsCodec {
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -847,7 +847,8 @@ mod tests {
     #[test]
     fn roundtrip_u8_pixels_identity() {
         let pixels: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        let image = Image::<U8>::from_buffer(2, 2, 3, pixels.clone()).expect("valid input image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(2, 2, 3, pixels.clone()).expect("valid input image");
 
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         assert!(FitsCodec.sniff(&encoded));
@@ -868,7 +869,8 @@ mod tests {
     #[test]
     fn roundtrip_f32_pixels_identity() {
         let pixels: Vec<f32> = vec![0.0, 1.25, -2.5, 3.75, 4.5, -6.0];
-        let image = Image::<F32>::from_buffer(3, 2, 1, pixels.clone()).expect("valid input image");
+        let image =
+            InMemoryImage::<F32>::from_buffer(3, 2, 1, pixels.clone()).expect("valid input image");
 
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         let decoded = FitsCodec
@@ -885,7 +887,8 @@ mod tests {
     #[test]
     fn roundtrip_i16_pixels_identity() {
         let pixels: Vec<i16> = vec![-4, -3, -2, -1, 1, 2, 3, 4];
-        let image = Image::<I16>::from_buffer(2, 2, 2, pixels.clone()).expect("valid input image");
+        let image =
+            InMemoryImage::<I16>::from_buffer(2, 2, 2, pixels.clone()).expect("valid input image");
 
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         let decoded = FitsCodec
@@ -905,7 +908,8 @@ mod tests {
     #[test]
     fn roundtrip_i32_pixels_identity() {
         let pixels: Vec<i32> = vec![-40, -30, -20, -10, 10, 20, 30, 40];
-        let image = Image::<I32>::from_buffer(2, 2, 2, pixels.clone()).expect("valid input image");
+        let image =
+            InMemoryImage::<I32>::from_buffer(2, 2, 2, pixels.clone()).expect("valid input image");
 
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         let decoded = FitsCodec
@@ -921,7 +925,8 @@ mod tests {
     #[test]
     fn roundtrip_f64_pixels_identity() {
         let pixels: Vec<f64> = vec![-4.0, -1.5, 0.0, 1.25, 2.5, 4.75, 8.0, 16.0];
-        let image = Image::<F64>::from_buffer(2, 2, 2, pixels.clone()).expect("valid input image");
+        let image =
+            InMemoryImage::<F64>::from_buffer(2, 2, 2, pixels.clone()).expect("valid input image");
 
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         let decoded = FitsCodec
@@ -936,7 +941,8 @@ mod tests {
 
     #[test]
     fn probe_reports_dimensions() {
-        let image = Image::<U8>::from_buffer(4, 3, 1, vec![7u8; 12]).expect("valid input image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(4, 3, 1, vec![7u8; 12]).expect("valid input image");
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         assert_eq!(
             FitsCodec.probe(&encoded).expect("probe should succeed"),
@@ -946,7 +952,8 @@ mod tests {
 
     #[test]
     fn decode_rejects_requested_type_mismatch() {
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![1u8, 2, 3, 4]).expect("valid image");
+        let image =
+            InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![1u8, 2, 3, 4]).expect("valid image");
         let encoded = FitsCodec.encode(&image).expect("encode should succeed");
         let err = FitsCodec
             .decode::<F32>(&encoded)
@@ -960,13 +967,15 @@ mod tests {
 
     #[test]
     fn encode_rejects_unsigned_formats() {
-        let u16_image = Image::<U16>::from_buffer(2, 1, 1, vec![1u16, 2]).expect("valid image");
+        let u16_image =
+            InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![1u16, 2]).expect("valid image");
         let u16_err = FitsCodec
             .encode(&u16_image)
             .expect_err("u16 encode must fail");
         assert!(u16_err.to_string().contains("unsupported save format"));
 
-        let u32_image = Image::<U32>::from_buffer(2, 1, 1, vec![1u32, 2]).expect("valid image");
+        let u32_image =
+            InMemoryImage::<U32>::from_buffer(2, 1, 1, vec![1u32, 2]).expect("valid image");
         let u32_err = FitsCodec
             .encode(&u32_image)
             .expect_err("u32 encode must fail");
@@ -976,7 +985,8 @@ mod tests {
     #[test]
     fn decode_with_options_and_probe_path_work() {
         let pixels: Vec<f32> = vec![0.5, 1.5, 2.5, 3.5];
-        let image = Image::<F32>::from_buffer(2, 2, 1, pixels.clone()).expect("valid image");
+        let image =
+            InMemoryImage::<F32>::from_buffer(2, 2, 1, pixels.clone()).expect("valid image");
         let encoded = FitsCodec
             .encode_with_options(&image, &SaveOptions::default())
             .expect("encode_with_options should succeed");
@@ -1009,7 +1019,7 @@ mod tests {
         metadata
             .extra
             .insert("fits-41".into(), "HISTORY created by tests".into());
-        let image = Image::<F32>::from_buffer(2, 1, 1, vec![1.0, 2.0])
+        let image = InMemoryImage::<F32>::from_buffer(2, 1, 1, vec![1.0, 2.0])
             .expect("valid image")
             .with_metadata(metadata);
 

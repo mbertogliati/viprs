@@ -14,7 +14,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -45,7 +45,7 @@ fn bench_gauss_blur(c: &mut Criterion) {
                 let v_op = GaussBlurV::<F32>::new(sigma);
                 let v_bridge = OperationBridge::new(v_op, 1u32);
 
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(h_bridge))
                     .unwrap()
                     .then(Box::new(v_bridge))
@@ -74,7 +74,7 @@ fn bench_gauss_blur(c: &mut Criterion) {
         rgb_group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .gauss_blur(sigma)
                     .unwrap()
                     .build()

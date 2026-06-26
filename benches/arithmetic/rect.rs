@@ -9,7 +9,7 @@ use viprs::{
     },
     domain::format::F32,
     domain::ops::arithmetic::RectOp,
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::{ImagePipeline, OperationBridge},
     ports::scheduler::TileScheduler,
 };
 
@@ -32,7 +32,7 @@ fn bench_rect(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 2, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new_pixel_local(RectOp, 2)))
                     .unwrap()
                     .build()

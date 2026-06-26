@@ -1,16 +1,23 @@
 use super::{
-    BandFormatId, BuildError, Cast, Colorspace, ColorspaceId, ColourspaceDispatcher, Conv2d,
-    DynOperation, F32, F64, Flush, GaussBlurH, GaussBlurV, GaussOutputFormat, I16, I32, Identity,
-    Interpretation, Lab, LabSSharpen, LabSToLab, LabToLabS, OperationBridge, PipelineBuilder, U8,
+    BandFormatId, BuildError, Cast, Colorspace, ColorspaceId, ColourspaceDispatcher, Commit,
+    Committed, Conv2d, DynOperation, F32, F64, GaussBlurH, GaussBlurV, GaussOutputFormat, I16, I32,
+    ImagePipeline, Interpretation, Lab, LabSSharpen, LabSToLab, LabToLabS, OperationBridge, U8,
     U16, U32,
 };
 
-impl<Op: Flush> PipelineBuilder<Op> {
+const DEFAULT_SHARPEN_SIGMA: f32 = 0.5;
+const DEFAULT_SHARPEN_X1: f32 = 2.0;
+const DEFAULT_SHARPEN_Y2: f32 = 10.0;
+const DEFAULT_SHARPEN_Y3: f32 = 20.0;
+const DEFAULT_SHARPEN_M1: f32 = 0.0;
+const DEFAULT_SHARPEN_M2: f32 = 3.0;
+
+impl<Op: Commit> ImagePipeline<Op> {
     /// Insert a `Cast` operation converting the current format to `target`.
     ///
     /// Only combinations with a `CastSample` impl are supported. Unsupported pairs
     /// return `BuildError::UnsupportedFormat`.
-    pub fn cast(self, target: BandFormatId) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn cast(self, target: BandFormatId) -> Result<ImagePipeline<Committed>, BuildError> {
         // TODO(fusion): integrate cast into Concretize chain.
         let bands = self.bands;
         let source_fmt = self.current_format;
@@ -59,7 +66,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     /// Only F32 input is supported in this MVP. For other input formats, cast to F32
     /// first with `cast(BandFormatId::F32)`. Returns `BuildError::UnsupportedFormat`
     /// for unsupported input formats.
-    pub fn conv2d(self, kernel: Vec<Vec<f64>>) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn conv2d(self, kernel: Vec<Vec<f64>>) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         let source_fmt = self.current_format;
         let op: Box<dyn DynOperation> = match source_fmt {
@@ -127,7 +134,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// `U8` stays on the fixed-point path for both passes. All other formats use an
     /// `F32` intermediate selected by [`GaussOutputFormat`].
-    pub fn gauss_blur(self, sigma: f32) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn gauss_blur(self, sigma: f32) -> Result<ImagePipeline<Committed>, BuildError> {
         let bands = self.bands;
         match self.current_format {
             BandFormatId::U8 => self
@@ -200,7 +207,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///
     /// The builder converts the current image to `Lab`, quantizes to `LabS`, sharpens only
     /// the `L` channel, converts back to `Lab`, then restores the original colorspace.
-    pub fn sharpen(
+    pub fn sharpen_with(
         self,
         sigma: f32,
         x1: f32,
@@ -208,7 +215,7 @@ impl<Op: Flush> PipelineBuilder<Op> {
         y3: f32,
         m1: f32,
         m2: f32,
-    ) -> Result<PipelineBuilder<Identity>, BuildError> {
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
         let builder = self.flush_into_identity()?;
         let original_colorspace = builder
             .current_colorspace
@@ -250,11 +257,11 @@ impl<Op: Flush> PipelineBuilder<Op> {
     ///     .colourspace::<Lab>()?
     ///     .build()?;
     /// ```
-    pub fn colourspace<To: Colorspace>(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+    pub fn colourspace<To: Colorspace>(self) -> Result<ImagePipeline<Committed>, BuildError> {
         self.colourspace_to(To::ID)
     }
 
-    fn colourspace_to(self, to: ColorspaceId) -> Result<PipelineBuilder<Identity>, BuildError> {
+    fn colourspace_to(self, to: ColorspaceId) -> Result<ImagePipeline<Committed>, BuildError> {
         let builder = self.flush_into_identity()?;
         let from = builder
             .current_colorspace
@@ -272,6 +279,20 @@ impl<Op: Flush> PipelineBuilder<Op> {
         }
 
         Ok(builder)
+    }
+}
+
+impl ImagePipeline<Committed> {
+    /// Apply libvips-compatible default sharpening parameters.
+    pub fn sharpen(self) -> Result<Self, BuildError> {
+        self.sharpen_with(
+            DEFAULT_SHARPEN_SIGMA,
+            DEFAULT_SHARPEN_X1,
+            DEFAULT_SHARPEN_Y2,
+            DEFAULT_SHARPEN_Y3,
+            DEFAULT_SHARPEN_M1,
+            DEFAULT_SHARPEN_M2,
+        )
     }
 }
 

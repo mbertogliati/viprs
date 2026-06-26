@@ -2,7 +2,7 @@ use super::*;
 
 #[test]
 fn cache_last_op_keeps_linear_output_nodes_for_repeated_runs() {
-    let pipeline = PipelineBuilder::new(16, 16)
+    let pipeline = ImagePipeline::new(16, 16)
         .then(non_pixel_local_pass_op(1))
         .unwrap()
         .cache_last_op(NonZeroUsize::new(32).unwrap())
@@ -31,7 +31,7 @@ fn coalescing_invert_invert_is_identity_end_to_end() {
     let input_data: Vec<u8> = (0..w * h).map(|i| i as u8).collect();
     let source = MemorySource::<U8>::new(w, h, bands, input_data.clone()).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .invert()
@@ -73,7 +73,7 @@ fn fused_resize_upscale_uses_output_height_for_intermediate_buffers() {
         .collect();
     let source = MemorySource::<U8>::new(width, height, bands, pixels).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .resize(Resize::new(1.25, 1.25, InterpolationKernel::Lanczos3))
         .unwrap()
         .build()
@@ -128,7 +128,7 @@ fn run_to_image_propagates_source_metadata() {
         .unwrap()
         .with_metadata(metadata.clone());
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(Box::new(OperationBridge::new(PassThrough, 3)))
         .unwrap()
         .build()
@@ -164,7 +164,7 @@ fn run_to_image_updates_colourspace_metadata_and_invalidates_source_icc() {
     .unwrap()
     .with_metadata(metadata);
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
         .colourspace::<Lab>()
         .unwrap()
@@ -185,7 +185,7 @@ fn normalize_to_srgb_matches_web_encode_normalization_for_gray_alpha_sources() {
         adapters::{scheduler::rayon_scheduler::RayonScheduler, sources::memory::MemorySource},
         domain::{
             format::U8,
-            image::{Image, ImageMetadata, Interpretation},
+            image::{ImageMetadata, InMemoryImage, Interpretation},
             ops::colour::{icc::srgb_profile_bytes, profile_load},
         },
     };
@@ -193,10 +193,10 @@ fn normalize_to_srgb_matches_web_encode_normalization_for_gray_alpha_sources() {
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::BW);
     metadata.icc_profile = Some(profile_load("gray").expect("load gray ICC profile"));
-    let input = Image::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
+    let input = InMemoryImage::<U8>::from_buffer(2, 1, 2, vec![32, 7, 160, 9])
         .unwrap()
         .with_metadata(metadata);
-    let pipeline = PipelineBuilder::from_source(
+    let pipeline = ImagePipeline::from_source(
         MemorySource::<U8>::new(
             input.width(),
             input.height(),
@@ -251,7 +251,7 @@ fn normalize_to_srgb_is_noop_for_existing_srgb_profile() {
     metadata.interpretation = Some(Interpretation::Srgb);
     metadata.icc_profile = Some(profile_load("srgb").expect("load srgb ICC profile"));
 
-    let builder = PipelineBuilder::from_source(
+    let builder = ImagePipeline::from_source(
         MemorySource::<U8>::new(2, 1, 3, vec![10, 20, 30, 40, 50, 60])
             .unwrap()
             .with_metadata(metadata),
@@ -429,7 +429,7 @@ fn from_source_maps_interpretation_for_colourspace_builder() {
         .unwrap()
         .with_metadata(metadata);
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .colourspace::<Lab>()
         .unwrap()
         .build()
@@ -445,17 +445,17 @@ fn jpeg_decoder_source_preserves_interpretation_through_pipeline() {
         codecs::JpegCodec, scheduler::rayon_scheduler::RayonScheduler,
         sources::decoder_source::DecoderSource,
     };
-    use crate::domain::{codec_options::SaveOptions, format::U8, image::Image};
+    use crate::domain::{codec_options::SaveOptions, format::U8, image::InMemoryImage};
     use crate::ports::codec::ImageEncoder;
 
     let codec = JpegCodec;
-    let original = Image::<U8>::from_buffer(2, 2, 3, vec![64u8; 12]).unwrap();
+    let original = InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![64u8; 12]).unwrap();
     let encoded = codec
         .encode_with_options(&original, &SaveOptions::default().with_quality(100))
         .unwrap();
     let source = DecoderSource::<_, U8>::new(codec, &encoded).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .invert()
@@ -472,7 +472,7 @@ fn jpeg_decoder_source_preserves_interpretation_through_pipeline() {
 #[test]
 fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
-    use crate::domain::{codec_options::LoadOptions, format::U8, image::Image};
+    use crate::domain::{codec_options::LoadOptions, format::U8, image::InMemoryImage};
     use crate::ports::codec::ImageDecoder;
     use crate::sources::decoder_source::DecoderSource;
     use std::num::NonZeroU8;
@@ -491,7 +491,7 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -499,7 +499,7 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "tracking decoder only supports U8".into(),
@@ -510,12 +510,16 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
             self.seen_factors.lock().unwrap().push(factor);
             let width = (800 / u32::from(factor)).max(1);
             let height = (600 / u32::from(factor)).max(1);
-            let image =
-                Image::from_buffer(width, height, 3, vec![0u8; (width * height * 3) as usize])
-                    .map_err(|e| ViprsError::Codec(e.to_string()))?;
+            let image = InMemoryImage::from_buffer(
+                width,
+                height,
+                3,
+                vec![0u8; (width * height * 3) as usize],
+            )
+            .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
             // SAFETY: F::ID == U8 implies F::Sample == u8 because BandFormat is sealed.
-            let cast = unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) };
+            let cast = unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) };
             Ok(cast)
         }
 
@@ -533,8 +537,8 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
     )
     .unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = ImagePipeline::from_source(source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(19),
             InterpolationKernel::Lanczos3,
         ))
@@ -550,7 +554,7 @@ fn thumbnail_passes_loader_specific_hint_to_jpeg_decoder_source() {
 #[test]
 fn thumbnail_passes_loader_hint_before_first_path_decode() {
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
-    use crate::domain::{codec_options::LoadOptions, format::U8, image::Image};
+    use crate::domain::{codec_options::LoadOptions, format::U8, image::InMemoryImage};
     use crate::ports::codec::ImageDecoder;
     use crate::sources::decoder_source::DecoderSource;
     use std::fs;
@@ -571,7 +575,7 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -579,7 +583,7 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "path tracking decoder only supports U8".into(),
@@ -590,12 +594,16 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
             self.seen_factors.lock().unwrap().push(factor);
             let width = (800 / u32::from(factor)).max(1);
             let height = (600 / u32::from(factor)).max(1);
-            let image =
-                Image::from_buffer(width, height, 3, vec![0u8; (width * height * 3) as usize])
-                    .map_err(|e| ViprsError::Codec(e.to_string()))?;
+            let image = InMemoryImage::from_buffer(
+                width,
+                height,
+                3,
+                vec![0u8; (width * height * 3) as usize],
+            )
+            .map_err(|e| ViprsError::Codec(e.to_string()))?;
 
             // SAFETY: F::ID == U8 implies F::Sample == u8 because BandFormat is sealed.
-            let cast = unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) };
+            let cast = unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) };
             Ok(cast)
         }
 
@@ -603,7 +611,7 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
             &self,
             _: &Path,
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError>
+        ) -> Result<InMemoryImage<F>, ViprsError>
         where
             Self: Sized,
         {
@@ -639,8 +647,8 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
     )
     .unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = ImagePipeline::from_source(source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(19),
             InterpolationKernel::Lanczos3,
         ))
@@ -656,7 +664,7 @@ fn thumbnail_passes_loader_hint_before_first_path_decode() {
 #[test]
 fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
-    use crate::domain::{codec_options::LoadOptions, format::U8, image::Image};
+    use crate::domain::{codec_options::LoadOptions, format::U8, image::InMemoryImage};
     use crate::ports::codec::ImageDecoder;
     use crate::sources::decoder_source::DecoderSource;
     use std::num::NonZeroU8;
@@ -672,7 +680,7 @@ fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -680,7 +688,7 @@ fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "native hint decoder only supports U8".into(),
@@ -690,12 +698,16 @@ fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
             let factor = opts.shrink_factor.map_or(1, NonZeroU8::get);
             let width = (2048 / u32::from(factor)).max(1);
             let height = (1536 / u32::from(factor)).max(1);
-            let image =
-                Image::from_buffer(width, height, 3, vec![0u8; (width * height * 3) as usize])
-                    .map_err(|err| ViprsError::Codec(err.to_string()))?;
+            let image = InMemoryImage::from_buffer(
+                width,
+                height,
+                3,
+                vec![0u8; (width * height * 3) as usize],
+            )
+            .map_err(|err| ViprsError::Codec(err.to_string()))?;
 
             // SAFETY: F::ID == U8 implies F::Sample == u8 because BandFormat is sealed.
-            let cast = unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) };
+            let cast = unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) };
             Ok(cast)
         }
 
@@ -705,14 +717,14 @@ fn large_thumbnail_with_native_source_hint_keeps_thin_strip_demand() {
     }
 
     let source = DecoderSource::<_, U8>::new(NativeHintDecoder, b"jpeg").unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(crate::domain::colorspace::ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .build()
         .unwrap();
@@ -728,7 +740,7 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
     };
     use crate::domain::ops::resample::thumbnail::ThumbnailTarget;
     use crate::domain::{
-        codec_options::LoadOptions, colorspace::ColorspaceId, format::U8, image::Image,
+        codec_options::LoadOptions, colorspace::ColorspaceId, format::U8, image::InMemoryImage,
     };
     use crate::ports::{codec::ImageDecoder, scheduler::TileScheduler};
     use std::num::NonZeroU8;
@@ -744,7 +756,7 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
             true
         }
 
-        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+        fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
             self.decode_with_options(src, &LoadOptions::default())
         }
 
@@ -752,7 +764,7 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
             &self,
             _: &[u8],
             opts: &LoadOptions,
-        ) -> Result<Image<F>, ViprsError> {
+        ) -> Result<InMemoryImage<F>, ViprsError> {
             if F::ID != U8::ID {
                 return Err(ViprsError::Codec(
                     "native shrink rounding decoder only supports U8".into(),
@@ -765,12 +777,16 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
             } else {
                 (2048, 2048)
             };
-            let image =
-                Image::from_buffer(width, height, 3, vec![64u8; (width * height * 3) as usize])
-                    .map_err(|err| ViprsError::Codec(err.to_string()))?;
+            let image = InMemoryImage::from_buffer(
+                width,
+                height,
+                3,
+                vec![64u8; (width * height * 3) as usize],
+            )
+            .map_err(|err| ViprsError::Codec(err.to_string()))?;
 
             // SAFETY: F::ID == U8 implies F::Sample == u8 because BandFormat is sealed.
-            let cast = unsafe { std::mem::transmute::<Image<U8>, Image<F>>(image) };
+            let cast = unsafe { std::mem::transmute::<InMemoryImage<U8>, InMemoryImage<F>>(image) };
             Ok(cast)
         }
 
@@ -780,14 +796,14 @@ fn thumbnail_replans_after_native_shrink_changes_actual_dimensions() {
     }
 
     let source = DecoderSource::<_, U8>::new(NativeShrinkRoundingDecoder, b"jpeg").unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .sharpen(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
         .unwrap()
         .build()
         .unwrap();
@@ -812,8 +828,8 @@ fn large_thumbnail_avoids_full_image_hint() {
     };
 
     let source = MemorySource::<U8>::new(2048, 2048, 3, vec![0u8; 2048 * 2048 * 3]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = ImagePipeline::from_source(source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
@@ -829,14 +845,14 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
     use crate::{
         domain::{
             format::U8,
-            image::{Image, ImageMetadata},
+            image::{ImageMetadata, InMemoryImage},
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
         sources::memory::MemorySource,
     };
 
-    fn patterned_rgb_u8(width: u32, height: u32) -> Image<U8> {
+    fn patterned_rgb_u8(width: u32, height: u32) -> InMemoryImage<U8> {
         let pixels = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -848,10 +864,13 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
                 })
             })
             .collect();
-        Image::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::from_buffer(width, height, 3, pixels).unwrap()
     }
 
-    fn run_thumbnail(image: &Image<U8>, width: u32) -> (CompiledPipeline, Image<U8>) {
+    fn run_thumbnail(
+        image: &InMemoryImage<U8>,
+        width: u32,
+    ) -> (CompiledPipeline, InMemoryImage<U8>) {
         let source = MemorySource::<U8>::new(
             image.width(),
             image.height(),
@@ -860,8 +879,8 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
         )
         .unwrap()
         .with_metadata(ImageMetadata::default());
-        let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
+        let pipeline = ImagePipeline::from_source(source)
+            .thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(width),
                 InterpolationKernel::Lanczos3,
             ))
@@ -885,13 +904,13 @@ fn chained_thumbnail_uses_intermediate_dimensions() {
         image.pixels().to_vec(),
     )
     .unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = ImagePipeline::from_source(source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(100),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(50),
             InterpolationKernel::Lanczos3,
         ))
@@ -915,14 +934,14 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
     use crate::{
         domain::{
             format::U8,
-            image::{Image, ImageMetadata},
+            image::{ImageMetadata, InMemoryImage},
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
         sources::memory::MemorySource,
     };
 
-    fn patterned_rgb_u8(width: u32, height: u32) -> Image<U8> {
+    fn patterned_rgb_u8(width: u32, height: u32) -> InMemoryImage<U8> {
         let pixels = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -934,10 +953,13 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
                 })
             })
             .collect();
-        Image::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::from_buffer(width, height, 3, pixels).unwrap()
     }
 
-    fn run_thumbnail(image: &Image<U8>, width: u32) -> (CompiledPipeline, Image<U8>) {
+    fn run_thumbnail(
+        image: &InMemoryImage<U8>,
+        width: u32,
+    ) -> (CompiledPipeline, InMemoryImage<U8>) {
         let source = MemorySource::<U8>::new(
             image.width(),
             image.height(),
@@ -946,8 +968,8 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
         )
         .unwrap()
         .with_metadata(ImageMetadata::default());
-        let pipeline = PipelineBuilder::from_source(source)
-            .thumbnail(Thumbnail::new(
+        let pipeline = ImagePipeline::from_source(source)
+            .thumbnail_with(Thumbnail::new(
                 ThumbnailTarget::Width(width),
                 InterpolationKernel::Lanczos3,
             ))
@@ -973,18 +995,18 @@ fn chained_thumbnail_single_row_matches_sequential_execution() {
     )
     .unwrap()
     .with_metadata(ImageMetadata::default());
-    let pipeline = PipelineBuilder::from_source(source)
-        .thumbnail(Thumbnail::new(
+    let pipeline = ImagePipeline::from_source(source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(64),
             InterpolationKernel::Lanczos3,
         ))
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(7),
             InterpolationKernel::Lanczos3,
         ))
@@ -1009,14 +1031,14 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
         domain::{
             colorspace::{ColorspaceId, Lab, SRgb},
             format::U8,
-            image::Image,
+            image::InMemoryImage,
             kernel::InterpolationKernel,
             ops::resample::thumbnail::{Thumbnail, ThumbnailTarget},
         },
         sources::memory::MemorySource,
     };
 
-    fn patterned_rgb_u8(width: u32, height: u32) -> Image<U8> {
+    fn patterned_rgb_u8(width: u32, height: u32) -> InMemoryImage<U8> {
         let pixels = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -1028,7 +1050,7 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
                 })
             })
             .collect();
-        Image::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::from_buffer(width, height, 3, pixels).unwrap()
     }
 
     let image = patterned_rgb_u8(777, 333);
@@ -1039,9 +1061,9 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
         image.pixels().to_vec(),
     )
     .unwrap();
-    let first_pipeline = PipelineBuilder::from_source(source)
+    let first_pipeline = ImagePipeline::from_source(source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
@@ -1064,8 +1086,8 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
     )
     .unwrap()
     .with_metadata(first.metadata().clone());
-    let sequential_pipeline = PipelineBuilder::from_source(sequential_source)
-        .thumbnail(Thumbnail::new(
+    let sequential_pipeline = ImagePipeline::from_source(sequential_source)
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(200),
             InterpolationKernel::Lanczos3,
         ))
@@ -1083,9 +1105,9 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
         image.pixels().to_vec(),
     )
     .unwrap();
-    let chained_pipeline = PipelineBuilder::from_source(chained_source)
+    let chained_pipeline = ImagePipeline::from_source(chained_source)
         .with_colorspace(ColorspaceId::SRgb)
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(400),
             InterpolationKernel::Lanczos3,
         ))
@@ -1094,7 +1116,7 @@ fn thumbnail_after_colourspace_uses_intermediate_dimensions() {
         .unwrap()
         .colourspace::<SRgb>()
         .unwrap()
-        .thumbnail(Thumbnail::new(
+        .thumbnail_with(Thumbnail::new(
             ThumbnailTarget::Width(200),
             InterpolationKernel::Lanczos3,
         ))
@@ -1125,7 +1147,7 @@ fn replicate_runs_end_to_end_without_tile_propagation_panic() {
     let input_data: Vec<u8> = (0..width * height).map(|value| value as u8).collect();
     let source = MemorySource::<U8>::new(width, height, 1, input_data.clone()).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .replicate(2, 3)
         .unwrap()
         .build()
@@ -1303,7 +1325,7 @@ fn sequential_builder_enables_thin_strip_streaming_defaults() {
     use crate::pipeline::LineCacheConfig;
 
     let source = ZeroSource::<U8>::new(64, 64, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .sequential(0)
         .then(pass_op(1))
         .unwrap()
@@ -1328,7 +1350,7 @@ fn linecache_op_exposes_explicit_line_budget() {
     use crate::pipeline::LineCacheConfig;
 
     let source = ZeroSource::<U8>::new(64, 64, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .apply(LineCacheOp::new(7))
         .unwrap()
         .then(pass_op(1))

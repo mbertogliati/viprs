@@ -11,7 +11,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F64};
-use viprs_core::image::Image;
+use viprs_core::image::InMemoryImage;
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── Token scanner ────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ fn decode_csv(
     src: &[u8],
     skip_lines: u32,
     limit_lines: Option<u32>,
-) -> Result<Image<F64>, ViprsError> {
+) -> Result<InMemoryImage<F64>, ViprsError> {
     let whitespace = build_whitespace_map(" ");
     let separators = build_separator_map(";,\t");
 
@@ -307,12 +307,16 @@ fn decode_csv(
         decode_scanner.consume_newline();
     }
 
-    Image::from_buffer(width, height, 1, pixels).map_err(|e| ViprsError::Codec(e.to_string()))
+    InMemoryImage::from_buffer(width, height, 1, pixels)
+        .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 // ── Core encode ──────────────────────────────────────────────────────────────
 
-fn encode_csv<F: BandFormat>(image: &Image<F>, separator: &str) -> Result<Vec<u8>, ViprsError> {
+fn encode_csv<F: BandFormat>(
+    image: &InMemoryImage<F>,
+    separator: &str,
+) -> Result<Vec<u8>, ViprsError> {
     if image.bands() != 1 {
         return Err(ViprsError::Codec(
             "csv: only single-band images can be saved as CSV".into(),
@@ -453,7 +457,7 @@ impl ImageDecoder for CsvCodec {
         Self::sniff_header(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -461,7 +465,7 @@ impl ImageDecoder for CsvCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -476,7 +480,7 @@ impl ImageDecoder for CsvCodec {
         let (w, h, b) = (image.width(), image.height(), image.bands());
         let raw: Vec<f64> = image.into_buffer();
         let samples: Vec<F::Sample> = bytemuck::cast_vec(raw);
-        Image::from_buffer(w, h, b, samples).map_err(|e| ViprsError::Codec(e.to_string()))
+        InMemoryImage::from_buffer(w, h, b, samples).map_err(|e| ViprsError::Codec(e.to_string()))
     }
 
     fn probe(&self, src: &[u8]) -> Result<(u32, u32, u32), ViprsError>
@@ -493,13 +497,13 @@ impl ImageEncoder for CsvCodec {
         "csv"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -559,7 +563,7 @@ mod tests {
     fn encode_round_trip_f64() {
         let codec = CsvCodec;
         let original =
-            Image::<F64>::from_buffer(3, 2, 1, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).unwrap();
+            InMemoryImage::<F64>::from_buffer(3, 2, 1, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).unwrap();
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F64>(&encoded).unwrap();
         assert_eq!(decoded.width(), 3);
@@ -572,7 +576,7 @@ mod tests {
     #[test]
     fn encode_u8_single_band() {
         let codec = CsvCodec;
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![0, 128, 64, 255]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0, 128, 64, 255]).unwrap();
         let encoded = codec.encode(&image).unwrap();
         let text = std::str::from_utf8(&encoded).unwrap();
         assert!(text.contains("128"));
@@ -582,7 +586,7 @@ mod tests {
     #[test]
     fn encode_multi_band_errors() {
         let codec = CsvCodec;
-        let image = Image::<U8>::from_buffer(2, 1, 3, vec![0; 6]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![0; 6]).unwrap();
         assert!(codec.encode(&image).is_err());
     }
 

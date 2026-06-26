@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use crate::domain::{
     error::ViprsError,
     format::U8,
-    image::{Image, Region, Tile},
+    image::{InMemoryImage, Region, Tile},
     reducer::TileReducer,
 };
 
@@ -104,7 +104,7 @@ impl UnionFind {
 
 impl TileReducer<U8> for LabelRegionsReducer {
     type Partial = TileLabelsPartial;
-    type Output = Result<Image<crate::domain::format::U32>, ViprsError>;
+    type Output = Result<InMemoryImage<crate::domain::format::U32>, ViprsError>;
     /// Per-thread reusable list of active pixel positions for one tile.
     type Scratch = Vec<(u32, u32)>;
 
@@ -236,7 +236,7 @@ impl TileReducer<U8> for LabelRegionsReducer {
             labels[idx] = *label;
         }
 
-        Image::from_buffer(width, height, 1, labels)
+        InMemoryImage::from_buffer(width, height, 1, labels)
     }
 }
 

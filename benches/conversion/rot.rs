@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::U8, ops::conversion::Angle},
@@ -29,7 +29,7 @@ fn bench_rot(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).rot(Angle::D90),
+                    ImagePipeline::from_source(source).rot(Angle::D90),
                     "add rot d90 operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");
@@ -50,7 +50,7 @@ fn bench_rot(c: &mut Criterion) {
                     "create memory source",
                 );
                 let builder = must(
-                    PipelineBuilder::from_source(source).rot(Angle::D180),
+                    ImagePipeline::from_source(source).rot(Angle::D180),
                     "add rot d180 operation",
                 );
                 let pipeline = must(builder.build(), "build pipeline");

@@ -13,7 +13,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::{F32, U8, U16},
-    image::{DemandHint, Image, Region},
+    image::{DemandHint, InMemoryImage, Region},
     op::{DynOperation, OperationBridge},
 };
 use viprs_ops_colour::colour::DE00;
@@ -33,9 +33,8 @@ use viprs_ports::{
 };
 
 use crate::{
-    pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
-    sinks::memory::MemorySink, sources::decoder_source::DecoderSource,
-    sources::memory::MemorySource,
+    pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler, sinks::memory::MemorySink,
+    sources::decoder_source::DecoderSource, sources::memory::MemorySource,
 };
 
 fn run_u8_pipeline(
@@ -46,7 +45,7 @@ fn run_u8_pipeline(
     op: Box<dyn DynOperation>,
 ) -> (u32, u32, u32, Vec<u8>) {
     let source = MemorySource::<U8>::new(width, height, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(op)
         .unwrap()
         .build()
@@ -122,7 +121,7 @@ impl ImageSource for RecordingSource {
     }
 }
 
-fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
+fn clamped_region_pixels_u8(image: &InMemoryImage<U8>, region: Region) -> Vec<u8> {
     let bands = image.bands() as usize;
     let mut output = vec![0u8; region.pixel_count() * bands];
     for out_y in 0..region.height {
@@ -137,7 +136,7 @@ fn clamped_region_pixels_u8(image: &Image<U8>, region: Region) -> Vec<u8> {
     output
 }
 
-fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
+fn patterned_rgb(width: u32, height: u32) -> InMemoryImage<U8> {
     let mut data = Vec::with_capacity(width as usize * height as usize * 3);
     for y in 0..height {
         for x in 0..width {
@@ -146,14 +145,14 @@ fn patterned_rgb(width: u32, height: u32) -> Image<U8> {
             data.push((((x ^ y) * 11) % 256) as u8);
         }
     }
-    Image::from_buffer(width, height, 3, data).unwrap()
+    InMemoryImage::from_buffer(width, height, 3, data).unwrap()
 }
 
 #[test]
 fn de00_pipeline_rejects_three_band_input() {
     let source = MemorySource::<F32>::new(1, 1, 3, vec![0.0, 0.0, 0.0]).unwrap();
     assert!(
-        PipelineBuilder::from_source(source)
+        ImagePipeline::from_source(source)
             .then(Box::new(OperationBridge::new_pixel_local(DE00, 3)))
             .is_err()
     );
@@ -163,7 +162,7 @@ fn de00_pipeline_rejects_three_band_input() {
 fn de00_pipeline_emits_single_distance_band() {
     let source =
         MemorySource::<F32>::new(1, 1, 6, vec![50.0, 10.0, 20.0, 40.0, -20.0, 10.0]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(Box::new(OperationBridge::new_pixel_local(DE00, 6)))
         .unwrap()
         .build()
@@ -258,7 +257,7 @@ fn subsample_point_mode_pipeline_reads_single_source_pixels() {
     let source = RecordingSource {
         reads: Arc::clone(&reads),
     };
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(Box::new(
             SubsampleBridge::<U8>::with_point(12, 5, 1, true).unwrap(),
         ))
@@ -304,7 +303,7 @@ fn subsample_point_mode_pipeline_after_invert_reads_single_source_pixels() {
     let source = RecordingSource {
         reads: Arc::clone(&reads),
     };
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(Box::new(OperationBridge::new_pixel_local(
             Invert::<U8>::new(),
             1,
@@ -351,7 +350,7 @@ fn subsample_point_mode_pipeline_after_invert_reads_single_source_pixels() {
 
 #[test]
 fn png_decoder_source_streams_regions_without_resident_frame() {
-    let image = Image::<U8>::from_buffer(5, 4, 3, (0u8..60).collect()).unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(5, 4, 3, (0u8..60).collect()).unwrap();
     let encoded = PngCodec::default().encode(&image).unwrap();
     let source =
         DecoderSource::<_, U8>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
@@ -368,8 +367,9 @@ fn png_decoder_source_streams_regions_without_resident_frame() {
 
 #[test]
 fn png_decoder_source_streams_u16_region() {
-    let image = Image::<U16>::from_buffer(3, 3, 3, (0u16..27).map(|sample| sample * 257).collect())
-        .unwrap();
+    let image =
+        InMemoryImage::<U16>::from_buffer(3, 3, 3, (0u16..27).map(|sample| sample * 257).collect())
+            .unwrap();
     let encoded = PngCodec::default().encode(&image).unwrap();
     let source =
         DecoderSource::<_, U16>::streaming(PngCodec::default(), &encoded, LoadOptions::default())
@@ -386,7 +386,8 @@ fn png_decoder_source_streams_u16_region() {
 #[test]
 fn png_decoder_source_streams_interlaced_regions() {
     let image =
-        Image::<U8>::from_buffer(8, 8, 3, (0u8..192).cycle().take(8 * 8 * 3).collect()).unwrap();
+        InMemoryImage::<U8>::from_buffer(8, 8, 3, (0u8..192).cycle().take(8 * 8 * 3).collect())
+            .unwrap();
     let encoded = PngCodec::default().encode(&image).unwrap();
     let eager = PngCodec::default().decode::<U8>(&encoded).unwrap();
     let source =
@@ -401,9 +402,13 @@ fn png_decoder_source_streams_interlaced_regions() {
 
 #[test]
 fn tiff_decoder_source_streams_path_regions() {
-    let image =
-        Image::<U8>::from_buffer(8, 6, 3, (0..8 * 6 * 3).map(|v| (v % 251) as u8).collect())
-            .unwrap();
+    let image = InMemoryImage::<U8>::from_buffer(
+        8,
+        6,
+        3,
+        (0..8 * 6 * 3).map(|v| (v % 251) as u8).collect(),
+    )
+    .unwrap();
     let encoded = TiffEncoder::default()
         .encode_with_options(
             &image,

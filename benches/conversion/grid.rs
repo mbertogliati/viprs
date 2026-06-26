@@ -6,7 +6,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -31,7 +31,7 @@ fn bench_grid(c: &mut Criterion) {
                     let source =
                         MemorySource::<U8>::new(src_width, input_height, 1, pixels.clone())
                             .unwrap();
-                    let pipeline = PipelineBuilder::from_source(source)
+                    let pipeline = ImagePipeline::from_source(source)
                         .grid(tile_height, 2)
                         .unwrap()
                         .build()

@@ -10,7 +10,7 @@ use viprs::{
         ops::{arithmetic::Linear, histogram::HistIsMonotonicOp},
         reducers::histogram::HistFindReducer,
     },
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::{ImagePipeline, OperationBridge},
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 
@@ -23,7 +23,7 @@ fn make_pixels(size: u32) -> Vec<u8> {
 
 fn cumulative_bins(size: u32, pixels: &[u8], scheduler: &RayonScheduler) -> Vec<f32> {
     let source = MemorySource::<U8>::new(size, size, 1, pixels.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(Box::new(OperationBridge::new_pixel_local(
             Linear::<U8>::new(1, 0).unwrap(),
             1,
@@ -62,7 +62,7 @@ fn bench_hist_ismonotonic(c: &mut Criterion) {
             b.iter(|| {
                 let cumulative = cumulative_bins(size, &pixels, &scheduler);
                 let source = MemorySource::<F32>::new(256, 1, 1, cumulative).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::new(
                         HistIsMonotonicOp::<F32>::new(),
                         1,

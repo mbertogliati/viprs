@@ -11,7 +11,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::{BandFormat, BandFormatId},
-    image::{Image, ImageMetadata, Interpretation},
+    image::{ImageMetadata, InMemoryImage, Interpretation},
 };
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
@@ -428,7 +428,7 @@ impl ImageDecoder for RadianceCodec {
         header.starts_with(RADIANCE_MAGIC.as_bytes()) || header.starts_with(RGBE_MAGIC.as_bytes())
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -436,7 +436,7 @@ impl ImageDecoder for RadianceCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -449,7 +449,7 @@ impl ImageDecoder for RadianceCodec {
 
         let (header, pixels) = decode_radiance(src)?;
         let pixels = bytemuck::cast_vec::<f32, F::Sample>(pixels);
-        Image::from_buffer(header.width, header.height, 3, pixels)
+        InMemoryImage::from_buffer(header.width, header.height, 3, pixels)
             .map(|image| image.with_metadata(metadata_for_radiance(&header)))
             .map_err(|error| ViprsError::Codec(error.to_string()))
     }
@@ -468,13 +468,13 @@ impl ImageEncoder for RadianceCodec {
         "radiance"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -558,9 +558,13 @@ mod tests {
     #[test]
     fn radiance_round_trip_rgb_f32() {
         let codec = RadianceCodec;
-        let original =
-            Image::<F32>::from_buffer(8, 2, 3, (0..48).map(|index| index as f32 * 0.125).collect())
-                .unwrap();
+        let original = InMemoryImage::<F32>::from_buffer(
+            8,
+            2,
+            3,
+            (0..48).map(|index| index as f32 * 0.125).collect(),
+        )
+        .unwrap();
 
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F32>(&encoded).unwrap();
@@ -659,7 +663,7 @@ EXPOSURE=1.5
         let mut metadata = ImageMetadata::default();
         metadata.extra.insert(EXPOSURE_KEY.into(), "1.5".into());
         metadata.extra.insert(ASPECT_KEY.into(), "2".into());
-        let original = Image::<F32>::from_buffer(1, 1, 3, vec![0.5, 1.0, 1.5])
+        let original = InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![0.5, 1.0, 1.5])
             .unwrap()
             .with_metadata(metadata);
 
@@ -675,7 +679,7 @@ EXPOSURE=1.5
 
     #[test]
     fn radiance_encode_rejects_non_rgb_images() {
-        let image = Image::<F32>::from_buffer(1, 1, 1, vec![0.5]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![0.5]).unwrap();
         assert!(RadianceCodec.encode(&image).is_err());
     }
 

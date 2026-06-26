@@ -4,7 +4,7 @@ use super::*;
 fn pipeline_with_zero_ops_is_identity() {
     let pixels = vec![19_u8, 7, 191, 36, 18, 196, 32, 36, 210, 49, 47, 215];
     let source = MemorySource::<U8>::new(2, 2, 3, pixels.clone()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source).build().unwrap();
+    let pipeline = ImagePipeline::from_source(source).build().unwrap();
     let output = pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
         .unwrap();
@@ -16,7 +16,7 @@ fn pipeline_with_zero_ops_is_identity() {
 
 #[test]
 fn invert_rejects_zero_band_sources() {
-    let result = PipelineBuilder::from_source(zero_band_source()).invert();
+    let result = ImagePipeline::from_source(zero_band_source()).invert();
 
     assert!(matches!(
         result,
@@ -28,7 +28,7 @@ fn invert_rejects_zero_band_sources() {
 
 #[test]
 fn flip_horizontal_rejects_zero_band_sources() {
-    let result = PipelineBuilder::from_source(zero_band_source()).flip_horizontal();
+    let result = ImagePipeline::from_source(zero_band_source()).flip_horizontal();
 
     assert!(matches!(
         result,
@@ -40,7 +40,7 @@ fn flip_horizontal_rejects_zero_band_sources() {
 
 #[test]
 fn rotate90_rejects_zero_band_sources() {
-    let result = PipelineBuilder::from_source(zero_band_source()).rotate90();
+    let result = ImagePipeline::from_source(zero_band_source()).rotate90();
 
     assert!(matches!(
         result,
@@ -58,7 +58,7 @@ fn point_mode_pipeline_handles_zero_width_source_after_upstream_op() {
     };
 
     let source = MemorySource::<U8>::new(0, 1, 1, vec![]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(Box::new(OperationBridge::new_pixel_local(
             Invert::<U8>::new(),
             1,
@@ -102,8 +102,8 @@ fn source_region_sizing_uses_coordinate_driven_source_plan() {
 fn flatten_rgb_is_noop() {
     let pixels = vec![19_u8, 7, 191, 36, 18, 196, 32, 36, 210, 49, 47, 215];
     let source = MemorySource::<U8>::new(2, 2, 3, pixels.clone()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .flatten([0.0, 0.0, 0.0, 1.0])
+    let pipeline = ImagePipeline::from_source(source)
+        .flatten_background([0.0, 0.0, 0.0, 1.0])
         .unwrap()
         .build()
         .unwrap();
@@ -119,8 +119,8 @@ fn flatten_rgb_is_noop() {
 fn flatten_rgba_removes_alpha() {
     let pixels = vec![10_u8, 20, 30, 0, 40, 50, 60, 255];
     let source = MemorySource::<U8>::new(2, 1, 4, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
-        .flatten([0.0, 0.0, 0.0, 1.0])
+    let pipeline = ImagePipeline::from_source(source)
+        .flatten_background([0.0, 0.0, 0.0, 1.0])
         .unwrap()
         .build()
         .unwrap();
@@ -133,13 +133,45 @@ fn flatten_rgba_removes_alpha() {
 }
 
 #[test]
+fn flatten_defaults_to_white_background() {
+    let source = MemorySource::<U8>::new(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
+    let pipeline = ImagePipeline::from_source(source)
+        .flatten()
+        .unwrap()
+        .build()
+        .unwrap();
+    let output = pipeline
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!(output.bands(), 3);
+    assert_eq!(output.pixels(), &[177, 202, 227]);
+}
+
+#[test]
+fn flatten_with_uses_custom_background() {
+    let source = MemorySource::<U8>::new(1, 1, 4, vec![100, 150, 200, 128]).unwrap();
+    let pipeline = ImagePipeline::from_source(source)
+        .flatten_with(10, 20, 30)
+        .unwrap()
+        .build()
+        .unwrap();
+    let output = pipeline
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!(output.bands(), 3);
+    assert_eq!(output.pixels(), &[55, 85, 115]);
+}
+
+#[test]
 fn premultiply_u16_rgb16_uses_interpretation_max_alpha() {
     let mut metadata = ImageMetadata::default();
     metadata.interpretation = Some(Interpretation::Rgb16);
     let source = MemorySource::<U16>::new(1, 1, 4, vec![65535, 32768, 16384, 32768])
         .unwrap()
         .with_metadata(metadata);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .premultiply()
         .unwrap()
         .build()
@@ -149,6 +181,102 @@ fn premultiply_u16_rgb16_uses_interpretation_max_alpha() {
         .unwrap();
 
     assert_eq!(output.pixels(), &[32768, 16384, 8192, 32768]);
+}
+
+#[test]
+fn sharpen_defaults_match_explicit_parameters() {
+    let pixels = vec![
+        12, 30, 48, 64, 82, 100, 118, 136, 154, 45, 63, 81, 97, 115, 133, 149, 167, 185, 78, 96,
+        114, 130, 148, 166, 182, 200, 218,
+    ];
+    let actual =
+        ImagePipeline::from_source(MemorySource::<U8>::new(3, 3, 3, pixels.clone()).unwrap())
+            .with_colorspace(ColorspaceId::SRgb)
+            .sharpen()
+            .unwrap()
+            .build()
+            .unwrap()
+            .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+            .unwrap();
+    let expected = ImagePipeline::from_source(MemorySource::<U8>::new(3, 3, 3, pixels).unwrap())
+        .with_colorspace(ColorspaceId::SRgb)
+        .sharpen_with(0.5, 2.0, 10.0, 20.0, 0.0, 3.0)
+        .unwrap()
+        .build()
+        .unwrap()
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!(actual.pixels(), expected.pixels());
+}
+
+#[test]
+fn smartcrop_crops_to_attention_region() {
+    let width = 96u32;
+    let height = 64u32;
+    let crop_width = 24u32;
+    let crop_height = 24u32;
+    let mut pixels = vec![0u8; width as usize * height as usize * 3];
+
+    for y in 0..height as usize {
+        for x in 0..width as usize {
+            let idx = (y * width as usize + x) * 3;
+            pixels[idx] = 14 + ((x * 3 + y * 2) % 5) as u8;
+            pixels[idx + 1] = 12 + ((x * 5 + y) % 5) as u8;
+            pixels[idx + 2] = 10 + ((x + y * 7) % 5) as u8;
+        }
+    }
+
+    for y in 18..42 {
+        for x in 56..82 {
+            let idx = (y * width as usize + x) * 3;
+            let border = x == 56 || x == 81 || y == 18 || y == 41 || x == 69 || y == 30;
+            if border {
+                pixels[idx..idx + 3].copy_from_slice(&[8, 8, 8]);
+            } else if (x + y) % 3 == 0 {
+                pixels[idx..idx + 3].copy_from_slice(&[230, 186, 150]);
+            } else {
+                pixels[idx..idx + 3].copy_from_slice(&[36, 232, 242]);
+            }
+        }
+    }
+
+    let input = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels.clone()).unwrap();
+    let crop = SmartcropOp::<U8>::analyze(&input, crop_width, crop_height);
+    let output =
+        ImagePipeline::from_source(MemorySource::<U8>::new(width, height, 3, pixels).unwrap())
+            .smartcrop(crop_width, crop_height)
+            .unwrap()
+            .build()
+            .unwrap()
+            .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+            .unwrap();
+
+    assert_eq!(
+        (output.width(), output.height(), output.bands()),
+        (crop_width, crop_height, 3)
+    );
+    let crop_base = ((crop.crop_top() * width + crop.crop_left()) * 3) as usize;
+    assert_eq!(
+        &output.pixels()[0..3],
+        &input.pixels()[crop_base..crop_base + 3]
+    );
+}
+
+#[test]
+fn smartcrop_clamps_zero_dimensions_to_one_pixel() {
+    let input =
+        InMemoryImage::<U8>::from_buffer(2, 2, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+            .unwrap();
+    let output = ImagePipeline::from_source(image_to_memory_source(input))
+        .smartcrop(0, 0)
+        .unwrap()
+        .build()
+        .unwrap()
+        .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
+        .unwrap();
+
+    assert_eq!((output.width(), output.height()), (1, 1));
 }
 
 #[test]
@@ -195,7 +323,7 @@ fn pipeline_arena_connect_rejects_invalid_input_slot() {
 
 #[test]
 fn similarity_auto_canvas_updates_pipeline_dimensions() {
-    let pipeline = PipelineBuilder::new(4, 2)
+    let pipeline = ImagePipeline::new(4, 2)
         .similarity(1.0, 90.0, InterpolationKernel::Bilinear)
         .unwrap()
         .build()
@@ -214,7 +342,7 @@ fn pipeline_arena_connect_invalid_index() {
 
 #[test]
 fn pipeline_linear_3_nodes_topological_order() {
-    let builder = PipelineBuilder::new(64, 64);
+    let builder = ImagePipeline::new(64, 64);
     let builder = builder.then(pass_op(3)).unwrap();
     let builder = builder.then(pass_op(3)).unwrap();
     let builder = builder.then(pass_op(3)).unwrap();
@@ -224,7 +352,7 @@ fn pipeline_linear_3_nodes_topological_order() {
 
 #[test]
 fn pipeline_empty_builds_identity_pipeline() {
-    let pipeline = PipelineBuilder::new(2, 2).build().unwrap();
+    let pipeline = ImagePipeline::new(2, 2).build().unwrap();
     let output = pipeline
         .run_to_image::<U8, _>(&RayonScheduler::new(1).unwrap())
         .unwrap();
@@ -235,7 +363,7 @@ fn pipeline_empty_builds_identity_pipeline() {
 
 #[test]
 fn thread_buffer_pool_correct_sizes() {
-    let builder = PipelineBuilder::new(128, 128);
+    let builder = ImagePipeline::new(128, 128);
     let builder = builder.then(pass_op(1)).unwrap();
     let pipeline = builder.build().unwrap();
     let pool = ThreadBufferPool::new(&pipeline);
@@ -247,7 +375,7 @@ fn thread_buffer_pool_correct_sizes() {
 #[test]
 fn pipeline_from_source_uses_source_dimensions() {
     let source = ZeroSource::<U8>::new(32, 16, 1);
-    let builder = PipelineBuilder::from_source(source);
+    let builder = ImagePipeline::from_source(source);
     let builder = builder.then(pass_op(1)).unwrap();
     let pipeline = builder.build().unwrap();
     assert_eq!(pipeline.width, 32);
@@ -258,25 +386,21 @@ fn pipeline_from_source_uses_source_dimensions() {
 fn pipeline_from_source_tracks_format() {
     // A F32 source must set current_format to F32.
     let source = ZeroSource::<F32>::new(8, 8, 1);
-    let builder = PipelineBuilder::from_source(source);
+    let builder = ImagePipeline::from_source(source);
     assert_eq!(builder.current_format(), BandFormatId::F32);
 }
 
 #[test]
 fn gauss_blur_preserves_u8_output_format() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let builder = PipelineBuilder::from_source(source)
-        .gauss_blur(1.5)
-        .unwrap();
+    let builder = ImagePipeline::from_source(source).gauss_blur(1.5).unwrap();
     assert_eq!(builder.current_format(), BandFormatId::U8);
 }
 
 #[test]
 fn gauss_blur_promotes_non_u8_output_format_to_f32() {
     let source = ZeroSource::<U16>::new(8, 8, 1);
-    let builder = PipelineBuilder::from_source(source)
-        .gauss_blur(1.5)
-        .unwrap();
+    let builder = ImagePipeline::from_source(source).gauss_blur(1.5).unwrap();
     assert_eq!(builder.current_format(), BandFormatId::F32);
 }
 
@@ -284,7 +408,7 @@ fn gauss_blur_promotes_non_u8_output_format_to_f32() {
 fn then_rejects_mismatched_format() {
     // ZeroSource<U8> → F32 op must fail with FormatMismatch.
     let source = ZeroSource::<U8>::new(4, 4, 1);
-    let builder = PipelineBuilder::from_source(source);
+    let builder = ImagePipeline::from_source(source);
     let f32_op = Box::new(OperationBridge::new(F32PassThrough, 1u32));
     let result = builder.then(f32_op);
     assert!(matches!(result, Err(BuildError::FormatMismatch { .. })));
@@ -293,7 +417,7 @@ fn then_rejects_mismatched_format() {
 #[test]
 fn convenience_linear_builds_pipeline() {
     let source = ZeroSource::<F32>::new(4, 4, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .linear(2.0, 0.5)
         .unwrap()
         .build()
@@ -308,7 +432,7 @@ fn convenience_linear_statically_fuses_adjacent_linear_ops() {
         sources::memory::MemorySource,
     };
 
-    let chained = PipelineBuilder::from_source(
+    let chained = ImagePipeline::from_source(
         MemorySource::<F32>::new(4, 1, 1, vec![1.0, 2.0, 3.0, 4.0]).unwrap(),
     )
     .linear(2.0, 10.0)
@@ -319,7 +443,7 @@ fn convenience_linear_statically_fuses_adjacent_linear_ops() {
     .unwrap();
     assert_eq!(chained.nodes.len(), 1);
 
-    let fused = PipelineBuilder::from_source(
+    let fused = ImagePipeline::from_source(
         MemorySource::<F32>::new(4, 1, 1, vec![1.0, 2.0, 3.0, 4.0]).unwrap(),
     )
     .linear(6.0, 35.0)
@@ -344,7 +468,7 @@ fn convenience_linear_u8_clips_like_libvips() {
     };
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 10, 250, 255]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .linear(1.5, 10.9)
         .unwrap()
         .build()
@@ -362,7 +486,7 @@ fn convenience_linear_u8_clips_like_libvips() {
 #[test]
 fn convenience_linear_rejects_nan_scale() {
     let source = ZeroSource::<F32>::new(1, 1, 1);
-    let result = PipelineBuilder::from_source(source).linear(f64::NAN, 0.0);
+    let result = ImagePipeline::from_source(source).linear(f64::NAN, 0.0);
     assert!(matches!(
         result,
         Err(BuildError::InvalidLinearParameters { scale, offset })
@@ -373,7 +497,7 @@ fn convenience_linear_rejects_nan_scale() {
 #[test]
 fn convenience_linear_rejects_infinite_scale() {
     let source = ZeroSource::<F32>::new(1, 1, 1);
-    let result = PipelineBuilder::from_source(source).linear(f64::INFINITY, 0.0);
+    let result = ImagePipeline::from_source(source).linear(f64::INFINITY, 0.0);
     assert!(matches!(
         result,
         Err(BuildError::InvalidLinearParameters { scale, offset })
@@ -384,7 +508,7 @@ fn convenience_linear_rejects_infinite_scale() {
 #[test]
 fn convenience_linear_rejects_nan_offset() {
     let source = ZeroSource::<F32>::new(1, 1, 1);
-    let result = PipelineBuilder::from_source(source).linear(1.0, f64::NAN);
+    let result = ImagePipeline::from_source(source).linear(1.0, f64::NAN);
     assert!(matches!(
         result,
         Err(BuildError::InvalidLinearParameters { scale, offset })
@@ -400,7 +524,7 @@ fn convenience_linear_accepts_zero_scale_and_produces_black() {
     };
 
     let source = MemorySource::<U8>::new(4, 1, 1, vec![0, 10, 250, 255]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .linear(0.0, 0.0)
         .unwrap()
         .build()
@@ -418,7 +542,7 @@ fn convenience_linear_accepts_zero_scale_and_produces_black() {
 #[test]
 fn convenience_invert_builds_pipeline() {
     let source = ZeroSource::<U8>::new(4, 4, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .build()
@@ -429,7 +553,7 @@ fn convenience_invert_builds_pipeline() {
 #[test]
 fn convenience_cast_u8_to_f32() {
     let source = ZeroSource::<U8>::new(4, 4, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .cast(BandFormatId::F32)
         .unwrap()
         .build()
@@ -441,14 +565,14 @@ fn convenience_cast_u8_to_f32() {
 fn convenience_cast_unsupported_returns_error() {
     // U8 → I32 has no CastSample impl; must return UnsupportedFormat.
     let source = ZeroSource::<U8>::new(4, 4, 1);
-    let result = PipelineBuilder::from_source(source).cast(BandFormatId::I32);
+    let result = ImagePipeline::from_source(source).cast(BandFormatId::I32);
     assert!(matches!(result, Err(BuildError::UnsupportedFormat { .. })));
 }
 
 #[test]
 fn shrink_h_with_ceil_rounds_output_width_up() {
     let source = ZeroSource::<U8>::new(10, 1, 1);
-    let floor = PipelineBuilder::from_source(source)
+    let floor = ImagePipeline::from_source(source)
         .shrink_h(3)
         .unwrap()
         .build()
@@ -456,7 +580,7 @@ fn shrink_h_with_ceil_rounds_output_width_up() {
     assert_eq!(floor.width, 3);
 
     let source = ZeroSource::<U8>::new(10, 1, 1);
-    let ceil = PipelineBuilder::from_source(source)
+    let ceil = ImagePipeline::from_source(source)
         .shrink_h_with_ceil(3, true)
         .unwrap()
         .build()
@@ -467,7 +591,7 @@ fn shrink_h_with_ceil_rounds_output_width_up() {
 #[test]
 fn shrink_v_with_ceil_rounds_output_height_up() {
     let source = ZeroSource::<U8>::new(1, 10, 1);
-    let floor = PipelineBuilder::from_source(source)
+    let floor = ImagePipeline::from_source(source)
         .shrink_v(3)
         .unwrap()
         .build()
@@ -475,7 +599,7 @@ fn shrink_v_with_ceil_rounds_output_height_up() {
     assert_eq!(floor.height, 3);
 
     let source = ZeroSource::<U8>::new(1, 10, 1);
-    let ceil = PipelineBuilder::from_source(source)
+    let ceil = ImagePipeline::from_source(source)
         .shrink_v_with_ceil(3, true)
         .unwrap()
         .build()
@@ -486,7 +610,7 @@ fn shrink_v_with_ceil_rounds_output_height_up() {
 #[test]
 fn shrink_v_zero_factor_returns_typed_error() {
     let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-    let result = PipelineBuilder::from_source(source).shrink_v(0);
+    let result = ImagePipeline::from_source(source).shrink_v(0);
 
     assert!(matches!(
         result,
@@ -500,7 +624,7 @@ fn shrink_v_zero_factor_returns_typed_error() {
 #[test]
 fn shrink_h_zero_factor_returns_typed_error() {
     let source = MemorySource::<U8>::new(4, 4, 1, (0u8..16).collect()).unwrap();
-    let result = PipelineBuilder::from_source(source).shrink_h(0);
+    let result = ImagePipeline::from_source(source).shrink_h(0);
 
     assert!(matches!(
         result,
@@ -514,7 +638,7 @@ fn shrink_h_zero_factor_returns_typed_error() {
 #[test]
 fn shrink_v_zero_band_source_returns_typed_error() {
     let source = MemorySource::<U8>::new(8, 8, 0, vec![]).unwrap();
-    let result = PipelineBuilder::from_source(source).shrink_v(2);
+    let result = ImagePipeline::from_source(source).shrink_v(2);
 
     assert!(matches!(
         result,
@@ -528,7 +652,7 @@ fn shrink_v_zero_band_source_returns_typed_error() {
 #[test]
 fn resize_zero_band_source_returns_typed_error() {
     let source = MemorySource::<U8>::new(8, 8, 0, vec![]).unwrap();
-    let result = PipelineBuilder::from_source(source).resize(Resize::new(
+    let result = ImagePipeline::from_source(source).resize(Resize::new(
         1.5,
         1.5,
         InterpolationKernel::Lanczos3,
@@ -546,7 +670,7 @@ fn resize_zero_band_source_returns_typed_error() {
 #[test]
 fn resize_rejects_vsqbs_downscale_reduce_path() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).resize(Resize::new(
+    let result = ImagePipeline::from_source(source).resize(Resize::new(
         0.6,
         1.0,
         InterpolationKernel::Vsqbs,
@@ -564,7 +688,7 @@ fn resize_rejects_vsqbs_downscale_reduce_path() {
 #[test]
 fn convenience_msb_builds_u8_pipeline() {
     let source = ZeroSource::<U16>::new(4, 4, 2);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .msb()
         .unwrap()
         .build()
@@ -576,7 +700,7 @@ fn convenience_msb_builds_u8_pipeline() {
 #[test]
 fn convenience_msb_rejects_float_formats() {
     let source = ZeroSource::<F32>::new(4, 4, 1);
-    let result = PipelineBuilder::from_source(source).msb();
+    let result = ImagePipeline::from_source(source).msb();
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedFormat { op: "msb", .. })
@@ -586,7 +710,7 @@ fn convenience_msb_rejects_float_formats() {
 #[test]
 fn convenience_rot45_builds_for_odd_square_images() {
     let source = ZeroSource::<U8>::new(5, 5, 1);
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .rot45(Angle45::D45)
         .unwrap()
         .build()
@@ -598,7 +722,7 @@ fn convenience_rot45_builds_for_odd_square_images() {
 
 #[test]
 fn rot45_non_square_canvas_correct() {
-    let pipeline = PipelineBuilder::from_source(ZeroSource::<U8>::new(100, 200, 1))
+    let pipeline = ImagePipeline::from_source(ZeroSource::<U8>::new(100, 200, 1))
         .rot45(Angle45::D45)
         .unwrap()
         .build()
@@ -610,7 +734,7 @@ fn rot45_non_square_canvas_correct() {
 
 #[test]
 fn rot45_square_canvas_correct() {
-    let pipeline = PipelineBuilder::from_source(ZeroSource::<U8>::new(100, 100, 1))
+    let pipeline = ImagePipeline::from_source(ZeroSource::<U8>::new(100, 100, 1))
         .rot45(Angle45::D45)
         .unwrap()
         .build()
@@ -621,7 +745,7 @@ fn rot45_square_canvas_correct() {
 
 #[test]
 fn convenience_rot45_keeps_exact_right_angle_dimensions() {
-    let pipeline = PipelineBuilder::from_source(ZeroSource::<U8>::new(5, 3, 1))
+    let pipeline = ImagePipeline::from_source(ZeroSource::<U8>::new(5, 3, 1))
         .rot45(Angle45::D90)
         .unwrap()
         .build()
@@ -633,7 +757,7 @@ fn convenience_rot45_keeps_exact_right_angle_dimensions() {
 #[test]
 fn reduce_h_rejects_lbb_kernel() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).reduce_h(2.0, InterpolationKernel::Lbb);
+    let result = ImagePipeline::from_source(source).reduce_h(2.0, InterpolationKernel::Lbb);
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedKernel {
@@ -647,7 +771,7 @@ fn reduce_h_rejects_lbb_kernel() {
 #[test]
 fn reduce_v_rejects_lbb_kernel() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).reduce_v(2.0, InterpolationKernel::Lbb);
+    let result = ImagePipeline::from_source(source).reduce_v(2.0, InterpolationKernel::Lbb);
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedKernel {
@@ -661,7 +785,7 @@ fn reduce_v_rejects_lbb_kernel() {
 #[test]
 fn reduce_rejects_lbb_kernel() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).reduce(2.0, 2.0, InterpolationKernel::Lbb);
+    let result = ImagePipeline::from_source(source).reduce(2.0, 2.0, InterpolationKernel::Lbb);
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedKernel {
@@ -675,7 +799,7 @@ fn reduce_rejects_lbb_kernel() {
 #[test]
 fn reduce_h_rejects_nohalo_kernel() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).reduce_h(2.0, InterpolationKernel::Nohalo);
+    let result = ImagePipeline::from_source(source).reduce_h(2.0, InterpolationKernel::Nohalo);
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedKernel {
@@ -689,7 +813,7 @@ fn reduce_h_rejects_nohalo_kernel() {
 #[test]
 fn reduce_v_rejects_nohalo_kernel() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).reduce_v(2.0, InterpolationKernel::Nohalo);
+    let result = ImagePipeline::from_source(source).reduce_v(2.0, InterpolationKernel::Nohalo);
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedKernel {
@@ -703,7 +827,7 @@ fn reduce_v_rejects_nohalo_kernel() {
 #[test]
 fn reduce_rejects_nohalo_kernel() {
     let source = ZeroSource::<U8>::new(8, 8, 1);
-    let result = PipelineBuilder::from_source(source).reduce(2.0, 2.0, InterpolationKernel::Nohalo);
+    let result = ImagePipeline::from_source(source).reduce(2.0, 2.0, InterpolationKernel::Nohalo);
     assert!(matches!(
         result,
         Err(BuildError::UnsupportedKernel {
@@ -719,7 +843,7 @@ fn pipeline_rgb_source_propagates_bands() {
     use crate::sources::memory::MemorySource;
     // 2x2 RGB: 4 pixels * 3 bands = 12 samples
     let source = MemorySource::<U8>::new(2, 2, 3, vec![0u8; 12]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .build()
@@ -739,7 +863,7 @@ fn pipeline_rgb_buffer_sizes_are_correct() {
     use crate::sources::memory::MemorySource;
     // 4x4 RGB U8: 4*4*3 = 48 samples
     let source = MemorySource::<U8>::new(4, 4, 3, vec![0u8; 48]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .build()
@@ -761,7 +885,7 @@ fn linear_transform_chain_starts_without_input_scratch_buffers() {
     use crate::sources::memory::MemorySource;
 
     let source = MemorySource::<U8>::new(8, 8, 3, vec![0u8; 8 * 8 * 3]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .invert()

@@ -3,7 +3,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -22,7 +22,7 @@ fn bench_reduceh_u8(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<U8>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .reduce_h(2.0, InterpolationKernel::Lanczos3)
                     .unwrap()
                     .build()
@@ -49,7 +49,7 @@ fn bench_reduceh_f32(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 1, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .reduce_h(2.0, InterpolationKernel::Lanczos3)
                     .unwrap()
                     .build()
@@ -78,7 +78,7 @@ fn bench_reduceh_thumbnail_residual(c: &mut Criterion) {
     group.bench_function("409x409_rgb_to_400x409", |b| {
         b.iter(|| {
             let source = MemorySource::<U8>::new(input_w, input_h, bands, pixels.clone()).unwrap();
-            let pipeline = PipelineBuilder::from_source(source)
+            let pipeline = ImagePipeline::from_source(source)
                 .reduce_h(factor, InterpolationKernel::Lanczos3)
                 .unwrap()
                 .build()

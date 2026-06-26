@@ -4,10 +4,10 @@ mod chaos_monkey_8 {
 
     use bytemuck::Pod;
     use viprs::{
-        BandFormat, BandFormatId, BuildError, CompiledPipeline, HistFindOp, Image, ImageMetadata,
-        Interpretation, U8, ViprsError,
+        BandFormat, BandFormatId, BuildError, CompiledPipeline, HistFindOp, ImageMetadata,
+        InMemoryImage, Interpretation, U8, ViprsError,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::{
@@ -36,7 +36,7 @@ mod chaos_monkey_8 {
         }
     }
 
-    fn patterned_u8(width: u32, height: u32, bands: u32) -> Image<U8> {
+    fn patterned_u8(width: u32, height: u32, bands: u32) -> InMemoryImage<U8> {
         let mut pixels = Vec::with_capacity(width as usize * height as usize * bands as usize);
         for y in 0..height {
             for x in 0..width {
@@ -52,8 +52,8 @@ mod chaos_monkey_8 {
             }
         }
 
-        let image =
-            Image::from_buffer(width, height, bands, pixels).expect("pattern image must build");
+        let image = InMemoryImage::from_buffer(width, height, bands, pixels)
+            .expect("pattern image must build");
         if bands >= 3 {
             image.with_metadata(srgb_metadata())
         } else {
@@ -73,7 +73,7 @@ mod chaos_monkey_8 {
         pixels
     }
 
-    fn memory_source_from_image<F>(image: &Image<F>) -> MemorySource<F>
+    fn memory_source_from_image<F>(image: &InMemoryImage<F>) -> MemorySource<F>
     where
         F: BandFormat,
         F::Sample: Pod,
@@ -88,22 +88,20 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Flush>(
-        image: &Image<FIn>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
-    ) -> Result<(CompiledPipeline, Image<FOut>), String>
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<FIn>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
+    ) -> Result<(CompiledPipeline, InMemoryImage<FOut>), String>
     where
         FIn: BandFormat,
         FOut: BandFormat,
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)
@@ -123,20 +121,18 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Flush>(
-        image: &Image<F>,
-        configure: impl FnOnce(PipelineBuilder) -> Result<PipelineBuilder<S>, BuildError>,
+    fn execute_pipeline_to_buffer<F, S: viprs::pipeline::Commit>(
+        image: &InMemoryImage<F>,
+        configure: impl FnOnce(ImagePipeline) -> Result<ImagePipeline<S>, BuildError>,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(PipelineBuilder::from_source(memory_source_from_image(
-            image,
-        )))
-        .map_err(|error| format!("stage failed: {error:?}"))?
-        .build()
-        .map_err(|error| format!("build failed: {error:?}"))?;
+        let pipeline = configure(ImagePipeline::from_source(memory_source_from_image(image)))
+            .map_err(|error| format!("stage failed: {error:?}"))?
+            .build()
+            .map_err(|error| format!("build failed: {error:?}"))?;
 
         let mut sink = MemorySink::for_pipeline(&pipeline).unwrap();
         RayonScheduler::new(2)

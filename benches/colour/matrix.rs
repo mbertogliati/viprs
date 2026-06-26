@@ -4,7 +4,7 @@ use std::time::Duration;
 use criterion::{BenchmarkId, Criterion, SamplingMode, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
@@ -81,7 +81,7 @@ fn run_u8_pipeline<To: Colorspace>(
     pixels: Vec<u8>,
 ) {
     let source = MemorySource::<U8>::new(size, size, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(source_colorspace)
         .colourspace::<To>()
         .unwrap()
@@ -102,7 +102,7 @@ fn run_f32_pipeline<To: Colorspace>(
     pixels: Vec<f32>,
 ) {
     let source = MemorySource::<F32>::new(size, size, bands, pixels).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .with_colorspace(source_colorspace)
         .colourspace::<To>()
         .unwrap()

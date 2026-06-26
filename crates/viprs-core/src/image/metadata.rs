@@ -1,6 +1,6 @@
 use crate::format::{BandFormat, U8};
 
-use super::core::Image;
+use super::core::InMemoryImage;
 
 /// Runtime interpretation of an image buffer.
 ///
@@ -128,8 +128,8 @@ pub struct MetadataOverrides {
 ///
 /// # Examples
 /// ```rust
-/// # use viprs_core::{format::U8, image::{Image, UhdrGainMap}};
-/// let image = Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
+/// # use viprs_core::{format::U8, image::{InMemoryImage, UhdrGainMap}};
+/// let image = InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap();
 /// let gain_map = UhdrGainMap {
 ///     image: Box::new(image),
 ///     metadata: Default::default(),
@@ -142,7 +142,7 @@ pub struct MetadataOverrides {
 #[derive(Debug, Clone, PartialEq)]
 pub struct UhdrGainMap {
     /// Stores the `image` value for this item.
-    pub image: Box<Image<U8>>,
+    pub image: Box<InMemoryImage<U8>>,
     /// Stores the `metadata` value for this item.
     pub metadata: UhdrGainMapMetadata,
     /// Stores the `hdr_capacity_min` value for this item.
@@ -161,9 +161,9 @@ impl UhdrGainMap {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::{Image, UhdrGainMap}};
+    /// # use viprs_core::{format::U8, image::{InMemoryImage, UhdrGainMap}};
     /// let gain_map = UhdrGainMap {
-    ///     image: Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()),
+    ///     image: Box::new(InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()),
     ///     metadata: Default::default(),
     ///     hdr_capacity_min: 1.0,
     ///     hdr_capacity_max: 1.0,
@@ -171,7 +171,7 @@ impl UhdrGainMap {
     /// };
     /// assert_eq!(gain_map.image().bands(), 1);
     /// ```
-    pub fn image(&self) -> &Image<U8> {
+    pub fn image(&self) -> &InMemoryImage<U8> {
         self.image.as_ref()
     }
 
@@ -182,9 +182,9 @@ impl UhdrGainMap {
     ///
     /// # Examples
     /// ```rust
-    /// # use viprs_core::{format::U8, image::{Image, UhdrGainMap}};
+    /// # use viprs_core::{format::U8, image::{InMemoryImage, UhdrGainMap}};
     /// let gain_map = UhdrGainMap {
-    ///     image: Box::new(Image::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()),
+    ///     image: Box::new(InMemoryImage::<U8>::from_buffer(1, 1, 1, vec![0]).unwrap()),
     ///     metadata: Default::default(),
     ///     hdr_capacity_min: 1.0,
     ///     hdr_capacity_max: 1.0,
@@ -240,7 +240,7 @@ pub enum AnimationLoopCount {
 /// A single decoded or user-authored animation frame.
 #[derive(Debug)]
 pub struct AnimationFrame<F: BandFormat> {
-    image: Box<Image<F>>,
+    image: Box<InMemoryImage<F>>,
     delay_ms: u32,
     disposal: FrameDisposal,
 }
@@ -248,7 +248,7 @@ pub struct AnimationFrame<F: BandFormat> {
 impl<F: BandFormat> AnimationFrame<F> {
     /// Build a typed animation frame around a full in-memory image.
     #[must_use]
-    pub fn new(image: Image<F>, delay_ms: u32, disposal: FrameDisposal) -> Self {
+    pub fn new(image: InMemoryImage<F>, delay_ms: u32, disposal: FrameDisposal) -> Self {
         Self {
             image: Box::new(image),
             delay_ms,
@@ -258,13 +258,13 @@ impl<F: BandFormat> AnimationFrame<F> {
 
     /// Borrow the underlying frame image.
     #[must_use]
-    pub fn image(&self) -> &Image<F> {
+    pub fn image(&self) -> &InMemoryImage<F> {
         self.image.as_ref()
     }
 
     /// Consume the frame and return the underlying image.
     #[must_use]
-    pub fn into_image(self) -> Image<F> {
+    pub fn into_image(self) -> InMemoryImage<F> {
         *self.image
     }
 

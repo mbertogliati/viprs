@@ -14,7 +14,7 @@
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, F64};
-use viprs_core::image::{Image, ImageMetadata};
+use viprs_core::image::{ImageMetadata, InMemoryImage};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 // ── Header parse ─────────────────────────────────────────────────────────────
@@ -107,7 +107,7 @@ fn parse_matrix_header(src: &[u8]) -> Result<ParsedMatrixHeader, ViprsError> {
 
 // ── Core decode ──────────────────────────────────────────────────────────────
 
-fn decode_matrix(src: &[u8]) -> Result<Image<F64>, ViprsError> {
+fn decode_matrix(src: &[u8]) -> Result<InMemoryImage<F64>, ViprsError> {
     let header = parse_matrix_header(src)?;
     let total = (header.width as usize)
         .checked_mul(header.height as usize)
@@ -162,14 +162,14 @@ fn decode_matrix(src: &[u8]) -> Result<Image<F64>, ViprsError> {
         .extra
         .insert("offset".to_string(), header.offset.to_string());
 
-    Image::from_buffer(header.width, header.height, 1, pixels)
+    InMemoryImage::from_buffer(header.width, header.height, 1, pixels)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 // ── Core encode ──────────────────────────────────────────────────────────────
 
-fn encode_matrix<F: BandFormat>(image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+fn encode_matrix<F: BandFormat>(image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
     if image.bands() != 1 {
         return Err(ViprsError::Codec(
             "matrix: only single-band images can be saved in matrix format".into(),
@@ -322,7 +322,7 @@ impl ImageDecoder for MatrixCodec {
         sniff_matrix(header)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -330,7 +330,7 @@ impl ImageDecoder for MatrixCodec {
         &self,
         src: &[u8],
         _opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -345,7 +345,7 @@ impl ImageDecoder for MatrixCodec {
         let (w, h, b) = (image.width(), image.height(), image.bands());
         let raw: Vec<f64> = image.into_buffer();
         let samples: Vec<F::Sample> = bytemuck::cast_vec(raw);
-        Image::from_buffer(w, h, b, samples)
+        InMemoryImage::from_buffer(w, h, b, samples)
             .map(|decoded| decoded.with_metadata(metadata))
             .map_err(|e| ViprsError::Codec(e.to_string()))
     }
@@ -364,13 +364,13 @@ impl ImageEncoder for MatrixCodec {
         "matrix"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         _opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -434,9 +434,10 @@ mod tests {
         metadata
             .extra
             .insert("offset".to_string(), "1.25".to_string());
-        let original = Image::<F64>::from_buffer(3, 2, 1, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-            .unwrap()
-            .with_metadata(metadata);
+        let original =
+            InMemoryImage::<F64>::from_buffer(3, 2, 1, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+                .unwrap()
+                .with_metadata(metadata);
         let encoded = codec.encode(&original).unwrap();
         let decoded = codec.decode::<F64>(&encoded).unwrap();
         assert_eq!(decoded.width(), 3);
@@ -457,7 +458,7 @@ mod tests {
     #[test]
     fn encode_u8_single_band() {
         let codec = MatrixCodec;
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![0, 128, 64, 255]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0, 128, 64, 255]).unwrap();
         let encoded = codec.encode(&image).unwrap();
         let text = std::str::from_utf8(&encoded).unwrap();
         // First line is the dimension header.
@@ -468,7 +469,7 @@ mod tests {
     #[test]
     fn encode_multi_band_errors() {
         let codec = MatrixCodec;
-        let image = Image::<U8>::from_buffer(2, 1, 3, vec![0; 6]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 3, vec![0; 6]).unwrap();
         assert!(codec.encode(&image).is_err());
     }
 
@@ -585,7 +586,7 @@ mod tests {
         let mut metadata = ImageMetadata::default();
         metadata.extra.insert("scale".to_string(), "3".to_string());
         metadata.extra.insert("offset".to_string(), "1".to_string());
-        let image = Image::<F64>::from_buffer(2, 1, 1, vec![1.0, 2.0])
+        let image = InMemoryImage::<F64>::from_buffer(2, 1, 1, vec![1.0, 2.0])
             .unwrap()
             .with_metadata(metadata);
         let codec = MatrixCodec;
@@ -600,7 +601,7 @@ mod tests {
     #[test]
     fn encode_default_metadata_omits_scale_and_offset() {
         let codec = MatrixCodec;
-        let image = Image::<F64>::from_buffer(2, 1, 1, vec![1.5, 2.5]).unwrap();
+        let image = InMemoryImage::<F64>::from_buffer(2, 1, 1, vec![1.5, 2.5]).unwrap();
         let encoded = codec.encode(&image).unwrap();
         let text = std::str::from_utf8(&encoded).unwrap();
         assert!(text.starts_with("2 1\n"));
@@ -614,7 +615,7 @@ mod tests {
         metadata
             .extra
             .insert("scale".to_string(), "not-a-number".to_string());
-        let image = Image::<F64>::from_buffer(1, 1, 1, vec![1.0])
+        let image = InMemoryImage::<F64>::from_buffer(1, 1, 1, vec![1.0])
             .unwrap()
             .with_metadata(metadata);
         let error = codec.encode(&image).unwrap_err();
@@ -628,7 +629,7 @@ mod tests {
         metadata
             .extra
             .insert("offset".to_string(), "not-a-number".to_string());
-        let image = Image::<F64>::from_buffer(1, 1, 1, vec![1.0])
+        let image = InMemoryImage::<F64>::from_buffer(1, 1, 1, vec![1.0])
             .unwrap()
             .with_metadata(metadata);
         let error = codec.encode(&image).unwrap_err();
@@ -640,7 +641,7 @@ mod tests {
         let codec = MatrixCodec;
         let mut metadata = ImageMetadata::default();
         metadata.extra.insert("scale".to_string(), "0".to_string());
-        let image = Image::<F64>::from_buffer(1, 1, 1, vec![1.0])
+        let image = InMemoryImage::<F64>::from_buffer(1, 1, 1, vec![1.0])
             .unwrap()
             .with_metadata(metadata);
         let error = codec.encode(&image).unwrap_err();
@@ -651,27 +652,27 @@ mod tests {
     fn encode_supports_all_numeric_band_formats() {
         let codec = MatrixCodec;
 
-        let f32_image = Image::<F32>::from_buffer(2, 1, 1, vec![1.25, -2.5]).unwrap();
+        let f32_image = InMemoryImage::<F32>::from_buffer(2, 1, 1, vec![1.25, -2.5]).unwrap();
         let f32_encoded = codec.encode(&f32_image).unwrap();
         let f32_text = std::str::from_utf8(&f32_encoded).unwrap();
         assert!(f32_text.contains("1.25 -2.5"));
 
-        let u16_image = Image::<U16>::from_buffer(2, 1, 1, vec![1, 65535]).unwrap();
+        let u16_image = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![1, 65535]).unwrap();
         let u16_encoded = codec.encode(&u16_image).unwrap();
         let u16_text = std::str::from_utf8(&u16_encoded).unwrap();
         assert!(u16_text.contains("1 65535"));
 
-        let i16_image = Image::<I16>::from_buffer(2, 1, 1, vec![-2, 3]).unwrap();
+        let i16_image = InMemoryImage::<I16>::from_buffer(2, 1, 1, vec![-2, 3]).unwrap();
         let i16_encoded = codec.encode(&i16_image).unwrap();
         let i16_text = std::str::from_utf8(&i16_encoded).unwrap();
         assert!(i16_text.contains("-2 3"));
 
-        let u32_image = Image::<U32>::from_buffer(2, 1, 1, vec![42, 1_000_000]).unwrap();
+        let u32_image = InMemoryImage::<U32>::from_buffer(2, 1, 1, vec![42, 1_000_000]).unwrap();
         let u32_encoded = codec.encode(&u32_image).unwrap();
         let u32_text = std::str::from_utf8(&u32_encoded).unwrap();
         assert!(u32_text.contains("42 1000000"));
 
-        let i32_image = Image::<I32>::from_buffer(2, 1, 1, vec![-42, 7]).unwrap();
+        let i32_image = InMemoryImage::<I32>::from_buffer(2, 1, 1, vec![-42, 7]).unwrap();
         let i32_encoded = codec.encode(&i32_image).unwrap();
         let i32_text = std::str::from_utf8(&i32_encoded).unwrap();
         assert!(i32_text.contains("-42 7"));

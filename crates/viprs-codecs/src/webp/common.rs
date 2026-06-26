@@ -12,7 +12,7 @@ use std::{
 use super::super::shrink_on_load::{ShrinkOnLoadBackend, ShrinkOnLoadPlan};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, Interpretation, Region};
+use viprs_core::image::{InMemoryImage, Interpretation, Region};
 
 const WEBP_SHRINK_BACKEND: ShrinkOnLoadBackend = ShrinkOnLoadBackend::WebpDecoderConfigScaling;
 const WEBP_ANIM_SHRINK_BACKEND: ShrinkOnLoadBackend = ShrinkOnLoadBackend::WebpDemuxFragmentScaling;
@@ -164,12 +164,13 @@ pub(super) fn image_from_u8_pixels<F: BandFormat>(
     height: u32,
     bands: u32,
     pixels_u8: Vec<u8>,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     let samples =
         bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels_u8).map_err(|(_e, _v)| {
             ViprsError::Codec("webp: sample cast failed (internal error)".into())
         })?;
-    Image::from_buffer(width, height, bands, samples).map_err(|e| ViprsError::Codec(e.to_string()))
+    InMemoryImage::from_buffer(width, height, bands, samples)
+        .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 #[inline]

@@ -19,7 +19,7 @@ use viprs_core::codec_options::{
 };
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId, U8, U16};
-use viprs_core::image::{AnimationFrame, FrameDisposal, Image, ImageMetadata};
+use viprs_core::image::{AnimationFrame, FrameDisposal, ImageMetadata, InMemoryImage};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 /// HEIF/HEIC codec.
@@ -231,24 +231,24 @@ fn select_heif_pages(
 }
 
 fn cast_decoded_frame<S: BandFormat, D: BandFormat>(
-    image: Image<S>,
+    image: InMemoryImage<S>,
     context: &str,
-) -> Result<Image<D>, ViprsError> {
+) -> Result<InMemoryImage<D>, ViprsError> {
     let width = image.width();
     let height = image.height();
     let bands = image.bands();
     let metadata = image.metadata().clone();
     let samples = bytemuck::allocation::try_cast_vec::<S::Sample, D::Sample>(image.into_buffer())
         .map_err(|(e, _)| ViprsError::Codec(format!("{context}: cast error: {e:?}")))?;
-    Image::from_buffer(width, height, bands, samples)
+    InMemoryImage::from_buffer(width, height, bands, samples)
         .map(|image| image.with_metadata(metadata))
         .map_err(|e| ViprsError::Codec(e.to_string()))
 }
 
 fn cast_decoded_image<S: BandFormat, D: BandFormat>(
-    image: Image<S>,
+    image: InMemoryImage<S>,
     context: &str,
-) -> Result<Image<D>, ViprsError>
+) -> Result<InMemoryImage<D>, ViprsError>
 where
     S::Sample: Clone,
 {
@@ -332,7 +332,7 @@ fn decode_single_page_u8(
     handle: &ImageHandle,
     total_pages: u32,
     opts: &LoadOptions,
-) -> Result<Image<U8>, ViprsError> {
+) -> Result<InMemoryImage<U8>, ViprsError> {
     decode_interleaved_plane(
         ctx,
         handle,
@@ -362,7 +362,7 @@ fn decode_single_page_u8(
                 }
             }
 
-            let image = Image::from_buffer(width, height, bands, samples)
+            let image = InMemoryImage::from_buffer(width, height, bands, samples)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?
                 .with_metadata(metadata);
             normalize_decoded_image(image, opts.no_rotate, "heif")
@@ -375,7 +375,7 @@ fn decode_single_page_u16(
     handle: &ImageHandle,
     total_pages: u32,
     opts: &LoadOptions,
-) -> Result<Image<U16>, ViprsError> {
+) -> Result<InMemoryImage<U16>, ViprsError> {
     decode_interleaved_plane(
         ctx,
         handle,
@@ -400,7 +400,7 @@ fn decode_single_page_u16(
                 }
             }
             normalize_u16_samples_for_bit_depth(&mut samples, bit_depth);
-            let image = Image::from_buffer(width, height, bands, samples)
+            let image = InMemoryImage::from_buffer(width, height, bands, samples)
                 .map_err(|e| ViprsError::Codec(e.to_string()))?
                 .with_metadata(metadata);
             normalize_decoded_image(image, opts.no_rotate, "heif")
@@ -408,7 +408,7 @@ fn decode_single_page_u16(
     )
 }
 
-fn decode_to_u8(src: &[u8], opts: &LoadOptions) -> Result<Image<U8>, ViprsError> {
+fn decode_to_u8(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<U8>, ViprsError> {
     let ctx = HeifContext::read_from_bytes(src)
         .map_err(|e| ViprsError::Codec(format!("heif: read_from_bytes: {e}")))?;
     let selection = select_heif_pages(&ctx, opts)?;
@@ -432,7 +432,8 @@ fn decode_to_u8(src: &[u8], opts: &LoadOptions) -> Result<Image<U8>, ViprsError>
     }
 
     let page_height = frames[0].image().height();
-    let mut image = Image::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut image =
+        InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut metadata = image.metadata().clone();
     metadata.n_pages = Some(selection.total_pages);
     metadata.page_height = (selection.total_pages > 1).then_some(page_height);
@@ -440,7 +441,7 @@ fn decode_to_u8(src: &[u8], opts: &LoadOptions) -> Result<Image<U8>, ViprsError>
     Ok(image)
 }
 
-fn decode_to_u16(src: &[u8], opts: &LoadOptions) -> Result<Image<U16>, ViprsError> {
+fn decode_to_u16(src: &[u8], opts: &LoadOptions) -> Result<InMemoryImage<U16>, ViprsError> {
     let ctx = HeifContext::read_from_bytes(src)
         .map_err(|e| ViprsError::Codec(format!("heif: read_from_bytes: {e}")))?;
     let selection = select_heif_pages(&ctx, opts)?;
@@ -464,7 +465,8 @@ fn decode_to_u16(src: &[u8], opts: &LoadOptions) -> Result<Image<U16>, ViprsErro
     }
 
     let page_height = frames[0].image().height();
-    let mut image = Image::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
+    let mut image =
+        InMemoryImage::from_frames(frames).map_err(|e| ViprsError::Codec(e.to_string()))?;
     let mut metadata = image.metadata().clone();
     metadata.n_pages = Some(selection.total_pages);
     metadata.page_height = (selection.total_pages > 1).then_some(page_height);
@@ -661,7 +663,7 @@ impl ImageDecoder for HeifCodec {
         )
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -669,7 +671,7 @@ impl ImageDecoder for HeifCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -708,13 +710,13 @@ impl ImageEncoder for HeifCodec {
         "heif"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -784,7 +786,7 @@ mod tests {
         stats
     }
 
-    fn rgb_u8_gradient(width: u32, height: u32) -> Image<U8> {
+    fn rgb_u8_gradient(width: u32, height: u32) -> InMemoryImage<U8> {
         let pixels: Vec<u8> = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -796,10 +798,10 @@ mod tests {
                 })
             })
             .collect();
-        Image::<U8>::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap()
     }
 
-    fn rgb_u16_gradient(width: u32, height: u32) -> Image<U16> {
+    fn rgb_u16_gradient(width: u32, height: u32) -> InMemoryImage<U16> {
         let pixels: Vec<u16> = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -811,10 +813,10 @@ mod tests {
                 })
             })
             .collect();
-        Image::<U16>::from_buffer(width, height, 3, pixels).unwrap()
+        InMemoryImage::<U16>::from_buffer(width, height, 3, pixels).unwrap()
     }
 
-    fn rgba_u16_gradient(width: u32, height: u32) -> Image<U16> {
+    fn rgba_u16_gradient(width: u32, height: u32) -> InMemoryImage<U16> {
         let pixels: Vec<u16> = (0..height)
             .flat_map(|y| {
                 (0..width).flat_map(move |x| {
@@ -827,7 +829,7 @@ mod tests {
                 })
             })
             .collect();
-        Image::<U16>::from_buffer(width, height, 4, pixels).unwrap()
+        InMemoryImage::<U16>::from_buffer(width, height, 4, pixels).unwrap()
     }
 
     fn heif_sequence_encoder_available() -> bool {
@@ -867,7 +869,7 @@ mod tests {
         encoder.set_quality(EncoderQuality::Lossy(100)).unwrap();
 
         let first = rgb_u8_gradient(1, 1);
-        let second = Image::<U8>::from_buffer(1, 1, 3, vec![0, 0, 255]).unwrap();
+        let second = InMemoryImage::<U8>::from_buffer(1, 1, 3, vec![0, 0, 255]).unwrap();
         let first_heif = libheif_rgb_image(1, 1, bytemuck::cast_slice(first.pixels()));
         let second_heif = libheif_rgb_image(1, 1, bytemuck::cast_slice(second.pixels()));
 
@@ -1181,7 +1183,7 @@ mod tests {
     #[test]
     fn encode_rejects_unsupported_band_count_for_u8_images() {
         let codec = HeifCodec;
-        let image = Image::<U8>::from_buffer(1, 1, 2, vec![10, 20]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(1, 1, 2, vec![10, 20]).unwrap();
         let err = codec.encode::<U8>(&image).unwrap_err();
 
         assert!(
@@ -1192,7 +1194,7 @@ mod tests {
     #[test]
     fn encode_rejects_unsupported_band_count_for_u16_images() {
         let codec = HeifCodec;
-        let image = Image::<U16>::from_buffer(1, 1, 2, vec![10, 20]).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(1, 1, 2, vec![10, 20]).unwrap();
         let err = codec.encode::<U16>(&image).unwrap_err();
 
         assert!(
@@ -1203,7 +1205,7 @@ mod tests {
     #[test]
     fn encode_rejects_unsupported_band_format() {
         let codec = HeifCodec;
-        let image = Image::<F32>::from_buffer(1, 1, 3, vec![0.0, 0.5, 1.0]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 3, vec![0.0, 0.5, 1.0]).unwrap();
         let err = codec.encode::<F32>(&image).unwrap_err();
 
         assert!(
@@ -1263,7 +1265,7 @@ mod tests {
         }
 
         let codec = HeifCodec;
-        let image = Image::<U8>::from_buffer(2, 2, 1, vec![0, 64, 128, 255]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 2, 1, vec![0, 64, 128, 255]).unwrap();
         let encoded = codec
             .encode_with_options::<U8>(&image, &SaveOptions::default().lossless())
             .unwrap();
@@ -1283,7 +1285,7 @@ mod tests {
         }
 
         let codec = HeifCodec;
-        let image = Image::<U8>::from_buffer(2, 1, 1, vec![16, 240]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![16, 240]).unwrap();
         let encoded = codec
             .encode_with_options::<U8>(
                 &image,
@@ -1317,7 +1319,7 @@ mod tests {
         }
 
         let codec = HeifCodec;
-        let image = Image::<U16>::from_buffer(2, 1, 1, vec![0x1234, 0xFEDC]).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(2, 1, 1, vec![0x1234, 0xFEDC]).unwrap();
 
         let encoded_8 = codec
             .encode_with_options::<U16>(
@@ -1356,7 +1358,7 @@ mod tests {
 
         let codec = HeifCodec;
         let pixels: Vec<u8> = [32u8, 160, 224].repeat(4 * 4);
-        let original = Image::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
+        let original = InMemoryImage::<U8>::from_buffer(4, 4, 3, pixels).unwrap();
 
         let encoded = codec
             .encode_with_options::<U8>(&original, &SaveOptions::default().with_quality(100))
@@ -1389,7 +1391,7 @@ mod tests {
 
         let codec = HeifCodec;
         let pixels: Vec<u16> = [96u16 << 6, 480u16 << 6, 860u16 << 6].repeat(4 * 4);
-        let original = Image::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
+        let original = InMemoryImage::<U16>::from_buffer(4, 4, 3, pixels).unwrap();
 
         let encoded = codec
             .encode_with_options::<U16>(

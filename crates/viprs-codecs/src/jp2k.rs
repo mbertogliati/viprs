@@ -23,7 +23,7 @@ use rayon::prelude::*;
 use viprs_core::codec_options::{LoadOptions, SaveOptions};
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata, Interpretation};
+use viprs_core::image::{ImageMetadata, InMemoryImage, Interpretation};
 use viprs_ports::codec::{ImageDecoder, ImageEncoder};
 
 const DEFAULT_QUALITY: u8 = 48;
@@ -471,7 +471,7 @@ fn decode_tiled_stream_fast<F: BandFormat>(
     codec_format: sys::CODEC_FORMAT,
     stream_ptr: *mut sys::opj_stream_t,
     opts: &LoadOptions,
-) -> Result<Option<Image<F>>, ViprsError> {
+) -> Result<Option<InMemoryImage<F>>, ViprsError> {
     let stream_guard = OpenJpegStream(stream_ptr);
     // SAFETY: OpenJPEG returns an owned decoder pointer or null on failure.
     let codec_ptr = unsafe { sys::opj_create_decompress(codec_format) };
@@ -597,7 +597,7 @@ fn decode_tiled_stream_fast<F: BandFormat>(
 
             let samples = bytemuck::allocation::try_cast_vec::<u8, F::Sample>(pixels)
                 .map_err(|(err, _)| ViprsError::Codec(format!("jp2k: cast error: {err:?}")))?;
-            Image::from_buffer(plan.width, plan.height, plan.bands, samples)
+            InMemoryImage::from_buffer(plan.width, plan.height, plan.bands, samples)
                 .map(|image| image.with_metadata(metadata))
                 .map(Some)
                 .map_err(|err| ViprsError::Codec(err.to_string()))
@@ -663,7 +663,7 @@ fn decode_tiled_stream_fast<F: BandFormat>(
 
             let samples = bytemuck::allocation::try_cast_vec::<u16, F::Sample>(pixels)
                 .map_err(|(err, _)| ViprsError::Codec(format!("jp2k: cast error: {err:?}")))?;
-            Image::from_buffer(plan.width, plan.height, plan.bands, samples)
+            InMemoryImage::from_buffer(plan.width, plan.height, plan.bands, samples)
                 .map(|image| image.with_metadata(metadata))
                 .map(Some)
                 .map_err(|err| ViprsError::Codec(err.to_string()))
@@ -675,7 +675,7 @@ fn decode_tiled_stream_fast<F: BandFormat>(
 fn decode_tiled_bytes_fast<F: BandFormat>(
     src: &[u8],
     opts: &LoadOptions,
-) -> Result<Option<Image<F>>, ViprsError> {
+) -> Result<Option<InMemoryImage<F>>, ViprsError> {
     let codec_format = codec_format_from_bytes(src)?;
     let data_ptr = Box::into_raw(Box::new(WrappedSlice::new(src))).cast::<c_void>();
 
@@ -704,7 +704,7 @@ fn decode_tiled_bytes_fast<F: BandFormat>(
 fn decode_tiled_path_fast<F: BandFormat>(
     path: &Path,
     opts: &LoadOptions,
-) -> Result<Option<Image<F>>, ViprsError> {
+) -> Result<Option<InMemoryImage<F>>, ViprsError> {
     let codec_format = codec_format_from_path(path)?;
     let c_path = CString::new(path.to_string_lossy().as_bytes())
         .map_err(|err| ViprsError::Codec(format!("jp2k: invalid input path: {err}")))?;
@@ -1602,7 +1602,7 @@ fn openjpeg_thread_count() -> i32 {
 }
 
 fn pack_tile_component_data<F: BandFormat>(
-    image: &Image<F>,
+    image: &InMemoryImage<F>,
     bands_usize: usize,
     tile_left: u32,
     tile_top: u32,
@@ -1680,7 +1680,7 @@ fn pack_tile_component_data<F: BandFormat>(
 }
 
 fn encode_to_jp2_bytes<F: BandFormat>(
-    image: &Image<F>,
+    image: &InMemoryImage<F>,
     opts: &SaveOptions,
 ) -> Result<Vec<u8>, ViprsError> {
     let bands = image.bands();
@@ -1906,14 +1906,14 @@ fn encode_to_jp2_bytes<F: BandFormat>(
 
 fn finish_decoded_image<F: BandFormat>(
     decoded: &OpenJpegDecodedImage,
-) -> Result<Image<F>, ViprsError> {
+) -> Result<InMemoryImage<F>, ViprsError> {
     match F::ID {
         BandFormatId::U8 => {
             let (width, height, bands, samples) = decode_pixels_u8(decoded)?;
             let metadata = decoded_metadata(decoded, bands, false);
             let samples = bytemuck::allocation::try_cast_vec::<u8, F::Sample>(samples)
                 .map_err(|(err, _)| ViprsError::Codec(format!("jp2k: cast error: {err:?}")))?;
-            Image::from_buffer(width, height, bands, samples)
+            InMemoryImage::from_buffer(width, height, bands, samples)
                 .map(|image| image.with_metadata(metadata))
                 .map_err(|err| ViprsError::Codec(err.to_string()))
         }
@@ -1922,7 +1922,7 @@ fn finish_decoded_image<F: BandFormat>(
             let metadata = decoded_metadata(decoded, bands, true);
             let samples = bytemuck::allocation::try_cast_vec::<u16, F::Sample>(samples)
                 .map_err(|(err, _)| ViprsError::Codec(format!("jp2k: cast error: {err:?}")))?;
-            Image::from_buffer(width, height, bands, samples)
+            InMemoryImage::from_buffer(width, height, bands, samples)
                 .map(|image| image.with_metadata(metadata))
                 .map_err(|err| ViprsError::Codec(err.to_string()))
         }
@@ -1949,7 +1949,7 @@ impl ImageDecoder for Jp2kCodec {
         header.starts_with(JP2_RFC3745_MAGIC) || header.starts_with(J2K_CODESTREAM_MAGIC)
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -1957,7 +1957,7 @@ impl ImageDecoder for Jp2kCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -1976,7 +1976,7 @@ impl ImageDecoder for Jp2kCodec {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -2011,13 +2011,13 @@ impl ImageEncoder for Jp2kCodec {
         "jp2k"
     }
 
-    fn encode<F: BandFormat>(&self, image: &Image<F>) -> Result<Vec<u8>, ViprsError> {
+    fn encode<F: BandFormat>(&self, image: &InMemoryImage<F>) -> Result<Vec<u8>, ViprsError> {
         self.encode_with_options(image, &SaveOptions::default())
     }
 
     fn encode_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         opts: &SaveOptions,
     ) -> Result<Vec<u8>, ViprsError>
     where
@@ -2072,7 +2072,7 @@ mod tests {
     #[test]
     fn round_trip_lossless_u8_preserves_samples() {
         let codec = Jp2kCodec;
-        let image = Image::<U8>::from_buffer(
+        let image = InMemoryImage::<U8>::from_buffer(
             3,
             2,
             3,
@@ -2100,7 +2100,8 @@ mod tests {
     fn round_trip_u16_preserves_samples() {
         let codec = Jp2kCodec;
         let image =
-            Image::<U16>::from_buffer(2, 2, 1, vec![0u16, 1024u16, 4096u16, 65535u16]).unwrap();
+            InMemoryImage::<U16>::from_buffer(2, 2, 1, vec![0u16, 1024u16, 4096u16, 65535u16])
+                .unwrap();
 
         let encoded = codec
             .encode_with_options(&image, &SaveOptions::default().lossless())
@@ -2130,7 +2131,7 @@ mod tests {
                 })
             })
             .collect();
-        let image = Image::<U8>::from_buffer(width, height, 3, pixels).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(width, height, 3, pixels).unwrap();
 
         let encoded = codec
             .encode_with_options(&image, &SaveOptions::default().with_quality(100))
@@ -2151,7 +2152,7 @@ mod tests {
     #[test]
     fn rejects_non_u8_u16_formats() {
         let codec = Jp2kCodec;
-        let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0f32]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![1.0f32]).unwrap();
         let err = codec.encode(&image).unwrap_err();
         assert!(err.to_string().contains("only U8 and U16"));
     }
@@ -2476,7 +2477,7 @@ mod tests {
 
     #[test]
     fn pack_tile_component_data_covers_u8_u16_and_unsupported_formats() {
-        let image = Image::<U8>::from_buffer(
+        let image = InMemoryImage::<U8>::from_buffer(
             3,
             2,
             3,
@@ -2489,7 +2490,7 @@ mod tests {
         pack_tile_component_data(&image, 3, 1, 0, 2, 2, &mut output).unwrap();
         assert_eq!(output, vec![4, 7, 13, 16, 5, 8, 14, 17, 6, 9, 15, 18]);
 
-        let image = Image::<U16>::from_buffer(2, 2, 1, vec![1u16, 258, 515, 772]).unwrap();
+        let image = InMemoryImage::<U16>::from_buffer(2, 2, 1, vec![1u16, 258, 515, 772]).unwrap();
         pack_tile_component_data(&image, 1, 0, 1, 2, 1, &mut output).unwrap();
         let expected: Vec<u8> = [515u16, 772]
             .into_iter()
@@ -2497,7 +2498,7 @@ mod tests {
             .collect();
         assert_eq!(output, expected);
 
-        let image = Image::<F32>::from_buffer(1, 1, 1, vec![1.0f32]).unwrap();
+        let image = InMemoryImage::<F32>::from_buffer(1, 1, 1, vec![1.0f32]).unwrap();
         assert!(pack_tile_component_data(&image, 1, 0, 0, 1, 1, &mut output).is_err());
     }
 

@@ -1,19 +1,19 @@
 use super::{
-    Arc, BandFormat, DecodeRegionFn, DecoderInput, Image, ImageDecoder, ImageMetadata, LoadOptions,
-    OnceLock, Path, PhantomData, ProbeInputFn, StableDecoderInput, TileImageDecoder, ViprsError,
-    decode_region_with, eager_backing_shrink_factor, eager_backing_shrink_factor_from_path,
-    normalize_shrink_factor, normalize_streaming_options, probe_input_with,
-    retains_stable_input_for_thumbnail,
+    Arc, BandFormat, DecodeRegionFn, DecoderInput, ImageDecoder, ImageMetadata, InMemoryImage,
+    LoadOptions, OnceLock, Path, PhantomData, ProbeInputFn, StableDecoderInput, TileImageDecoder,
+    ViprsError, decode_region_with, eager_backing_shrink_factor,
+    eager_backing_shrink_factor_from_path, normalize_shrink_factor, normalize_streaming_options,
+    probe_input_with, retains_stable_input_for_thumbnail,
 };
 
 pub(super) enum DecoderBacking<'a, D: ImageDecoder, F: BandFormat> {
-    Eager(Image<F>),
+    Eager(InMemoryImage<F>),
     Deferred {
         width: u32,
         height: u32,
         bands: u32,
         metadata: ImageMetadata,
-        image: OnceLock<Result<Arc<Image<F>>, String>>,
+        image: OnceLock<Result<Arc<InMemoryImage<F>>, String>>,
     },
     Streaming {
         input: DecoderInput<'a>,
@@ -269,7 +269,7 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
     /// Create a streaming source from shared compressed input.
     ///
     /// The returned source is `'static`, so it can be inserted into
-    /// [`PipelineBuilder::from_source`](crate::pipeline::PipelineBuilder::from_source).
+    /// [`PipelineBuilder::from_source`](crate::pipeline::ImagePipeline::from_source).
     ///
     /// # Errors
     ///
@@ -308,12 +308,6 @@ impl<D: ImageDecoder, F: BandFormat> DecoderSource<'static, D, F, RandomAccess> 
 }
 
 impl<'a, D: ImageDecoder, F: BandFormat> DecoderSource<'a, D, F, RandomAccess> {
-    #[cfg(feature = "jpeg")]
-    pub(crate) const fn without_deferred_thumbnail_materialization(mut self) -> Self {
-        self.materialize_deferred_thumbnail_hints = false;
-        self
-    }
-
     /// Create a streaming source over borrowed compressed input.
     ///
     /// This is the lowest resident-memory path: no encoded copy and no decoded

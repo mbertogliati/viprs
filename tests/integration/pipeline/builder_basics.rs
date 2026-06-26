@@ -13,7 +13,7 @@ fn memory_source_add_constant_end_to_end() {
     use viprs::{
         Add, OperationBridge,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -25,7 +25,7 @@ fn memory_source_add_constant_end_to_end() {
     let add_op = Add::<U8>::new(vec![5u8; 16]);
     let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()
@@ -52,7 +52,7 @@ fn memory_source_clamp_to_edge_does_not_panic() {
     use viprs::{
         Add, OperationBridge,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -64,7 +64,7 @@ fn memory_source_clamp_to_edge_does_not_panic() {
     let add_op = Add::<U8>::new(vec![0u8; 16]); // identity (add zero)
     let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()
@@ -91,7 +91,7 @@ fn convenience_invert_end_to_end() {
     // PipelineBuilder::invert() builds correctly and produces inverted pixels.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -100,7 +100,7 @@ fn convenience_invert_end_to_end() {
 
     // 4x4 single-band: all pixels = 0, inverted → 255.
     let source = MemorySource::<U8>::new(4, 4, 1, vec![0u8; 16]).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .build()
@@ -126,7 +126,7 @@ fn convenience_linear_end_to_end() {
     // cannot hide indexing or broadcast bugs.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::F32,
@@ -136,7 +136,7 @@ fn convenience_linear_end_to_end() {
     let input = [1.0f32, 2.0, 3.0, 4.0];
     let expected = [4.0f32, 7.0, 10.0, 13.0];
     let source = MemorySource::<F32>::new(4, 1, 1, input.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .linear(3.0, 1.0)
         .unwrap()
         .build()
@@ -166,7 +166,7 @@ fn convenience_cast_u8_to_f32_end_to_end() {
     use viprs::{
         BandFormatId,
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -176,7 +176,7 @@ fn convenience_cast_u8_to_f32_end_to_end() {
     let input = [0u8, 64, 127, 255];
     let expected = [0.0f32, 64.0 / 255.0, 127.0 / 255.0, 1.0];
     let source = MemorySource::<U8>::new(4, 1, 1, input.to_vec()).unwrap();
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .cast(BandFormatId::F32)
         .unwrap()
         .build()
@@ -204,7 +204,7 @@ fn chained_invert_twice_is_identity() {
     // Two consecutive invert() calls must cancel out.
     use viprs::{
         adapters::{
-            pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+            pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
             sinks::memory::MemorySink, sources::memory::MemorySource,
         },
         domain::format::U8,
@@ -215,7 +215,7 @@ fn chained_invert_twice_is_identity() {
     let expected = source_data.clone();
     let source = MemorySource::<U8>::new(4, 4, 1, source_data).unwrap();
 
-    let pipeline = PipelineBuilder::from_source(source)
+    let pipeline = ImagePipeline::from_source(source)
         .invert()
         .unwrap()
         .invert()

@@ -1,7 +1,7 @@
 use viprs_core::{
     error::ViprsError,
     format::{F32, U8, U16},
-    image::Image,
+    image::InMemoryImage,
 };
 
 #[cfg(feature = "icc")]
@@ -54,17 +54,17 @@ pub struct IccTransformOptions<'a> {
 /// Enumerates the available icc image values.
 pub enum IccImage {
     /// Uses the `U8` variant of `IccImage`.
-    U8(Image<U8>),
+    U8(InMemoryImage<U8>),
     /// Uses the `U16` variant of `IccImage`.
-    U16(Image<U16>),
+    U16(InMemoryImage<U16>),
     /// Uses the `F32` variant of `IccImage`.
-    F32(Image<F32>),
+    F32(InMemoryImage<F32>),
 }
 
 impl IccImage {
     #[must_use]
     /// Returns this value as u8.
-    pub const fn as_u8(&self) -> Option<&Image<U8>> {
+    pub const fn as_u8(&self) -> Option<&InMemoryImage<U8>> {
         match self {
             Self::U8(image) => Some(image),
             Self::U16(_) | Self::F32(_) => None,
@@ -73,7 +73,7 @@ impl IccImage {
 
     #[must_use]
     /// Returns this value as u16.
-    pub const fn as_u16(&self) -> Option<&Image<U16>> {
+    pub const fn as_u16(&self) -> Option<&InMemoryImage<U16>> {
         match self {
             Self::U16(image) => Some(image),
             Self::U8(_) | Self::F32(_) => None,
@@ -82,7 +82,7 @@ impl IccImage {
 
     #[must_use]
     /// Returns this value as f32.
-    pub const fn as_f32(&self) -> Option<&Image<F32>> {
+    pub const fn as_f32(&self) -> Option<&InMemoryImage<F32>> {
         match self {
             Self::U8(_) | Self::U16(_) => None,
             Self::F32(image) => Some(image),

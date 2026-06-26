@@ -17,7 +17,7 @@ use crate::viprs_span;
 use viprs_core::codec_options::LoadOptions;
 use viprs_core::error::ViprsError;
 use viprs_core::format::{BandFormat, BandFormatId};
-use viprs_core::image::{Image, ImageMetadata};
+use viprs_core::image::{ImageMetadata, InMemoryImage};
 use viprs_ports::codec::ImageDecoder;
 
 fn scaled_dimension_for_factor(dimension: u32, factor: u8) -> u32 {
@@ -41,7 +41,7 @@ impl ImageDecoder for JpegCodec {
         header.len() >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF
     }
 
-    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<Image<F>, ViprsError> {
+    fn decode<F: BandFormat>(&self, src: &[u8]) -> Result<InMemoryImage<F>, ViprsError> {
         self.decode_with_options(src, &LoadOptions::default())
     }
 
@@ -49,7 +49,7 @@ impl ImageDecoder for JpegCodec {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {
@@ -196,7 +196,7 @@ impl ImageDecoder for JpegCodec {
             ..ImageMetadata::default()
         };
 
-        Image::from_buffer(width, height, bands, samples)
+        InMemoryImage::from_buffer(width, height, bands, samples)
             .map(|image| image.with_metadata(metadata))
             .map_err(|e| ViprsError::Codec(format!("jpeg: {e}")))
     }
@@ -212,7 +212,7 @@ impl ImageDecoder for JpegCodec {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError>
+    ) -> Result<InMemoryImage<F>, ViprsError>
     where
         Self: Sized,
     {

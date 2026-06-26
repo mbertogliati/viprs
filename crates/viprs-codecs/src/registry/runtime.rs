@@ -14,7 +14,7 @@ use viprs_core::{
     codec_options::{LoadOptions, SaveOptions},
     error::ViprsError,
     format::{BandFormat, U8},
-    image::Image,
+    image::InMemoryImage,
 };
 use viprs_ports::codec::ImageCodec;
 
@@ -132,7 +132,7 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::load;
     /// ```
-    pub fn load(&self, path: &Path) -> Result<Image<U8>, ViprsError> {
+    pub fn load(&self, path: &Path) -> Result<InMemoryImage<U8>, ViprsError> {
         self.load_as_with_options(path, &LoadOptions::default())
     }
 
@@ -148,7 +148,7 @@ impl ForeignRegistry {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<U8>, ViprsError> {
+    ) -> Result<InMemoryImage<U8>, ViprsError> {
         self.load_as_with_options(path, opts)
     }
 
@@ -160,7 +160,7 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::load_as;
     /// ```
-    pub fn load_as<F: BandFormat>(&self, path: &Path) -> Result<Image<F>, ViprsError> {
+    pub fn load_as<F: BandFormat>(&self, path: &Path) -> Result<InMemoryImage<F>, ViprsError> {
         self.load_as_with_options(path, &LoadOptions::default())
     }
 
@@ -176,7 +176,7 @@ impl ForeignRegistry {
         &self,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         if path.is_dir() {
             if let Some(codec) = self.find_path_decoder(path) {
                 return self.decode_from_codec_path::<F>(codec, path, opts);
@@ -207,7 +207,10 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::load_from_memory;
     /// ```
-    pub fn load_from_memory(&self, src: &[u8]) -> Result<(Image<U8>, &'static str), ViprsError> {
+    pub fn load_from_memory(
+        &self,
+        src: &[u8],
+    ) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
         self.load_from_memory_as_with_options(src, &LoadOptions::default())
     }
 
@@ -223,7 +226,7 @@ impl ForeignRegistry {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<(Image<U8>, &'static str), ViprsError> {
+    ) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
         self.load_from_memory_as_with_options(src, opts)
     }
 
@@ -238,7 +241,7 @@ impl ForeignRegistry {
     pub fn load_from_memory_as<F: BandFormat>(
         &self,
         src: &[u8],
-    ) -> Result<(Image<F>, &'static str), ViprsError> {
+    ) -> Result<(InMemoryImage<F>, &'static str), ViprsError> {
         self.load_from_memory_as_with_options(src, &LoadOptions::default())
     }
 
@@ -254,7 +257,7 @@ impl ForeignRegistry {
         &self,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<(Image<F>, &'static str), ViprsError> {
+    ) -> Result<(InMemoryImage<F>, &'static str), ViprsError> {
         let codec = self.find_decoder(src).ok_or_else(|| {
             ViprsError::Codec("foreign: no decoder matched in-memory input".into())
         })?;
@@ -270,7 +273,7 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::save;
     /// ```
-    pub fn save(&self, image: &Image<U8>, path: &Path) -> Result<(), ViprsError> {
+    pub fn save(&self, image: &InMemoryImage<U8>, path: &Path) -> Result<(), ViprsError> {
         self.save_as_with_options(image, path, &SaveOptions::default())
     }
 
@@ -284,7 +287,7 @@ impl ForeignRegistry {
     /// ```
     pub fn save_with_options(
         &self,
-        image: &Image<U8>,
+        image: &InMemoryImage<U8>,
         path: &Path,
         opts: &SaveOptions,
     ) -> Result<(), ViprsError> {
@@ -299,7 +302,11 @@ impl ForeignRegistry {
     /// ```ignore
     /// let _ = viprs_codecs::registry::save_as;
     /// ```
-    pub fn save_as<F: BandFormat>(&self, image: &Image<F>, path: &Path) -> Result<(), ViprsError> {
+    pub fn save_as<F: BandFormat>(
+        &self,
+        image: &InMemoryImage<F>,
+        path: &Path,
+    ) -> Result<(), ViprsError> {
         self.save_as_with_options(image, path, &SaveOptions::default())
     }
 
@@ -313,7 +320,7 @@ impl ForeignRegistry {
     /// ```
     pub fn save_as_with_options<F: BandFormat>(
         &self,
-        image: &Image<F>,
+        image: &InMemoryImage<F>,
         path: &Path,
         opts: &SaveOptions,
     ) -> Result<(), ViprsError> {
@@ -366,10 +373,10 @@ impl ForeignRegistry {
         codec: &dyn ImageCodec,
         path: &Path,
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         let decoded = codec.decode_boxed_path(path, F::ID, opts)?;
         decoded
-            .downcast::<Image<F>>()
+            .downcast::<InMemoryImage<F>>()
             .map(|image| *image)
             .map_err(|_| {
                 ViprsError::Codec(format!(
@@ -385,10 +392,10 @@ impl ForeignRegistry {
         codec: &dyn ImageCodec,
         src: &[u8],
         opts: &LoadOptions,
-    ) -> Result<Image<F>, ViprsError> {
+    ) -> Result<InMemoryImage<F>, ViprsError> {
         let decoded = codec.decode_boxed(src, F::ID, opts)?;
         decoded
-            .downcast::<Image<F>>()
+            .downcast::<InMemoryImage<F>>()
             .map(|image| *image)
             .map_err(|_| {
                 ViprsError::Codec(format!(

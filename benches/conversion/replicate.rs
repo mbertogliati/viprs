@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::ImagePipeline, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,
@@ -33,7 +33,7 @@ fn bench_replicate(c: &mut Criterion) {
                         "create memory source",
                     );
                     let builder = must(
-                        PipelineBuilder::from_source(source).replicate(2, 2),
+                        ImagePipeline::from_source(source).replicate(2, 2),
                         "add replicate operation",
                     );
                     let pipeline = must(builder.build(), "build pipeline");

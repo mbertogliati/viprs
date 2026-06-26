@@ -191,23 +191,6 @@ impl RayonScheduler {
         self
     }
 
-    #[must_use]
-    /// `with_execution_limiter` exposes adapter behavior needed by the surrounding module.
-    /// Call it when you need the concrete operation implemented here.
-    ///
-    /// # Examples
-    ///
-    /// ```ignore
-    /// let _ = viprs_runtime::scheduler::rayon_scheduler::with_execution_limiter;
-    /// ```
-    pub(crate) fn with_execution_limiter(
-        mut self,
-        execution_limiter: Arc<ExecutionSemaphore>,
-    ) -> Self {
-        self.execution_limiter = Some(execution_limiter);
-        self
-    }
-
     pub(super) fn with_execution_permit<T>(
         &self,
         f: impl FnOnce() -> Result<T, ViprsError>,

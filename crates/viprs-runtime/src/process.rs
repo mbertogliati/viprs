@@ -58,7 +58,7 @@ use crate::{
         codec_options::{LoadOptions, SaveOptions},
         error::ViprsError,
         format::U8,
-        image::{Image, ImageMetadata},
+        image::{ImageMetadata, InMemoryImage},
         limits::DecodeLimits,
     },
 };
@@ -153,7 +153,7 @@ pub fn process<W, F>(
 ) -> Result<ProcessResult, ViprsError>
 where
     W: Write,
-    F: FnOnce(Image<U8>) -> Result<Image<U8>, ViprsError>,
+    F: FnOnce(InMemoryImage<U8>) -> Result<InMemoryImage<U8>, ViprsError>,
 {
     validate_encode_options(encode_opts)?;
     check_cancelled(process_opts.cancel_token.as_ref())?;
@@ -216,10 +216,10 @@ pub fn process_pipeline<W, F>(
 where
     W: Write,
     F: FnOnce(
-        crate::pipeline::PipelineBuilder,
+        crate::pipeline::ImagePipeline,
     ) -> Result<crate::pipeline::CompiledPipeline, ViprsError>,
 {
-    use crate::pipeline::PipelineBuilder;
+    use crate::pipeline::ImagePipeline;
     use crate::ports::scheduler::TileScheduler;
     use crate::scheduler::rayon_scheduler::RayonScheduler;
     use crate::sinks::memory::MemorySink;
@@ -246,7 +246,7 @@ where
         decoded.bands(),
         decoded.into_buffer(),
     )?;
-    let builder = PipelineBuilder::from_source(source);
+    let builder = ImagePipeline::from_source(source);
 
     // Let the caller configure pipeline operations.
     let pipeline = build_pipeline(builder)?;
@@ -321,7 +321,7 @@ fn check_cancelled(cancel_token: Option<&CancellationToken>) -> Result<(), Viprs
 }
 
 fn encode_image(
-    image: &Image<U8>,
+    image: &InMemoryImage<U8>,
     encode_opts: &EncodeOptions,
     process_opts: &ProcessOptions,
 ) -> Result<Vec<u8>, ViprsError> {
@@ -385,7 +385,10 @@ impl EncodeOptions {
 
 /// Decode input bytes to `Image<U8>`, handling formats that only support higher
 /// bit-depth (e.g. EXR → F32 → U8 cast).
-fn decode_as_u8(input: &[u8], opts: &LoadOptions) -> Result<(Image<U8>, &'static str), ViprsError> {
+fn decode_as_u8(
+    input: &[u8],
+    opts: &LoadOptions,
+) -> Result<(InMemoryImage<U8>, &'static str), ViprsError> {
     let registry = ForeignRegistry::shared();
 
     // Try U8 decode first (most formats support it).
@@ -405,7 +408,7 @@ fn decode_as_u8(input: &[u8], opts: &LoadOptions) -> Result<(Image<U8>, &'static
             .iter()
             .map(|sample| (sample.clamp(0.0, 1.0) * 255.0).round() as u8)
             .collect();
-        let image = Image::<U8>::from_buffer(
+        let image = InMemoryImage::<U8>::from_buffer(
             f32_image.width(),
             f32_image.height(),
             f32_image.bands(),
@@ -422,12 +425,15 @@ fn decode_as_u8(input: &[u8], opts: &LoadOptions) -> Result<(Image<U8>, &'static
 }
 
 #[cfg(feature = "jpeg")]
-fn encode_jpeg(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_jpeg(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     JpegCodec.encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "jpeg"))]
-const fn encode_jpeg(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_jpeg(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: jpeg",
         details: "enable Cargo feature `jpeg` to use EncodeOptions::Jpeg",
@@ -435,12 +441,15 @@ const fn encode_jpeg(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(feature = "png")]
-fn encode_png(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_png(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     PngCodec::default().encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "png"))]
-const fn encode_png(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_png(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: png",
         details: "enable Cargo feature `png` to use EncodeOptions::Png",
@@ -448,12 +457,15 @@ const fn encode_png(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(feature = "webp")]
-fn encode_webp(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_webp(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     WebpCodec.encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "webp"))]
-const fn encode_webp(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_webp(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: webp",
         details: "enable Cargo feature `webp` to use EncodeOptions::WebP",
@@ -461,12 +473,15 @@ const fn encode_webp(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(feature = "tiff")]
-fn encode_tiff(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_tiff(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     TiffCodec::default().encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "tiff"))]
-const fn encode_tiff(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_tiff(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: tiff",
         details: "enable Cargo feature `tiff` to use EncodeOptions::Tiff",
@@ -474,12 +489,15 @@ const fn encode_tiff(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(feature = "gif")]
-fn encode_gif(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_gif(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     GifCodec::default().encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "gif"))]
-const fn encode_gif(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_gif(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: gif",
         details: "enable Cargo feature `gif` to use EncodeOptions::Gif",
@@ -487,12 +505,15 @@ const fn encode_gif(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(feature = "avif")]
-fn encode_avif(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_avif(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     AvifCodec.encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "avif"))]
-const fn encode_avif(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_avif(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: avif",
         details: "enable Cargo feature `avif` to use EncodeOptions::Avif",
@@ -500,12 +521,15 @@ const fn encode_avif(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(feature = "heif")]
-fn encode_heif(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_heif(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     HeifCodec.encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "heif"))]
-const fn encode_heif(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_heif(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: heif",
         details: "enable Cargo feature `heif` to use EncodeOptions::Heif",
@@ -513,12 +537,15 @@ const fn encode_heif(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(feature = "jp2k")]
-fn encode_jp2k(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_jp2k(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     Jp2kCodec.encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "jp2k"))]
-const fn encode_jp2k(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_jp2k(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: jp2k",
         details: "enable Cargo feature `jp2k` to use EncodeOptions::Jp2k",
@@ -526,12 +553,15 @@ const fn encode_jp2k(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u
 }
 
 #[cfg(feature = "exr")]
-fn encode_exr(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_exr(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     ExrCodec.encode_with_options(&convert_u8_image_to_f32(image)?, options)
 }
 
 #[cfg(not(feature = "exr"))]
-const fn encode_exr(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_exr(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: exr",
         details: "enable Cargo feature `exr` to use EncodeOptions::Exr",
@@ -539,7 +569,7 @@ const fn encode_exr(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8
 }
 
 #[cfg(feature = "exr")]
-fn convert_u8_image_to_f32(image: &Image<U8>) -> Result<Image<F32>, ViprsError> {
+fn convert_u8_image_to_f32(image: &InMemoryImage<U8>) -> Result<InMemoryImage<F32>, ViprsError> {
     let pixels = image
         .pixels()
         .iter()
@@ -548,7 +578,7 @@ fn convert_u8_image_to_f32(image: &Image<U8>) -> Result<Image<F32>, ViprsError> 
         .collect();
 
     let mut converted =
-        Image::<F32>::from_buffer(image.width(), image.height(), image.bands(), pixels)?
+        InMemoryImage::<F32>::from_buffer(image.width(), image.height(), image.bands(), pixels)?
             .with_metadata(image.metadata().clone());
 
     if let Some(animation_frames) = image.animation_frames() {
@@ -580,12 +610,15 @@ fn convert_u8_animation_frame_to_f32(
 }
 
 #[cfg(feature = "bmp")]
-fn encode_bmp(image: &Image<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+fn encode_bmp(image: &InMemoryImage<U8>, options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
     BmpCodec.encode_with_options(image, options)
 }
 
 #[cfg(not(feature = "bmp"))]
-const fn encode_bmp(_image: &Image<U8>, _options: &SaveOptions) -> Result<Vec<u8>, ViprsError> {
+const fn encode_bmp(
+    _image: &InMemoryImage<U8>,
+    _options: &SaveOptions,
+) -> Result<Vec<u8>, ViprsError> {
     Err(ViprsError::Unimplemented {
         feature: "process encode: bmp",
         details: "enable Cargo feature `bmp` to use EncodeOptions::Bmp",
@@ -606,14 +639,14 @@ mod tests {
     use crate::{adapters::codecs::PngCodec, ports::codec::ImageEncoder};
     #[cfg(any(feature = "exr", feature = "png"))]
     use crate::{
-        domain::{format::U8, image::Image},
+        domain::{format::U8, image::InMemoryImage},
         ports::codec::ImageDecoder,
     };
 
     #[cfg(feature = "png")]
     #[test]
     fn png_round_trip_writes_output() {
-        let input = Image::<U8>::from_buffer(2, 1, 1, vec![8, 16]).unwrap();
+        let input = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![8, 16]).unwrap();
         let encoded = PngCodec::default().encode(&input).unwrap();
         let mut output = Vec::new();
 
@@ -657,7 +690,7 @@ mod tests {
     #[cfg(feature = "exr")]
     #[test]
     fn exr_encode_auto_casts_u8_input_to_f32() {
-        let image = Image::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
+        let image = InMemoryImage::<U8>::from_buffer(2, 1, 1, vec![0, 255]).unwrap();
 
         let encoded = super::encode_exr(&image, &SaveOptions::default()).unwrap();
         let decoded = ExrCodec.decode::<F32>(&encoded).unwrap();

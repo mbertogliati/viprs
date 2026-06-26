@@ -7,7 +7,7 @@ use viprs::{
     },
     domain::format::F32,
     domain::ops::arithmetic::{RecombOp, recomb::Matrix},
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::{ImagePipeline, OperationBridge},
     ports::scheduler::TileScheduler,
 };
 
@@ -37,7 +37,7 @@ fn bench_lut_recomb(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |b, &size| {
             b.iter(|| {
                 let source = MemorySource::<F32>::new(size, size, 3, pixels.clone()).unwrap();
-                let pipeline = PipelineBuilder::from_source(source)
+                let pipeline = ImagePipeline::from_source(source)
                     .then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
                         RecombOp::<F32>::new(matrix.clone()),
                         3,
