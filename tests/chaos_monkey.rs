@@ -35,16 +35,18 @@ where
 fn execute_pipeline<F>(
     image: &Image<F>,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
     ) -> Result<CompiledPipeline, BuildError>,
 ) -> Result<Vec<u8>, String>
 where
     F: viprs::BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-        memory_source_from_image(image),
-    ))
+    let pipeline = configure(
+        viprs_runtime::pipeline::internal::PipelineBuilder::from_source(memory_source_from_image(
+            image,
+        )),
+    )
     .map_err(|err| format!("build failed: {err:?}"))?;
     let mut sink =
         MemorySink::for_pipeline(&pipeline).map_err(|err| format!("sink failed: {err:?}"))?;
@@ -58,7 +60,7 @@ where
 fn assert_zero_band_pipeline_is_rejected(
     op_name: &str,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
     ) -> Result<CompiledPipeline, BuildError>,
 ) {
     let image = zero_band_image();

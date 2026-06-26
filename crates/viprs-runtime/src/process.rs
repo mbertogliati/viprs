@@ -217,7 +217,7 @@ where
 /// Returns `ViprsError` on decode, pipeline, or encode failure.
 /// Returns `ViprsError::Cancelled` if the cancel token is triggered.
 #[cfg(feature = "rayon")]
-pub fn process_pipeline<W, F>(
+pub fn process_pipeline<W, F, State>(
     input: &[u8],
     output: &mut W,
     build_pipeline: F,
@@ -228,7 +228,8 @@ where
     W: Write,
     F: FnOnce(
         crate::image_pipeline::ImagePipeline,
-    ) -> Result<crate::image_pipeline::ImagePipeline, ViprsError>,
+    ) -> Result<crate::image_pipeline::ImagePipeline<State>, ViprsError>,
+    State: crate::image_pipeline::CommitState,
 {
     use crate::image_pipeline::{Format, ImagePipeline, Input, Sink};
 
@@ -254,7 +255,7 @@ where
     )?;
     let pipeline = ImagePipeline::from_input(input);
 
-    let pipeline = build_pipeline(pipeline)?;
+    let pipeline = build_pipeline(pipeline)?.commit()?;
 
     check_cancelled(process_opts.cancel_token.as_ref())?;
 

@@ -1,4 +1,4 @@
-error[E0599]: no method named `run_blocking` found for struct `ImagePipeline` in the current scope
+error[E0599]: no method named `run_blocking` found for struct `ImagePipeline<State>` in the current scope
  --> tests/ui/image_pipeline_requires_output_contract.rs:5:28
   |
 5 |     let _output = pipeline.run_blocking(Sink::memory())?;

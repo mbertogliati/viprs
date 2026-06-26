@@ -502,16 +502,17 @@ fn flow2_affine_transform_gauntlet_covers_identity_rotation_bounds_and_errors() 
     .1;
     assert_eq!((tiny.width(), tiny.height()), (1, 1));
 
-    let degenerate =
-        viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
-            .affine(
-                [1.0, 2.0, 2.0, 4.0],
-                0.0,
-                0.0,
-                image.width(),
-                image.height(),
-                InterpolationKernel::Bilinear,
-            );
+    let degenerate = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+        memory_source_from_image(&image),
+    )
+    .affine(
+        [1.0, 2.0, 2.0, 4.0],
+        0.0,
+        0.0,
+        image.width(),
+        image.height(),
+        InterpolationKernel::Bilinear,
+    );
     assert!(matches!(
         degenerate,
         Err(BuildError::DegenerateAffineTransform { .. })

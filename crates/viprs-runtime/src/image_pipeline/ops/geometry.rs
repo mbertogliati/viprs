@@ -1,17 +1,29 @@
 use viprs_core::error::BuildError;
 
-use super::super::{Angle, Angle45, ExtendMode, Gravity, pipeline::ImagePipeline};
+use super::super::{
+    Angle, Angle45, ExtendMode, Gravity,
+    pipeline::{CommitState, Committed, ImagePipeline},
+};
 
-impl ImagePipeline {
+impl<State> ImagePipeline<State>
+where
+    State: CommitState,
+{
     /// Crop the image to a source-coordinate rectangle.
     ///
     /// # Errors
     ///
     /// Returns [`BuildError`] when the rectangle is outside the current image.
-    pub fn extract_area(self, x: u32, y: u32, width: u32, height: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.extract_area(x, y, width, height)?,
-        })
+    pub fn extract_area(
+        self,
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.extract_area(x, y, width, height)?,
+        ))
     }
 
     /// Embed the image in a larger canvas.
@@ -30,12 +42,10 @@ impl ImagePipeline {
         src_width: u32,
         src_height: u32,
         extend: ExtendMode,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.embed(
-                dst_width, dst_height, x_off, y_off, src_width, src_height, extend,
-            )?,
-        })
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(self.commit()?.builder.embed(
+            dst_width, dst_height, x_off, y_off, src_width, src_height, extend,
+        )?))
     }
 
     /// Embed the image with signed offsets.
@@ -54,12 +64,12 @@ impl ImagePipeline {
         src_width: u32,
         src_height: u32,
         extend: ExtendMode,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.embed_signed(
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.embed_signed(
                 dst_width, dst_height, x_off, y_off, src_width, src_height, extend,
             )?,
-        })
+        ))
     }
 
     /// Embed the image in a larger canvas using compass gravity.
@@ -75,12 +85,12 @@ impl ImagePipeline {
         src_width: u32,
         src_height: u32,
         extend: ExtendMode,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.embed_with_gravity(
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.embed_with_gravity(
                 dst_width, dst_height, gravity, src_width, src_height, extend,
             )?,
-        })
+        ))
     }
 
     /// Flip the image horizontally.
@@ -88,10 +98,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn flip_horizontal(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.flip_horizontal()?,
-        })
+    pub fn flip_horizontal(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.flip_horizontal()?,
+        ))
     }
 
     /// Flip the image vertically.
@@ -99,10 +109,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn flip_vertical(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.flip_vertical()?,
-        })
+    pub fn flip_vertical(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.flip_vertical()?,
+        ))
     }
 
     /// Rotate the image by a right angle.
@@ -110,10 +120,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn rot(self, angle: Angle) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.rot(angle)?,
-        })
+    pub fn rot(self, angle: Angle) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.rot(angle)?,
+        ))
     }
 
     /// Rotate the image by a multiple of 45 degrees.
@@ -121,10 +131,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn rot45(self, angle: Angle45) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.rot45(angle)?,
-        })
+    pub fn rot45(self, angle: Angle45) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.rot45(angle)?,
+        ))
     }
 
     /// Alias for [`ImagePipeline::rot`].
@@ -132,10 +142,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn rotate(self, angle: Angle) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.rotate(angle)?,
-        })
+    pub fn rotate(self, angle: Angle) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.rotate(angle)?,
+        ))
     }
 
     /// Rotate the image 90 degrees clockwise.
@@ -143,10 +153,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn rotate90(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.rotate90()?,
-        })
+    pub fn rotate90(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.rotate90()?,
+        ))
     }
 
     /// Rotate the image 180 degrees.
@@ -154,10 +164,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn rotate180(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.rotate180()?,
-        })
+    pub fn rotate180(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.rotate180()?,
+        ))
     }
 
     /// Rotate the image 270 degrees clockwise.
@@ -165,10 +175,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn rotate270(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.rotate270()?,
-        })
+    pub fn rotate270(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.rotate270()?,
+        ))
     }
 
     /// Tile the current image.
@@ -176,10 +186,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factors are invalid.
-    pub fn replicate(self, across: u32, down: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.replicate(across, down)?,
-        })
+    pub fn replicate(self, across: u32, down: u32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.replicate(across, down)?,
+        ))
     }
 
     /// Rearrange a vertical strip into a grid.
@@ -187,10 +197,14 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current pipeline cannot accept the operation.
-    pub fn grid(self, tile_height: u32, across: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.grid(tile_height, across)?,
-        })
+    pub fn grid(
+        self,
+        tile_height: u32,
+        across: u32,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.grid(tile_height, across)?,
+        ))
     }
 
     /// Decimate by integer factors.
@@ -198,10 +212,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factors are invalid.
-    pub fn subsample(self, xfac: u32, yfac: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.subsample(xfac, yfac)?,
-        })
+    pub fn subsample(self, xfac: u32, yfac: u32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.subsample(xfac, yfac)?,
+        ))
     }
 
     /// Upscale with nearest-neighbour integer factors.
@@ -209,10 +223,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factors are invalid.
-    pub fn zoom(self, xfac: u32, yfac: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.zoom(xfac, yfac)?,
-        })
+    pub fn zoom(self, xfac: u32, yfac: u32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.zoom(xfac, yfac)?,
+        ))
     }
 
     /// Wrap the image origin.
@@ -220,9 +234,9 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current image is empty.
-    pub fn wrap(self, x: i32, y: i32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.wrap(x, y)?,
-        })
+    pub fn wrap(self, x: i32, y: i32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.wrap(x, y)?,
+        ))
     }
 }

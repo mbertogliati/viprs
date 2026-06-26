@@ -342,7 +342,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| builder.invert().map_err(Into::into),
+            |builder| builder.invert()?.commit().map_err(Into::into),
             &EncodeOptions::Jpeg { quality: 85 },
             &ProcessOptions::default(),
         )
@@ -361,7 +361,7 @@ mod pipeline_jpeg {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| builder.linear(1.5, 10.0).map_err(Into::into),
+            |builder| builder.linear(1.5, 10.0)?.commit().map_err(Into::into),
             &EncodeOptions::Jpeg { quality: 85 },
             &ProcessOptions::default(),
         )
@@ -477,7 +477,7 @@ mod pipeline_png {
         let result = process_pipeline(
             &input,
             &mut output,
-            |builder| builder.invert().map_err(Into::into),
+            |builder| builder.invert()?.commit().map_err(Into::into),
             &EncodeOptions::Png { compression: 6 },
             &ProcessOptions::default(),
         )

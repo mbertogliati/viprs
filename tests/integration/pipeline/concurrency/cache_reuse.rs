@@ -131,12 +131,14 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -144,9 +146,11 @@ mod chaos_monkey_18 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -214,28 +218,29 @@ mod chaos_monkey_18 {
         let image = grayscale_pattern(16, 16);
         let first_calls = Arc::new(AtomicUsize::new(0));
         let second_calls = Arc::new(AtomicUsize::new(0));
-        let pipeline =
-            viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
-                .then(Box::new(OperationBridge::new_pixel_local(
-                    CountingPass {
-                        calls: Arc::clone(&first_calls),
-                    },
-                    1,
-                )))
-                .unwrap()
-                .cache_last_op(NonZeroUsize::new(1 << 20).unwrap())
-                .unwrap()
-                .then(Box::new(OperationBridge::new_pixel_local(
-                    CountingPass {
-                        calls: Arc::clone(&second_calls),
-                    },
-                    1,
-                )))
-                .unwrap()
-                .cache_last_op(NonZeroUsize::new(1 << 20).unwrap())
-                .unwrap()
-                .build()
-                .unwrap();
+        let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+            memory_source_from_image(&image),
+        )
+        .then(Box::new(OperationBridge::new_pixel_local(
+            CountingPass {
+                calls: Arc::clone(&first_calls),
+            },
+            1,
+        )))
+        .unwrap()
+        .cache_last_op(NonZeroUsize::new(1 << 20).unwrap())
+        .unwrap()
+        .then(Box::new(OperationBridge::new_pixel_local(
+            CountingPass {
+                calls: Arc::clone(&second_calls),
+            },
+            1,
+        )))
+        .unwrap()
+        .cache_last_op(NonZeroUsize::new(1 << 20).unwrap())
+        .unwrap()
+        .build()
+        .unwrap();
 
         let scheduler = RayonScheduler::new(1).unwrap();
         let first = pipeline.run_to_image::<U8, _>(&scheduler).unwrap();

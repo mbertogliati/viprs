@@ -22,7 +22,7 @@ static ALLOC: dhat::Alloc = dhat::Alloc;
 
 use std::path::{Path, PathBuf};
 
-use viprs::adapters::pipeline::PipelineBuilder;
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 use viprs::adapters::scheduler::rayon_scheduler::RayonScheduler;
 use viprs::adapters::sinks::memory::MemorySink;
 use viprs::adapters::sources::memory::MemorySource;

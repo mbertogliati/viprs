@@ -69,20 +69,24 @@ mod chaos_monkey_7 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_same_format<F, S: viprs_runtime::pipeline::Flush>(
+    fn execute_same_format<F, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<F>), String>
     where
         F: viprs::BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -124,9 +128,11 @@ mod chaos_monkey_7 {
     fn zero_band_colourspace_returns_typed_error() {
         let image = zero_band_u8(8, 8).with_metadata(rgb_metadata());
         let outcome = catch_unwind(AssertUnwindSafe(|| {
-            viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
-                .with_colorspace(ColorspaceId::SRgb)
-                .colourspace::<Lab>()
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(&image),
+            )
+            .with_colorspace(ColorspaceId::SRgb)
+            .colourspace::<Lab>()
         }));
 
         let result = match outcome {

@@ -6,7 +6,7 @@ use viprs::{
         sources::memory::MemorySource,
     },
     domain::{format::U8, op::OperationBridge, ops::conversion::Transpose3dOp},
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelineBuilder,
     ports::scheduler::TileScheduler,
 };
 

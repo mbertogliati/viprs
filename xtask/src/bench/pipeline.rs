@@ -4,6 +4,7 @@ use std::num::{NonZeroU8, NonZeroUsize};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::{Arc, Mutex, OnceLock};
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 use bytemuck::Pod;
 use mozjpeg::decompress::DecompressStarted;
@@ -46,7 +47,7 @@ use viprs::domain::ops::resample::Resize;
 use viprs::domain::ops::resample::thumbnail::{Thumbnail, ThumbnailTarget};
 use viprs::ports::codec::TileImageDecoder;
 use viprs::ports::source::{ImageSource, RandomAccessSource};
-use viprs_runtime::pipeline::{CompiledPipeline, PipelineArena, PipelineBuilder};
+use viprs_runtime::pipeline::{CompiledPipeline, PipelineArena};
 
 use super::helpers::load_bench_image;
 use super::types::BenchImage;

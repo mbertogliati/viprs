@@ -7,7 +7,7 @@ use viprs::{
     },
     domain::format::U8,
     domain::kernel::InterpolationKernel,
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelineBuilder,
     ports::scheduler::TileScheduler,
 };
 

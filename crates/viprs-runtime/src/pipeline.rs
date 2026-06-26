@@ -138,7 +138,23 @@ pub use arena::PipelineArena;
 use arena::{ArenaNodeOp, format_sample_size};
 
 mod builder;
-pub use builder::{Flush, PipelineBuilder, PipelineOp};
+use builder::{Flush, Identity};
+
+#[doc(hidden)]
+pub mod internal {
+    //! Internal planner access for runtime facades, workspace tests, and benchmarks.
+    //!
+    //! This module is not a user-facing operation DSL. Public image processing code
+    //! should use `viprs_runtime::image_pipeline::ImagePipeline`.
+
+    pub use super::builder::{Flush, Fusing, Identity, PipelineBuilder, PipelineOp};
+}
+
+pub(crate) type CommittedBuilderState = Identity;
+
+pub trait CommitBuilderState: Flush {}
+
+impl<State: Flush> CommitBuilderState for State {}
 
 #[cfg(test)]
 mod tests;

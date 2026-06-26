@@ -25,5 +25,5 @@ pub use config::ProcessingConfig;
 pub use format::Format;
 pub use input::Input;
 pub use output::{PipelineOutput, RawOutputPipeline};
-pub use pipeline::ImagePipeline;
+pub use pipeline::{CommitState, Committed, Fusing, ImagePipeline};
 pub use sink::Sink;

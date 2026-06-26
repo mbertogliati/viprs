@@ -1053,7 +1053,7 @@ fn streaming_path_uses_decoder_path_api() {
 
 #[test]
 fn streaming_shared_source_runs_through_pipeline_scheduler() {
-    use crate::pipeline::PipelineBuilder;
+    use crate::pipeline::internal::PipelineBuilder;
     use crate::scheduler::rayon_scheduler::RayonScheduler;
 
     let decoder = StreamingGridDecoder::new();

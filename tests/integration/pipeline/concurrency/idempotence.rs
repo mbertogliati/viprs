@@ -48,17 +48,21 @@ mod robustez_idempotencia {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline<S: viprs_runtime::pipeline::Flush>(
+    fn execute_pipeline<S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<U8>,
         threads: usize,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, viprs::BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            viprs::BuildError,
+        >,
     ) -> Image<U8> {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source_from_image(
+                image,
+            )),
+        )
         .unwrap()
         .build()
         .unwrap();
@@ -103,17 +107,18 @@ mod robustez_idempotencia {
     #[test]
     fn same_pipeline_twice_produces_identical_bytes() {
         let image = patterned_image(257, 193, 3);
-        let pipeline =
-            viprs_runtime::pipeline::PipelineBuilder::from_source(source_from_image(&image))
-                .thumbnail(Thumbnail::new(
-                    ThumbnailTarget::Width(91),
-                    InterpolationKernel::Lanczos3,
-                ))
-                .unwrap()
-                .invert()
-                .unwrap()
-                .build()
-                .unwrap();
+        let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+            source_from_image(&image),
+        )
+        .thumbnail(Thumbnail::new(
+            ThumbnailTarget::Width(91),
+            InterpolationKernel::Lanczos3,
+        ))
+        .unwrap()
+        .invert()
+        .unwrap()
+        .build()
+        .unwrap();
         let scheduler = RayonScheduler::new(2).unwrap();
 
         let first = pipeline.run_to_image::<U8, _>(&scheduler).unwrap();

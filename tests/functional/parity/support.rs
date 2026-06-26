@@ -41,23 +41,23 @@ fn fixture_metadata(upstream: &str, op: &str, case: &str) -> String {
     format!("upstream: {upstream}\nop: {op}\ncase: {case}")
 }
 
-pub(crate) fn run_pipeline_u8<S: viprs_runtime::pipeline::Flush>(
+pub(crate) fn run_pipeline_u8<S: viprs_runtime::pipeline::internal::Flush>(
     source_pixels: Vec<u8>,
     width: u32,
     height: u32,
     bands: u32,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let source =
         MemorySource::<U8>::new(width, height, bands, source_pixels).expect("MemorySource");
-    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-        source,
-    ))
-    .expect("pipeline step")
-    .build()
-    .expect("pipeline build");
+    let pipeline =
+        configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source))
+            .expect("pipeline step")
+            .build()
+            .expect("pipeline build");
 
     let output_width = pipeline.width;
     let output_height = pipeline.height;
@@ -70,23 +70,23 @@ pub(crate) fn run_pipeline_u8<S: viprs_runtime::pipeline::Flush>(
     (output_width, output_height, sink.into_buffer())
 }
 
-pub(crate) fn run_pipeline_f32<S: viprs_runtime::pipeline::Flush>(
+pub(crate) fn run_pipeline_f32<S: viprs_runtime::pipeline::internal::Flush>(
     source_pixels: Vec<f32>,
     width: u32,
     height: u32,
     bands: u32,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> (u32, u32, Vec<u8>) {
     let source =
         MemorySource::<F32>::new(width, height, bands, source_pixels).expect("MemorySource");
-    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-        source,
-    ))
-    .expect("pipeline step")
-    .build()
-    .expect("pipeline build");
+    let pipeline =
+        configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source))
+            .expect("pipeline step")
+            .build()
+            .expect("pipeline build");
 
     let output_width = pipeline.width;
     let output_height = pipeline.height;

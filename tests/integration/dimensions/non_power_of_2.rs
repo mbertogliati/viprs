@@ -65,17 +65,20 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 }
 
 #[cfg(feature = "jpeg")]
-fn execute_to_image<S: viprs_runtime::pipeline::Flush>(
+fn execute_to_image<S: viprs_runtime::pipeline::internal::Flush>(
     image: &Image<U8>,
     op_name: &str,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Image<U8>) {
     let result = catch_unwind(AssertUnwindSafe(|| {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .unwrap_or_else(|error| panic!("{op_name} stage failed: {error:?}"))
         .build()
         .unwrap_or_else(|error| panic!("{op_name} build failed: {error:?}"));

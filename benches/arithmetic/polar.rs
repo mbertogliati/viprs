@@ -1,5 +1,6 @@
 #![allow(missing_docs)]
 use std::f32::consts::PI;
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
@@ -9,7 +10,7 @@ use viprs::{
     },
     domain::format::F32,
     domain::ops::arithmetic::PolarOp,
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::OperationBridge,
     ports::scheduler::TileScheduler,
 };
 

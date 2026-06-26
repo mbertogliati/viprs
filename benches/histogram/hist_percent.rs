@@ -10,9 +10,10 @@ use viprs::{
         ops::{arithmetic::Linear, histogram::HistPercentOp},
         reducers::histogram::HistFindReducer,
     },
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::OperationBridge,
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 fn make_pixels(size: u32) -> Vec<u8> {
     let pixel_count = size as usize * size as usize;

@@ -2,7 +2,7 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{format::F32, op::OperationBridge, ops::colour::DE00},

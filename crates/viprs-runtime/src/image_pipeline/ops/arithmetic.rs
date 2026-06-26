@@ -1,8 +1,15 @@
 use viprs_core::error::BuildError;
 
-use super::super::{BandFormatId, pipeline::ImagePipeline};
+use super::super::{
+    BandFormatId,
+    pipeline::{CommitState, Committed, ImagePipeline},
+};
+use crate::pipeline::internal::PipelineOp;
 
-impl ImagePipeline {
+impl<State> ImagePipeline<State>
+where
+    State: CommitState,
+{
     /// Apply sample inversion to the pipeline.
     ///
     /// # Errors
@@ -21,10 +28,24 @@ impl ImagePipeline {
     /// assert!(!output.as_bytes().is_empty());
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn invert(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.invert()?.flush_into_identity()?,
-        })
+    pub fn invert(
+        self,
+    ) -> Result<
+        ImagePipeline<
+            <crate::domain::ops::point::Invert as PipelineOp<State::BuilderState>>::NextState,
+        >,
+        BuildError,
+    >
+    where
+        crate::domain::ops::point::Invert: PipelineOp<State::BuilderState>,
+        <crate::domain::ops::point::Invert as PipelineOp<State::BuilderState>>::NextState:
+            CommitState<
+                BuilderState = <crate::domain::ops::point::Invert as PipelineOp<
+                    State::BuilderState,
+                >>::NextState,
+            >,
+    {
+        Ok(ImagePipeline::from_builder(self.builder.invert()?))
     }
 
     /// Apply `output = input * scale + offset` per sample.
@@ -42,10 +63,28 @@ impl ImagePipeline {
     /// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn linear(self, scale: f64, offset: f64) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.linear(scale, offset)?.flush_into_identity()?,
-        })
+    pub fn linear(
+        self,
+        scale: f64,
+        offset: f64,
+    ) -> Result<
+        ImagePipeline<
+            <crate::domain::ops::point::Linear as PipelineOp<State::BuilderState>>::NextState,
+        >,
+        BuildError,
+    >
+    where
+        crate::domain::ops::point::Linear: PipelineOp<State::BuilderState>,
+        <crate::domain::ops::point::Linear as PipelineOp<State::BuilderState>>::NextState:
+            CommitState<
+                BuilderState = <crate::domain::ops::point::Linear as PipelineOp<
+                    State::BuilderState,
+                >>::NextState,
+            >,
+    {
+        Ok(ImagePipeline::from_builder(
+            self.builder.linear(scale, offset)?,
+        ))
     }
 
     /// Convert samples to another band format.
@@ -63,10 +102,10 @@ impl ImagePipeline {
     /// assert_eq!(pipeline.output_format(), Format::F32);
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn cast(self, target: BandFormatId) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.cast(target)?,
-        })
+    pub fn cast(self, target: BandFormatId) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.cast(target)?,
+        ))
     }
 
     /// Extract the most-significant byte from each integer band.
@@ -74,9 +113,7 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current format is unsupported.
-    pub fn msb(self) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.msb()?,
-        })
+    pub fn msb(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(self.commit()?.builder.msb()?))
     }
 }

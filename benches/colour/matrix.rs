@@ -4,7 +4,7 @@ use std::time::Duration;
 use criterion::{BenchmarkId, Criterion, SamplingMode, black_box, criterion_group, criterion_main};
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{

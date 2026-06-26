@@ -1,6 +1,84 @@
-use crate::pipeline::PipelineBuilder;
+use std::marker::PhantomData;
+
+use viprs_core::error::BuildError;
 
 use super::{DemandHint, Format, Input, RawOutputPipeline};
+use crate::pipeline::{
+    CommitBuilderState, CommittedBuilderState,
+    internal::{Fusing as BuilderFusing, PipelineBuilder},
+};
+
+/// Public state for a pipeline with no pending fused point operations.
+///
+/// This is the default `ImagePipeline` state. It marks a pipeline whose staged
+/// operation graph is ready for non-fusable operations or output contracts.
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// use viprs_runtime::image_pipeline::{Committed, ImagePipeline, Input};
+///
+/// let pipeline: ImagePipeline<Committed> = ImagePipeline::from_input(Input::path("photo.jpg")?);
+/// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
+/// # Ok::<(), viprs_core::error::ViprsError>(())
+/// ```
+pub struct Committed;
+
+/// Public state for a pipeline accumulating a statically fused point-operation chain.
+///
+/// The chain is materialized only when [`ImagePipeline::commit`] is called, when
+/// a non-fusable operation is appended, or when an output contract is selected.
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// use viprs_runtime::image_pipeline::{Fusing, ImagePipeline, Input};
+/// use viprs_runtime::domain::ops::point::Invert;
+///
+/// let pipeline: ImagePipeline<Fusing<Invert>> =
+///     ImagePipeline::from_input(Input::path("photo.jpg")?).invert()?;
+/// let committed = pipeline.commit()?;
+/// assert_eq!(committed.output_format(), viprs_runtime::image_pipeline::Format::U8);
+/// # Ok::<(), viprs_core::error::ViprsError>(())
+/// ```
+pub type Fusing<C> = BuilderFusing<C>;
+
+/// Capability for an `ImagePipeline` state that can be committed.
+///
+/// The public API uses this trait as the boundary between typestate-preserving
+/// fusable operations and operations that require a concrete planned graph.
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// use viprs_runtime::image_pipeline::{CommitState, Committed};
+///
+/// fn accepts_committable<S: CommitState>() {}
+/// accepts_committable::<Committed>();
+/// ```
+pub trait CommitState: private::Sealed {
+    #[doc(hidden)]
+    type BuilderState: CommitBuilderState;
+}
+
+impl CommitState for Committed {
+    type BuilderState = CommittedBuilderState;
+}
+
+impl<C> CommitState for Fusing<C>
+where
+    C: viprs_core::concretize::Concretize + Clone,
+{
+    type BuilderState = Self;
+}
+
+mod private {
+    pub trait Sealed {}
+
+    impl Sealed for super::Committed {}
+
+    impl<C> Sealed for super::Fusing<C> where C: viprs_core::concretize::Concretize {}
+}
 
 /// Public image pipeline builder and execution object.
 ///
@@ -25,8 +103,12 @@ use super::{DemandHint, Format, Input, RawOutputPipeline};
 /// let pipeline = ImagePipeline::from_input(Input::path("photo.jpg").unwrap());
 /// let _ = pipeline.run_blocking(Sink::memory());
 /// ```
-pub struct ImagePipeline {
-    pub(super) builder: PipelineBuilder,
+pub struct ImagePipeline<State = Committed>
+where
+    State: CommitState,
+{
+    pub(super) builder: PipelineBuilder<State::BuilderState>,
+    state: PhantomData<State>,
 }
 
 impl ImagePipeline {
@@ -43,9 +125,41 @@ impl ImagePipeline {
     /// ```
     #[must_use]
     pub fn from_input(input: Input) -> Self {
+        Self::from_builder(input.into_builder())
+    }
+}
+
+impl<State> ImagePipeline<State>
+where
+    State: CommitState,
+{
+    pub(super) const fn from_builder(builder: PipelineBuilder<State::BuilderState>) -> Self {
         Self {
-            builder: input.into_builder(),
+            builder,
+            state: PhantomData,
         }
+    }
+
+    /// Commit any pending fused point operations into the internal execution plan.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BuildError`] when pending operations cannot be materialized for the
+    /// current image format or band count.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use viprs_runtime::image_pipeline::{ImagePipeline, Input};
+    ///
+    /// let pipeline = ImagePipeline::from_input(Input::path("photo.jpg")?)
+    ///     .invert()?
+    ///     .commit()?;
+    /// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
+    /// # Ok::<(), viprs_core::error::ViprsError>(())
+    /// ```
+    pub fn commit(self) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(self.builder.commit_plan()?))
     }
 
     /// Declare the colorspace of the current pipeline stage.
@@ -121,7 +235,7 @@ impl ImagePipeline {
     /// ```
     #[must_use]
     pub fn raw_pixels(self) -> RawOutputPipeline {
-        RawOutputPipeline::from_builder(self.builder)
+        RawOutputPipeline::from_builder(self.commit().map(|pipeline| pipeline.builder))
     }
 
     /// Return the current pipeline output format.

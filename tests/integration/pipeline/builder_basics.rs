@@ -40,7 +40,7 @@ fn memory_input_raw_pixels_end_to_end() {
 
 #[test]
 fn fluent_invert_end_to_end() {
-    let output = run_u8_pipeline(vec![0u8; 16], |pipeline| pipeline.invert());
+    let output = run_u8_pipeline(vec![0u8; 16], |pipeline| pipeline.invert()?.commit());
 
     assert!(
         output.iter().all(|&sample| sample == 255),
@@ -86,7 +86,9 @@ fn fluent_cast_u8_to_f32_end_to_end() {
 #[test]
 fn chained_invert_twice_is_identity() {
     let input: Vec<u8> = (0u8..16).collect();
-    let output = run_u8_pipeline(input.clone(), |pipeline| pipeline.invert()?.invert());
+    let output = run_u8_pipeline(input.clone(), |pipeline| {
+        pipeline.invert()?.invert()?.commit()
+    });
 
     assert_eq!(output, input, "Double-invert must be identity");
 }

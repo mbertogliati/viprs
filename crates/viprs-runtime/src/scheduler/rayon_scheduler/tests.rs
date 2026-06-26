@@ -1,6 +1,6 @@
 use super::*;
 use crate::adapters::{
-    pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+    pipeline::internal::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
 };
 use crate::domain::image::{DemandHint, ImageMetadata};
 use crate::domain::{error::BuildError, format::U16};
@@ -646,7 +646,7 @@ fn thin_strip_worker_budget_skips_small_sources() {
 #[test]
 fn large_thumbnail_sharpen_caps_strip_workers() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::zero::ZeroSource},
+        adapters::{pipeline::internal::PipelineBuilder, sources::zero::ZeroSource},
         domain::{
             colorspace::ColorspaceId,
             kernel::InterpolationKernel,
@@ -685,7 +685,7 @@ fn large_thumbnail_sharpen_caps_strip_workers() {
 #[test]
 fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::zero::ZeroSource},
+        adapters::{pipeline::internal::PipelineBuilder, sources::zero::ZeroSource},
         domain::{
             colorspace::ColorspaceId,
             kernel::InterpolationKernel,
@@ -724,7 +724,8 @@ fn medium_thumbnail_sharpen_keeps_full_strip_workers() {
 fn strip_scheduling_matches_single_tile_row_output() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelineBuilder, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::op::OperationBridge,
     };
@@ -768,7 +769,7 @@ fn strip_scheduling_matches_single_tile_row_output() {
 #[test]
 fn run_concurrent_matches_run_output() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelineBuilder, sources::memory::MemorySource},
         domain::op::OperationBridge,
     };
 
@@ -941,7 +942,7 @@ fn scheduler_limits_max_concurrent_pipeline_runs() {
 #[test]
 fn run_with_reducer_returns_correct_sum_and_writes_sink() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelineBuilder, sources::memory::MemorySource},
         domain::{op::OperationBridge, reducer::TileReducer},
     };
 
@@ -1021,7 +1022,7 @@ fn run_with_profile_reduces_serial_sink_to_one_lock_per_tile() {
 
 #[test]
 fn view_only_pipeline_direct_writes_into_memory_sink() {
-    use crate::{pipeline::PipelineBuilder, sources::memory::MemorySource};
+    use crate::{pipeline::internal::PipelineBuilder, sources::memory::MemorySource};
 
     let width = 128;
     let height = 96;
@@ -1156,7 +1157,7 @@ fn source_cache_plus_branch_point_op_cache_stays_within_four_locks_per_output_ti
 #[test]
 fn run_with_reducer_rejects_format_mismatch() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelineBuilder, sources::memory::MemorySource},
         domain::{format::U16, op::OperationBridge, reducer::TileReducer},
     };
 
@@ -1195,7 +1196,7 @@ fn run_with_reducer_rejects_format_mismatch() {
 
 #[test]
 fn sequential_access_runs_tiles_in_row_major_order() {
-    use crate::{domain::op::OperationBridge, pipeline::PipelineBuilder};
+    use crate::{domain::op::OperationBridge, pipeline::internal::PipelineBuilder};
 
     let state = Arc::new(TrackingSourceState::default());
     let source = TrackingSource::new(32, 256, Arc::clone(&state));
@@ -1225,7 +1226,7 @@ fn sequential_access_runs_tiles_in_row_major_order() {
 
 #[test]
 fn sequential_access_reduces_in_flight_tile_memory() {
-    use crate::{domain::op::OperationBridge, pipeline::PipelineBuilder};
+    use crate::{domain::op::OperationBridge, pipeline::internal::PipelineBuilder};
 
     let parallel_state = Arc::new(TrackingSourceState::default());
     let parallel_source = TrackingSource::new(64, 256, Arc::clone(&parallel_state));
@@ -1381,7 +1382,7 @@ fn execute_tile_returns_error_when_transform_state_is_missing() {
 #[test]
 fn execute_tile_returns_error_when_later_transform_state_is_missing() {
     use crate::{
-        adapters::{pipeline::PipelineBuilder, sources::memory::MemorySource},
+        adapters::{pipeline::internal::PipelineBuilder, sources::memory::MemorySource},
         domain::{
             format::U8,
             image::{DemandHint, Tile, TileMut},
@@ -1457,7 +1458,8 @@ fn shrinkh_zero_band_u16_pipeline_returns_typed_error() {
 fn run_with_reducer_supports_bisource_reducer_side_input() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelineBuilder, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -1571,7 +1573,8 @@ fn run_with_reducer_supports_bisource_reducer_side_input() {
 fn run_with_reducer_uses_accumulate_into_scratch_api() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelineBuilder, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{
             format::U8,
@@ -1846,7 +1849,8 @@ fn multi_input_first_node_reuses_preallocated_input_refs_for_three_slots() {
 fn affine_identity_bilinear_runs_without_source_buffer_overflow() {
     use crate::{
         adapters::{
-            pipeline::PipelineBuilder, sinks::memory::MemorySink, sources::memory::MemorySource,
+            pipeline::internal::PipelineBuilder, sinks::memory::MemorySink,
+            sources::memory::MemorySource,
         },
         domain::{format::U8, kernel::InterpolationKernel},
         ports::scheduler::TileScheduler,

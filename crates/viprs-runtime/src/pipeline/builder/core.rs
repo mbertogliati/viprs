@@ -72,16 +72,6 @@ impl PipelineBuilder<Identity> {
             pending: Identity,
         }
     }
-
-    /// Declare the colorspace of the current pipeline stage.
-    ///
-    /// Call this after `from_source` when the source colorspace is known (e.g. after
-    /// probing a JPEG decoder). Required before calling `colourspace()`.
-    #[must_use]
-    pub const fn with_colorspace(mut self, colorspace: ColorspaceId) -> Self {
-        self.current_colorspace = Some(colorspace);
-        self
-    }
 }
 
 impl<Op: Flush> PipelineBuilder<Op> {
@@ -124,6 +114,16 @@ impl<Op: Flush> PipelineBuilder<Op> {
             current_icc_profile: self.current_icc_profile,
             pending,
         }
+    }
+
+    /// Declare the colorspace of the current pipeline stage.
+    ///
+    /// Call this after `from_source` when the source colorspace is known (e.g. after
+    /// probing a JPEG decoder). Required before calling `colourspace()`.
+    #[must_use]
+    pub const fn with_colorspace(mut self, colorspace: ColorspaceId) -> Self {
+        self.current_colorspace = Some(colorspace);
+        self
     }
 
     /// `current_format` exposes adapter behavior needed by the surrounding module.
@@ -262,6 +262,10 @@ impl<Op: Flush> PipelineBuilder<Op> {
     pub fn flush_into_identity(mut self) -> Result<PipelineBuilder<Identity>, BuildError> {
         self.flush_pending()?;
         Ok(self.into_state(Identity))
+    }
+
+    pub(crate) fn commit_plan(self) -> Result<PipelineBuilder<Identity>, BuildError> {
+        self.flush_into_identity()
     }
 
     pub(in crate::pipeline::builder) fn push_dyn_op(

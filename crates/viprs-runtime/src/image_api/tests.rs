@@ -15,7 +15,7 @@ use crate::adapters::codecs::PngCodec;
 #[cfg(feature = "webp")]
 use crate::adapters::codecs::WebpCodec;
 use crate::adapters::{
-    pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+    pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
     sources::memory::MemorySource,
 };
 use crate::domain::colorspace::ColorspaceId;

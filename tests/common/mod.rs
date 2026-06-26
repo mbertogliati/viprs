@@ -56,15 +56,15 @@ where
     .with_metadata(image.metadata().clone())
 }
 
-pub fn execute_to_image<F, S: viprs_runtime::pipeline::Flush>(
+pub fn execute_to_image<F, S: viprs_runtime::pipeline::internal::Flush>(
     image: &Image<F>,
-    configure: impl FnOnce(viprs_runtime::pipeline::PipelineBuilder) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(viprs_runtime::pipeline::internal::PipelineBuilder) -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> Result<(CompiledPipeline, Image<F>), String>
 where
     F: BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(memory_source_from_image(
         image,
     )))
     .map_err(|error| format!("stage failed: {error:?}"))?
@@ -89,15 +89,15 @@ where
     Ok((pipeline, output))
 }
 
-pub fn execute_to_buffer<F, S: viprs_runtime::pipeline::Flush>(
+pub fn execute_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
     image: &Image<F>,
-    configure: impl FnOnce(viprs_runtime::pipeline::PipelineBuilder) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+    configure: impl FnOnce(viprs_runtime::pipeline::internal::PipelineBuilder) -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> Result<(CompiledPipeline, Vec<u8>), String>
 where
     F: BandFormat,
     F::Sample: Pod,
 {
-    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(
+    let pipeline = configure(viprs_runtime::pipeline::internal::PipelineBuilder::from_source(memory_source_from_image(
         image,
     )))
     .map_err(|error| format!("stage failed: {error:?}"))?

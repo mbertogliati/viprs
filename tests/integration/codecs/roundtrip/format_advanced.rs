@@ -133,12 +133,14 @@ mod chaos_monkey_18 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
+    fn execute_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: viprs::BandFormat,
@@ -146,9 +148,11 @@ mod chaos_monkey_18 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -317,12 +321,14 @@ mod chaos_monkey_8 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -330,9 +336,11 @@ mod chaos_monkey_8 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;
@@ -355,20 +363,24 @@ mod chaos_monkey_8 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::Flush>(
+    fn execute_pipeline_to_buffer<F, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<F>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Vec<u8>), String>
     where
         F: BandFormat,
         F::Sample: Pod,
     {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?
         .build()
         .map_err(|error| format!("build failed: {error:?}"))?;

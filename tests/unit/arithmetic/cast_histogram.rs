@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::Flush>(
-        builder: viprs_runtime::pipeline::PipelineBuilder<S>,
+    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::internal::Flush>(
+        builder: viprs_runtime::pipeline::internal::PipelineBuilder<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -108,12 +108,14 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -121,9 +123,11 @@ mod chaos_monkey_13 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let builder = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let builder = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
     }
@@ -159,9 +163,10 @@ mod chaos_monkey_13 {
     #[ignore = "BUG: flatten() on RGB silently drops a colour band instead of erroring or acting as a no-op"]
     fn flatten_on_rgb_is_typed_error_or_noop() {
         let image = patterned_u8(6, 4, 3);
-        let builder =
-            viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
-                .flatten([0.0, 0.0, 0.0, 1.0]);
+        let builder = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+            memory_source_from_image(&image),
+        )
+        .flatten([0.0, 0.0, 0.0, 1.0]);
 
         match builder {
             Err(_) => {}

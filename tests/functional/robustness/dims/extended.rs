@@ -53,13 +53,15 @@ mod robustez_dims {
         .map(|source| source.with_metadata(image.metadata().clone()))
     }
 
-    fn execute_without_panicking<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
+    fn execute_without_panicking<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<FIn>,
         op_name: &str,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<FOut>), ViprsError>
     where
         FIn: viprs::BandFormat,
@@ -68,9 +70,11 @@ mod robustez_dims {
         FOut::Sample: Pod,
     {
         let result = catch_unwind(AssertUnwindSafe(|| {
-            let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-                memory_source_from_image(image)?,
-            ))?
+            let pipeline = configure(
+                viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                    memory_source_from_image(image)?,
+                ),
+            )?
             .build()?;
             let scheduler =
                 RayonScheduler::new(2).map_err(|error| ViprsError::Scheduler(error.to_string()))?;
@@ -88,18 +92,22 @@ mod robustez_dims {
         result.unwrap()
     }
 
-    fn configure_without_panicking<S: viprs_runtime::pipeline::Flush>(
+    fn configure_without_panicking<S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<U8>,
         op_name: &str,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, ViprsError> {
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
+    ) -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, ViprsError> {
         let result = catch_unwind(AssertUnwindSafe(|| {
-            configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-                memory_source_from_image(image)?,
-            ))
+            configure(
+                viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                    memory_source_from_image(image)?,
+                ),
+            )
             .map_err(Into::into)
         }));
 

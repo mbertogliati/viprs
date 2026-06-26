@@ -292,11 +292,11 @@ fn random_resize(rng: &mut Lcg) -> Resize {
 }
 
 fn configure_pipeline(
-    builder: viprs_runtime::pipeline::PipelineBuilder,
+    builder: viprs_runtime::pipeline::internal::PipelineBuilder,
     image: &Image<U8>,
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
-) -> Result<viprs_runtime::pipeline::PipelineBuilder, BuildError> {
+) -> Result<viprs_runtime::pipeline::internal::PipelineBuilder, BuildError> {
     match pipeline_kind {
         PipelineKind::Thumbnail => {
             let target = thumbnail_target_width(image.width(), rng);
@@ -333,9 +333,9 @@ fn execute_iteration(
     pipeline_kind: PipelineKind,
     rng: &mut Lcg,
 ) -> (u32, u32, usize) {
-    let builder = viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(
-        &fixture.image,
-    ));
+    let builder = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+        memory_source_from_image(&fixture.image),
+    );
     let pipeline = configure_pipeline(builder, &fixture.image, pipeline_kind, rng)
         .unwrap_or_else(|error| {
             panic!(

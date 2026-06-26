@@ -17,7 +17,6 @@
 ///   docker run --rm -v $(pwd):/src -w /src viprs-perf:arm64 \
 ///     cargo bench --bench iai_pipeline
 use iai_callgrind::{library_benchmark, library_benchmark_group, main};
-use viprs::adapters::pipeline::PipelineBuilder;
 use viprs::adapters::scheduler::rayon_scheduler::RayonScheduler;
 use viprs::adapters::sinks::memory::MemorySink;
 use viprs::adapters::sources::memory::MemorySource;
@@ -27,6 +26,7 @@ use viprs::domain::op::OperationBridge;
 use viprs::domain::ops::arithmetic::add::Add;
 use viprs::domain::ops::arithmetic::invert::Invert;
 use viprs::ports::scheduler::TileScheduler;
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 fn tile_samples(size: u32) -> usize {
     let tw = DemandHint::ThinStrip.tile_width(size) as usize;

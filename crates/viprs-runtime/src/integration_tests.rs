@@ -33,7 +33,7 @@ use viprs_ports::{
 };
 
 use crate::{
-    pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+    pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
     sinks::memory::MemorySink, sources::decoder_source::DecoderSource,
     sources::memory::MemorySource,
 };

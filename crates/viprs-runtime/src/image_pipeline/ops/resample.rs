@@ -1,17 +1,27 @@
 use viprs_core::error::BuildError;
 
-use super::super::{InterpolationKernel, Resize, Thumbnail, pipeline::ImagePipeline};
+use super::super::{
+    InterpolationKernel, Resize, Thumbnail,
+    pipeline::{CommitState, Committed, ImagePipeline},
+};
 
-impl ImagePipeline {
+impl<State> ImagePipeline<State>
+where
+    State: CommitState,
+{
     /// Reduce image width by a factor.
     ///
     /// # Errors
     ///
     /// Returns [`BuildError`] when factor or kernel is invalid.
-    pub fn reduce_h(self, factor: f64, kernel: InterpolationKernel) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.reduce_h(factor, kernel)?,
-        })
+    pub fn reduce_h(
+        self,
+        factor: f64,
+        kernel: InterpolationKernel,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.reduce_h(factor, kernel)?,
+        ))
     }
 
     /// Shrink image width by an integer factor.
@@ -19,10 +29,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factor is invalid.
-    pub fn shrink_h(self, factor: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.shrink_h(factor)?,
-        })
+    pub fn shrink_h(self, factor: u32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.shrink_h(factor)?,
+        ))
     }
 
     /// Shrink image width by an integer factor with ceil rounding.
@@ -30,10 +40,14 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factor is invalid.
-    pub fn shrink_h_with_ceil(self, factor: u32, ceil: bool) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.shrink_h_with_ceil(factor, ceil)?,
-        })
+    pub fn shrink_h_with_ceil(
+        self,
+        factor: u32,
+        ceil: bool,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.shrink_h_with_ceil(factor, ceil)?,
+        ))
     }
 
     /// Shrink both axes by integer factors.
@@ -41,10 +55,14 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factors are invalid.
-    pub fn shrink(self, h_factor: u32, v_factor: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.shrink(h_factor, v_factor)?,
-        })
+    pub fn shrink(
+        self,
+        h_factor: u32,
+        v_factor: u32,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.shrink(h_factor, v_factor)?,
+        ))
     }
 
     /// Reduce image height by a factor.
@@ -52,10 +70,14 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factor or kernel is invalid.
-    pub fn reduce_v(self, factor: f64, kernel: InterpolationKernel) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.reduce_v(factor, kernel)?,
-        })
+    pub fn reduce_v(
+        self,
+        factor: f64,
+        kernel: InterpolationKernel,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.reduce_v(factor, kernel)?,
+        ))
     }
 
     /// Reduce both axes by floating-point factors.
@@ -68,10 +90,10 @@ impl ImagePipeline {
         h_factor: f64,
         v_factor: f64,
         kernel: InterpolationKernel,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.reduce(h_factor, v_factor, kernel)?,
-        })
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.reduce(h_factor, v_factor, kernel)?,
+        ))
     }
 
     /// Shrink image height by an integer factor.
@@ -79,10 +101,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factor is invalid.
-    pub fn shrink_v(self, factor: u32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.shrink_v(factor)?,
-        })
+    pub fn shrink_v(self, factor: u32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.shrink_v(factor)?,
+        ))
     }
 
     /// Shrink image height by an integer factor with ceil rounding.
@@ -90,10 +112,14 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when factor is invalid.
-    pub fn shrink_v_with_ceil(self, factor: u32, ceil: bool) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.shrink_v_with_ceil(factor, ceil)?,
-        })
+    pub fn shrink_v_with_ceil(
+        self,
+        factor: u32,
+        ceil: bool,
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.shrink_v_with_ceil(factor, ceil)?,
+        ))
     }
 
     /// Apply an affine transform.
@@ -111,12 +137,12 @@ impl ImagePipeline {
         output_w: u32,
         output_h: u32,
         kernel: InterpolationKernel,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?
                 .builder
                 .affine(matrix, tx, ty, output_w, output_h, kernel)?,
-        })
+        ))
     }
 
     /// Apply a similarity transform.
@@ -129,10 +155,10 @@ impl ImagePipeline {
         scale: f64,
         angle: f64,
         kernel: InterpolationKernel,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.similarity(scale, angle, kernel)?,
-        })
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.similarity(scale, angle, kernel)?,
+        ))
     }
 
     /// Resize the image using a prepared resize plan.
@@ -151,10 +177,10 @@ impl ImagePipeline {
     /// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn resize(self, resize: Resize) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.resize(resize)?,
-        })
+    pub fn resize(self, resize: Resize) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.resize(resize)?,
+        ))
     }
 
     /// Create a thumbnail using a prepared thumbnail plan.
@@ -162,9 +188,9 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when thumbnail planning or execution setup fails.
-    pub fn thumbnail(self, thumbnail: Thumbnail) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.thumbnail(thumbnail)?,
-        })
+    pub fn thumbnail(self, thumbnail: Thumbnail) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.thumbnail(thumbnail)?,
+        ))
     }
 }

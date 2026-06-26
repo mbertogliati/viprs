@@ -82,7 +82,7 @@ fn png_invert_matches_vips() {
     let source = MemorySource::<U16>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
         .invert()
         .expect("invert step failed")
         .build()
@@ -131,7 +131,7 @@ fn png_flip_horizontal_matches_vips() {
     let source = MemorySource::<U16>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
         .flip_horizontal()
         .expect("flip_horizontal step failed")
         .build()
@@ -178,7 +178,7 @@ fn png_rotate90_matches_vips() {
     let source = MemorySource::<U16>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
         .rotate90()
         .expect("rotate90 step failed")
         .build()
@@ -237,7 +237,7 @@ fn jpeg_invert_matches_vips() {
     let source = MemorySource::<U8>::new(width, height, bands, decoded.pixels().to_vec())
         .expect("MemorySource failed");
 
-    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
         .invert()
         .expect("invert step failed")
         .build()

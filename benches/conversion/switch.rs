@@ -7,7 +7,7 @@ use viprs::{
     },
     domain::format::U8,
     domain::ops::conversion::SwitchOp,
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelineBuilder,
     ports::scheduler::TileScheduler,
 };
 

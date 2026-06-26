@@ -97,7 +97,7 @@ fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
 fn build_thumbnail_pipeline(
     image: &Image<U8>,
 ) -> Result<viprs_runtime::pipeline::CompiledPipeline, BuildError> {
-    viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(image))
+    viprs_runtime::pipeline::internal::PipelineBuilder::from_source(memory_source_from_image(image))
         .thumbnail(Thumbnail::new(
             ThumbnailTarget::Width(TARGET_WIDTH),
             InterpolationKernel::Lanczos3,

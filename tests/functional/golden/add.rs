@@ -26,7 +26,7 @@ fn run_add(source_pixels: Vec<u8>, rhs: Vec<u8>) -> Vec<u8> {
     let add_op = Add::<U8>::new(rhs);
     let dyn_op = Box::new(OperationBridge::new(add_op, 1u32));
 
-    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()

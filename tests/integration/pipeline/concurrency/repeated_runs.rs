@@ -68,17 +68,21 @@ mod robustness_determinism {
         .with_metadata(image.metadata().clone())
     }
 
-    fn execute_to_buffer<S: viprs_runtime::pipeline::Flush>(
+    fn execute_to_buffer<S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<U8>,
         threads: usize,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> (CompiledPipeline, Vec<u8>) {
-        let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let pipeline = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .unwrap_or_else(|error| panic!("pipeline stage failed: {error:?}"))
         .build()
         .unwrap_or_else(|error| panic!("pipeline build failed: {error:?}"));

@@ -7,9 +7,10 @@ use viprs::{
     },
     domain::format::F32,
     domain::ops::arithmetic::{RecombOp, recomb::Matrix},
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::OperationBridge,
     ports::scheduler::TileScheduler,
 };
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 fn make_pixels(size: u32) -> Vec<f32> {
     let pixel_count = size as usize * size as usize;

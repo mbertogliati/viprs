@@ -7,7 +7,7 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use viprs::domain::ops::boolean::xor::Xor;
 use viprs::{
     adapters::{
-        pipeline::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
+        pipeline::internal::PipelineBuilder, scheduler::rayon_scheduler::RayonScheduler,
         sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::format::U8,

@@ -12,7 +12,7 @@ use viprs::{
         ops::conversion::{ScaleMode, ScaleOp},
         reducers::stats::StatsReducer,
     },
-    pipeline::PipelineBuilder,
+    pipeline::internal::PipelineBuilder,
     ports::scheduler::{ReducingScheduler, TileScheduler},
 };
 

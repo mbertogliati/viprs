@@ -78,8 +78,8 @@ mod chaos_monkey_13 {
         .with_metadata(image.metadata().clone())
     }
 
-    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::Flush>(
-        builder: viprs_runtime::pipeline::PipelineBuilder<S>,
+    fn run_builder_to_image<FOut, S: viprs_runtime::pipeline::internal::Flush>(
+        builder: viprs_runtime::pipeline::internal::PipelineBuilder<S>,
         metadata: ImageMetadata,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
@@ -108,12 +108,14 @@ mod chaos_monkey_13 {
         Ok((pipeline, output))
     }
 
-    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::Flush>(
+    fn execute_pipeline_to_image<FIn, FOut, S: viprs_runtime::pipeline::internal::Flush>(
         image: &Image<FIn>,
         configure: impl FnOnce(
-            viprs_runtime::pipeline::PipelineBuilder,
-        )
-            -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+            viprs_runtime::pipeline::internal::PipelineBuilder,
+        ) -> Result<
+            viprs_runtime::pipeline::internal::PipelineBuilder<S>,
+            BuildError,
+        >,
     ) -> Result<(CompiledPipeline, Image<FOut>), String>
     where
         FIn: BandFormat,
@@ -121,9 +123,11 @@ mod chaos_monkey_13 {
         FIn::Sample: Pod,
         FOut::Sample: Pod,
     {
-        let builder = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-            memory_source_from_image(image),
-        ))
+        let builder = configure(
+            viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+                memory_source_from_image(image),
+            ),
+        )
         .map_err(|error| format!("stage failed: {error:?}"))?;
         run_builder_to_image(builder, image.metadata().clone())
     }
@@ -149,19 +153,20 @@ mod chaos_monkey_13 {
         let image = patterned_u8(12, 8, 3);
         let matrix = Matrix::new(2, 3, vec![1.0, 0.0, 0.0, 0.0, 1.0, 0.0]);
 
-        let builder =
-            viprs_runtime::pipeline::PipelineBuilder::from_source(memory_source_from_image(&image))
-                .then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
-                    RecombOp::<U8>::new(matrix),
-                    3,
-                    2,
-                )))
-                .and_then(|builder| {
-                    builder.thumbnail(Thumbnail::new(
-                        ThumbnailTarget::Width(6),
-                        InterpolationKernel::Lanczos3,
-                    ))
-                });
+        let builder = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(
+            memory_source_from_image(&image),
+        )
+        .then(Box::new(OperationBridge::with_dynamic_bands_pixel_local(
+            RecombOp::<U8>::new(matrix),
+            3,
+            2,
+        )))
+        .and_then(|builder| {
+            builder.thumbnail(Thumbnail::new(
+                ThumbnailTarget::Width(6),
+                InterpolationKernel::Lanczos3,
+            ))
+        });
 
         match builder {
             Err(_) => {}

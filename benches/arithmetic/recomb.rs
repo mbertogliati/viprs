@@ -8,9 +8,10 @@ use viprs::{
     domain::format::F32,
     domain::ops::arithmetic::RecombOp,
     domain::ops::arithmetic::recomb::Matrix,
-    pipeline::{OperationBridge, PipelineBuilder},
+    pipeline::OperationBridge,
     ports::scheduler::TileScheduler,
 };
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 fn bench_recomb(c: &mut Criterion) {
     let mut group = c.benchmark_group("recomb_f32");

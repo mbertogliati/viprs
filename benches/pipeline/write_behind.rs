@@ -1,4 +1,5 @@
 #![allow(missing_docs)]
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 use std::{thread, time::Duration};
 
 use criterion::{
@@ -6,7 +7,7 @@ use criterion::{
 };
 use viprs::{
     adapters::{
-        pipeline::{CompiledPipeline, PipelineBuilder},
+        pipeline::CompiledPipeline,
         scheduler::rayon_scheduler::RayonScheduler,
         sinks::{
             double_buffer::DoubleBufferSink,

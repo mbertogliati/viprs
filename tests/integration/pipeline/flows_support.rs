@@ -71,15 +71,18 @@ pub(crate) fn memory_source_from_image(image: &Image<U8>) -> MemorySource<U8> {
     .with_metadata(metadata)
 }
 
-pub(crate) fn execute_u8_pipeline<S: viprs_runtime::pipeline::Flush>(
+pub(crate) fn execute_u8_pipeline<S: viprs_runtime::pipeline::internal::Flush>(
     image: &Image<U8>,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, MemorySink) {
-    let pipeline = configure(viprs_runtime::pipeline::PipelineBuilder::from_source(
-        memory_source_from_image(image),
-    ))
+    let pipeline = configure(
+        viprs_runtime::pipeline::internal::PipelineBuilder::from_source(memory_source_from_image(
+            image,
+        )),
+    )
     .expect("pipeline stage failed")
     .build()
     .expect("pipeline build failed");
@@ -93,11 +96,12 @@ pub(crate) fn execute_u8_pipeline<S: viprs_runtime::pipeline::Flush>(
     (pipeline, sink)
 }
 
-pub(crate) fn execute_u8_pipeline_to_buffer<S: viprs_runtime::pipeline::Flush>(
+pub(crate) fn execute_u8_pipeline_to_buffer<S: viprs_runtime::pipeline::internal::Flush>(
     image: &Image<U8>,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Vec<u8>) {
     let (pipeline, sink) = execute_u8_pipeline(image, configure);
     let buffer = sink.into_buffer();
@@ -151,11 +155,12 @@ pub(crate) fn output_image_from_buffer(
     feature = "tiff",
     feature = "avif"
 ))]
-pub(crate) fn execute_u8_pipeline_to_image<S: viprs_runtime::pipeline::Flush>(
+pub(crate) fn execute_u8_pipeline_to_image<S: viprs_runtime::pipeline::internal::Flush>(
     image: &Image<U8>,
     configure: impl FnOnce(
-        viprs_runtime::pipeline::PipelineBuilder,
-    ) -> Result<viprs_runtime::pipeline::PipelineBuilder<S>, BuildError>,
+        viprs_runtime::pipeline::internal::PipelineBuilder,
+    )
+        -> Result<viprs_runtime::pipeline::internal::PipelineBuilder<S>, BuildError>,
 ) -> (CompiledPipeline, Image<U8>) {
     let (pipeline, buffer) = execute_u8_pipeline_to_buffer(image, configure);
     let output = output_image_from_buffer(image, &pipeline, buffer);

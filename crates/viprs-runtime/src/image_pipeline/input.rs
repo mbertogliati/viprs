@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::{
-    image_api::ImageApi, pipeline::PipelineBuilder, ports::source::ImageSource,
+    image_api::ImageApi, pipeline::internal::PipelineBuilder, ports::source::ImageSource,
     sources::memory::MemorySource,
 };
 use viprs_core::{error::ViprsError, format::BandFormat};

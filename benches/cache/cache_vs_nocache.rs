@@ -3,10 +3,8 @@ use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_ma
 use std::num::NonZeroUsize;
 use viprs::{
     adapters::{
-        pipeline::{CompiledPipeline, PipelineBuilder},
-        scheduler::rayon_scheduler::RayonScheduler,
-        sinks::memory::MemorySink,
-        sources::memory::MemorySource,
+        pipeline::CompiledPipeline, scheduler::rayon_scheduler::RayonScheduler,
+        sinks::memory::MemorySink, sources::memory::MemorySource,
     },
     domain::{
         format::U8,
@@ -15,6 +13,7 @@ use viprs::{
     },
     ports::scheduler::TileScheduler,
 };
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 const STANDARD_SIZES: [u32; 3] = [512, 2048, 8192];
 const TARGET_WIDTH: u32 = 128;

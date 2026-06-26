@@ -1,8 +1,11 @@
 use viprs_core::error::BuildError;
 
-use super::super::pipeline::ImagePipeline;
+use super::super::pipeline::{CommitState, Committed, ImagePipeline};
 
-impl ImagePipeline {
+impl<State> ImagePipeline<State>
+where
+    State: CommitState,
+{
     /// Apply a 2D convolution.
     ///
     /// # Errors
@@ -19,10 +22,10 @@ impl ImagePipeline {
     /// assert_eq!(pipeline.output_format(), viprs_runtime::image_pipeline::Format::U8);
     /// # Ok::<(), viprs_core::error::ViprsError>(())
     /// ```
-    pub fn conv2d(self, kernel: Vec<Vec<f64>>) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.conv2d(kernel)?,
-        })
+    pub fn conv2d(self, kernel: Vec<Vec<f64>>) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.conv2d(kernel)?,
+        ))
     }
 
     /// Apply a separable Gaussian blur.
@@ -30,10 +33,10 @@ impl ImagePipeline {
     /// # Errors
     ///
     /// Returns [`BuildError`] when the current format is unsupported.
-    pub fn gauss_blur(self, sigma: f32) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.gauss_blur(sigma)?,
-        })
+    pub fn gauss_blur(self, sigma: f32) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.gauss_blur(sigma)?,
+        ))
     }
 
     /// Apply libvips-style sharpen semantics.
@@ -51,9 +54,9 @@ impl ImagePipeline {
         y3: f32,
         m1: f32,
         m2: f32,
-    ) -> Result<Self, BuildError> {
-        Ok(Self {
-            builder: self.builder.sharpen(sigma, x1, y2, y3, m1, m2)?,
-        })
+    ) -> Result<ImagePipeline<Committed>, BuildError> {
+        Ok(ImagePipeline::from_builder(
+            self.commit()?.builder.sharpen(sigma, x1, y2, y3, m1, m2)?,
+        ))
     }
 }

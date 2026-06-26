@@ -1,9 +1,9 @@
 use std::future::{Ready, ready};
 
 use crate::{
-    pipeline::PipelineBuilder, ports::scheduler::TileScheduler, sinks::memory::MemorySink,
+    pipeline::internal::PipelineBuilder, ports::scheduler::TileScheduler, sinks::memory::MemorySink,
 };
-use viprs_core::error::ViprsError;
+use viprs_core::error::{BuildError, ViprsError};
 
 use super::{Format, ProcessingConfig, Sink, sink::SinkKind};
 
@@ -25,11 +25,13 @@ use super::{Format, ProcessingConfig, Sink, sink::SinkKind};
 /// # Ok::<(), viprs_core::error::ViprsError>(())
 /// ```
 pub struct RawOutputPipeline {
-    builder: PipelineBuilder,
+    builder: Result<PipelineBuilder, BuildError>,
 }
 
 impl RawOutputPipeline {
-    pub(in crate::image_pipeline) const fn from_builder(builder: PipelineBuilder) -> Self {
+    pub(in crate::image_pipeline) const fn from_builder(
+        builder: Result<PipelineBuilder, BuildError>,
+    ) -> Self {
         Self { builder }
     }
 
@@ -119,7 +121,7 @@ impl RawOutputPipeline {
     }
 
     fn run_memory(self, config: ProcessingConfig) -> Result<PipelineOutput, ViprsError> {
-        let pipeline = self.builder.build()?;
+        let pipeline = self.builder?.build()?;
         config.validate_output(
             pipeline.width,
             pipeline.height,

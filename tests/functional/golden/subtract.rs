@@ -37,7 +37,7 @@ fn run_subtract(source_pixels: Vec<f32>, rhs: Vec<f32>) -> Vec<u8> {
     let sub_op = Subtract::<F32>::new(rhs);
     let dyn_op = Box::new(OperationBridge::new(sub_op, 1u32));
 
-    let pipeline = viprs_runtime::pipeline::PipelineBuilder::from_source(source)
+    let pipeline = viprs_runtime::pipeline::internal::PipelineBuilder::from_source(source)
         .then(dyn_op)
         .unwrap()
         .build()

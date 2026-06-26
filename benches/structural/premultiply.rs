@@ -13,6 +13,7 @@ use viprs::domain::{
     op::Op,
     ops::structural::{Premultiply, Unpremultiply},
 };
+use viprs_runtime::pipeline::internal::PipelineBuilder;
 
 fn bench_premultiply(c: &mut Criterion) {
     let mut group = c.benchmark_group("premultiply_u8");

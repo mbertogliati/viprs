@@ -315,7 +315,7 @@ mod tests {
         format::U8,
         image::{DemandHint, Tile, TileMut},
     };
-    use crate::pipeline::PipelineBuilder;
+    use crate::pipeline::internal::PipelineBuilder;
     use std::sync::Arc;
 
     // ── helpers ──────────────────────────────────────────────────────────────
