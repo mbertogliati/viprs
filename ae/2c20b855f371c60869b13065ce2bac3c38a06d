@@ -1,0 +1,572 @@
+tests/unit/colour/srgb_identity.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 52-55
+  s_40a6b245f8639b::t_6175b1e5fb00c5 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 50,56
+  s_c07b024833c7a8::t_53edd897bf84b2 63
+tests/functional/golden/linear.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 13-14
+  s_c07b024833c7a8::t_53edd897bf84b2 23,27
+tests/unit/geometry/transform_sequences.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,110-113,119-121,137-140,146-148,198-203
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 72,108,135,197
+tests/integration/pipeline/invariants/chained_dimensions.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7
+  s_40a6b245f8639b::t_b773b455d8e97b 69-72,80-82,145-147
+  s_40a6b245f8639b::t_bf0848267a8ad9 67,73
+tests/unit/resample/identity_roundtrips.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,77-79,104-107,113-115
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72,102,108
+tests/unit/colour/dispatch_routes.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_b773b455d8e97b 67-70,76-78,103-106,112-114
+  s_40a6b245f8639b::t_bf0848267a8ad9 65,101
+crates/viprs-runtime/src/lib.rs
+  s_c07b024833c7a8::t_1e07e19a520400 37
+  s_c07b024833c7a8::t_f777c181a0c7a3 18
+tests/unit/colour/grayscale_errors.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,77-79,104-107,113-115
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72,102,108
+tests/unit/arithmetic/cast_histogram.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_2ff58c23db4cbd 32
+  s_40a6b245f8639b::t_bf0848267a8ad9 81,111
+  s_c07b024833c7a8::t_53edd897bf84b2 82
+  s_40a6b245f8639b::t_b773b455d8e97b 113-116,124-126,162-164
+tests/unit/arithmetic/basics.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72,102,108
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,77-79,104-107,113-115
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+tests/unit/arithmetic/histogram_invert.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 13
+  s_40a6b245f8639b::t_b773b455d8e97b 136-139,147-149
+  s_40a6b245f8639b::t_bf0848267a8ad9 134
+tests/unit/arithmetic/linear_extremes.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 72
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85
+  s_40a6b245f8639b::t_47ac981098fbe2 11-12
+tests/integration/pipeline/invariants/nested_embed.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 90-93,99-101
+  s_40a6b245f8639b::t_bf0848267a8ad9 88
+  s_c07b024833c7a8::t_18cbd1c49265b3 6-7
+tests/unit/colour/hsv_roundtrip.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 68,104
+  s_40a6b245f8639b::t_b773b455d8e97b 70-73,79-81,106-109,115-117
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+tests/ui/image_pipeline_requires_output_contract.stderr
+  s_c07b024833c7a8::t_aab8f5eeeaf07c 1-5
+xtask/src/bench/runner.rs
+  s_c07b024833c7a8::t_ffb0ff1f8fc7e3 276
+tests/unit/convolution/kernel_identity.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 6-7
+  s_40a6b245f8639b::t_bf0848267a8ad9 88
+  s_40a6b245f8639b::t_b773b455d8e97b 90-93,99-101
+tests/functional/soak_test.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 11-12
+  s_c07b024833c7a8::t_53edd897bf84b2 94
+tests/functional/smp_scaling.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 97-99
+  s_40a6b245f8639b::t_8cb725f22e49eb 10
+  s_c07b024833c7a8::t_53edd897bf84b2 100
+tests/unit/resample/affine_extremes.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,79-81
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+tests/unit/colour/srgb_lab_precision.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 88
+  s_40a6b245f8639b::t_47ac981098fbe2 6-7
+  s_40a6b245f8639b::t_b773b455d8e97b 90-93,99-101
+tests/integration/pipeline/invariants/recomb_thumbnail.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 82
+  s_c07b024833c7a8::t_18cbd1c49265b3 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 81,111
+  s_40a6b245f8639b::t_b773b455d8e97b 113-116,124-126,152-164
+  s_40a6b245f8639b::t_2ff58c23db4cbd 32
+tests/functional/golden/basic.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 158,183
+  s_40a6b245f8639b::t_8cb725f22e49eb 7
+  s_40a6b245f8639b::t_b773b455d8e97b 163-165,168-173,188-190,193-198
+tests/unit/geometry/outside_canvas.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 52-55
+  s_40a6b245f8639b::t_6175b1e5fb00c5 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 50,56
+  s_c07b024833c7a8::t_53edd897bf84b2 63
+tests/integration/pipeline/concurrency/cache_reuse.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 13
+  s_40a6b245f8639b::t_bf0848267a8ad9 134
+  s_40a6b245f8639b::t_b773b455d8e97b 136-139,147-149,217-238
+tests/ui/pipeline_builder_not_public_dsl.rs
+  s_c07b024833c7a8::t_3ef273de40f1f9 1-5
+xtask/README.md
+  s_c07b024833c7a8::t_b381eb61211c68 164,168
+crates/viprs-ops-spatial/src/resample/thumbnail.rs
+  s_c07b024833c7a8::t_0b97b8f1bc9857 22,217
+tests/integration/pipeline/invariants/embed_mismatch.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 60
+  s_c07b024833c7a8::t_18cbd1c49265b3 5
+  s_40a6b245f8639b::t_b773b455d8e97b 62-65,73-75,89-99
+  s_40a6b245f8639b::t_2ff58c23db4cbd 15
+crates/viprs-ops-spatial/src/structural/embed.rs
+  s_c07b024833c7a8::t_b91cdb588eefda 166
+tests/functional/golden/convolution.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 28-30,33-38,53-55,58-63
+  s_40a6b245f8639b::t_8cb725f22e49eb 7
+  s_40a6b245f8639b::t_bf0848267a8ad9 23,48
+tests/integration/pipeline/concurrency/depth_and_parallelism.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85
+  s_c07b024833c7a8::t_18cbd1c49265b3 11-12
+  s_40a6b245f8639b::t_bf0848267a8ad9 72
+tests/unit/resample/reduceh_identity.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 75
+  s_40a6b245f8639b::t_b773b455d8e97b 77-80,86-88
+tests/unit/arithmetic/linear_identity.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,110-113,119-121,137-140,146-148,198-203
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 72,108,135,197
+tests/functional/golden/libvips/support_core.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 117,142,167
+  s_40a6b245f8639b::t_ecf967da6abf9b 6-7
+  s_40a6b245f8639b::t_b773b455d8e97b 122-124,127-132,147-149,152-157,172-174,177-182
+  s_c07b024833c7a8::t_53edd897bf84b2 446
+tests/unit/geometry/hsv_embed_errors.rs
+  s_40a6b245f8639b::t_2ff58c23db4cbd 30
+  s_40a6b245f8639b::t_bf0848267a8ad9 91,129
+  s_40a6b245f8639b::t_b773b455d8e97b 93-96,104-106,131-134,140-142,177-180
+  s_40a6b245f8639b::t_47ac981098fbe2 10-11
+tests/unit/arithmetic/linear_constant.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 67-70,76-78,103-106,112-114
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_bf0848267a8ad9 65,101
+tests/unit/colour/cmyk_roundtrip.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 67,73
+  s_40a6b245f8639b::t_47ac981098fbe2 7
+  s_40a6b245f8639b::t_b773b455d8e97b 69-72,80-82,145-147
+tests/ui/pipeline_builder_root_not_public_dsl.stderr
+  s_c07b024833c7a8::t_125231e270dd76 1-5
+tests/unit/convolution/multiband_morphology.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_bf0848267a8ad9 68,104
+  s_40a6b245f8639b::t_b773b455d8e97b 70-73,79-81,106-109,115-117
+tests/unit/resample/rotate_identity.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 88
+  s_40a6b245f8639b::t_47ac981098fbe2 6-7
+  s_40a6b245f8639b::t_b773b455d8e97b 90-93,99-101
+tests/unit/geometry/identity_canvas.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_b773b455d8e97b 85-88,94-96,110-113,120-122,136-139,145-147
+  s_40a6b245f8639b::t_bf0848267a8ad9 83,108,134
+crates/viprs-ops-spatial/src/resample/resize.rs
+  s_c07b024833c7a8::t_afab0678d4fede 5
+tests/integration/pipeline/concurrency/cache_equivalence.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7
+  s_40a6b245f8639b::t_b773b455d8e97b 69-72,80-82,145-147
+  s_40a6b245f8639b::t_bf0848267a8ad9 67,73
+tests/integration/pipeline/invariants/rgba_thumbnail.rs
+  s_40a6b245f8639b::t_2ff58c23db4cbd 195
+  s_40a6b245f8639b::t_bf0848267a8ad9 65,101,256,294
+  s_c07b024833c7a8::t_18cbd1c49265b3 8-9,175-176
+  s_40a6b245f8639b::t_b773b455d8e97b 67-70,76-78,103-106,112-114,258-261,269-271,296-299,305-307
+crates/viprs-runtime/src/process.rs
+  s_c07b024833c7a8::t_ffb1726bb68ff6 192-193,230-231
+  s_c07b024833c7a8::t_70b76d05e4ddc0 195-197,199-213,233,249,255,257,261-264,267-269,275-281
+tests/unit/resample/affine_reduce_similarity.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 136-139,147-149
+  s_40a6b245f8639b::t_47ac981098fbe2 13
+  s_40a6b245f8639b::t_bf0848267a8ad9 134
+tests/integration/pipeline/concurrency/threaded_determinism.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 10-11
+  s_40a6b245f8639b::t_bf0848267a8ad9 91,129
+  s_40a6b245f8639b::t_b773b455d8e97b 93-96,104-106,131-134,140-142
+  s_40a6b245f8639b::t_2ff58c23db4cbd 30
+tests/integration/codecs/roundtrip/format_basic.rs
+  s_40a6b245f8639b::t_2ff58c23db4cbd 17
+  s_40a6b245f8639b::t_bf0848267a8ad9 62,172,178
+  s_c07b024833c7a8::t_18cbd1c49265b3 7,111
+  s_40a6b245f8639b::t_b773b455d8e97b 64-67,75-77,174-177,185-187
+tests/unit/convolution/non_square_kernels.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_bf0848267a8ad9 65,101
+  s_40a6b245f8639b::t_b773b455d8e97b 67-70,76-78,103-106,112-114
+tests/unit/colour/hsv_edges.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 10-11
+  s_40a6b245f8639b::t_bf0848267a8ad9 91,129
+  s_40a6b245f8639b::t_2ff58c23db4cbd 30
+  s_40a6b245f8639b::t_b773b455d8e97b 93-96,104-106,131-134,140-142,204-207
+xtask/src/bench/pipeline.rs
+  s_c07b024833c7a8::t_42447a00fa5b18 49
+tests/integration/pipeline/concurrency/fusion.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 83,108,134
+  s_40a6b245f8639b::t_b773b455d8e97b 85-88,94-96,110-113,120-122,136-139,145-147
+tests/unit/geometry/flip_and_bounds.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 88
+  s_40a6b245f8639b::t_47ac981098fbe2 6-7
+  s_40a6b245f8639b::t_b773b455d8e97b 90-93,99-101
+tests/unit/resample/shrink_limits.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 63
+  s_40a6b245f8639b::t_6175b1e5fb00c5 5
+  s_40a6b245f8639b::t_b773b455d8e97b 52-55
+  s_40a6b245f8639b::t_bf0848267a8ad9 50,56
+tests/integration/pipeline/internal/no_op.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 75
+  s_40a6b245f8639b::t_b773b455d8e97b 77-80,86-88,118-120,162-170
+crates/viprs-runtime/src/sources/zero.rs
+  s_c07b024833c7a8::t_98db8bf8887c1b 19-20
+xtask/Cargo.toml
+  s_c07b024833c7a8::t_40b0ce51e49c77 15
+benches/pipeline/multi_op_chains.rs
+  s_c07b024833c7a8::t_1e6b413b3045e6 9
+  s_c07b024833c7a8::t_01cdb84efc577b 10-11,20,50-52,57-58,62-64,73-74,78-80,91-92,101,106-107
+tests/functional/robustness/dims/extended.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7
+  s_40a6b245f8639b::t_b773b455d8e97b 59-62,71-73,94-97,100-102
+  s_c07b024833c7a8::t_53edd897bf84b2 98
+  s_40a6b245f8639b::t_bf0848267a8ad9 56,91
+tests/unit/arithmetic/linear_chain.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 6-7
+  s_40a6b245f8639b::t_bf0848267a8ad9 88
+  s_40a6b245f8639b::t_b773b455d8e97b 90-93,99-101
+tests/integration/pipeline/invariants/thumbnail_colourspace.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7-8
+  s_40a6b245f8639b::t_b773b455d8e97b 85-88,94-96,110-113,120-122,136-139,145-147
+  s_40a6b245f8639b::t_bf0848267a8ad9 83,108,134
+crates/viprs-runtime/src/image_pipeline.rs
+  s_c07b024833c7a8::t_b4fe3d8c27bd8a 9
+  s_cfb3632a62625d::t_fde9975a3a79ce 14,16-23
+  s_cfb3632a62625d::t_15b280d91d0780 15
+tests/unit/colour/stress_roundtrips.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 72,108,135,197
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,110-113,119-121,137-140,146-148,198-203
+tests/unit/arithmetic/linear_recomb.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 70-73,79-81,106-109,115-117
+  s_40a6b245f8639b::t_bf0848267a8ad9 68,104
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+tests/integration/pipeline/invariants/pass_dimensions/extended.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 8-9
+  s_40a6b245f8639b::t_bf0848267a8ad9 68,104
+  s_40a6b245f8639b::t_b773b455d8e97b 70-73,79-81,106-109,115-117
+tests/unit/colour/lab_linear.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 134
+  s_40a6b245f8639b::t_b773b455d8e97b 136-139,147-149
+  s_40a6b245f8639b::t_47ac981098fbe2 13
+crates/viprs-ops-spatial/src/convolution/gauss_blur.rs
+  s_c07b024833c7a8::t_0379d9df03921c 15-18
+crates/viprs-ops-colour/src/colour/bridge.rs
+  s_c07b024833c7a8::t_98591aff590f06 13,145
+tests/unit/convolution/sharpen_sigma_edges.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 72,108,135,197
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,110-113,119-121,137-140,146-148,198-203
+tests/functional/golden/add.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 13-14
+  s_c07b024833c7a8::t_53edd897bf84b2 29
+tests/unit/colour/lab_roundtrip.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,79-81
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+tests/common/mod.rs
+  s_40a6b245f8639b::t_6175b1e5fb00c5 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 59,92
+  s_c07b024833c7a8::t_53edd897bf84b2 61,67,94,100
+tests/functional/golden/subtract.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 21-22
+  s_c07b024833c7a8::t_53edd897bf84b2 40
+tests/functional/parity/support.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 49-51,55-60,78-80,84-89
+  s_40a6b245f8639b::t_8cb725f22e49eb 13
+  s_40a6b245f8639b::t_bf0848267a8ad9 44,73
+tests/functional/robustness/dims/core.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 49,71
+  s_40a6b245f8639b::t_b773b455d8e97b 51-54,56-58,74-77
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+tests/unit/arithmetic/cast_invert.rs
+  s_40a6b245f8639b::t_2ff58c23db4cbd 30
+  s_40a6b245f8639b::t_bf0848267a8ad9 91,129
+  s_40a6b245f8639b::t_b773b455d8e97b 93-96,104-106,131-134,140-142
+  s_40a6b245f8639b::t_47ac981098fbe2 10-11
+tests/unit/resample/resize_identity.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 72,108,135,197
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,110-113,119-121,137-140,146-148,198-203
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+tests/integration/pipeline/invariants/metadata_updates.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 75
+  s_40a6b245f8639b::t_b773b455d8e97b 77-80,86-88,120-126
+tests/functional/golden/legacy/support.rs
+  s_40a6b245f8639b::t_8cb725f22e49eb 4
+  s_40a6b245f8639b::t_bf0848267a8ad9 58,86,101
+  s_40a6b245f8639b::t_b773b455d8e97b 63-65,69-74,91-93,106-108
+  s_c07b024833c7a8::t_47c740d8379f5a 6-7
+tests/integration/pipeline/builder_basics.rs
+  s_c07b024833c7a8::t_11a47a60665ebe 1,3-4,6,8-13,15-16,19-23,27,33-38,42-43,46-47,52-54,57-58,61-62,66,69,72-73,76-78,81,88,91
+  s_c07b024833c7a8::t_3d6dc7dc0b2a72 28-32,89
+tests/integration/pipeline/concurrency/repeated_runs.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,79-81
+  s_40a6b245f8639b::t_bf0848267a8ad9 71
+  s_c07b024833c7a8::t_18cbd1c49265b3 10-11
+tests/unit/colour/lab_cast.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 82
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 81,111
+  s_40a6b245f8639b::t_b773b455d8e97b 113-116,124-126
+  s_40a6b245f8639b::t_2ff58c23db4cbd 32
+tests/unit/resample/rotate_roundtrip.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 62-65,73-75
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+  s_40a6b245f8639b::t_2ff58c23db4cbd 15
+  s_40a6b245f8639b::t_bf0848267a8ad9 60
+tests/unit/resample/affine_identity.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 68,104
+  s_40a6b245f8639b::t_b773b455d8e97b 70-73,79-81,106-109,115-117
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+tests/functional/e2e_images.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 85,134,181,240
+  s_40a6b245f8639b::t_47ac981098fbe2 33-34
+tests/unit/colour/chained_roundtrip.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85
+  s_40a6b245f8639b::t_bf0848267a8ad9 72
+  s_40a6b245f8639b::t_47ac981098fbe2 11-12
+  s_c07b024833c7a8::t_53edd897bf84b2 127
+tests/unit/geometry/padded_resize.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85
+  s_40a6b245f8639b::t_47ac981098fbe2 11-12
+  s_40a6b245f8639b::t_bf0848267a8ad9 72
+tests/integration/pipeline/resample.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 20,46,95,215
+  s_c07b024833c7a8::t_18cbd1c49265b3 72-73
+  s_c07b024833c7a8::t_2666fad67343bf 7-8
+  s_40a6b245f8639b::t_8cb725f22e49eb 143
+tests/ui/pipeline_builder_root_not_public_dsl.rs
+  s_c07b024833c7a8::t_125231e270dd76 1-5
+tests/unit/geometry/affine_embed_errors.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 67-70,76-78,103-106,112-114,169-179
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_bf0848267a8ad9 65,101
+crates/viprs-runtime/src/image_pipeline/pipeline.rs
+  s_c07b024833c7a8::t_39a2383423123c 3,29
+  s_cfb3632a62625d::t_1d583db30c7365 51,56,58-60,63-102
+tests/integration/pipeline/internal/recovery.rs
+  s_40a6b245f8639b::t_8cb725f22e49eb 5
+  s_c07b024833c7a8::t_53edd897bf84b2 89,99
+  s_40a6b245f8639b::t_bf0848267a8ad9 80,96
+crates/viprs-runtime/src/pipeline.rs
+  s_c07b024833c7a8::t_1e07e19a520400 1,3-4,65,72,77,84
+  s_c07b024833c7a8::t_e28806047c1f88 91,97,104,112,121
+  s_c07b024833c7a8::t_b1e88e27ccb7d8 103,111,120
+tests/ui/image_pipeline_fluent_api.rs
+  s_c07b024833c7a8::t_9a9069b25b5895 1-11
+crates/viprs-runtime/src/image_pipeline/ops/arithmetic.rs
+  s_c07b024833c7a8::t_f4fcfc8218c146 3
+  s_c07b024833c7a8::t_3fd7d7b3ae14dd 1
+  s_c07b024833c7a8::t_5f6a304d07e270 2,4-82
+tests/ui/pipeline_builder_not_public_dsl.stderr
+  s_c07b024833c7a8::t_e5d9911d6b4a66 2-4
+  s_c07b024833c7a8::t_4ac64bd0e87344 1,5
+crates/viprs-runtime/src/image_pipeline/ops/convolution.rs
+  s_c07b024833c7a8::t_53e9f5c7ef1cc9 1-59
+Cargo.toml
+  s_c07b024833c7a8::t_6fea283f32fd40 104
+tests/integration/codecs/roundtrip/format_advanced.rs
+  s_40a6b245f8639b::t_2ff58c23db4cbd 259
+  s_40a6b245f8639b::t_bf0848267a8ad9 136,320,358
+  s_c07b024833c7a8::t_18cbd1c49265b3 15,239-240
+  s_40a6b245f8639b::t_b773b455d8e97b 138-141,149-151,322-325,333-335,360-363,369-371
+tests/functional/soak_stability.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 12-13
+  s_c07b024833c7a8::t_53edd897bf84b2 295,299
+  s_40a6b245f8639b::t_b773b455d8e97b 336-338
+tests/unit/colour/lab_linear_chain.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 75
+  s_40a6b245f8639b::t_b773b455d8e97b 77-80,86-88
+tests/unit/arithmetic/premultiply_recomb.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 63
+  s_40a6b245f8639b::t_6175b1e5fb00c5 5
+  s_40a6b245f8639b::t_bf0848267a8ad9 50,56
+  s_40a6b245f8639b::t_b773b455d8e97b 52-55
+tests/unit/arithmetic/recomb_histogram.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 83,108,134
+  s_40a6b245f8639b::t_b773b455d8e97b 85-88,94-96,110-113,120-122,136-139,145-147
+tests/unit/geometry/boundary_extract.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,79-81
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+tests/unit/resample/affine_geometry.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_b773b455d8e97b 67-70,76-78,103-106,112-114
+  s_40a6b245f8639b::t_bf0848267a8ad9 65,101
+tests/public_image_pipeline_api.rs
+  s_c07b024833c7a8::t_828f283dd956ed 1-2
+  s_c07b024833c7a8::t_daae99cf6cebb6 3-7,9-10
+  s_c07b024833c7a8::t_125231e270dd76 8
+tests/unit/resample/reduce_errors.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 85-88,94-96,110-113,120-122,136-139,145-147
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 83,108,134
+tests/chaos_monkey.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 37-39,45-47,60-62
+  s_c07b024833c7a8::t_18cbd1c49265b3 9-10
+tests/integration/process.rs
+  s_40a6b245f8639b::t_b43e4e88212e96 323,345,364,390,415,436,460,480,504
+src/lib.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 97-98
+  s_cfb3632a62625d::t_446d4d2a264ebb 82-84
+  s_c07b024833c7a8::t_25cdcbc3eead1d 100
+  s_c07b024833c7a8::t_761bc4e3f31c9b 99
+  s_c07b024833c7a8::t_1e07e19a520400 5-6,125
+crates/viprs-runtime/src/image_pipeline/ops/resample.rs
+  s_c07b024833c7a8::t_071fb9334c731d 147,149
+  s_c07b024833c7a8::t_3d8bd0cda9d507 11,55
+  s_c07b024833c7a8::t_f447404e906ed4 3
+  s_c07b024833c7a8::t_ce28775ac66787 1
+  s_c07b024833c7a8::t_accdbcc3d3ab2a 2,4-10,12-54,56-146,148,150-170
+tests/integration/dimensions/non_power_of_2.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 9-10
+  s_40a6b245f8639b::t_bf0848267a8ad9 68
+  s_40a6b245f8639b::t_b773b455d8e97b 71-73,76-78
+crates/viprs-runtime/src/image_pipeline/ops/geometry.rs
+  s_c07b024833c7a8::t_71fd5be3125431 1
+  s_c07b024833c7a8::t_8ad8b15d98e986 2,4-10,12-228
+  s_c07b024833c7a8::t_7fba57a2b7b5c9 3
+  s_c07b024833c7a8::t_3d8bd0cda9d507 11
+tests/unit/resample/resize_extremes.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 10-11
+  s_40a6b245f8639b::t_2ff58c23db4cbd 30
+  s_40a6b245f8639b::t_bf0848267a8ad9 91,129
+  s_40a6b245f8639b::t_b773b455d8e97b 93-96,104-106,131-134,140-142
+tests/unit/convolution/conv2d_identity.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+  s_40a6b245f8639b::t_b773b455d8e97b 77-80,86-88
+  s_40a6b245f8639b::t_bf0848267a8ad9 75
+tests/process_api.rs
+  s_40a6b245f8639b::t_b43e4e88212e96 323,345,364,390,415,436,460,480,504
+tests/integration/pipeline/invariants/pass_dimensions/basic.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 134
+  s_40a6b245f8639b::t_b773b455d8e97b 136-139,147-149
+  s_c07b024833c7a8::t_18cbd1c49265b3 13
+tests/integration/pipeline/flows_support.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 74,96,154
+  s_40a6b245f8639b::t_b773b455d8e97b 76-78,80-82,98-100,156-158
+crates/viprs-runtime/src/sources/decoder_source/backing.rs
+  s_c07b024833c7a8::t_d8e82d5be0438f 271
+crates/viprs-ops-spatial/src/structural/rotate90.rs
+  s_c07b024833c7a8::t_f3ee89a1a24e98 112
+crates/viprs-runtime/src/image_pipeline/ops/colour.rs
+  s_c07b024833c7a8::t_20e76d12a71af8 1-83
+tests/unit/geometry/embed_extract_identity.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 70-73,79-81,106-109,115-117
+  s_40a6b245f8639b::t_47ac981098fbe2 8-9
+  s_40a6b245f8639b::t_bf0848267a8ad9 68,104
+tests/unit/geometry/background_fill.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 136-139,147-149
+  s_40a6b245f8639b::t_bf0848267a8ad9 134
+  s_40a6b245f8639b::t_47ac981098fbe2 13
+tests/unit/arithmetic/numeric_edges.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7
+  s_40a6b245f8639b::t_b773b455d8e97b 69-72,80-82,145-147
+  s_40a6b245f8639b::t_bf0848267a8ad9 67,73
+crates/viprs-ops-spatial/src/convolution/sharpen.rs
+  s_c07b024833c7a8::t_44a237b52fadbb 16
+tests/unit/geometry/repeat_embed.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 69-72,80-82,145-147
+  s_40a6b245f8639b::t_47ac981098fbe2 7
+  s_40a6b245f8639b::t_bf0848267a8ad9 67,73
+tests/ui/image_pipeline_requires_output_contract.rs
+  s_c07b024833c7a8::t_f6683ea4feb820 1-7
+tests/integration/pipeline/structural.rs
+  s_c07b024833c7a8::t_53edd897bf84b2 20,63,99,131,167,207,261,317
+  s_c07b024833c7a8::t_18cbd1c49265b3 10-11,55-56,88-89,123-124,156-157,195-196,240-241,307-308
+tests/unit/resample/affine_shear.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 72
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,176-177
+  s_40a6b245f8639b::t_47ac981098fbe2 11-12
+tests/integration/codecs/edges/advanced.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 9-10,203-204,368
+  s_40a6b245f8639b::t_b773b455d8e97b 87-90,96-98,112-115,122-124,138-141,147-149,309-312,320-322,440-443,449-451
+  s_40a6b245f8639b::t_2ff58c23db4cbd 228
+  s_c07b024833c7a8::t_53edd897bf84b2 278
+  s_40a6b245f8639b::t_bf0848267a8ad9 85,110,136,277,307,438
+tests/integration/pipeline/internal/staged_execution.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7-8
+  s_40a6b245f8639b::t_b773b455d8e97b 85-88,94-96,110-113,120-122,136-139,145-147
+  s_40a6b245f8639b::t_bf0848267a8ad9 83,108,134
+tests/integration/pipeline/internal/single_pixel.rs
+  s_c07b024833c7a8::t_18cbd1c49265b3 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 72,108,135,197
+  s_40a6b245f8639b::t_b773b455d8e97b 74-77,83-85,110-113,119-121,137-140,146-148,198-203
+tests/unit/resample/shrink_chains.rs
+  s_40a6b245f8639b::t_b773b455d8e97b 69-72,80-82,145-147
+  s_40a6b245f8639b::t_47ac981098fbe2 7
+  s_40a6b245f8639b::t_bf0848267a8ad9 67,73
+tests/unit/arithmetic/recomb_cast.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 66,72
+  s_40a6b245f8639b::t_b773b455d8e97b 68-71,79-81
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+crates/viprs-runtime/src/image_pipeline/ops.rs
+  s_c07b024833c7a8::t_303b87c0ce2ce7 1-7
+crates/viprs-runtime/src/sources/any.rs
+  s_c07b024833c7a8::t_eaf3dac39322e7 22
+tests/unit/geometry/clipped_embed.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 75
+  s_40a6b245f8639b::t_47ac981098fbe2 5
+  s_40a6b245f8639b::t_b773b455d8e97b 77-80,86-88
+tests/integration/pipeline/concurrency/idempotence.rs
+  s_40a6b245f8639b::t_bf0848267a8ad9 51
+  s_40a6b245f8639b::t_b773b455d8e97b 54-57,59-64,106-116
+  s_c07b024833c7a8::t_18cbd1c49265b3 6
+tests/unit/geometry/rotated_extract.rs
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_bf0848267a8ad9 81,111
+  s_c07b024833c7a8::t_53edd897bf84b2 82
+  s_40a6b245f8639b::t_b773b455d8e97b 113-116,124-126
+  s_40a6b245f8639b::t_2ff58c23db4cbd 32
+tests/unit/resample/reduce_identity.rs
+  s_40a6b245f8639b::t_2ff58c23db4cbd 32
+  s_c07b024833c7a8::t_53edd897bf84b2 82
+  s_40a6b245f8639b::t_bf0848267a8ad9 81,111
+  s_40a6b245f8639b::t_47ac981098fbe2 7-8
+  s_40a6b245f8639b::t_b773b455d8e97b 113-116,124-126
+tests/integration/pipeline/flows_complex.rs
+  s_c07b024833c7a8::t_0f6bf51a7535dd 7-8
+  s_40a6b245f8639b::t_b773b455d8e97b 505-514
+  s_40a6b245f8639b::t_2ff58c23db4cbd 4-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ae2c20b855f371c60869b13065ce2bac3c38a06d",
+  "prompts": {},
+  "sessions": {
+    "s_40a6b245f8639b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "019f011b-bfef-7992-b557-329173974c6d",
+        "model": "unknown"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_c07b024833c7a8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f011b-bfef-7992-b557-329173974c6d",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    },
+    "s_cfb3632a62625d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f0066-2c12-7f62-8b5f-f8b4c59eb03e",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
