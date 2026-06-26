@@ -1,0 +1,47 @@
+tests/integration/pipeline/builder_basics.rs
+  s_c07b024833c7a8::t_c9152a3c9eaa17 6-13,16-37,71-75,80-92,97-102,157-162
+  s_c07b024833c7a8::t_56d7e8126d03c0 76-79,93-96,163
+tests/ui/image_pipeline_load_api.rs
+  s_c07b024833c7a8::t_baa1729dbc9544 1-12
+tests/ui/image_pipeline_encoded_input_api.rs
+  s_c07b024833c7a8::t_5b2fff38f341ce 1-5,7-20
+  s_c07b024833c7a8::t_ca57fec26b28dd 6
+tests/ui/image_pipeline_dynamic_commit_api.rs
+  s_c07b024833c7a8::t_baa1729dbc9544 2-8,10,17,23,25-28
+  s_c07b024833c7a8::t_015e5cbd345547 1,9,11-16,18,24
+  s_c07b024833c7a8::t_17565b79abb0ab 19-22
+crates/viprs-runtime/src/image_pipeline/output.rs
+  s_c07b024833c7a8::t_84f244b20ae3b0 1-6,125-126,131-153
+crates/viprs-runtime/src/image_pipeline/sink.rs
+  s_c07b024833c7a8::t_df40ee283af6f7 26-27
+  s_c07b024833c7a8::t_65e741cc90bbb1 1-5,8-10,28-29,50-94,108-134
+crates/viprs-runtime/src/image_pipeline/input.rs
+  s_c07b024833c7a8::t_2136ca4d2c77f5 273-275,280-283,289-291,296-299
+  s_c07b024833c7a8::t_c823dec39e2148 64,67-69,86-87,117
+  s_c07b024833c7a8::t_29aa193c78b06c 1-4,17-18,65-66,70-85,88-116,257-272,276-279,284-288,292-295
+crates/viprs-runtime/src/image_pipeline/pipeline.rs
+  s_c07b024833c7a8::t_baa1729dbc9544 117-132
+tests/public_image_pipeline_api.rs
+  s_c07b024833c7a8::t_5b2fff38f341ce 6
+  s_c07b024833c7a8::t_baa1729dbc9544 7-8
+  s_c07b024833c7a8::t_dfa62da9e0f341 10
+tests/ui/image_pipeline_raw_sink_api.rs
+  s_c07b024833c7a8::t_2f2910bb61735b 15,18
+  s_c07b024833c7a8::t_7406d9b09ea4a5 1-14,16-17,19-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0a1ac8bcd5fd88240bcfa31cb7af82ba4856876d",
+  "prompts": {},
+  "sessions": {
+    "s_c07b024833c7a8": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f011b-bfef-7992-b557-329173974c6d",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Mateo Ezequiel Bertogliati <mateoezequiel.bertogliati@mercadolibre.com>"
+    }
+  }
+}
